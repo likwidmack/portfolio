@@ -80,6 +80,11 @@ test("app packages survive and private internals do not", () => {
     );
   }
 
+  const tsconfig = JSON.parse(fs.readFileSync(path.join(dest, "tsconfig.json"), "utf8"));
+  const tsPaths = (tsconfig.references || []).map((ref) => ref.path);
+  assert.ok(tsPaths.includes("./core/web"));
+  assert.equal(tsPaths.includes("./core/web-e2e"), false);
+
   const meta = JSON.parse(fs.readFileSync(path.join(dest, ".sync-meta.json"), "utf8"));
   assert.equal(meta.sourceRepo, "tamaramack/portfolio");
   assert.equal(meta.sourceTag, "v1.3.19");
