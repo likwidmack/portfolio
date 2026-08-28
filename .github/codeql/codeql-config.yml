@@ -1,0 +1,12 @@
+name: portfolio
+paths:
+  - core/web
+  - packages
+  - sync
+  - .github
+paths-ignore:
+  - theme
+  - tests/fixtures
+  - "**/node_modules/**"
+  - "**/.nuxt/**"
+  - "**/.output/**"

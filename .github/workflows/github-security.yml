@@ -1,19 +1,18 @@
-name: GitHub profile
+name: GitHub security settings
 
 on:
   workflow_dispatch:
   push:
     branches: [main]
     paths:
-      - package.json
-      - sync/update-github-profile.mjs
-      - .github/workflows/github-profile.yml
+      - sync/apply-github-security.mjs
+      - .github/workflows/github-security.yml
 
 permissions:
   contents: read
 
 jobs:
-  profile:
+  apply:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -23,7 +22,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
-      - name: Update About, homepage, and topics
+      - name: Enable private reporting, Dependabot, and main protection
         env:
           LK_GH_TOKEN: ${{ secrets.LK_GH_TOKEN }}
         run: |
@@ -31,4 +30,4 @@ jobs:
             echo "LK_GH_TOKEN is not set in Actions secrets; skip"
             exit 0
           fi
-          node sync/update-github-profile.mjs
+          node sync/apply-github-security.mjs

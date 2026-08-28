@@ -95,6 +95,7 @@ test("app packages survive and private internals do not", () => {
   assert.match(readme, /Table of contents/);
   assert.match(readme, /Quick start/);
   assert.match(readme, /repository-images\.githubusercontent\.com\/1349135003\//);
+  assert.match(readme, /SECURITY\.md/);
   assert.doesNotMatch(
     readme,
     /tamaramack|sanitized|TM_GH_TOKEN|LK_GH_TOKEN|private source|public mirror|Synced from/i,
@@ -267,4 +268,11 @@ test("dest-owned GitHub social preview is the real 1280x640 image", () => {
   assert.equal(buf.readUInt32BE(16), 1280);
   assert.equal(buf.readUInt32BE(20), 640);
   assert.ok(buf.length > 10_000, "social preview must not be a 1x1 placeholder");
+});
+
+test("dest-owned security policy uses private reporting", () => {
+  const policy = fs.readFileSync(path.join(root, "SECURITY.md"), "utf8");
+  assert.match(policy, /security\/advisories\/new/);
+  assert.match(policy, /Do not/i);
+  assert.doesNotMatch(policy, /5\.1\.x/);
 });
