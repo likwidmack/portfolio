@@ -2,7 +2,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
-/** 1×1 PNG (89 PNG). */
+/** 1×1 PNG. */
 export const PNG_1X1 = Buffer.from(
   "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
   "base64",
@@ -44,9 +44,8 @@ function pngAsIco(png) {
 
 export const ICO_1X1 = pngAsIco(PNG_1X1);
 
-/** Tiny SVG that still satisfies dest diagram tests (intrinsic 1440×810, ASCII, middot). */
 export const SVG_1X1 = Buffer.from(
-  '<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="810"><rect width="1440" height="810" fill="#ccc"/><text x="12" y="24">&#183;</text></svg>\n',
+  '<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"/>\n',
   "utf8",
 );
 
@@ -69,70 +68,31 @@ export const PDF_STUB = Buffer.from(
 );
 
 export const HASHED_JS_STUB = Buffer.from("/* placeholder */\n", "utf8");
-export const HTML_STUB = Buffer.from("<!doctype html><title>placeholder</title>\n", "utf8");
-export const CSS_STUB = Buffer.from("/* placeholder */\n", "utf8");
-export const WOFF_STUB = Buffer.from("wOFF", "utf8");
-export const WOFF2_STUB = Buffer.from("wOF2", "utf8");
-export const TTF_STUB = Buffer.from([0x00, 0x01, 0x00, 0x00]);
-export const OTF_STUB = Buffer.from("OTTO", "utf8");
-export const GENERIC_STUB = Buffer.from("placeholder\n", "utf8");
 
-const STUB_BY_EXT = new Map([
+const MEDIA_BY_EXT = new Map([
   [".png", PNG_1X1],
   [".jpg", JPEG_1X1],
   [".jpeg", JPEG_1X1],
   [".gif", GIF_1X1],
   [".webp", WEBP_1X1],
-  [".avif", PNG_1X1],
   [".ico", ICO_1X1],
   [".svg", SVG_1X1],
   [".mp4", MP4_STUB],
-  [".m4v", MP4_STUB],
-  [".mov", MP4_STUB],
   [".webm", WEBM_STUB],
   [".pdf", PDF_STUB],
-  [".html", HTML_STUB],
-  [".htm", HTML_STUB],
-  [".js", HASHED_JS_STUB],
-  [".mjs", HASHED_JS_STUB],
-  [".cjs", HASHED_JS_STUB],
-  [".css", CSS_STUB],
-  [".map", HASHED_JS_STUB],
-  [".woff", WOFF_STUB],
-  [".woff2", WOFF2_STUB],
-  [".ttf", TTF_STUB],
-  [".otf", OTF_STUB],
-  [".eot", GENERIC_STUB],
-  [".mp3", GENERIC_STUB],
-  [".wav", GENERIC_STUB],
-  [".wasm", GENERIC_STUB],
 ]);
 
 const HASHED_STATIC_RE = /(?:^|\/)[^/]+\.[a-f0-9]{8,}\.(js|mjs|cjs|css)$/i;
 
 export const CDN_PLACEHOLDER_MAX_BYTES = 2048;
 
-function posixBase(relOrName) {
-  return path.posix.basename(String(relOrName).replaceAll("\\", "/"));
-}
-
-export function isKeptPublicFile(relOrName) {
-  const base = posixBase(relOrName);
-  return base === ".gitkeep" || base.toLowerCase() === "readme.md";
-}
-
-/**
- * Tiny same-type stub for a `core/web/public` object, or `null` to leave
- * layout notes (README) and `.gitkeep`.
- */
 export function placeholderBytesFor(relOrName) {
   const normalized = String(relOrName).replaceAll("\\", "/");
-  if (isKeptPublicFile(normalized)) return null;
   const ext = path.posix.extname(normalized).toLowerCase();
-  const byExt = STUB_BY_EXT.get(ext);
-  if (byExt) return byExt;
+  const media = MEDIA_BY_EXT.get(ext);
+  if (media) return media;
   if (HASHED_STATIC_RE.test(normalized)) return HASHED_JS_STUB;
-  return GENERIC_STUB;
+  return null;
 }
 
 function walkPublic(dir, onFile) {
@@ -147,14 +107,15 @@ function walkPublic(dir, onFile) {
 }
 
 /**
- * Replace CDN binaries (and other public objects) under `core/web/public`
- * with tiny same-path placeholders. Preserve relative paths and the tree.
+ * Replace CDN binaries and hashed static assets under `core/web/public`
+ * with tiny same-type placeholders. Preserve relative paths and the tree.
+ * HTML labs and non-hashed scripts are left as source.
  */
 export function applyCdnPlaceholders(staging) {
   const publicDir = path.join(staging, "core/web/public");
   if (!fs.existsSync(publicDir)) return;
-  walkPublic(publicDir, (full) => {
-    const bytes = placeholderBytesFor(full);
+  walkPublic(publicDir, (full, name) => {
+    const bytes = placeholderBytesFor(name);
     if (!bytes) return;
     fs.writeFileSync(full, bytes);
   });
@@ -164,8 +125,8 @@ export function cdnOriginalScanHits(staging) {
   const publicDir = path.join(staging, "core/web/public");
   const hits = [];
   if (!fs.existsSync(publicDir)) return hits;
-  walkPublic(publicDir, (full) => {
-    const expected = placeholderBytesFor(full);
+  walkPublic(publicDir, (full, name) => {
+    const expected = placeholderBytesFor(name);
     if (!expected) return;
     const buf = fs.readFileSync(full);
     const rel = path.relative(staging, full).split(path.sep).join("/");

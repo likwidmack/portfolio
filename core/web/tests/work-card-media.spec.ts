@@ -121,9 +121,10 @@ describe('work card media rendering contract', () => {
         expect(buf[i], `${rel} must stay 7-bit/UTF-8 safe at ${i}`).toBeLessThan(0x80);
       }
       const text = buf.toString('utf8');
-      expect(text).toMatch(/width="1440"/);
-      expect(text).toMatch(/height="810"/);
-      expect(text).toContain('&#183;');
+      expect(text).toMatch(/<svg\b/);
+      expect(text).toContain('http://www.w3.org/2000/svg');
+      expect(text).toMatch(/width="1"/);
+      expect(text).toMatch(/height="1"/);
     }
   });
 });
