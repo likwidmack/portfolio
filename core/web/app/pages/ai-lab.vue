@@ -1,5 +1,5 @@
 <template lang="pug">
-.page-content.portfolio-page.ai-lab(data-fit="screen")
+.page-content.portfolio-page.ai-lab
   header.portfolio-hero
     p.eyebrow-container Human-Controlled AI Lab
     h1 Goal → plan → approval → result

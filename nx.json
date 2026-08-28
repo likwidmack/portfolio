@@ -28,7 +28,6 @@
     },
     {
       "plugin": "@nx/js/typescript",
-      "exclude": ["tests/**"],
       "options": {
         "typecheck": {
           "targetName": "typecheck"
@@ -39,20 +38,24 @@
           "buildDepsName": "build-deps",
           "watchDepsName": "watch-deps"
         }
-      }
+      },
+      "exclude": [
+        "tests/**"
+      ]
     },
     {
       "plugin": "@nx/vitest",
-      "exclude": ["tests/**"],
       "options": {
         "testTargetName": "test",
         "ciTargetName": "test-ci",
         "testMode": "run"
-      }
+      },
+      "exclude": [
+        "tests/**"
+      ]
     },
     {
       "plugin": "@nx/vite/plugin",
-      "exclude": ["tests/**"],
       "options": {
         "buildTargetName": "build",
         "testTargetName": "vite:test",
@@ -63,11 +66,13 @@
         "typecheckTargetName": "vite:typecheck",
         "buildDepsTargetName": "vite:build-deps",
         "watchDepsTargetName": "vite:watch-deps"
-      }
+      },
+      "exclude": [
+        "tests/**"
+      ]
     },
     {
       "plugin": "@nx/storybook/plugin",
-      "exclude": ["tests/**"],
       "options": {
         "serveStorybookTargetName": "storybook",
         "buildStorybookTargetName": "build-storybook",
@@ -75,17 +80,22 @@
         "staticStorybookTargetName": "static-storybook",
         "buildDepsTargetName": "build-deps",
         "watchDepsTargetName": "watch-deps"
-      }
+      },
+      "exclude": [
+        "tests/**"
+      ]
     },
     {
       "plugin": "@nx/cypress/plugin",
-      "exclude": ["tests/**"],
       "options": {
         "targetName": "e2e",
         "openTargetName": "open-cypress",
         "componentTestingTargetName": "component-test",
         "ciTargetName": "e2e-ci"
-      }
+      },
+      "exclude": [
+        "tests/**"
+      ]
     }
   ],
   "release": {

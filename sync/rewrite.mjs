@@ -163,7 +163,7 @@ function rewritePortfolioSeo(staging) {
   if (!fs.existsSync(file)) return;
   const text = fs.readFileSync(file, "utf8");
   const next = text.replace(
-    "`${base}/i/portfolio/social-card.png`",
+    /`\$\{base\}\/(?:i|img)\/portfolio\/social-card\.png`/g,
     "'https://raw.githubusercontent.com/likwidmack/portfolio/main/.github/social-preview.png'",
   );
   if (next !== text) fs.writeFileSync(file, next);

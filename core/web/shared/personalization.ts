@@ -1,51 +1,31 @@
 import { pickContrastingInk } from '@tgmc/theme';
 
 export type MotionPreference = 'system' | 'playful' | 'reduced';
-export type AccentId = 'ember' | 'crimson';
-export type ThemeResolvedMode = 'light' | 'dark';
+export type AccentId = 'coral' | 'cobalt' | 'teal' | 'violet' | 'amber';
 
 export const ACCENT_KEY = 'tgmc-accent';
 export const MOTION_KEY = 'tgmc-motion';
 
-export type AccentPreset = {
-  id: AccentId;
-  label: string;
-  /** Dark-mode primary hex — FOUC inline map + chip swatch. */
-  color: string;
-  primary: { light: string; dark: string };
-  secondary: { light: string; dark: string };
-};
-
-/** Two warm families: ember (orange primary) and crimson (swap). */
-export const ACCENT_PRESETS: AccentPreset[] = [
-  {
-    id: 'ember',
-    label: 'Ember',
-    color: '#FF6B35',
-    primary: { light: '#D9531D', dark: '#FF6B35' },
-    secondary: { light: '#6E1622', dark: '#8B1E2E' },
-  },
-  {
-    id: 'crimson',
-    label: 'Crimson',
-    color: '#8B1E2E',
-    primary: { light: '#6E1622', dark: '#8B1E2E' },
-    secondary: { light: '#D9531D', dark: '#FF6B35' },
-  },
+/** Single source of truth for accent ids → hex (FOUC script, CSS fallbacks, UI chips). */
+export const ACCENT_PRESETS: Array<{ id: AccentId; label: string; color: string }> = [
+  { id: 'coral', label: 'Coral', color: '#ff6b5e' },
+  { id: 'cobalt', label: 'Cobalt', color: '#3467eb' },
+  { id: 'teal', label: 'Teal', color: '#008577' },
+  { id: 'violet', label: 'Violet', color: '#8656d9' },
+  { id: 'amber', label: 'Amber', color: '#b45309' },
 ];
 
-export const DEFAULT_ACCENT_ID: AccentId = 'ember';
+export const DEFAULT_ACCENT_ID: AccentId = 'coral';
 export const DEFAULT_ACCENT_COLOR =
-  ACCENT_PRESETS.find((preset) => preset.id === DEFAULT_ACCENT_ID)?.color ?? '#FF6B35';
+  ACCENT_PRESETS.find((preset) => preset.id === DEFAULT_ACCENT_ID)?.color ?? '#ff6b5e';
 
-/** Warm paper / ink surfaces — keep in sync with theme light background / dark text. */
-export const PORTFOLIO_IVORY = '#FAF6F3';
-export const PORTFOLIO_INK = '#0f0908';
+/** Ivory / ink brand surfaces — keep in sync with theme light background / dark text. */
+export const PORTFOLIO_IVORY = '#f7f1e7';
+export const PORTFOLIO_INK = '#141312';
 
 /**
  * Inline FOUC guard: theme mode + accent CSS vars + motion before first paint.
  * Built from {@link ACCENT_PRESETS} so hex values are not hand-copied into app-prop.
- * Map uses dark-mode primary hexes; `applyAccent` re-runs on theme change with mode-aware tokens.
  */
 export function buildPersonalizationFoucScript(): string {
   const accentMap = ACCENT_PRESETS.map((preset) => `${preset.id}:'${preset.color}'`).join(',');
@@ -60,27 +40,16 @@ export function isMotion(value: string | null): value is MotionPreference {
   return value === 'system' || value === 'playful' || value === 'reduced';
 }
 
-/**
- * Mode-aware brand tokens. Light uses darkened hexes for contrast on warm paper.
- * Unknown stored ids (`coral`, …) fall back via {@link resolveAccentId}.
- */
-export function buildAccentTokens(next: AccentId, mode: ThemeResolvedMode = 'dark'): Record<string, string> {
+export function buildAccentTokens(next: AccentId): Record<string, string> {
   const preset = ACCENT_PRESETS.find((item) => item.id === next) ?? ACCENT_PRESETS[0]!;
-  const primary = mode === 'light' ? preset.primary.light : preset.primary.dark;
-  const secondary = mode === 'light' ? preset.secondary.light : preset.secondary.dark;
-  const ink = pickContrastingInk({ backgroundColor: primary });
+  const ink = pickContrastingInk({ backgroundColor: preset.color });
   return {
-    '--primary-color': primary,
-    '--secondary-color': secondary,
-    '--accent-color': primary,
-    '--focus-ring': primary,
+    '--primary-color': preset.color,
+    '--secondary-color': preset.color,
+    '--accent-color': preset.color,
+    '--focus-ring': preset.color,
     '--button-fg': ink,
   };
-}
-
-/** Map legacy / unknown stored accent ids to {@link DEFAULT_ACCENT_ID}. */
-export function resolveAccentId(value: string | null): AccentId {
-  return isAccent(value) ? value : DEFAULT_ACCENT_ID;
 }
 
 export function loadPersonalization(storage: Pick<Storage, 'getItem'>): {
@@ -90,7 +59,7 @@ export function loadPersonalization(storage: Pick<Storage, 'getItem'>): {
   const accent = storage.getItem(ACCENT_KEY);
   const motion = storage.getItem(MOTION_KEY);
   return {
-    accent: resolveAccentId(accent),
+    accent: isAccent(accent) ? accent : DEFAULT_ACCENT_ID,
     motion: isMotion(motion) ? motion : 'system',
   };
 }

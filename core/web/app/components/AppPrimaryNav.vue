@@ -5,12 +5,14 @@
     span LIKWIDMACK
   nav.primary-nav__links(aria-label="Primary")
     NuxtLink(to="/work") Work
-    NuxtLink(to="/about") About
     NuxtLink(to="/gallery") Gallery
-    NuxtLink(to="/blog") Writing
-    NuxtLink(to="/code") Code
+    NuxtLink(to="/docs") Docs
+    NuxtLink(to="/ai-lab") AI Lab
+    NuxtLink(to="/process") Process
+    NuxtLink(to="/about") About
+    NuxtLink(to="/blog") Notes
   .primary-nav__actions
-    a.primary-nav__contact(href="mailto:likwidmack@gmail.com", @click="trackContact") Get in touch
+    a.primary-nav__contact(href="mailto:likwidmack@gmail.com", @click="trackContact") Contact
     span.app-env-chip(v-if="envChip.show", :aria-label="envChip.ariaLabel") {{ envChip.label }}
 </template>
 

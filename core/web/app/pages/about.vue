@@ -1,22 +1,42 @@
 <template lang="pug">
-.page-content.about.about-cv(data-fit="prose")
-  .page-with-nav.about-cv__layout
-    aside.about-cv__sidebar
-      p.eyebrow-container {{ aboutContent.hero.eyebrow }}
-      p.about-cv__name {{ aboutContent.hero.name }}
-      p.about-cv__role {{ aboutContent.hero.role }}
-      AppPageNav(:items="_navItems", label="On this page")
-      .about-cv__actions(aria-label="Primary actions")
-        a.about-cv__resume(:href="primaryResume.href", download, @click="trackResumeDownload(primaryResume.key)")
-          span.pi.pi-download(aria-hidden="true")
-          span {{ aboutContent.hero.primaryActionLabel }}
-        a.about-cv__contact(:href="aboutContent.hero.secondaryActionHref", @click="trackContact") {{ aboutContent.hero.secondaryActionLabel }}
+.page-content.about
+  header(data-region="hero")
+    p.eyebrow-container {{ aboutContent.hero.eyebrow }}
+    h1.display {{ aboutContent.hero.title }}
+    p.lead {{ aboutContent.hero.lede }}
+    .button-row(aria-label="Primary actions")
+      UiButton(
+        as="a",
+        :href="primaryResume.href",
+        download,
+        icon="pi pi-download",
+        :label="aboutContent.hero.primaryActionLabel"
+      )
+      UiButton(
+        as="a",
+        :href="aboutContent.hero.secondaryActionHref",
+        icon="pi pi-send",
+        variant="outlined",
+        severity="secondary",
+        :label="aboutContent.hero.secondaryActionLabel"
+      )
+      UiButton(
+        as="a",
+        href="/other/data/Tamara-Mack-UI-AI-Portfolio-2026.pdf",
+        download,
+        icon="pi pi-file-pdf",
+        variant="outlined",
+        severity="secondary",
+        label="Download portfolio PDF",
+        @click="trackDeckDownload"
+      )
+
+  .page-with-nav
+    AppPageNav(:items="_navItems")
 
     div(data-region="body")
-      header#summary.about-cv__intro(aria-labelledby="about-summary-heading")
-        h1#about-summary-heading.display {{ aboutContent.hero.title }}
-        p.lead {{ aboutContent.hero.lede }}
-        h2.title {{ aboutContent.intro.heading }}
+      section#summary(aria-labelledby="about-summary-heading")
+        h2#about-summary-heading.title {{ aboutContent.intro.heading }}
         .auto-grid(data-region="intro")
           p(v-for="paragraph in aboutContent.intro.paragraphs", :key="paragraph") {{ paragraph }}
 
@@ -80,24 +100,15 @@
             p(data-type="panel-title") {{ resume.title }}
             p(data-type="kicker") {{ resume.meta }}
             .button-row
-              a.about-cv__resume.about-cv__resume--inline(
+              UiButton(
+                as="a",
                 :href="resume.href",
                 download,
+                icon="pi pi-file-pdf",
+                label="Download PDF",
+                size="small",
                 @click="trackResumeDownload(resume.key)"
               )
-                span.pi.pi-file-pdf(aria-hidden="true")
-                span Download PDF
-        .button-row.about-cv__deck
-          UiButton(
-            as="a",
-            href="/d/Tamara-Mack-UI-AI-Portfolio-2026.pdf",
-            download,
-            icon="pi pi-file-pdf",
-            variant="outlined",
-            severity="secondary",
-            label="Download portfolio PDF",
-            @click="trackDeckDownload"
-          )
 </template>
 
 <script setup lang="ts">
@@ -114,7 +125,7 @@ type ResumeKey =
   | 'seniorFullStackContract';
 
 const resumeFiles: Partial<Record<ResumeKey, string>> = {
-  general: '/d/Resume2026.pdf',
+  general: '/other/data/Tamara G Mack_Resume_2026.pdf',
 } as const;
 
 type ResumeData = {
@@ -151,9 +162,7 @@ type AboutContent = {
   hero: {
     eyebrow: string;
     lede: string;
-    name: string;
     primaryActionLabel: string;
-    role: string;
     secondaryActionHref: string;
     secondaryActionLabel: string;
     title: string;
@@ -193,7 +202,6 @@ const pageDescription =
 const { track } = usePortfolioAnalytics();
 const trackDeckDownload = () => track('deck_download', { placement: 'about' });
 const trackResumeDownload = (resumeKey: ResumeKey) => track('resume_download', { resume: resumeKey });
-const trackContact = () => track('contact_click', { placement: 'about-sidebar' });
 
 const { data: resumeContent } = await useContentAsyncData('resume-content', () =>
   fetchContentCollection<AboutContent>('resume', { mode: 'first' })
@@ -219,7 +227,7 @@ const fallbackResume: ResumeLink = {
   key: 'general',
   title: 'General Resume',
   meta: '2026 PDF',
-  href: resumeFiles.general ?? '/d/Resume2026.pdf',
+  href: resumeFiles.general ?? '/other/data/Tamara G Mack_Resume_2026.pdf',
 };
 
 const primaryResume = computed(
@@ -242,139 +250,43 @@ usePortfolioSeo({ title: pageTitle, description: pageDescription, path: '/about'
 </script>
 
 <style lang="scss" scoped>
-.about-cv {
+.about {
   display: grid;
   gap: var(--section-gap, 2rem);
 
-  section,
-  .about-cv__intro {
+  section {
     width: 100%;
   }
 
-  &__layout {
-    align-items: start;
+  .display {
+    animation: neonPulse 2s ease-in-out infinite;
   }
 
-  &__sidebar {
-    display: grid;
-    gap: 0.85rem;
-    padding: 1rem 1.1rem;
-    border: 1px solid var(--border-color, var(--portfolio-rule));
-    border-radius: var(--border-radius-md, 0.5rem);
-    background: var(--surface-color, var(--main-background-secondary));
-    min-width: 0;
-
-    @media (min-width: $breakpoint-tablet) {
-      position: sticky;
-      top: calc(var(--page-chrome, 6.5rem) + 0.75rem);
-      z-index: 1;
-    }
-
-    :deep(.page-nav) {
-      position: static;
-      margin: 0;
-      padding: 0;
-      background: transparent;
-    }
-
-    :deep(.page-nav [data-label]) {
-      color: var(--text-secondary-color, inherit);
-    }
-  }
-
-  &__name {
-    margin: 0;
-    font-size: clamp(1.35rem, 2.5vw, 1.75rem);
-    font-weight: 700;
-    line-height: 1.15;
-  }
-
-  &__role {
-    margin: 0;
-    color: var(--text-secondary-color, inherit);
-    font-size: var(--font-size-sm);
-    line-height: 1.4;
-  }
-
-  &__actions {
-    display: grid;
-    gap: 0.55rem;
-    margin-top: 0.35rem;
-  }
-
-  &__resume {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.45rem;
-    min-height: 2.75rem;
-    padding: 0.55rem 0.9rem;
-    border: 1px solid var(--portfolio-teal);
-    border-radius: var(--border-radius-md, 0.5rem);
-    background: var(--portfolio-teal);
-    color: var(--button-fg, #f2ece8);
-    font-size: var(--font-size-sm);
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-decoration: none;
-    text-transform: uppercase;
-
-    &:hover,
-    &:focus-visible {
-      filter: brightness(1.08);
-      outline: none;
-      text-decoration: none;
-    }
-
-    &:focus-visible {
-      box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--portfolio-teal) 35%, transparent);
-    }
-
-    &--inline {
-      justify-self: start;
-      min-height: 2.25rem;
-      padding-block: 0.4rem;
-      font-size: var(--font-size-xs);
-    }
-  }
-
-  &__contact {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 2.75rem;
-    padding: 0.55rem 0.9rem;
-    border: 1px solid var(--border-color, currentColor);
-    border-radius: var(--border-radius-md, 0.5rem);
-    color: var(--text-color);
-    font-size: var(--font-size-sm);
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-decoration: none;
-    text-transform: uppercase;
-
-    &:hover,
-    &:focus-visible {
-      border-color: var(--primary-color);
-      color: var(--primary-color);
-      outline: none;
-    }
-  }
-
-  &__intro {
+  [data-region='hero'] {
+    position: relative;
     display: grid;
     gap: 0.75rem;
-    min-width: 0;
-  }
+    padding-bottom: 0.5rem;
 
-  &__deck {
-    margin-top: 0.5rem;
-  }
+    &::after {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      color: color-mix(in srgb, var(--primary-color) 28%, transparent);
+      content: '</>';
+      font-size: clamp(2rem, 8vw, 5rem);
+      line-height: 1;
+      pointer-events: none;
+    }
 
-  .display {
-    margin: 0;
-    font-size: clamp(1.75rem, 4vw, 2.75rem);
-    line-height: 1.15;
+    .button-row {
+      margin-bottom: 0;
+    }
+
+    :deep(a.p-button),
+    :deep(a.btn) {
+      text-decoration: none;
+    }
   }
 
   [data-region='body'] {
@@ -436,6 +348,7 @@ usePortfolioSeo({ title: pageTitle, description: pageDescription, path: '/about'
     border: 2px solid var(--primary-color);
     border-radius: 50%;
     background: var(--surface-color);
+    box-shadow: 0 0 0 0.3rem color-mix(in srgb, var(--primary-color) 16%, transparent);
   }
 
   .panel[data-variant='timeline'],

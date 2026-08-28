@@ -1,129 +1,138 @@
 # Project Structure
 
-Organization of the Nuxt application `@tgmc/web` (`core/web`).
+Organization of the Nuxt application.
 
-Canonical documentation lives in the **repo** [`docs/`](../../) tree (not under `core/web/docs/`). In-app `/docs` reads that tree in place — see [gallery-and-docs.md](../features/gallery-and-docs.md) and `shared/docs-source.ts`.
-
-## Directory overview
+## Directory Overview
 
 ```
 core/web/
-├── app/                      # Vue application (Nuxt 4 app/ dir)
-│   ├── components/
-│   ├── composables/
-│   ├── layouts/
-│   ├── pages/
-│   ├── plugins/
-│   ├── utils/
-│   ├── app.vue
-│   └── error.vue
-├── assets/                   # CSS / static assets bundled by Vite
-├── bin/                      # Dev helpers (SSL generation)
-├── config-properties/        # Nuxt config delegates
-├── content/                  # Nuxt Content collections (gallery JSON, etc.)
-│                             # — do NOT put repo docs markdown here
-├── content.config.ts         # Content collections; docs cwd = REPO_DOCS_DIR
-├── layers/                   # Auto-scanned Nuxt layers (e.g. 1.base)
-├── public/                   # Public static files
-├── server/                   # Nitro API, middleware, DB adapters
-├── services/                 # App services (storage shims, etc.)
-├── shared/                   # Shared utilities (CDN, docs-source, syntax, …)
-├── types/                    # TypeScript definitions / Nuxt augmentations
-├── tests/                    # Vitest specs
+├── app/                        # Vue application
+│   ├── components/            # Vue components
+│   ├── composables/           # Composables & hooks
+│   ├── pages/                 # Page routes
+│   ├── plugins/               # Nuxt plugins
+│   ├── layouts/               # Page layouts
+│   ├── app.vue                # Root component
+│   └── error.vue              # Error page
+├── types/                     # TypeScript definitions
+│   ├── nuxt/                 # Module augmentations
+│   │   ├── cdn.d.ts
+│   │   ├── theme-tokens.d.ts
+│   │   └── toast.d.ts
+│   └── README.md
+├── server/                    # Server-side code
+│   ├── api/                  # API routes
+│   ├── middleware/           # Server middleware
+│   └── utils/                # Server utilities
+├── shared/                    # Shared code
+│   ├── utils/                # Utility functions
+│   ├── theme/                # Theme utilities
+│   └── syntax/               # Syntax highlighting
+├── plugins/                   # Nuxt plugins
+│   ├── cdn.server.ts
+│   ├── cdn.client.ts
+│   └── ...
+├── composables/              # Global composables
+│   ├── useCdn.ts
+│   └── ...
+├── config-properties/        # Configuration
+├── assets/                   # Static assets
+│   ├── images/
+│   ├── styles/
+│   └── other/
+├── public/                   # Public files
 ├── examples/                 # Code examples
-├── nuxt.config.ts
-├── package.json
-├── tsconfig*.json
-└── vitest.config.ts
+├── tests/                    # Test files
+├── docs/                     # Documentation (NEW)
+│   ├── README.md
+│   ├── guides/
+│   ├── features/
+│   ├── setup/
+│   └── reference/
+├── bin/                      # Scripts & tools
+│   ├── ssl/                 # SSL certificates
+│   └── generate-ssl-*
+├── nuxt.config.ts           # Nuxt configuration
+├── tsconfig.app.json        # TypeScript config
+├── tsconfig.json            # Root TypeScript config
+├── package.json             # Dependencies & scripts
+└── vitest.config.ts         # Test configuration
 ```
 
-Workspace theme and libs sit **outside** this package: `theme/core` (`@tgmc/theme`), `packages/*`.
-
-## Key files
+## Key Files
 
 ### Configuration
 
-- `nuxt.config.ts` — aliases, Nitro preset, runtimeConfig, CDN
-- `content.config.ts` — Content collections (docs → repo `docs/`)
-- `tsconfig.app.json` — compiler options / paths
-- `vitest.config.ts` — Vitest
-- `eslint.config.mjs` — lint
-- `package.json` — package scripts (`preview` is here; root uses Nx `npm run build` / `dev`)
+- `nuxt.config.ts` - Nuxt app configuration
+- `tsconfig.app.json` - TypeScript compiler options
+- `vitest.config.ts` - Test runner configuration
+- `eslint.config.mjs` - Linting rules
+- `package.json` - Scripts and dependencies
 
-### Type system
+### Type System
 
-- `types/` — module augmentations and shared types
-- See [types.md](./types.md) and [typescript-config.md](./typescript-config.md)
+- `types/nuxt/` - Module augmentations
+- `types/README.md` - Type organization guide
+- `tsconfig.app.json` - Path aliases
 
-### Application code
+### Application Code
 
-- `app/` — components, pages, composables, plugins, layouts
-- `app/components/AppPrimaryNav.vue` — primary rail: Work / About / Gallery / Writing / Code
-- `app/components/AppWorkSubNav.vue` + `shared/work-sub-nav.ts` — Docs / AI Lab / Process under Work (`.page-nav`)
-- `app/components/AppPageNav.vue` — on-page hash scroll-spy (About, docs groups, product, styles)
-- `layers/1.base` — shared Nuxt layer leaf (auto-scanned; do not also `extends` it)
-- `server/` — public/server API and middleware
-- `shared/` — isomorphic helpers (`docs-source`, `work-sub-nav`, CDN, syntax, …)
+- `app/` - Vue components, pages, composables, plugins
+- `layers/1.base` - Shared Nuxt layer (leaf; auto-scanned)
+- `server/` - Public/server API and middleware (non-admin)
+- `shared/utils/` - Shared utilities
+- `config-properties/` - Nuxt config delegates
 
-## Import aliases
+## Import Aliases
 
-| Alias         | Path               | Usage              |
-| ------------- | ------------------ | ------------------ |
-| `#shared`     | `./shared`         | Shared utilities   |
-| `#types`      | `./types`          | Types (optional)   |
-| `@tgmc/theme` | `theme/core/dist`  | Theme tokens       |
-| `theme`       | `../../theme/core` | Theme source alias |
+| Alias         | Path          | Usage            |
+| ------------- | ------------- | ---------------- |
+| `#shared`     | `./shared`    | Utilities        |
+| `#types`      | `./types`     | Types (optional) |
+| `@tgmc/theme` | Theme package | Theme tokens     |
 
-Full path map: [typescript-config.md](./typescript-config.md).
+## CDN Structure
 
-## CDN structure
+CDN support files:
 
-- `app/plugins/cdn.server.ts` / `cdn.client.ts`
-- `app/composables/useCdn.ts` (or `#shared` CDN helpers)
-- `shared/utils/cdn.ts`
-- `server/middleware/cdn.ts`
-- Types under `types/nuxt/`
+- `app/plugins/cdn.server.ts` - Server plugin
+- `app/plugins/cdn.client.ts` - Client plugin
+- `app/composables/useCdn.ts` - Vue composable
+- `shared/utils/cdn.ts` - Utilities
+- `server/middleware/cdn.ts` - Cache headers
+- `types/nuxt/cdn.d.ts` - Type definitions
 
 ## Nuxt layers
 
-- **Local (auto-scanned):** `layers/1.base` — thin shared shell. Nuxt scans `layers/`; do not also list those paths in `extends` (double-merge).
-- **Publishable (workspace):** `@tgmc/web-layer-admin` (`packages/web-layer-admin`) — admin pages/APIs. Wired via `extends: ['@tgmc/web-layer-admin']`.
+- **Local (auto-scanned):** `layers/1.base` — thin shared shell leaf. Nuxt scans `layers/`; do not also list those paths in `extends` (double-merge).
+- **Publishable (workspace package):** `@tgmc/web-layer-admin` (`packages/web-layer-admin`) — admin pages (`/admin`), write APIs (`/api/admin`), and admin auth helpers. Wired via `extends: ['@tgmc/web-layer-admin']` (`@tgmc/web` depends on the package).
 
 Marketing/blog pages stay under `app/pages/`. Admin token runtime config stays in the app root.
 
 ## Workspace packages
 
-Build with `npm run build:libs` or `npm run build --workspace=@tgmc/<name>`:
+- `@tgmc/web-layer-admin` — see Nuxt layers above
+- Publish-ready libs (not wired into `@tgmc/web` yet). Build with `npm run build --workspace=@tgmc/<name>`; publish is manual (`npm pack` / `npm publish`) — no CI publish workflow.
+  - `packages/utilities` (`@tgmc/utilities`)
+  - `packages/media-player` (`@tgmc/media-player`)
+  - `packages/likwidlibs` (`@tgmc/likwidlibs`)
 
-| Package                 | Docs / README                                        |
-| ----------------------- | ---------------------------------------------------- |
-| `@tgmc/utilities`       | [packages/utilities.md](../../packages/utilities.md) |
-| `@tgmc/theme`           | [packages/theme.md](../../packages/theme.md)         |
-| `@tgmc/media-player`    | `packages/media-player/README.md`                    |
-| `@tgmc/likwidlibs`      | `packages/likwidlibs/README.md`                      |
-| `@tgmc/web-layer-admin` | Package README / layer notes above                   |
+## Testing Structure
 
-## Testing
+- `tests/shared/cdn.spec.ts` - CDN utilities tests
+- `vitest.config.ts` - Vitest configuration
+- Admin auth specs: `tests/web-layer-admin/admin-auth.spec.ts` (covers `@tgmc/web-layer-admin`)
 
-- App Vitest: `core/web/tests/`, `server/**/*.spec.ts`
-- Page-fit contract: `tests/page-fit.spec.ts`
-- Docs packaging: `tests/docs-source.spec.ts`
+## Documentation Structure
 
-## Documentation structure
+- Repo/infra: `docs/cicd.md`, `docs/superpowers/`
+- App developer guides: `docs/web/` (`guides/`, `setup/`, `features/`, `reference/`)
 
-| Location                 | Role                                            |
-| ------------------------ | ----------------------------------------------- |
-| `docs/` (repo root)      | Canonical runbooks; in-app `/docs` source       |
-| `docs/web/`              | App guides, features, setup, reference          |
-| `docs/packages/theme.md` | Theme tokens, `data-fit`, ratios, container fit |
-| `core/web/content/`      | Content collections only — **no** docs markdown |
+## Getting Started
 
-## Getting started
-
-1. Install (repo root): `npm ci` then `npm run db:migrate:local`
-2. Develop: `npm run dev` → `http://localhost:4200`
+1. Install: `npm install`
+2. Develop: `npm run dev`
 3. Build: `npm run build`
-4. Test: `npm test`
-5. Preview built app: `cd core/web && npm run preview` (after a build)
+4. Test: `npm run test`
 
-See [Quick Start](../guides/quickstart.md).
+See [Quick Start](../guides/quickstart.md) for more.

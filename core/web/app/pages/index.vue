@@ -1,18 +1,12 @@
 <template lang="pug">
-.page-content.portfolio-page.home(data-fit="screen")
+.page-content.portfolio-page.home
   header.home-hero
     .home-hero__copy
       p.eyebrow-container {{ content.hero.eyebrow }}
       p.home-hero__name {{ content.hero.brand }}
-      h1
-        | {{ content.hero.title }}
-        |
-        span.home-hero__title-accent {{ content.hero.titleAccent }}
+      h1 {{ content.hero.title }}
       p.home-hero__lede {{ content.hero.lede }}
-      ul.home-hero__stats(aria-label="Career highlights")
-        li(v-for="stat in content.hero.stats", :key="stat.label")
-          strong {{ stat.value }}
-          span {{ stat.label }}
+      p.home-hero__availability {{ content.hero.availability }}
       .button-row
         UiButton(as="a", :href="content.hero.primaryActionHref", :label="content.hero.primaryActionLabel")
         UiButton(
@@ -20,41 +14,18 @@
           :href="content.hero.secondaryActionHref",
           :label="content.hero.secondaryActionLabel",
           variant="outlined",
-          severity="secondary",
-          download
+          severity="secondary"
         )
-      ul.home-hero__disciplines(aria-label="Disciplines")
-        li(v-for="discipline in content.hero.disciplines", :key="discipline") {{ discipline }}
     figure.home-hero__visual
       span.home-hero__signature {{ content.hero.signature }}
-      .home-hero__visual-media
-        img(
-          src="/i/tesseract/schlegel-wireframe-8-cell.png",
-          alt="Tesseract wireframe representing multidimensional interface systems",
-          width="720",
-          height="720",
-          loading="eager",
-          fetchpriority="high"
-        )
-        video(
-          v-if="showAmbientVideo",
-          ref="ambientVideo",
-          src="/v/portfolio/generated/vimg-tesseract-framework.mp4",
-          muted,
-          loop,
-          playsinline,
-          preload="metadata",
-          aria-hidden="true"
-        )
-        button.home-hero__visual-pause(
-          v-if="showAmbientVideo",
-          type="button",
-          :aria-pressed="videoPaused ? 'true' : 'false'",
-          @click="toggleAmbientVideo"
-        ) {{ videoPaused ? 'Play' : 'Pause' }}
-      p.home-hero__currently
-        strong {{ content.hero.currentlyLabel }}
-        | {{ content.hero.availability }}
+      img(
+        src="/img/tesseract/schlegel-wireframe-8-cell.png",
+        alt="Tesseract wireframe representing multidimensional interface systems",
+        width="720",
+        height="720",
+        loading="eager",
+        fetchpriority="high"
+      )
       figcaption {{ content.hero.visualCaption }}
 
   section.home-section(aria-labelledby="featured-work-heading")
@@ -117,52 +88,6 @@ const featuredStudies = computed(() => {
 });
 const { track } = usePortfolioAnalytics();
 const trackContact = () => track('contact_click', { placement: 'home' });
-
-const ambientVideo = ref<HTMLVideoElement | null>(null);
-const videoPaused = ref(false);
-const motionPreference = useState<string>('portfolio-motion', () => 'system');
-
-const prefersReducedMotion = ref(false);
-const showAmbientVideo = computed(() => {
-  if (motionPreference.value === 'reduced') return false;
-  if (motionPreference.value === 'playful') return true;
-  return !prefersReducedMotion.value;
-});
-
-const syncAmbientPlayback = async () => {
-  const el = ambientVideo.value;
-  if (!el || !showAmbientVideo.value) return;
-  if (videoPaused.value) {
-    el.pause();
-    return;
-  }
-  try {
-    await el.play();
-  } catch {
-    videoPaused.value = true;
-  }
-};
-
-const toggleAmbientVideo = () => {
-  videoPaused.value = !videoPaused.value;
-  void syncAmbientPlayback();
-};
-
-onMounted(() => {
-  if (!import.meta.client) return;
-  const media = window.matchMedia('(prefers-reduced-motion: reduce)');
-  prefersReducedMotion.value = media.matches;
-  const onChange = () => {
-    prefersReducedMotion.value = media.matches;
-  };
-  media.addEventListener('change', onChange);
-  onBeforeUnmount(() => media.removeEventListener('change', onChange));
-  void nextTick(() => syncAmbientPlayback());
-});
-
-watch([showAmbientVideo, ambientVideo], () => {
-  void nextTick(() => syncAmbientPlayback());
-});
 
 usePortfolioSeo({
   title: content.value.seo.title,

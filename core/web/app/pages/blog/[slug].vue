@@ -1,5 +1,5 @@
 <template lang="pug">
-.page-content.blog-post(data-fit="prose")
+.page-content.blog-post
   header(data-region="hero")
     p.eyebrow-container
       NuxtLink(to="/blog") Blog

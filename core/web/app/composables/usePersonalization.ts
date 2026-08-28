@@ -2,7 +2,6 @@ import {
   ACCENT_KEY,
   ACCENT_PRESETS,
   buildAccentTokens,
-  DEFAULT_ACCENT_ID,
   loadPersonalization,
   MOTION_KEY,
   resetPersonalization,
@@ -17,7 +16,7 @@ export function usePersonalization() {
   let theme: ReturnType<typeof useThemeTokens> | undefined;
   const getTheme = () => (theme ??= useThemeTokens());
   const mode = useState<ThemeModePreference>('portfolio-theme-mode', () => 'system');
-  const accent = useState<AccentId>('portfolio-accent', () => DEFAULT_ACCENT_ID);
+  const accent = useState<AccentId>('portfolio-accent', () => 'coral');
   const motion = useState<MotionPreference>('portfolio-motion', () => 'system');
   const initialized = useState<boolean>('portfolio-personalization-ready', () => false);
   const { track } = usePortfolioAnalytics();
@@ -25,11 +24,7 @@ export function usePersonalization() {
   const applyAccent = (next: AccentId, persist = true) => {
     accent.value = next;
     const theme = getTheme();
-    const resolved = theme.getResolvedThemeMode();
-    theme.updateTokens(buildAccentTokens(next, resolved), {
-      ...theme.bridges,
-      source: 'portfolio:accent',
-    });
+    theme.updateTokens(buildAccentTokens(next), { ...theme.bridges, source: 'portfolio:accent' });
     if (import.meta.client && persist) localStorage.setItem(ACCENT_KEY, next);
   };
 
@@ -66,9 +61,9 @@ export function usePersonalization() {
     mode.value = 'system';
     const theme = getTheme();
     theme.setThemeMode('system');
-    applyAccent(DEFAULT_ACCENT_ID, false);
+    applyAccent('coral', false);
     applyMotion('system', false);
-    track('theme_changed', { mode: 'system', accent: DEFAULT_ACCENT_ID, motion: 'system' });
+    track('theme_changed', { mode: 'system', accent: 'coral', motion: 'system' });
   };
 
   onMounted(() => {

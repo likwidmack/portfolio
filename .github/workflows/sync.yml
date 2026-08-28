@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       ref:
-        description: "Source tag (v0.0.14). Empty = default branch HEAD."
+        description: "Source tag or branch. Empty = tamaramack/portfolio main."
         required: false
         type: string
 
@@ -33,10 +33,7 @@ jobs:
           SOURCE_REF: ${{ inputs.ref }}
         run: |
           chmod +x sync/sync.sh
-          extra=()
-          if [ -n "${SOURCE_REF}" ]; then
-            extra+=(--tag "${SOURCE_REF}")
-          fi
+          extra=(--tag "${SOURCE_REF:-main}")
           bash sync/sync.sh "${extra[@]}"
       - id: meta
         run: |

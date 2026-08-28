@@ -35,8 +35,6 @@ const resumeKeySchema = z.enum([
 const resumeContentSchema = z.object({
   hero: z.object({
     eyebrow: z.string(),
-    name: z.string(),
-    role: z.string(),
     title: z.string(),
     lede: z.string(),
     primaryActionLabel: z.string(),
@@ -115,21 +113,12 @@ const homeContentSchema = z.object({
     eyebrow: z.string(),
     lede: z.string(),
     availability: z.string(),
-    currentlyLabel: z.string(),
     primaryActionLabel: z.string(),
     primaryActionHref: z.string(),
     secondaryActionLabel: z.string(),
     secondaryActionHref: z.string(),
     title: z.string(),
-    titleAccent: z.string(),
     visualCaption: z.string(),
-    stats: z.array(
-      z.object({
-        value: z.string(),
-        label: z.string(),
-      })
-    ),
-    disciplines: z.array(z.string()),
   }),
   featuredWork: z.object({
     eyebrow: z.string(),
@@ -348,10 +337,6 @@ const galleryContentSchema = z.object({
           hrefLabel: z.string().optional(),
           motif: z.enum(['lattice', 'orbit', 'spectrum', 'nodes']).optional(),
           tone: z.enum(['cool', 'warm', 'neutral', 'signal']).optional(),
-          platform: z.enum(['youtube', 'shorts', 'reels', 'still', 'code', 'viz']).optional(),
-          aspect: z.enum(['wide', 'tall', 'square']).optional(),
-          views: z.number().nonnegative().optional(),
-          likes: z.number().nonnegative().optional(),
           image: z.string().optional(),
           imageAlt: z.string().optional(),
           exhibit: galleryExhibitSchema.optional(),
@@ -407,54 +392,6 @@ const decisionCardSchema = z.object({
   privacyStatus: z.enum(['approved', 'sanitized', 'private']),
 });
 
-const codeContentSchema = z.object({
-  seo: z.object({
-    title: z.string(),
-    description: z.string(),
-  }),
-  hero: z.object({
-    eyebrow: z.string(),
-    title: z.string(),
-    lede: z.string(),
-  }),
-  windowTitle: z.string(),
-  explorer: z.array(z.string().min(1)),
-  repos: z.array(
-    z.object({
-      id: z.string().min(1),
-      name: z.string().min(1),
-      language: z.string().min(1),
-      description: z.string().min(1),
-      updated: z.string().min(1),
-      // `#` when the monorepo is private (anonymous GitHub 404); real URLs when public.
-      href: z.union([z.string().url(), z.literal('#')]).optional(),
-    })
-  ),
-});
-
-const writingContentSchema = z.object({
-  seo: z.object({
-    title: z.string(),
-    description: z.string(),
-  }),
-  hero: z.object({
-    eyebrow: z.string(),
-    title: z.string(),
-    lede: z.string(),
-  }),
-  essays: z.array(
-    z.object({
-      id: z.string().min(1),
-      category: z.string().min(1),
-      status: z.enum(['planned', 'proposed', 'draft', 'required', 'published']),
-      title: z.string().min(1),
-      excerpt: z.string().min(1),
-      featured: z.boolean().optional(),
-      href: z.string().optional(),
-    })
-  ),
-});
-
 /**
  * Content configuration for `@nuxt/content`.
  *
@@ -486,16 +423,6 @@ export default defineContentConfig({
       type: 'data',
       source: 'gallery.json',
       schema: galleryContentSchema,
-    }),
-    code: defineCollection({
-      type: 'data',
-      source: 'code.json',
-      schema: codeContentSchema,
-    }),
-    writing: defineCollection({
-      type: 'data',
-      source: 'writing.json',
-      schema: writingContentSchema,
     }),
     resume: defineCollection({
       type: 'data',

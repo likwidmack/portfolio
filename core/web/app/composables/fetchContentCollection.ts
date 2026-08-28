@@ -3,7 +3,7 @@
  * See docs/web/features/page-data-loading.md.
  */
 export type ContentCollectionName =
-  'home' | 'resume' | 'product' | 'gallery' | 'code' | 'writing' | 'docs' | 'caseStudies' | 'decisionCards';
+  'home' | 'resume' | 'product' | 'gallery' | 'docs' | 'caseStudies' | 'decisionCards';
 
 export type FetchContentCollectionOptions = {
   mode?: 'first' | 'all';

@@ -17,9 +17,6 @@ const STATIC_EXTENSIONS = [
   '.ico',
   '.mp4',
   '.webm',
-  '.pdf',
-  '.htm',
-  '.html',
 ] as const;
 
 /** Pathname only — ignore query/hash so `?x=.js` cannot fake a static asset. */

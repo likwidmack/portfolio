@@ -152,4 +152,4 @@ npx tsc --noEmit --skipLibCheck
 
 - [Types Documentation](./types.md)
 - [Project Structure](./project-structure.md)
-- [Theme layout / page fit](../../packages/theme.md)
+- [Cleanup Summary](./cleanup-summary.md)

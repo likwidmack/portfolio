@@ -240,7 +240,7 @@ test("CDN objects under core/web/public become placeholders", () => {
 
 test("branch tags keep the source package version", () => {
   const dest = fs.mkdtempSync(path.join(os.tmpdir(), "portfolio-dest-"));
-  runSync(dest, "development");
+  runSync(dest, "main");
   const pkg = JSON.parse(fs.readFileSync(path.join(dest, "package.json"), "utf8"));
   assert.equal(pkg.version, "1.3.19");
 });

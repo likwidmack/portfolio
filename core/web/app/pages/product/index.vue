@@ -1,5 +1,5 @@
 <template lang="pug">
-.page-content.product(data-fit="screen")
+.page-content.product
   header(data-region="hero")
     p.eyebrow-container {{ content.hero.eyebrow }}
     h1.display {{ content.hero.title }}

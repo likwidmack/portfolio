@@ -2,8 +2,8 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 export const TESSERACT_REFERENCE_IMAGES = {
-  schlegelWireframe: '/i/tesseract/schlegel-wireframe-8-cell.png',
-  blueSimple: '/i/tesseract/blue-8-cell-simple.png',
+  schlegelWireframe: '/img/tesseract/schlegel-wireframe-8-cell.png',
+  blueSimple: '/img/tesseract/blue-8-cell-simple.png',
 } as const;
 
 export interface TesseractModelOptions {

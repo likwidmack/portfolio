@@ -47,7 +47,7 @@ describe('portfolio content contracts', () => {
     const study = JSON.parse(
       await readFile(join(contentRoot, 'case-studies', 'innovation-prototyping.json'), 'utf8')
     ) as CaseStudy;
-    const generatedMedia = study.media.filter((item) => item.src.startsWith('/i/portfolio/generated/'));
+    const generatedMedia = study.media.filter((item) => item.src.startsWith('/img/portfolio/generated/'));
 
     expect(generatedMedia).toHaveLength(3);
     expect(generatedMedia.every((item) => item.src.endsWith('.webp'))).toBe(true);
@@ -65,7 +65,7 @@ describe('portfolio content contracts', () => {
 
     expect(videos).toHaveLength(2);
     expect(videos.every((item) => item.src.endsWith('.mp4'))).toBe(true);
-    expect(videos.every((item) => item.poster?.startsWith('/i/'))).toBe(true);
+    expect(videos.every((item) => item.poster?.startsWith('/img/'))).toBe(true);
     expect(videos.every((item) => item.caption?.startsWith('Motion study'))).toBe(true);
     const videoFiles = videos.map((item) => join(import.meta.dirname, '../public', item.src.replace(/^\/+/, '')));
     const fileStats = await Promise.all(videoFiles.map((file) => stat(file)));
@@ -113,12 +113,12 @@ describe('portfolio content contracts', () => {
       getCaseStudyCardMedia({
         ...studies[0],
         media: [
-          { type: 'diagram', src: '/i/portfolio/media-system-flow.svg', alt: 'Diagram' },
-          { type: 'image', src: '/i/portfolio/manhattan-2150-keyframe.png', alt: 'Keyframe' },
+          { type: 'diagram', src: '/img/portfolio/media-system-flow.svg', alt: 'Diagram' },
+          { type: 'image', src: '/img/portfolio/manhattan-2150-keyframe.png', alt: 'Keyframe' },
         ],
       })
     ).toEqual({
-      src: '/i/portfolio/manhattan-2150-keyframe.png',
+      src: '/img/portfolio/manhattan-2150-keyframe.png',
       alt: 'Keyframe',
     });
   });

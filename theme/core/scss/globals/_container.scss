@@ -51,47 +51,6 @@ article,
   }
 }
 
-/// Media frames inside sections/articles/cards follow `--media-ratio` (landscape on horizontal screens).
-/// Ratio applies to the media box only so captions/copy are not clipped.
-:is(section, article, .panel, .card) :is([data-region='media'], .card-media) {
-  max-width: 100%;
-  min-width: 0;
-  aspect-ratio: var(--media-ratio, 16 / 9);
-  overflow: hidden;
-
-  > :is(img, video) {
-    display: block;
-    width: 100%;
-    height: 100%;
-    max-width: 100%;
-    object-fit: cover;
-  }
-}
-
-:is(section, article, .panel, .card) figure {
-  max-width: 100%;
-  min-width: 0;
-
-  > :is(img, video) {
-    display: block;
-    width: 100%;
-    max-width: 100%;
-    height: auto;
-    aspect-ratio: var(--media-ratio, 16 / 9);
-    object-fit: cover;
-  }
-}
-
-/// Compact surface cards (stats / swatches): stay within the grid track.
-@media (orientation: landscape) {
-  .auto-grid[data-layout='surface'] > :is(.panel, [data-variant='stat']),
-  .auto-grid[data-layout='swatch'] > *,
-  .auto-grid[data-layout='swatch-compact'] > * {
-    min-width: 0;
-    max-width: 100%;
-  }
-}
-
 section {
   $depth: 5;
 

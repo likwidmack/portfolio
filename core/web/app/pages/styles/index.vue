@@ -1,5 +1,5 @@
 <template lang="pug">
-.page-content.styles-page(data-fit="screen")
+.page-content.styles-page
   header
     p.eyebrow-container.text-shadow-primary Design system
     h1.display Styles
