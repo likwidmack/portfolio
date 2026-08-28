@@ -1,0 +1,28 @@
+name: GitHub profile
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - package.json
+      - sync/update-github-profile.mjs
+      - .github/workflows/github-profile.yml
+
+jobs:
+  profile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Update About, homepage, and topics
+        env:
+          LK_GH_TOKEN: ${{ secrets.LK_GH_TOKEN }}
+        run: |
+          if [ -z "${LK_GH_TOKEN}" ]; then
+            echo "LK_GH_TOKEN is not set in Actions secrets; skip"
+            exit 0
+          fi
+          node sync/update-github-profile.mjs
