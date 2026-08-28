@@ -189,6 +189,10 @@ Treat every docs edit (new page, rewrite, or behavior change reflected in markdo
 ## Pull requests
 
 - PRs into \`main\` run [Tests](https://github.com/likwidmack/portfolio/actions/workflows/test.yml).
+
+## Security
+
+Report vulnerabilities privately. See [SECURITY.md](../SECURITY.md).
 `,
 
   "docs/dev/README.md": `# Developer tooling

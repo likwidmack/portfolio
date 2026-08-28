@@ -26,6 +26,7 @@ This repository is the source hub for the [Nuxt 4](docs/web/README.md) SSR site 
 - [Documentation](#documentation)
 - [Repository layout](#repository-layout)
 - [Contributing](#contributing)
+- [Security](#security)
 - [License](#license)
 
 ## About
@@ -75,6 +76,10 @@ Instructions live under **`docs/`**. Do not grow this README with runbooks.
 ## Contributing
 
 See [docs/contributing.md](docs/contributing.md).
+
+## Security
+
+Report vulnerabilities privately. See [SECURITY.md](SECURITY.md).
 
 ## License
 
