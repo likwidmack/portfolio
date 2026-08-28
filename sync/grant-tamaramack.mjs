@@ -1,15 +1,12 @@
 #!/usr/bin/env node
-"use strict";
-
 /**
  * Invite tamaramack as admin collaborator on likwidmack/portfolio.
  * Uses GH_TOKEN or gitconfig GitHub token. Never prints the token.
  */
-
-const https = require("https");
-const fs = require("fs");
-const path = require("path");
-const os = require("os");
+import fs from "node:fs";
+import https from "node:https";
+import os from "node:os";
+import path from "node:path";
 
 function gitconfigToken() {
   const text = fs.readFileSync(path.join(os.homedir(), ".gitconfig"), "utf8");
