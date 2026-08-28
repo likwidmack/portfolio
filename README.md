@@ -6,7 +6,7 @@
 
 Nx + Nuxt 4 monorepo for Tamara Mack’s web portfolio (`@tgmc/web`): Nitro SSR, shared packages, and local SQLite.
 
-![tgmc-portfolio — Tamara Mack web portfolio](.github/social-preview.png)
+![tgmc-portfolio — Tamara Mack web portfolio](https://repository-images.githubusercontent.com/1349135003/7f6935cc-3cf2-44f8-89c7-ec4462c5bc1f)
 
 This repository is the source hub for the [Nuxt 4](docs/web/README.md) SSR site and [Nx](docs/packages/README.md) workspace packages. It orchestrates that stack; it does not replace Nuxt.
 

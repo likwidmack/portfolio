@@ -158,13 +158,17 @@ function rewriteWebTestTarget(staging) {
   }
 }
 
+/** GitHub Settings → Social preview (repo 1349135003). Not a repo file. */
+const GITHUB_SOCIAL_PREVIEW_URL =
+  "https://repository-images.githubusercontent.com/1349135003/7f6935cc-3cf2-44f8-89c7-ec4462c5bc1f";
+
 function rewritePortfolioSeo(staging) {
   const file = path.join(staging, "core/web/app/composables/usePortfolioSeo.ts");
   if (!fs.existsSync(file)) return;
   const text = fs.readFileSync(file, "utf8");
   const next = text.replace(
     /`\$\{base\}\/(?:i|img)\/portfolio\/social-card\.png`/g,
-    "'https://raw.githubusercontent.com/likwidmack/portfolio/main/.github/social-preview.png'",
+    `'${GITHUB_SOCIAL_PREVIEW_URL}'`,
   );
   if (next !== text) fs.writeFileSync(file, next);
 }
@@ -301,7 +305,7 @@ function writeReadme(staging) {
 
 Nx + Nuxt 4 monorepo for Tamara Mack’s web portfolio (\`@tgmc/web\`): Nitro SSR, shared packages, and local SQLite.
 
-![tgmc-portfolio — Tamara Mack web portfolio](.github/social-preview.png)
+![tgmc-portfolio — Tamara Mack web portfolio](${GITHUB_SOCIAL_PREVIEW_URL})
 
 This repository is the source hub for the [Nuxt 4](docs/web/README.md) SSR site and [Nx](docs/packages/README.md) workspace packages. It orchestrates that stack; it does not replace Nuxt.
 
