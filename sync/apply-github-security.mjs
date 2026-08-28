@@ -78,6 +78,12 @@ async function enable(method, urlPath, body, allowed, label, optional = false) {
       console.log(`${label}: HTTP ${result.status} (skipped)`);
       return result;
     }
+    if (result.status === 401 || result.status === 403) {
+      console.log(
+        `::warning::${label} skipped (HTTP ${result.status}). LK_GH_TOKEN needs Administration: write on likwidmack/portfolio, or unset the secret to skip this job.`,
+      );
+      return result;
+    }
     console.error(`${label} failed: HTTP ${result.status}`);
     process.exit(1);
   }
@@ -87,6 +93,12 @@ async function enable(method, urlPath, body, allowed, label, optional = false) {
 
 async function ensureMainRuleset() {
   const listed = await request("GET", `/repos/${OWNER}/${REPO}/rulesets`);
+  if (listed.status === 401 || listed.status === 403) {
+    console.log(
+      `::warning::list rulesets skipped (HTTP ${listed.status}). LK_GH_TOKEN needs Administration: write on likwidmack/portfolio, or unset the secret to skip this job.`,
+    );
+    return;
+  }
   if (!ok(listed.status, [200])) {
     console.error(`list rulesets failed: HTTP ${listed.status}`);
     process.exit(1);

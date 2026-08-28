@@ -9,6 +9,8 @@ on:
       - sync/update-github-profile.mjs
       - .github/workflows/github-profile.yml
 
+# LK_GH_TOKEN must be a fine-grained PAT with Administration: write on likwidmack/portfolio.
+# A read-only PAT returns 403; the script warns and skips so main stays green.
 permissions:
   contents: read
 
