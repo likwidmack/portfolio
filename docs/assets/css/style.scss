@@ -1,0 +1,144 @@
+---
+---
+
+@import '{{ site.theme }}';
+
+html {
+  background-color: #0d1117;
+  color-scheme: dark;
+}
+
+body {
+  background-color: #0d1117;
+  color: #c9d1d9;
+}
+
+a {
+  color: #58a6ff;
+}
+
+a:hover {
+  color: #79c0ff;
+}
+
+.page-header {
+  background-color: #0d1117;
+  background-image: linear-gradient(120deg, #0d3a5c, #0d5c38);
+}
+
+.main-content {
+  background-color: #0d1117;
+  color: #c9d1d9;
+}
+
+.main-content h1,
+.main-content h2,
+.main-content h3,
+.main-content h4,
+.main-content h5,
+.main-content h6 {
+  color: #3fb950;
+}
+
+.main-content blockquote {
+  color: #8b949e;
+  border-left-color: #30363d;
+}
+
+.main-content hr {
+  background-color: #30363d;
+}
+
+.main-content code,
+.main-content tt {
+  color: #e6edf3;
+  background-color: #161b22;
+}
+
+.main-content pre,
+.main-content .highlight,
+.main-content .highlight pre {
+  color: #e6edf3;
+  background-color: #161b22;
+  border-color: #30363d;
+}
+
+.main-content pre code {
+  color: #e6edf3;
+  background-color: transparent;
+}
+
+.main-content kbd {
+  background-color: #161b22;
+  border-color: #30363d;
+  border-bottom-color: #484f58;
+  box-shadow: inset 0 -1px 0 #484f58;
+  color: #c9d1d9;
+}
+
+.main-content table {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+}
+
+.main-content th,
+.main-content td {
+  border-color: #30363d;
+}
+
+.main-content th {
+  background-color: #161b22;
+}
+
+.site-footer {
+  border-top-color: #30363d;
+}
+
+.site-footer-credits {
+  color: #8b949e;
+}
+
+/* Rouge (github-light) tokens on dark code panes */
+.highlight .c,
+.highlight .c1,
+.highlight .cm,
+.highlight .cp {
+  color: #8b949e;
+}
+
+.highlight .k,
+.highlight .kd,
+.highlight .kn,
+.highlight .kp {
+  color: #ff7b72;
+}
+
+.highlight .s,
+.highlight .s1,
+.highlight .s2,
+.highlight .si,
+.highlight .sx {
+  color: #a5d6ff;
+}
+
+.highlight .m,
+.highlight .mi,
+.highlight .mf {
+  color: #79c0ff;
+}
+
+.highlight .nf,
+.highlight .nc {
+  color: #d2a8ff;
+}
+
+.highlight .na,
+.highlight .nl {
+  color: #7ee787;
+}
+
+.highlight .o,
+.highlight .p {
+  color: #c9d1d9;
+}

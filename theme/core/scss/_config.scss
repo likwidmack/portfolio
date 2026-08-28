@@ -1,0 +1,11 @@
+/// Feature flags for optional CSS layers. Override before `@use '@tgmc/theme/scss'`.
+$theme-enable-normalize: false !default;
+$theme-enable-foundation: false !default;
+$theme-enable-primevue: false !default;
+
+/// When Foundation is enabled: `layout` = XY Grid + flex/visibility helpers;
+/// `full` = `foundation-everything` (type, forms, components). Prefer `layout`.
+$theme-foundation-mode: 'layout' !default;
+
+/// PrimeVue Sass theme entry (package subpath under `@tgmc/theme-primevue`).
+$theme-primevue-entry: 'tgmc' !default;

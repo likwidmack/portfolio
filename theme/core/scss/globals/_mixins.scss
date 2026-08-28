@@ -1,0 +1,251 @@
+@use 'sass:map';
+@use 'sass:color';
+@use '../tokens/colors' as c;
+@use '../tokens/contrast' as contrast;
+@use '../tokens/variables' as v;
+
+$primary: c.$color-magenta;
+$secondary: c.$color-cyan;
+
+$foundation-palette: (
+  primary: $primary,
+  secondary: $secondary,
+  success: c.$success,
+  warning: c.$warning,
+  alert: c.$alert,
+  info: c.$info,
+);
+
+$var-element: '--color-';
+$color-variables: (
+  light-gray: c.$color-gray-lt,
+  medium-gray: c.$color-gray-md,
+  dark-gray: c.$color-gray-dk,
+  black: c.$color-black,
+  white: c.$color-white,
+);
+$color-variables: map.merge($color-variables, $foundation-palette);
+
+@function vh($size) {
+  @return calc(var(--vh, 1vh) * #{$size});
+}
+
+@function fill-lightness($colors...) {
+  @return contrast.fill-lightness($colors...);
+}
+
+@function dyn-color($color, $light: c.$css-button-fg-light, $dark: c.$css-button-fg-dark) {
+  @if (color.channel($color, 'lightness', $space: hsl) > 50%) {
+    @return $dark;
+  } @else {
+    @return $light;
+  }
+}
+
+@function dyn-color-against-fill($colors...) {
+  @return contrast.dyn-color-against-fill($colors...);
+}
+
+@mixin contrast-fill($bg-color: var(--primary-color), $bg-image: var(--button-bg), $ink: var(--button-fg)) {
+  @include contrast.contrast-fill($bg-color, $bg-image, $ink);
+}
+
+@mixin square($size) {
+  height: $size;
+  width: $size;
+}
+
+@mixin border($color, $position) {
+  @if ($position) {
+    border-#{$position}: 1px solid $color;
+  } @else {
+    border: 1px solid $color;
+  }
+}
+
+@mixin invert-color($color, $name, $weight: 100%) {
+  #{$name}: #{color.invert($color, $weight: $weight)};
+}
+
+@mixin vheight($size: 100, $prefix: '') {
+  #{$prefix}height: #{$size}vh;
+  #{$prefix}height: vh(#{$size});
+}
+
+@mixin invisibleText() {
+  color: rgba(c.$color-black, 0) !important;
+  text-shadow: none !important;
+  font-size: 1px !important;
+  z-index: -999 !important;
+}
+
+/// Visually hide while keeping accessible to AT (`.sr-only` / `.hidden`).
+@mixin sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/// Soft glass blur helper — prefers `--blur-*` CSS vars.
+@mixin backdrop-blur($size: md) {
+  $value: var(
+    --blur-#{$size},
+    #{map.get(
+        (
+          sm: v.$blur-sm,
+          md: v.$blur-md,
+          lg: v.$blur-lg,
+        ),
+        $size
+      )}
+  );
+  -webkit-backdrop-filter: blur($value);
+  backdrop-filter: blur($value);
+}
+
+/// Document wallpaper (conic brand tile). Opt-in via `.theme-wallpaper` or `body`.
+@mixin theme-wallpaper {
+  background: {
+    color: var(--main-background);
+    image: var(
+      --theme-wallpaper-image,
+      conic-gradient(
+        color-mix(in srgb, var(--primary-color) 65%, transparent) 0.25turn,
+        var(--main-background) 0.25turn 0.5turn,
+        color-mix(in srgb, var(--primary-color) 65%, transparent) 0.5turn 0.75turn,
+        var(--main-background) 0.75turn
+      )
+    );
+    size: var(--theme-wallpaper-size, 25rem 25rem);
+    position: top center;
+    repeat: repeat;
+  }
+}
+
+/// Sticky glass chrome for site header/footer bars.
+@mixin site-chrome {
+  background-color: color-mix(in srgb, var(--gray-100, #{c.$color-gray-lt}) 5%, transparent);
+  @include backdrop-blur(md);
+}
+
+@mixin site-chrome-header {
+  @include site-chrome;
+  box-shadow:
+    0 -5px 16px color-mix(in srgb, var(--default-black, #{c.$color-black}) 50%, transparent),
+    inset 0 -5px 5px color-mix(in srgb, var(--gray-100, #{c.$color-gray-lt}) 10%, transparent);
+}
+
+@mixin site-chrome-footer {
+  @include site-chrome;
+  box-shadow:
+    0 5px 16px color-mix(in srgb, var(--default-black, #{c.$color-black}) 50%, transparent),
+    inset 0 5px 5px color-mix(in srgb, var(--gray-100, #{c.$color-gray-lt}) 10%, transparent);
+}
+
+/// Soft color/shadow motion on descendants (opt-in `.theme-motion`).
+@mixin theme-motion {
+  &,
+  * {
+    transition-duration: var(--transition-base-duration, 250ms);
+    transition-timing-function: ease-in;
+    transition-property:
+      color, width, height, border-color, background-color, text-shadow, box-shadow, transform, opacity, filter;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &,
+    * {
+      transition: none;
+    }
+  }
+}
+
+/// Shared heading character treatments (color, shadow, clip) for `h*` and demos.
+@mixin heading-character-base {
+  color: var(--septenary-light-dark);
+  text-transform: capitalize;
+  text-shadow:
+    0 -1px 0 rgba(c.$primary-color-light, 0.5),
+    -1px 0 0 rgba(c.$primary-color-dark, 0.75);
+}
+
+@mixin heading-character-display {
+  background-color: var(--color-amber);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  text-shadow: 2px 3px 2px rgba(c.$color-black, 0.55);
+  font-size-adjust: 0.65;
+  font-variant: small-caps;
+}
+
+@mixin heading-character-title {
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: rgba(c.$color-gray-lt, 0.6);
+  text-shadow:
+    1px 2px 3px c.$color-black,
+    -1px -1px 0 c.$color-white;
+  text-align: center;
+  font-size-adjust: 0.75;
+  font-variant: small-caps;
+}
+
+@mixin text-overflow($width: 100%) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: $width;
+}
+
+@mixin text-overflow-multiline($width: 100%) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  width: $width;
+}
+
+/// Mixin to place items on a circle
+/// @author Kitty Giraudel
+/// @author Ana Tudor
+/// @param {Integer} $item-count - Number of items on the circle
+/// @param {Length} $circle-size - Large circle size
+/// @param {Length} $item-size - Single item size
+// https://css-tricks.com/snippets/sass/placing-items-circle/
+@mixin on-circle($item-count, $circle-size, $item-size) {
+  position: relative;
+  width: $circle-size;
+  height: $circle-size;
+  padding: 0;
+  border-radius: 50%;
+  list-style: none;
+
+  > * {
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: $item-size;
+    height: $item-size;
+    margin: -($item-size / 2);
+
+    $angle: (360 / $item-count);
+    $rot: 0;
+
+    @for $i from 1 through $item-count {
+      &:nth-of-type(#{$i}) {
+        transform: rotate($rot * 1deg) translate($circle-size / 2) rotate($rot * -1deg);
+      }
+
+      $rot: $rot + $angle;
+    }
+  }
+}

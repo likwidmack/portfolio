@@ -1,0 +1,36 @@
+@use "themes/mytheme/variables/general";
+@use "themes/mytheme/variables/panel";
+
+// core
+.p-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.p-toolbar-group-start,
+.p-toolbar-group-center,
+.p-toolbar-group-end {
+    display: flex;
+    align-items: center;
+}
+
+.p-toolbar-group-left,
+.p-toolbar-group-right {
+    display: flex;
+    align-items: center;
+}
+
+// theme
+.p-toolbar {
+    background: panel.$panelHeaderBg;
+    border: panel.$panelHeaderBorder;
+    padding: panel.$panelHeaderPadding;
+    border-radius: general.$borderRadius;
+    gap: general.$inlineSpacing;
+
+    .p-toolbar-separator {
+        margin: 0 general.$inlineSpacing;
+    }
+}

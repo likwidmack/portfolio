@@ -1,0 +1,33 @@
+@use "themes/mytheme/variables/general";
+@use "themes/mytheme/variables/panel";
+
+.p-card {
+    background: panel.$panelContentBg;
+    color: panel.$panelContentTextColor;
+    box-shadow: panel.$cardShadow;
+    border-radius: general.$borderRadius;
+
+    .p-card-body {
+        padding: panel.$cardBodyPadding;
+    }
+
+    .p-card-title {
+        font-size: panel.$cardTitleFontSize;
+        font-weight: panel.$cardTitleFontWeight;
+        margin-bottom: general.$inlineSpacing;
+    }
+
+    .p-card-subtitle {
+        font-weight: panel.$cardSubTitleFontWeight;
+        margin-bottom: general.$inlineSpacing;
+        color: panel.$cardSubTitleColor;
+    }
+
+    .p-card-content {
+        padding: panel.$cardContentPadding;
+    }
+
+    .p-card-footer {
+        padding: panel.$cardFooterPadding;
+    }
+}

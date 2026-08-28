@@ -1,0 +1,240 @@
+// Bright Sky & Sunset: Combinations using pastel blues (#c8e8fc), pinks (#ffecf0), and soft whites (#ffdee4) to represent, or contrast with, fading light.
+// Dark Night/Golden Day: A palette of black pearl (#001A26), dark tarawera (#053752), thanksgiving orange (#EF810E), and bright wattle yellow (#E5DE44)
+// Pastel Day/Night: A mix of sky blue (#6696ba), pale yellow (#e2e38b), soft orange (#e7a553), muted magenta (#7e4b68), and deep indigo (#292965).
+// Midnight Magic ["#3a015c","#4f0147","#35012c","#290025","#11001c"]
+@use 'sass:color';
+
+@use 'base-colors' as *;
+@forward 'base-colors';
+
+/* common */
+
+$color-white: #ffffff;
+$color-black: #000000;
+$color-gray-lt: rgb(205, 205, 205);
+$color-gray-md: rgb(128, 128, 128);
+$color-gray-dk: rgb(50, 50, 50);
+
+$color-blue: rgb(0, 0, 255);
+$color-red: rgb(255, 0, 0);
+$color-green: rgb(0, 255, 0);
+$color-magenta: rgb(255, 0, 255);
+$color-cyan: rgb(0, 255, 255);
+$color-yellow: rgb(255, 255, 0);
+
+/* theme */
+
+// Bright Sky & Sunset Palette
+$pastel-blue: #c8e8fc;
+$pastel-pink: #ffecf0;
+$soft-white: #ffdee4;
+
+// Dark Night / Golden Day
+$black-pearl: #001a26;
+$dark-tarawera: #053752;
+$thanksgiving-orange: #ef810e;
+$wattle-yellow: #e5de44;
+
+// Pastel Day/Night
+$sky-blue: #6696ba;
+$pale-yellow: #e2e38b;
+$soft-orange: #e7a553;
+$muted-magenta: #7e4b68;
+$deep-indigo: #292965;
+
+// Midnight Magic
+$dark-amethyst: #3a015c;
+$deep-purple: #4f0147;
+$midnight-violet: #35012c;
+$midnight-violet-dk: #11001c;
+
+// Color Variables
+$default-white: #efefef;
+$default-black: #000000;
+
+// Root CSS variable source tokens.
+$accent-soft: #82aaff;
+$shadow-color: #081020;
+$shadow-alt-color: #0a1428;
+$neon-color: #50b4ff;
+
+$css-red-light: #dc2626;
+$css-red-dark: #f87171;
+
+$css-orange-light: #ea580c;
+$css-orange-dark: #fb923c;
+
+$css-amber-light: #d97706;
+$css-amber-dark: #fbbf24;
+
+$css-yellow-light: #ca8a04;
+$css-yellow-dark: #facc15;
+
+$css-lime-light: #65a30d;
+$css-lime-dark: #a3e635;
+
+$css-green-light: #16a34a;
+$css-green-dark: #4ade80;
+
+$css-teal-light: #0d9488;
+$css-teal-dark: #2dd4bf;
+
+$css-blue-light: #2563eb;
+$css-blue-dark: #60a5fa;
+
+$css-purple-light: #9333ea;
+$css-purple-dark: #c084fc;
+
+$css-magenta-light: #c026d3;
+$css-magenta-dark: #e879f9;
+
+// Hue scale (paired -light/-dark only — not brand roles).
+// CSS `--quaternary-color` … `--denary-color` / `--tertiary-*` remain compatibility aliases to these hues.
+$navy-default: $css-blue-light;
+$navy-light: #132440;
+$azure-dark: #60a5fa;
+
+$forest-default: $css-green-light;
+$forest-light: #285a48;
+$forest-dark: #408a71;
+
+$oxblood-default: $css-red-light;
+$oxblood-light: #360a14;
+$oxblood-dark: #9e2a3a;
+
+$violet-default: $css-purple-light;
+$violet-light: #211832;
+$violet-dark: #5c3e94;
+
+$wine-default: $css-magenta-light;
+$wine-light: #4a0404;
+$wine-dark: #822659;
+
+// Named `sea` (not `teal`) — `$css-teal-*` / `--portfolio-teal` own the teal signal.
+$sea-default: $css-teal-light;
+$sea-light: #15292b;
+$sea-dark: #5a9690;
+
+$olive-default: $css-lime-light;
+$olive-light: #1b211a;
+$olive-dark: #8bae66;
+
+$plum-default: $css-orange-light;
+$plum-light: #320a6b;
+$tangerine-dark: #ff6500;
+
+$taupe-default: $css-amber-light;
+$taupe-light: #3a2525;
+$taupe-dark: #d2c1b6;
+
+$ink-default: #0000bb;
+$ink-light: #1a1a1d;
+$parchment-dark: #dcd7c9;
+
+// Brand roles — ember / crimson (PrimeVue-facing `--primary-color` / `--secondary-color` / `--accent-color`).
+$primary-color-light: #d9531d; // ember, darkened for light surfaces
+$primary-color-dark: #ff6b35; // ember
+$primary-default-color: $primary-color-dark;
+
+$secondary-color-light: #6e1622; // crimson, darkened for light surfaces
+$secondary-color-dark: #8b1e2e; // crimson
+$secondary-default-color: $secondary-color-dark;
+
+$accent-color-light: $primary-color-light;
+$accent-color-dark: $primary-color-dark;
+
+$primary-color: light-dark($primary-color-light, $primary-color-dark);
+$secondary-color: light-dark($secondary-color-light, $secondary-color-dark);
+$accent-color: $primary-color;
+
+// Text Color Variables
+$text-color-dark: #f2ece8;
+$text-color-light: #1c1412;
+
+/// Muted on-surface text — same ink family as `$text-color-*` (not inverted contrast).
+/// Dark mode → softer light ink; light mode → softer dark ink.
+$text-color-secondary-dark: #baa8a0;
+$text-color-secondary-light: #5a4a42;
+
+$text-color: light-dark($text-color-light, $text-color-dark);
+$text-secondary-color: light-dark($text-color-secondary-light, $text-color-secondary-dark);
+
+// Background Colors
+$main-background-dark: #0f0908;
+$main-background-light: #faf6f3;
+
+$main-background-dark-secondary: #16100e;
+$main-background-light-secondary: #f0e9e4;
+
+$main-background-dark-accent: color.adjust($violet-light, $lightness: -20%, $space: hsl);
+$main-background-light-accent: color.adjust($violet-dark, $lightness: 10%, $space: hsl);
+
+$main-background: light-dark($main-background-light, $main-background-dark);
+$main-background-secondary: light-dark($main-background-light-secondary, $main-background-dark-secondary);
+$main-background-accent: light-dark($main-background-light-accent, $main-background-dark-accent);
+
+$main-color: $primary-color;
+$main-secondary-color: $secondary-color;
+
+/// Portfolio teal signal (also drives semantic success). Do not overwrite `$css-teal-*` / `--color-teal`.
+$portfolio-teal-light: #146060;
+$portfolio-teal-dark: #1b7a7a;
+
+$success-light: $portfolio-teal-light;
+$success-dark: $portfolio-teal-dark;
+
+$warning-light: #c26a1f;
+$warning-dark: #ff8c61;
+
+$alert-light: #b33a0f;
+$alert-dark: #c1440e;
+
+$error-light: #b33a0f;
+$error-dark: #c1440e;
+
+$info-light: #0a0aef;
+$info-dark: #0288d1;
+
+$success: light-dark($success-light, $success-dark);
+$warning: light-dark($warning-light, $warning-dark);
+$alert: light-dark($alert-light, $alert-dark);
+$error: light-dark($error-light, $error-dark);
+$info: light-dark($info-light, $info-dark);
+
+$css-surface-light: #f0e9e4;
+$css-surface-dark: #16100e;
+/// Hover / nested surfaces — same family as the mode surface (not inverted ink).
+$css-surface-variant-light: #e6dcd5;
+$css-surface-variant-dark: #1c1412;
+
+$css-primary-light: $ink-light;
+$css-primary-dark: $parchment-dark;
+$css-primary-hover-light: color.adjust($css-primary-light, $lightness: -10%);
+$css-primary-hover-dark: color.adjust($css-primary-dark, $lightness: 10%);
+
+$css-border-light: rgba(0, 0, 0, 0.08);
+$css-border-dark: rgba(255, 255, 255, 0.08);
+
+$css-focus-ring-light: $primary-color-light;
+$css-focus-ring-dark: $primary-color-dark;
+
+/// On-fill ink for solid + gradient chrome — opposite luminance of the composite
+/// (`background-color` AND `background-image` stops). Prefer `dyn-color-against-fill`
+/// / `pickContrastingInk` over hard-coding a single mode ink.
+$css-button-fg-dark: #0f172a;
+$css-button-fg-light: #eaf2ff;
+$css-button-fg: $css-button-fg-dark;
+$css-button-glass-text: $css-button-fg-light;
+
+$css-form-border: rgba($color-gray-lt, 0.4);
+$css-form-background-disabled: rgba($color-gray-dk, 0.72);
+$css-form-placeholder: rgba($color-gray-md, 0.9);
+
+$text-shadow-color: rgba($grey-900, 0.4);
+
+$box-shadow-color-light: $grey-700;
+$box-shadow-color-dark: $grey-900;
+$box-shadow-color-light-dark: light-dark($box-shadow-color-light, $box-shadow-color-dark);
+
+$text-shadow-light: rgba($grey-800, 0.33);
+$text-shadow-dark: rgba($grey-900, 0.4);

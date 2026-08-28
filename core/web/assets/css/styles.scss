@@ -1,0 +1,13 @@
+// Thin Nuxt entry — design system + default token surface from `@tgmc/theme`.
+// PrimeVue chrome: Nora styled-mode via `primevue-prop.ts` (`themePrimeVuePreset`).
+// Foundation: layout-only XY Grid (+ flex/visibility helpers) for complex multipass layouts.
+// Sass `@layer primevue` (mytheme) stays off here to avoid double-styling; enable
+// only when switching Nuxt PrimeVue to `unstyled: true` + classic PassThrough.
+@use 'theme/scss/config' as * with (
+  $theme-enable-normalize: false,
+  // XY Grid + flex/visibility for complex multipass layouts; theme owns type/forms.
+  $theme-enable-foundation: true,
+  $theme-foundation-mode: 'layout',
+  $theme-enable-primevue: false
+);
+@use 'theme/scss';

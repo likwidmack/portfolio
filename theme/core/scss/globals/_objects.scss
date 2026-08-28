@@ -1,0 +1,219 @@
+@use '../tokens/variables' as *;
+@use '../tokens/colors' as *;
+
+progress {
+  appearance: none;
+  margin: 0 0.5rem;
+  height: 1rem;
+  background: {
+    color: var(--main-background-secondary);
+  }
+}
+
+::-moz-progress-bar,
+::-webkit-progress-bar {
+  background: {
+    color: var(--primary-color);
+  }
+}
+
+::-moz-range-progress,
+::-webkit-progress-value {
+  background: {
+    color: var(--tertiary-color);
+    image: linear-gradient(180deg, transparent 0%, rgba($color-black, 0.25) 50%, transparent 100%);
+  }
+}
+
+::-webkit-progress-inner-element,
+::-moz-range-track {
+  background: {
+    color: var(--primary-color);
+  }
+}
+
+meter {
+  -webkit-appearance: meter;
+  -moz-appearance: meterbar;
+  margin: 0 0.5rem;
+  height: 1rem;
+  background: none;
+  background: {
+    color: var(--main-background-secondary);
+  }
+}
+
+::-webkit-meter-bar,
+::-moz-meter-bar {
+  -moz-appearance: meterchunk;
+  background: none;
+  background: {
+    color: var(--secondary-color);
+    size: 100% 100%;
+  }
+}
+
+::-webkit-meter-optimum-value {
+  background: {
+    color: var(--tertiary-color);
+  }
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+img,
+video,
+canvas,
+svg,
+iframe,
+embed,
+object {
+  border-radius: var(--border-radius-sm);
+}
+
+figure {
+  margin: 1rem 0;
+  display: grid;
+  gap: 0.55rem;
+
+  > img,
+  > picture,
+  > video,
+  > canvas,
+  > svg {
+    width: 100%;
+    margin: 0;
+    box-shadow: 0 8px 24px rgba($shadow-color, 0.22);
+  }
+}
+
+figcaption {
+  color: color-mix(in srgb, var(--text-color) 82%, transparent);
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+}
+
+picture {
+  width: 100%;
+}
+
+video,
+iframe,
+embed,
+object {
+  width: 100%;
+  border: 1px solid rgba($color-gray-lt, 0.2);
+  background: rgba($color-black, 0.25);
+}
+
+audio {
+  width: 100%;
+  min-height: 2.5rem;
+  border-radius: var(--border-radius-pill);
+}
+
+svg,
+canvas {
+  overflow: hidden;
+  background: rgba($color-gray-lt, 0.04);
+}
+
+// Flexible embed container
+.media-wrap {
+  width: 100%;
+  margin: 1rem 0;
+
+  &--ratio,
+  &.ratio {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border-radius: var(--border-radius-md);
+    background: rgba($color-black, 0.25);
+    aspect-ratio: 16 / 9;
+
+    > iframe,
+    > video,
+    > embed,
+    > object,
+    > img,
+    > canvas,
+    > svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      object-fit: cover;
+    }
+  }
+
+  &--ratio-1x1,
+  &.ratio-1x1 {
+    aspect-ratio: 1 / 1;
+  }
+
+  &--ratio-4x3,
+  &.ratio-4x3 {
+    aspect-ratio: 4 / 3;
+  }
+
+  &--ratio-21x9,
+  &.ratio-21x9 {
+    aspect-ratio: 21 / 9;
+  }
+}
+
+// Media object pattern
+.media-object {
+  display: grid;
+  grid-template-columns: minmax(6rem, 12rem) minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+
+  &__media {
+    min-width: 0;
+
+    > img,
+    > picture,
+    > video,
+    > canvas,
+    > svg {
+      width: 100%;
+      border-radius: var(--border-radius-md);
+      object-fit: cover;
+    }
+  }
+
+  &__body {
+    min-width: 0;
+  }
+}
+
+@media (max-width: $breakpoint-tablet) {
+  .media-object {
+    grid-template-columns: 1fr;
+  }
+
+  .media-wrap {
+    margin: 0.85rem 0;
+  }
+}
+
+@media (max-width: $breakpoint-mobile) {
+  .media-object {
+    gap: 0.75rem;
+  }
+
+  figure {
+    margin: 0.75rem 0;
+  }
+}

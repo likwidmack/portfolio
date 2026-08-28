@@ -1,0 +1,81 @@
+@use "themes/mytheme/variables/general";
+@use "themes/mytheme/variables/menu";
+@use "../../mixins";
+
+// core
+.p-breadcrumb {
+    overflow-x: auto;
+}
+
+.p-breadcrumb .p-breadcrumb-list {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+}
+
+.p-breadcrumb .p-menuitem-text {
+    line-height: 1;
+}
+
+.p-breadcrumb .p-menuitem-link {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+.p-breadcrumb .p-menuitem-separator {
+    display: flex;
+    align-items: center;
+}
+
+.p-breadcrumb::-webkit-scrollbar {
+    display: none;
+}
+
+// theme
+.p-breadcrumb {
+    background: menu.$breadcrumbBg;
+    border: menu.$breadcrumbBorder;
+    border-radius: general.$borderRadius;
+    padding: menu.$breadcrumbPadding;
+
+    .p-breadcrumb-list {
+        li {
+            .p-menuitem-link {
+                transition: general.$listItemTransition;
+                border-radius: general.$borderRadius;
+                outline-color: transparent;
+
+                &:focus-visible {
+                    @include mixins.focused();
+                }
+
+                .p-menuitem-text {
+                    color: menu.$breadcrumbItemTextColor;
+                }
+
+                .p-menuitem-icon {
+                    color: menu.$breadcrumbItemIconColor;
+                }
+            }
+
+            &.p-menuitem-separator {
+                margin: 0 general.$inlineSpacing 0 general.$inlineSpacing;
+                color: menu.$breadcrumbSeparatorColor;
+            }
+
+            &:last-child {
+                .p-menuitem-text {
+                    color: menu.$breadcrumbLastItemTextColor;
+                }
+
+                .p-menuitem-icon {
+                    color: menu.$breadcrumbLastItemIconColor;
+                }
+            }
+        }
+    }
+}

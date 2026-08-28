@@ -1,0 +1,96 @@
+@use "themes/mytheme/variables/general";
+@use "themes/mytheme/variables/panel";
+@use "../../mixins";
+
+// core
+.p-tabmenu {
+    overflow-x: auto;
+}
+
+.p-tabmenu-nav {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    flex-wrap: nowrap;
+}
+
+.p-tabmenu-nav a {
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    position: relative;
+    text-decoration: none;
+    text-decoration: none;
+    overflow: hidden;
+}
+
+.p-tabmenu-nav a:focus {
+    z-index: 1;
+}
+
+.p-tabmenu-nav .p-menuitem-text {
+    line-height: 1;
+}
+
+.p-tabmenu-ink-bar {
+    display: none;
+    z-index: 1;
+}
+
+.p-tabmenu::-webkit-scrollbar {
+    display: none;
+}
+
+// theme
+.p-tabmenu {
+    .p-tabmenu-nav {
+        background: panel.$tabviewNavBg;
+        border: panel.$tabviewNavBorder;
+        border-width: panel.$tabviewNavBorderWidth;
+
+        .p-tabmenuitem {
+            margin-right: panel.$tabviewHeaderSpacing;
+
+            .p-menuitem-link {
+                border: panel.$tabviewHeaderBorder;
+                border-width: panel.$tabviewHeaderBorderWidth;
+                border-color: panel.$tabviewHeaderBorderColor;
+                background: panel.$tabviewHeaderBg;
+                color: panel.$tabviewHeaderTextColor;
+                padding: panel.$tabviewHeaderPadding;
+                font-weight: panel.$tabviewHeaderFontWeight;
+                border-top-right-radius: general.$borderRadius;
+                border-top-left-radius: general.$borderRadius;
+                transition: general.$listItemTransition;
+                margin: panel.$tabviewHeaderMargin;
+                outline-color: transparent;
+
+                .p-menuitem-icon {
+                    margin-right: general.$inlineSpacing;
+                }
+
+                &:not(.p-disabled):focus-visible {
+                    @include mixins.focused-inset();
+                }
+            }
+
+            &:not(.p-highlight):not(.p-disabled):hover {
+                .p-menuitem-link {
+                    background: panel.$tabviewHeaderHoverBg;
+                    border-color: panel.$tabviewHeaderHoverBorderColor;
+                    color: panel.$tabviewHeaderTextHoverColor;
+                }
+            }
+
+            &.p-highlight {
+                .p-menuitem-link {
+                    background: panel.$tabviewHeaderActiveBg;
+                    border-color: panel.$tabviewHeaderActiveBorderColor;
+                    color: panel.$tabviewHeaderTextActiveColor;
+                }
+            }
+        }
+    }
+}

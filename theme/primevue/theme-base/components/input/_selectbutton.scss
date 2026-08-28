@@ -1,0 +1,54 @@
+@use "themes/mytheme/variables/button";
+@use "themes/mytheme/variables/general";
+@use "../../mixins";
+
+.p-selectbutton {
+    .p-button {
+        background: button.$toggleButtonBg;
+        border: button.$toggleButtonBorder;
+        color: button.$toggleButtonTextColor;
+        transition: general.$formElementTransition;
+
+        .p-button-icon-left,
+        .p-button-icon-right {
+            color: button.$toggleButtonIconColor;
+        }
+
+        &:not(.p-disabled):not(.p-highlight):hover {
+            background: button.$toggleButtonHoverBg;
+            border-color: button.$toggleButtonHoverBorderColor;
+            color: button.$toggleButtonTextHoverColor;
+
+            .p-button-icon-left,
+            .p-button-icon-right {
+                color: button.$toggleButtonIconHoverColor;
+            }
+        }
+
+        &.p-highlight {
+            background: button.$toggleButtonActiveBg;
+            border-color: button.$toggleButtonActiveBorderColor;
+            color: button.$toggleButtonTextActiveColor;
+
+            .p-button-icon-left,
+            .p-button-icon-right {
+                color: button.$toggleButtonIconActiveColor;
+            }
+
+            &:hover {
+                background: button.$toggleButtonActiveHoverBg;
+                border-color: button.$toggleButtonActiveHoverBorderColor;
+                color: button.$toggleButtonTextActiveHoverColor;
+
+                .p-button-icon-left,
+                .p-button-icon-right {
+                    color: button.$toggleButtonIconActiveHoverColor;
+                }
+            }
+        }
+    }
+
+    &.p-invalid > .p-button {
+        @include mixins.invalid-input();
+    }
+}

@@ -1,0 +1,23 @@
+// Centralized exports for all variable modules in this directory.
+@use 'base-colors' as *;
+@use 'colors' as *;
+@use 'contrast' as *;
+@use 'button-mixins' as *;
+
+@forward 'base-colors';
+@forward 'colors';
+@forward 'contrast';
+@forward 'variables';
+@forward 'custom';
+// Empty by default — third parties alias `@tgmc/theme/scss/tokens/overrides`.
+@forward 'overrides';
+@forward 'button-mixins';
+
+// Placeholder aliases kept for in-module `@extend` / media-query overrides.
+%button-base {
+  @include button-base;
+}
+
+%button-theme {
+  @include button-theme;
+}

@@ -1,0 +1,86 @@
+@use "themes/mytheme/variables/button";
+@use "themes/mytheme/variables/misc";
+
+// core
+.p-badge {
+    display: inline-block;
+    border-radius: 10px;
+    text-align: center;
+    padding: 0 .5rem;
+}
+
+.p-overlay-badge {
+    position: relative;
+}
+
+.p-overlay-badge .p-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    transform: translate(50%,-50%);
+    transform-origin: 100% 0;
+    margin: 0;
+}
+
+.p-badge.p-badge-dot {
+    width: .5rem;
+    min-width: .5rem;
+    height: .5rem;
+    border-radius: 50%;
+    padding: 0;
+}
+
+.p-badge-no-gutter {
+    padding: 0;
+    border-radius: 50%;
+}
+
+// theme
+.p-badge {
+    background: misc.$badgeBg;
+    color: misc.$badgeTextColor;
+    font-size: misc.$badgeFontSize;
+    font-weight: misc.$badgeFontWeight;
+    min-width: misc.$badgeMinWidth;
+    height: misc.$badgeHeight;
+    line-height: misc.$badgeHeight;
+
+    &.p-badge-secondary {
+        background-color: button.$secondaryButtonBg;
+        color: button.$secondaryButtonTextColor;
+    }
+
+    &.p-badge-success {
+        background-color: button.$successButtonBg;
+        color: button.$successButtonTextColor;
+    }
+
+    &.p-badge-info {
+        background-color: button.$infoButtonBg;
+        color: button.$infoButtonTextColor;
+    }
+
+    &.p-badge-warning {
+        background-color: button.$warningButtonBg;
+        color: button.$warningButtonTextColor;
+    }
+
+    &.p-badge-danger {
+        background-color: button.$dangerButtonBg;
+        color: button.$dangerButtonTextColor;
+    }
+
+    &.p-badge-lg {
+        font-size: 1.5 * misc.$badgeFontSize;
+        min-width: 1.5 * misc.$badgeMinWidth;
+        height: 1.5 * misc.$badgeHeight;
+        line-height: 1.5 * misc.$badgeHeight;
+    }
+
+    &.p-badge-xl {
+        font-size: 2 * misc.$badgeFontSize;
+        min-width: 2 * misc.$badgeMinWidth;
+        height: 2 * misc.$badgeHeight;
+        line-height: 2 * misc.$badgeHeight;
+    }
+}
