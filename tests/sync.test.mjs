@@ -58,7 +58,7 @@ test("app packages survive and private internals do not", () => {
   assert.equal(pkg.name, "portfolio");
   assert.equal(pkg.version, "1.3.19");
   assert.equal(pkg.scripts["docker:local"], undefined);
-  assert.equal(pkg.scripts.dev, "nx nuxt dev");
+  assert.equal(pkg.scripts.dev, "nx dev @tgmc/web");
   assert.equal(pkg.scripts["db:migrate:local"], "node core/web/bin/db-migrate-local.mjs");
   assert.equal(pkg.scripts.format, "prettier -wl .");
   assert.equal(pkg.scripts["build:libs"]?.includes("@tgmc/utilities"), true);
@@ -72,6 +72,13 @@ test("app packages survive and private internals do not", () => {
 
   const nx = JSON.parse(fs.readFileSync(path.join(dest, "nx.json"), "utf8"));
   assert.equal(nx.nxCloudId, undefined);
+  for (const plugin of nx.plugins || []) {
+    if (!plugin || typeof plugin !== "object") continue;
+    assert.ok(
+      Array.isArray(plugin.exclude) && plugin.exclude.includes("tests/**"),
+      "nx plugins must ignore dest test fixtures",
+    );
+  }
 
   const meta = JSON.parse(fs.readFileSync(path.join(dest, ".sync-meta.json"), "utf8"));
   assert.equal(meta.sourceRepo, "tamaramack/portfolio");
