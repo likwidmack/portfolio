@@ -70,7 +70,7 @@ function rewritePackageJson(staging, tag) {
     build: "nx build @tgmc/web",
     "build:libs":
       "npm run build --workspace=@tgmc/utilities --workspace=@tgmc/media-player --workspace=@tgmc/likwidlibs",
-    dev: "nx nuxt dev",
+    dev: "nx dev @tgmc/web",
     start: "nx dev @tgmc/web",
     "start:ssl:4200": "env HTTPS=1 PORT=4200 nx dev @tgmc/web",
     "ssl:gen:linux": "bash core/web/bin/generate-ssl-linux.sh",
@@ -91,6 +91,13 @@ function rewriteNxJson(staging) {
   if (!fs.existsSync(file)) return;
   const nx = readJson(file);
   delete nx.nxCloudId;
+  for (const plugin of nx.plugins || []) {
+    if (!plugin || typeof plugin !== "object") continue;
+    const current = Array.isArray(plugin.exclude) ? plugin.exclude : [];
+    if (!current.includes("tests/**")) {
+      plugin.exclude = [...current, "tests/**"];
+    }
+  }
   writeJson(file, nx);
 }
 

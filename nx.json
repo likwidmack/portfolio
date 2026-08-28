@@ -4,7 +4,8 @@
     {
       "plugin": "@nx/eslint/plugin",
       "exclude": [
-        "theme/foundation/**"
+        "theme/foundation/**",
+        "tests/**"
       ],
       "options": {
         "targetName": "lint"
@@ -13,7 +14,8 @@
     {
       "plugin": "@nx/nuxt/plugin",
       "exclude": [
-        "packages/web-layer-admin/**"
+        "packages/web-layer-admin/**",
+        "tests/**"
       ],
       "options": {
         "buildTargetName": "build",
@@ -26,6 +28,7 @@
     },
     {
       "plugin": "@nx/js/typescript",
+      "exclude": ["tests/**"],
       "options": {
         "typecheck": {
           "targetName": "typecheck"
@@ -40,6 +43,7 @@
     },
     {
       "plugin": "@nx/vitest",
+      "exclude": ["tests/**"],
       "options": {
         "testTargetName": "test",
         "ciTargetName": "test-ci",
@@ -48,6 +52,7 @@
     },
     {
       "plugin": "@nx/vite/plugin",
+      "exclude": ["tests/**"],
       "options": {
         "buildTargetName": "build",
         "testTargetName": "vite:test",
@@ -62,6 +67,7 @@
     },
     {
       "plugin": "@nx/storybook/plugin",
+      "exclude": ["tests/**"],
       "options": {
         "serveStorybookTargetName": "storybook",
         "buildStorybookTargetName": "build-storybook",
@@ -73,6 +79,7 @@
     },
     {
       "plugin": "@nx/cypress/plugin",
+      "exclude": ["tests/**"],
       "options": {
         "targetName": "e2e",
         "openTargetName": "open-cypress",
