@@ -18,15 +18,6 @@ const PRIVATE_REL_PATHS = [
   "core/web/tests/scripts",
 ];
 
-/** CloudFront/S3 payloads under Nuxt `public/`. */
-const CDN_PUBLIC_REL_PATHS = [
-  "core/web/public/i",
-  "core/web/public/v",
-  "core/web/public/d",
-  "core/web/public/favicon.ico",
-  "core/web/public/README.md",
-];
-
 function parseArgs(argv) {
   const out = {};
   for (let i = 2; i < argv.length; i += 1) {
@@ -231,16 +222,13 @@ function dropPrivatePaths(staging) {
 }
 
 function stripCdnPublicAssets(staging) {
-  for (const rel of CDN_PUBLIC_REL_PATHS) {
-    rmRf(path.join(staging, rel));
-  }
-  const publicDir = path.join(staging, "core/web/public");
-  if (!fs.existsSync(path.dirname(publicDir))) return;
+  const webDir = path.join(staging, "core/web");
+  if (!fs.existsSync(webDir)) return;
+  const publicDir = path.join(webDir, "public");
+  // Wipe hashed assets, /i /v /d, favicon, social cards, videos, and placeholder stubs.
+  rmRf(publicDir);
   fs.mkdirSync(publicDir, { recursive: true });
-  const gitkeep = path.join(publicDir, ".gitkeep");
-  if (!fs.existsSync(gitkeep)) {
-    fs.writeFileSync(gitkeep, "");
-  }
+  fs.writeFileSync(path.join(publicDir, ".gitkeep"), "");
 }
 
 function stripEnvFiles(dir) {
