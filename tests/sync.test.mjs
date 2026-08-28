@@ -61,6 +61,7 @@ test("app packages survive and private internals do not", () => {
   assert.equal(pkg.scripts.dev, "nx nuxt dev");
   assert.match(pkg.repository.url, /likwidmack\/portfolio/);
   assert.doesNotMatch(pkg.description, /sanitized/i);
+  assert.match(pkg.description, /Nx \+ Nuxt 4 SSR portfolio/);
 
   const web = JSON.parse(fs.readFileSync(path.join(dest, "core/web/package.json"), "utf8"));
   assert.equal(web.nx.targets.test.options.command, "npm run test --workspace=@tgmc/web");

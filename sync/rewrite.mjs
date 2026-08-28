@@ -56,7 +56,8 @@ function rewritePackageJson(staging, tag) {
   pkg.name = "portfolio";
   pkg.version = publicVersion(tag, pkg.version);
   pkg.private = true;
-  pkg.description = "Tamara Mack’s Nx + Nuxt 4 portfolio.";
+  pkg.description =
+    "Nx + Nuxt 4 SSR portfolio with SQLite, Docker/Postgres, and AWS SAM (Lambda, DynamoDB, CloudFront).";
   pkg.homepage = "https://likwidmack.com";
   pkg.bugs = { url: "https://github.com/likwidmack/portfolio/issues" };
   pkg.repository = {
