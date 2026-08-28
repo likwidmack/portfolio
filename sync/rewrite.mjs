@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import path from "node:path";
+import { applyCdnPlaceholders } from "./cdn-placeholders.mjs";
 import { applyPublicDocs } from "./public-docs.mjs";
 
 const PRIVATE_REL_PATHS = [
@@ -157,6 +158,17 @@ function rewriteWebTestTarget(staging) {
   }
 }
 
+function rewritePortfolioSeo(staging) {
+  const file = path.join(staging, "core/web/app/composables/usePortfolioSeo.ts");
+  if (!fs.existsSync(file)) return;
+  const text = fs.readFileSync(file, "utf8");
+  const next = text.replace(
+    "`${base}/i/portfolio/social-card.png`",
+    "'https://raw.githubusercontent.com/likwidmack/portfolio/main/.github/social-preview.png'",
+  );
+  if (next !== text) fs.writeFileSync(file, next);
+}
+
 function rewriteLintStaged(staging) {
   const file = path.join(staging, "lint-staged.config.mjs");
   if (!fs.existsSync(file)) return;
@@ -219,16 +231,6 @@ function dropPrivatePaths(staging) {
   for (const rel of PRIVATE_REL_PATHS) {
     rmRf(path.join(staging, rel));
   }
-}
-
-function stripCdnPublicAssets(staging) {
-  const webDir = path.join(staging, "core/web");
-  if (!fs.existsSync(webDir)) return;
-  const publicDir = path.join(webDir, "public");
-  // Wipe hashed assets, /i /v /d, favicon, social cards, videos, and placeholder stubs.
-  rmRf(publicDir);
-  fs.mkdirSync(publicDir, { recursive: true });
-  fs.writeFileSync(path.join(publicDir, ".gitkeep"), "");
 }
 
 function stripEnvFiles(dir) {
@@ -298,6 +300,8 @@ function writeReadme(staging) {
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 Nx + Nuxt 4 monorepo for Tamara Mack’s web portfolio (\`@tgmc/web\`): Nitro SSR, shared packages, and local SQLite.
+
+![tgmc-portfolio — Tamara Mack web portfolio](.github/social-preview.png)
 
 This repository is the source hub for the [Nuxt 4](docs/web/README.md) SSR site and [Nx](docs/packages/README.md) workspace packages. It orchestrates that stack; it does not replace Nuxt.
 
@@ -457,13 +461,19 @@ function main() {
   const sha = args.sha || "unknown";
   stripEnvFiles(staging);
   dropPrivatePaths(staging);
-  stripCdnPublicAssets(staging);
+  applyCdnPlaceholders(staging);
+  const publicDir = path.join(staging, "core/web/public");
+  if (fs.existsSync(path.dirname(publicDir))) {
+    fs.mkdirSync(publicDir, { recursive: true });
+    fs.writeFileSync(path.join(publicDir, ".gitkeep"), "");
+  }
   rewritePackageJson(staging, tag);
   rewriteNxJson(staging);
   rewriteTsconfig(staging);
   rewriteNestedPackageRepos(staging);
   rewriteMarkdownRepos(path.join(staging, "docs"));
   rewriteWebTestTarget(staging);
+  rewritePortfolioSeo(staging);
   rewriteLintStaged(staging);
   rewriteDocsConfig(staging);
   writeGitignore(staging);

@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import path from "node:path";
+import { cdnOriginalScanHits } from "./cdn-placeholders.mjs";
 
 const DENY_BASENAMES = new Set([
   ".env",
@@ -53,22 +54,9 @@ function parseArgs(argv) {
   return out;
 }
 
-function posixRel(stagingRoot, full) {
-  return path.relative(stagingRoot, full).split(path.sep).join("/");
-}
-
-function isLeakedCdnPublic(rel) {
-  if (rel === "core/web/public" || rel === "core/web/public/.gitkeep") return false;
-  return rel.startsWith("core/web/public/");
-}
-
 function walk(dir, hits, depth, stagingRoot) {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const full = path.join(dir, entry.name);
-    const rel = posixRel(stagingRoot, full);
-    if (isLeakedCdnPublic(rel)) {
-      hits.push(`CDN public object present: ${rel}`);
-    }
     if (entry.isDirectory()) {
       if (depth === 0 && DENY_DIR_NAMES.has(entry.name)) {
         hits.push(`denied directory present: ${full}`);
@@ -105,6 +93,7 @@ function main() {
   }
   const hits = [];
   walk(staging, hits, 0, staging);
+  hits.push(...cdnOriginalScanHits(staging));
   if (hits.length > 0) {
     console.error(hits.join("\n"));
     process.exit(3);
