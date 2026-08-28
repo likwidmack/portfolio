@@ -1,7 +1,7 @@
 {
-  "sourceRepo": "tamaramack/portfolio",
-  "sourceTag": "main",
-  "sourceSha": "f30e4528cb72277e6d32675d0be613dffa640c27",
-  "syncedAt": "2026-08-28T07:08:44.449Z",
+  "sourceRepo": "tamaramack/tamaramack.github.io",
+  "sourceTag": "development",
+  "sourceSha": "d6e6deaa6714c13eec0ff644cfa5a360344bf86c",
+  "syncedAt": "2026-08-28T21:14:58.068094Z",
   "destRepo": "likwidmack/portfolio"
 }

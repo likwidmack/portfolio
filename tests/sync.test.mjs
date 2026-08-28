@@ -1,278 +1,150 @@
 import assert from "node:assert/strict";
-import { spawnSync } from "node:child_process";
-import fs from "node:fs";
+import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
+import { copyAllowlisted } from "../sync/copy.mjs";
+import { rewriteDest, rewritePackageJson } from "../sync/rewrite.mjs";
+import { isDeniedPath, scanDest, scanText } from "../sync/scan.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const fixture = path.join(root, "tests/fixtures/source-mini");
-const syncSh = path.join(root, "sync/sync.sh");
+const allowlist = path.join(root, "sync/allowlist.txt");
 
-function runSync(dest, tag = "v1.3.19") {
-  const result = spawnSync(
-    "bash",
-    [syncSh, "--source", fixture, "--dest", dest, "--tag", tag, "--sha", "abc1234deadbeef"],
-    { encoding: "utf8" },
-  );
-  if (result.status !== 0) {
-    throw new Error(`sync failed (${result.status}): ${result.stdout}\n${result.stderr}`);
+async function makeFixture() {
+  const dir = await fs.mkdtemp(path.join(os.tmpdir(), "portfolio-src-"));
+  const files = {
+    "src/main.js": "import store from '@/js/.sys/store'\n",
+    "src/js/.sys/store.js": "export default { keep: true }\n",
+    "src/css/.sys/settings.scss": "$ink: #0b0d12;\n",
+    "api/configure.js": "module.exports = require('./.api')\n",
+    "api/.api/index.js": "module.exports = () => {}\n",
+    "api/data/5.items.json": "[]\n",
+    "api/data/100.items.json": "[]\n",
+    "api/data/3000.items.json": "[]\n",
+    "api/data/options.json": "{}\n",
+    "api/data/100000.people.json": "[\"too-big\"]\n",
+    "bin/deploy.sh": "#!/bin/sh\necho deploy\n",
+    "exports/s3.js": "module.exports = {}\n",
+    ".env-sample": "AWS_SECRET_ACCESS_KEY=placeholder\n",
+    "app.json": "{}\n",
+    "vue.config.js": "module.exports = { pluginOptions: { s3Deploy: { bucket: 'x' } }, devServer: { before: () => {} } }\n",
+    "server.js": "require('dotenv').config(); require('opn')('http://localhost')\n",
+    "apps/portfolio/app/pages/index.vue": "<template><p>home</p></template>\n",
+    "apps/portfolio/package.json": JSON.stringify({
+      name: "portfolio",
+      scripts: {
+        build: "nuxt build",
+        "build:pages": "nuxt build --preset github_pages",
+        dev: "nuxt dev",
+        postinstall: "nuxt prepare",
+        typecheck: "nuxt typecheck",
+      },
+      dependencies: { nuxt: "^4.5.2", mongodb: "6.0.0" },
+    }, null, 2) + "\n",
+    "docs/architecture.md": "Source lives in `apps/portfolio`. See [deploy-pages.yml](../.github/workflows/deploy-pages.yml).\n",
+    "package.json": `${JSON.stringify({
+      name: "tamaramack.github.io",
+      scripts: {
+        clean: "node bin/clean.js",
+        build: "vue-cli-service build",
+        serve: "vue-cli-service serve",
+        "test:e2e": "cypress run",
+      },
+      gitHooks: { "pre-commit": "lint-staged" },
+    }, null, 2)}\n`,
+  };
+  for (const [rel, body] of Object.entries(files)) {
+    const abs = path.join(dir, rel);
+    await fs.mkdir(path.dirname(abs), { recursive: true });
+    await fs.writeFile(abs, body);
   }
-  return result;
+  return dir;
 }
 
-test("app packages survive and private internals do not", () => {
-  const dest = fs.mkdtempSync(path.join(os.tmpdir(), "portfolio-dest-"));
-  runSync(dest);
+test("hidden app dirs survive and internals do not", async () => {
+  const source = await makeFixture();
+  const dest = await fs.mkdtemp(path.join(os.tmpdir(), "portfolio-dest-"));
+  const copied = await copyAllowlisted(source, dest, allowlist);
+  assert.ok(copied.includes("src/js/.sys/store.js"));
+  assert.ok(copied.includes("api/.api/index.js"));
+  assert.ok(copied.includes("api/data/5.items.json"));
+  assert.ok(!copied.some((rel) => rel.startsWith("bin/")));
+  assert.ok(!copied.some((rel) => rel.startsWith("exports/")));
+  assert.ok(!copied.includes(".env-sample"));
+  assert.ok(!copied.includes("app.json"));
+  assert.ok(!copied.includes("api/data/100000.people.json"));
+});
 
-  const kept = [
-    "core/web/nuxt.config.ts",
-    "packages/utilities/package.json",
-    "packages/web-layer-admin/package.json",
-    "theme/core/package.json",
-    "docs/README.md",
-    "package.json",
-    ".sync-meta.json",
-  ];
-  for (const rel of kept) {
-    assert.ok(fs.existsSync(path.join(dest, rel)), `missing ${rel}`);
-  }
-
-  const dropped = [
-    "scripts/dev.sh",
-    "docker/Dockerfile.dev",
-    "infra/sam/template.yaml",
-    ".github/workflows/ci.yml",
-    ".env.example",
-    "AGENTS.md",
-    "archive/v1/old.txt",
-    "core/web/.env.cdn.example",
-    "docs/infra.md",
-  ];
-  for (const rel of dropped) {
-    assert.equal(fs.existsSync(path.join(dest, rel)), false, `leaked ${rel}`);
-  }
-
-  const pkg = JSON.parse(fs.readFileSync(path.join(dest, "package.json"), "utf8"));
+test("rewrite flattens Nuxt app, strips deploy scripts, and overlays dest files", async () => {
+  const source = await makeFixture();
+  const dest = await fs.mkdtemp(path.join(os.tmpdir(), "portfolio-dest-"));
+  await copyAllowlisted(source, dest, allowlist);
+  await rewriteDest(dest);
+  const pkg = JSON.parse(await fs.readFile(path.join(dest, "package.json"), "utf8"));
   assert.equal(pkg.name, "portfolio");
-  assert.equal(pkg.version, "1.3.19");
-  assert.equal(pkg.scripts["docker:local"], undefined);
-  assert.equal(pkg.scripts.dev, "nx dev @tgmc/web");
-  assert.equal(pkg.scripts["db:migrate:local"], "node core/web/bin/db-migrate-local.mjs");
-  assert.equal(pkg.scripts.format, "prettier -wl .");
-  assert.equal(pkg.scripts["build:libs"]?.includes("@tgmc/utilities"), true);
-  assert.match(pkg.repository.url, /likwidmack\/portfolio/);
-  assert.doesNotMatch(pkg.description, /sanitized/i);
-  assert.match(pkg.description, /Nx \+ Nuxt 4 SSR portfolio/);
-  assert.ok(fs.existsSync(path.join(dest, "core/web/bin/db-migrate-local.mjs")));
-
-  const web = JSON.parse(fs.readFileSync(path.join(dest, "core/web/package.json"), "utf8"));
-  assert.equal(web.nx.targets.test.options.command, "npm run test --workspace=@tgmc/web");
-
-  const nx = JSON.parse(fs.readFileSync(path.join(dest, "nx.json"), "utf8"));
-  assert.equal(nx.nxCloudId, undefined);
-  for (const plugin of nx.plugins || []) {
-    if (!plugin || typeof plugin !== "object") continue;
-    assert.ok(
-      Array.isArray(plugin.exclude) && plugin.exclude.includes("tests/**"),
-      "nx plugins must ignore dest test fixtures",
-    );
-  }
-
-  const tsconfig = JSON.parse(fs.readFileSync(path.join(dest, "tsconfig.json"), "utf8"));
-  const tsPaths = (tsconfig.references || []).map((ref) => ref.path);
-  assert.ok(tsPaths.includes("./core/web"));
-  assert.equal(tsPaths.includes("./core/web-e2e"), false);
-
-  const meta = JSON.parse(fs.readFileSync(path.join(dest, ".sync-meta.json"), "utf8"));
-  assert.equal(meta.sourceRepo, "tamaramack/portfolio");
-  assert.equal(meta.sourceTag, "v1.3.19");
-
-  const readme = fs.readFileSync(path.join(dest, "README.md"), "utf8");
-  assert.match(readme, /^# tgmc-portfolio/m);
-  assert.match(readme, /likwidmack\.com/);
-  assert.match(readme, /Table of contents/);
-  assert.match(readme, /Quick start/);
-  assert.match(readme, /repository-images\.githubusercontent\.com\/1349135003\//);
-  assert.match(readme, /SECURITY\.md/);
-  assert.doesNotMatch(
-    readme,
-    /tamaramack|sanitized|TM_GH_TOKEN|LK_GH_TOKEN|private source|public mirror|Synced from/i,
-  );
-
-  const docsReadme = fs.readFileSync(path.join(dest, "docs/README.md"), "utf8");
-  assert.match(docsReadme, /likwidmack\/portfolio/);
-  assert.doesNotMatch(docsReadme, /tamaramack\/portfolio/);
-  assert.doesNotMatch(
-    docsReadme,
-    /cicd\.md|docker\.md|infra\.md|docs\/agents|github-access|pages\.yml|AGENTS\.md|git-hooks/,
-  );
-
-  const contributing = fs.readFileSync(path.join(dest, "docs/contributing.md"), "utf8");
-  assert.match(contributing, /docs\/README\.md/);
-  assert.doesNotMatch(
-    contributing,
-    /cicd\.md|github-access|agents\/README|AGENTS\.md|git-hooks|docker\/|infra\/sam/,
-  );
-
-  const quickstart = fs.readFileSync(path.join(dest, "docs/web/guides/quickstart.md"), "utf8");
-  assert.match(quickstart, /npm run db:migrate:local/);
-  assert.doesNotMatch(quickstart, /git-hooks|cdn-guide|cdn-quickstart/);
-
-  const catalog = fs.readFileSync(path.join(dest, "docs/_catalog.md"), "utf8");
-  assert.doesNotMatch(
-    catalog,
-    /cicd\.md|docker\.md|infra\.md|agents\/README|github-access|AGENTS\.md/,
-  );
-
-  const architecture = fs.readFileSync(
-    path.join(dest, "docs/web/reference/architecture.md"),
-    "utf8",
-  );
-  assert.doesNotMatch(architecture, /\]\([^)]*cicd\.md\)|\]\([^)]*docker\.md\)|\]\([^)]*infra\.md\)/);
-
-  const seo = fs.readFileSync(path.join(dest, "core/web/app/composables/usePortfolioSeo.ts"), "utf8");
-  assert.match(seo, /repository-images\.githubusercontent\.com\/1349135003\//);
-  assert.doesNotMatch(seo, /social-card\.png/);
+  assert.equal(pkg.repository.url, "git+https://github.com/likwidmack/portfolio.git");
+  assert.equal(pkg.homepage, "https://tamaramack.github.io/");
+  assert.ok(pkg.scripts.serve.includes("9200"));
+  assert.ok(pkg.scripts.start.includes("9200"));
+  assert.ok(pkg.scripts.postinstall.includes("nuxt prepare"));
+  assert.equal(pkg.scripts["build:pages"], undefined);
+  assert.equal(pkg.scripts.clean, undefined);
+  assert.equal(pkg.dependencies.mongodb, undefined);
+  assert.equal(pkg.gitHooks, undefined);
+  assert.ok(await fs.readFile(path.join(dest, "app/pages/index.vue"), "utf8"));
+  assert.ok(!(await exists(path.join(dest, "apps"))));
+  const vueConfig = await fs.readFile(path.join(dest, "vue.config.js"), "utf8");
+  assert.ok(!vueConfig.includes("s3Deploy"));
+  const server = await fs.readFile(path.join(dest, "server.js"), "utf8");
+  assert.ok(!server.includes("dotenv"));
+  assert.ok(!server.includes("opn"));
+  assert.ok(server.includes("connect-history-api-fallback") || server.includes("history"));
+  const readme = await fs.readFile(path.join(dest, "README.md"), "utf8");
+  assert.ok(readme.includes("9200"));
+  assert.ok(readme.includes("BSD-2-Clause") || (await fs.readFile(path.join(dest, "LICENSE"), "utf8")).includes("BSD"));
+  const arch = await fs.readFile(path.join(dest, "docs/architecture.md"), "utf8");
+  assert.ok(!arch.includes("apps/portfolio/"));
 });
 
-function assertCdnPlaceholder(destRoot, rel, originalText, kind) {
-  const destFile = path.join(destRoot, rel);
-  const srcFile = path.join(fixture, rel);
-  assert.ok(fs.existsSync(destFile), `missing ${rel}`);
-  const destBytes = fs.readFileSync(destFile);
-  const srcBytes = fs.readFileSync(srcFile);
-  assert.equal(srcBytes.toString("utf8"), originalText, `${rel} fixture original drifted`);
-  assert.notEqual(Buffer.compare(destBytes, srcBytes), 0, `${rel} must not copy the fixture original`);
-  assert.ok(destBytes.length > 0 && destBytes.length < 2048, `${rel} must be a tiny placeholder`);
-  switch (kind) {
-    case "png":
-      assert.equal(destBytes.subarray(0, 8).toString("hex"), "89504e470d0a1a0a");
-      break;
-    case "jpg":
-      assert.equal(destBytes[0], 0xff);
-      assert.equal(destBytes[1], 0xd8);
-      break;
-    case "webp":
-      assert.equal(destBytes.subarray(0, 4).toString("ascii"), "RIFF");
-      assert.equal(destBytes.subarray(8, 12).toString("ascii"), "WEBP");
-      break;
-    case "svg":
-      assert.match(destBytes.toString("utf8"), /<svg\b/);
-      break;
-    case "ico":
-      assert.equal(destBytes.readUInt16LE(0), 0);
-      assert.equal(destBytes.readUInt16LE(2), 1);
-      break;
-    case "mp4":
-      assert.match(destBytes.toString("latin1"), /ftyp/);
-      break;
-    case "pdf":
-      assert.equal(destBytes.subarray(0, 5).toString("ascii"), "%PDF-");
-      break;
-    case "js":
-      assert.match(destBytes.toString("utf8"), /placeholder/);
-      assert.doesNotMatch(destBytes.toString("utf8"), /hashed static public asset fixture/);
-      assert.doesNotMatch(destBytes.toString("utf8"), /helix-lab-original/);
-      break;
-    case "html":
-      assert.match(destBytes.toString("utf8"), /placeholder/);
-      assert.doesNotMatch(destBytes.toString("utf8"), /lab/);
-      break;
-    default: {
-      const unexpected = kind;
-      throw new Error(`unhandled placeholder kind: ${unexpected}`);
-    }
+test("scan fails closed on secrets and denied paths", () => {
+  assert.equal(isDeniedPath("bin/deploy.sh"), true);
+  assert.equal(isDeniedPath("api/data/100000.people.json"), true);
+  assert.equal(isDeniedPath("src/js/.sys/store.js"), false);
+  const hits = scanText("aws key AKIAIOSFODNN7EXAMPLE extra", "leak.txt");
+  assert.ok(hits.some((item) => item.id === "aws-access-key"));
+});
+
+test("scanDest reports a planted secret", async () => {
+  const dest = await fs.mkdtemp(path.join(os.tmpdir(), "portfolio-scan-"));
+  await fs.writeFile(path.join(dest, "oops.js"), "const token = 'ghp_abcdefghijklmnopqrstuvwx'\n");
+  const findings = await scanDest(dest);
+  assert.ok(findings.some((item) => item.id === "github-pat"));
+});
+
+test("vue-cli package rewrite uses modern build and drops bin scripts", () => {
+  const pkg = rewritePackageJson({
+    name: "old",
+    scripts: {
+      build: "vue-cli-service build",
+      clean: "node bin/clean.js",
+      serve: "vue-cli-service serve",
+      lint: "eslint src",
+      "test:unit": "jest",
+    },
+    dependencies: { mongodb: "1.0.0" },
+  });
+  assert.equal(pkg.scripts.build, "vue-cli-service build --modern");
+  assert.equal(pkg.scripts.clean, undefined);
+  assert.ok(pkg.scripts.serve.includes("9200"));
+  assert.equal(pkg.dependencies.mongodb, undefined);
+});
+
+async function exists(filePath) {
+  try {
+    await fs.access(filePath);
+    return true;
+  } catch {
+    return false;
   }
 }
-
-test("CDN objects under core/web/public become placeholders", () => {
-  const dest = fs.mkdtempSync(path.join(os.tmpdir(), "portfolio-dest-"));
-  runSync(dest);
-
-  assertCdnPlaceholder(dest, "core/web/public/i/portfolio/social-card.png", "cdn-card", "png");
-  assertCdnPlaceholder(dest, "core/web/public/placeholder.png", "placeholder\n", "png");
-  assertCdnPlaceholder(dest, "core/web/public/favicon.ico", "cdn-favicon", "ico");
-  assertCdnPlaceholder(
-    dest,
-    "core/web/public/v/portfolio/generated/clip.mp4",
-    "cdn-clip",
-    "mp4",
-  );
-  assertCdnPlaceholder(dest, "core/web/public/d/Resume2026.pdf", "cdn-pdf", "pdf");
-  assertCdnPlaceholder(
-    dest,
-    "core/web/public/i/portfolio/data-visualization-flow.svg",
-    "cdn-svg-original\n",
-    "svg",
-  );
-  assertCdnPlaceholder(
-    dest,
-    "core/web/public/i/portfolio/generated/vimg-crystal-volume.webp",
-    "cdn-webp\n",
-    "webp",
-  );
-  assertCdnPlaceholder(dest, "core/web/public/i/profile_pic_1.jpg", "cdn-jpg\n", "jpg");
-  assertCdnPlaceholder(
-    dest,
-    "core/web/public/entry.a1b2c3d4.js",
-    "/* hashed static public asset fixture */\n",
-    "js",
-  );
-
-  const readme = fs.readFileSync(path.join(dest, "core/web/public/README.md"), "utf8");
-  assert.match(readme, /Public static assets/);
-  assertCdnPlaceholder(
-    dest,
-    "core/web/public/d/js/helix.js",
-    "helix-lab-original\n",
-    "js",
-  );
-  assertCdnPlaceholder(
-    dest,
-    "core/web/public/d/htm/wire_tess.html",
-    "<!doctype html>lab\n",
-    "html",
-  );
-  assert.ok(fs.existsSync(path.join(dest, "core/web/public/.gitkeep")));
-  assert.ok(fs.existsSync(path.join(dest, "core/web/nuxt.config.ts")));
-});
-
-test("branch tags keep the source package version", () => {
-  const dest = fs.mkdtempSync(path.join(os.tmpdir(), "portfolio-dest-"));
-  runSync(dest, "main");
-  const pkg = JSON.parse(fs.readFileSync(path.join(dest, "package.json"), "utf8"));
-  assert.equal(pkg.version, "1.3.19");
-});
-
-test("a second sync removes dest files dropped since the last run", () => {
-  const dest = fs.mkdtempSync(path.join(os.tmpdir(), "portfolio-dest-"));
-  runSync(dest);
-  const stale = path.join(dest, "docs/infra.md");
-  fs.mkdirSync(path.dirname(stale), { recursive: true });
-  fs.writeFileSync(stale, "account 305052780274 leftover");
-  const stub = path.join(dest, "core/web/public/i/portfolio/social-card.png");
-  fs.mkdirSync(path.dirname(stub), { recursive: true });
-  fs.writeFileSync(stub, "placeholder");
-  runSync(dest);
-  assert.equal(fs.existsSync(stale), false);
-  assertCdnPlaceholder(dest, "core/web/public/i/portfolio/social-card.png", "cdn-card", "png");
-});
-
-test("dest-owned GitHub social preview is the real 1280x640 image", () => {
-  const file = path.join(root, ".github/social-preview.png");
-  assert.ok(fs.existsSync(file), "missing .github/social-preview.png");
-  const buf = fs.readFileSync(file);
-  assert.equal(buf.subarray(0, 8).toString("hex"), "89504e470d0a1a0a");
-  assert.equal(buf.readUInt32BE(16), 1280);
-  assert.equal(buf.readUInt32BE(20), 640);
-  assert.ok(buf.length > 10_000, "social preview must not be a 1x1 placeholder");
-});
-
-test("dest-owned security policy uses private reporting", () => {
-  const policy = fs.readFileSync(path.join(root, "SECURITY.md"), "utf8");
-  assert.match(policy, /security\/advisories\/new/);
-  assert.match(policy, /Do not/i);
-  assert.doesNotMatch(policy, /5\.1\.x/);
-});

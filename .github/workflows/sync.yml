@@ -1,4 +1,4 @@
-name: Sync public mirror
+name: Sync public snapshot
 
 on:
   schedule:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       ref:
-        description: "Source tag or branch. Empty = tamaramack/portfolio main."
+        description: "Source tag (vX.Y.Z) or development. Empty = next new public semver tag."
         required: false
         type: string
 
@@ -30,27 +30,31 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: "24"
-      - name: Sync from tamaramack/portfolio
+      - name: Sync from tamaramack/tamaramack.github.io
         env:
-          TM_GH_TOKEN: ${{ secrets.TM_GH_TOKEN }}
           SOURCE_REF: ${{ inputs.ref }}
         run: |
           chmod +x sync/sync.sh
-          extra=(--tag "${SOURCE_REF:-main}")
-          bash sync/sync.sh "${extra[@]}"
+          if [ -n "${SOURCE_REF}" ]; then
+            bash sync/sync.sh --tag "${SOURCE_REF}"
+          else
+            bash sync/sync.sh
+          fi
       - id: meta
         run: |
           python3 - <<'PY'
           import json, os
-          meta = json.load(open(".sync-meta.json"))
+          skipped = "false"
+          try:
+              meta = json.load(open(".sync-meta.json"))
+          except FileNotFoundError:
+              skipped = "true"
+              meta = {"sourceTag": "none", "sourceSha": "unknown"}
           tag = meta.get("sourceTag") or "head"
           sha = meta.get("sourceSha") or "unknown"
           branch = f"sync/{tag}"
-          print(f"tag={tag}")
-          print(f"sha={sha}")
-          print(f"branch={branch}")
           with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
-              fh.write(f"tag={tag}\nsha={sha}\nbranch={branch}\nskipped=false\n")
+              fh.write(f"tag={tag}\nsha={sha}\nbranch={branch}\nskipped={skipped}\n")
           PY
       - name: Open sync PR
         env:
@@ -60,8 +64,11 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -B "${{ steps.meta.outputs.branch }}"
           git add -A
-          git diff --cached --quiet && echo "No changes" && exit 0
-          git commit -m "sync: tamaramack/portfolio ${{ steps.meta.outputs.tag }} (${{ steps.meta.outputs.sha }})"
+          if git diff --cached --quiet; then
+            echo "No changes"
+            exit 0
+          fi
+          git commit -m "sync: tamaramack/tamaramack.github.io ${{ steps.meta.outputs.tag }} (${{ steps.meta.outputs.sha }})"
           git push -u origin "${{ steps.meta.outputs.branch }}"
           gh pr create --fill --base main --head "${{ steps.meta.outputs.branch }}" || true
 

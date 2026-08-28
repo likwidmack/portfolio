@@ -1,31 +1,41 @@
-# Keep-list for the public mirror of tamaramack/portfolio (Nx + Nuxt 4).
-# Directories copy recursively. Source dot-directories are not listed and are dropped.
+# Keep-set for public snapshots of tamaramack/tamaramack.github.io.
+# Cursor never copies files; only these patterns leave the clone.
 
-core/web
-packages/utilities
-packages/media-player
-packages/likwidlibs
-packages/web-layer-admin
-packages/tsconfig.package.json
-packages/tsconfig.package.lib.json
-packages/tsconfig.package.spec.json
-theme
-docs
-LICENSE
-README.md
-package.json
-package-lock.json
-nx.json
-tsconfig.json
-tsconfig.base.json
-vitest.workspace.ts
-lint-staged.config.mjs
-.nvmrc
-.npmrc
-.npmignore
-.editorconfig
+# Hidden Vue CLI / Express trees
+src/js/.sys/**
+src/css/.sys/**
+api/.api/**
+
+# Vue CLI keep-set (legacy tags / older trees)
+src/**
+public/**
+api/configure.js
+api/process/**
+api/data/5.*
+api/data/100.*
+api/data/3000.*
+api/data/options.json
+tests/unit/**
+babel.config.js
+jest.config.js
+postcss.config.js
+.eslintrc.js
 .eslintignore
-.eslintrc.json
-.prettierrc
-.prettierignore
-.gitattributes
+.browserslistrc
+.editorconfig
+src/assets/tamara.jpg
+vue.config.js
+server.js
+package.json
+
+# Nuxt 4 professional profile (development HEAD, Aug 2026+)
+apps/portfolio/app/**
+apps/portfolio/server/**
+apps/portfolio/shared/**
+apps/portfolio/public/**
+apps/portfolio/nuxt.config.ts
+apps/portfolio/tsconfig.json
+apps/portfolio/package.json
+apps/portfolio/.nvmrc
+apps/portfolio/.npmrc
+docs/architecture.md

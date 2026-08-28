@@ -1,103 +1,104 @@
 #!/usr/bin/env node
-import fs from "node:fs";
+import fs from "node:fs/promises";
 import path from "node:path";
-import { cdnOriginalScanHits } from "./cdn-placeholders.mjs";
+import { fileURLToPath } from "node:url";
 
-const DENY_BASENAMES = new Set([
-  ".env",
-  ".env.sample",
-  ".env.example",
-  ".env.development.example",
-  ".env.production.example",
-  ".env.test.example",
-  "AGENTS.md",
-  "opencode.json",
-  "portfolio-review.md",
-]);
+const DENY_PATHS = [
+  /^bin(\/|$)/,
+  /^exports(\/|$)/,
+  /^\.env$/,
+  /^\.env-sample$/,
+  /^\.env\./,
+  /^app\.json$/,
+  /^_config\.yml$/,
+  /^tests\/e2e(\/|$)/,
+  /^api\/data\/100000\./,
+  /^\.github(\/|$)/,
+  /^node_modules(\/|$)/,
+  /^dist(\/|$)/,
+  /^app\/_archives(\/|$)/,
+  /^docs\/superpowers(\/|$)/,
+];
 
-const DENY_DIR_NAMES = new Set([
-  "scripts",
-  "docker",
-  "infra",
-  "archive",
-  "deliverables",
-  ".github",
-  ".agents",
-  ".codex",
-  ".husky",
-  ".vscode",
-  ".opencode",
-  "web-e2e",
-]);
+const SECRET_REGEXES = [
+  { id: "aws-access-key", re: /\bAKIA[0-9A-Z]{16}\b/ },
+  { id: "aws-secret-key", re: /aws_secret_access_key\s*[:=]\s*['"][A-Za-z0-9/+=]{30,}['"]/i },
+  { id: "github-pat", re: /\bgh[pousr]_[A-Za-z0-9_]{20,}\b/ },
+  { id: "github-fine-grained", re: /\bgithub_pat_[A-Za-z0-9_]{20,}\b/ },
+  { id: "private-key", re: /-----BEGIN (?:RSA |OPENSSH |EC )?PRIVATE KEY-----/ },
+  { id: "slack-token", re: /\bxox[baprs]-[A-Za-z0-9-]{10,}\b/ },
+  { id: "generic-secret", re: /\b(?:api[_-]?key|secret[_-]?key|auth[_-]?token)\s*[:=]\s*['"][^'"]{16,}['"]/i },
+];
 
-const NESTED_DOT_DIRS = new Set([
-  ".github",
-  ".husky",
-  ".vscode",
-  ".agents",
-  ".codex",
-  ".opencode",
-]);
+const SKIP_SCAN_DIRS = new Set([".git", "node_modules", ".nuxt", ".output", "sync", "templates", "tests"]);
 
-const SECRET_RE = /(github_pat_[A-Za-z0-9_]+|ghp_[A-Za-z0-9]{36,}|AKIA[0-9A-Z]{16})/;
-const PRIVATE_INFRA_RE =
-  /(305052780274|d3sr1gndi209fc|shared-cdn-test-assets-)/;
-
-function parseArgs(argv) {
-  const out = {};
-  for (let i = 2; i < argv.length; i += 1) {
-    const key = argv[i];
-    if (!key.startsWith("--")) continue;
-    out[key.slice(2)] = argv[i + 1];
-    i += 1;
-  }
-  return out;
+export function isDeniedPath(rel) {
+  const normalized = rel.replaceAll("\\", "/").replace(/^\.\//, "");
+  return DENY_PATHS.some((re) => re.test(normalized));
 }
 
-function walk(dir, hits, depth, stagingRoot) {
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) {
-      if (depth === 0 && DENY_DIR_NAMES.has(entry.name)) {
-        hits.push(`denied directory present: ${full}`);
-      }
-      if (depth > 0 && NESTED_DOT_DIRS.has(entry.name)) {
-        hits.push(`nested dot-directory present: ${full}`);
-      }
-      walk(full, hits, depth + 1, stagingRoot);
+export function scanText(text, rel = "") {
+  const findings = [];
+  for (const { id, re } of SECRET_REGEXES) {
+    if (re.test(text)) {
+      findings.push({ id, path: rel });
+    }
+  }
+  return findings;
+}
+
+async function walk(root, relative = "") {
+  const dir = path.join(root, relative);
+  const entries = await fs.readdir(dir, { withFileTypes: true });
+  const files = [];
+  for (const entry of entries) {
+    if (SKIP_SCAN_DIRS.has(entry.name)) {
       continue;
     }
-    if (DENY_BASENAMES.has(entry.name) || entry.name.startsWith(".env")) {
-      hits.push(`denied file present: ${full}`);
-    }
-    if (
-      entry.size < 1_000_000 &&
-      /\.(js|mjs|ts|json|vue|md|env|yml|yaml|sh|txt)$/.test(entry.name)
-    ) {
-      const text = fs.readFileSync(full, "utf8");
-      if (SECRET_RE.test(text) && !full.includes(`${path.sep}sync${path.sep}`)) {
-        hits.push(`secret-shaped string in ${full}`);
-      }
-      if (PRIVATE_INFRA_RE.test(text)) {
-        hits.push(`private infra identifier in ${full}`);
-      }
+    const rel = relative ? `${relative}/${entry.name}` : entry.name;
+    if (entry.isDirectory()) {
+      files.push(...(await walk(root, rel)));
+    } else if (entry.isFile()) {
+      files.push(rel);
     }
   }
+  return files;
 }
 
-function main() {
-  const staging = parseArgs(process.argv).staging;
-  if (!staging) {
-    console.error("scan.mjs requires --staging");
+export async function scanDest(destRoot) {
+  const findings = [];
+  const files = await walk(destRoot);
+  for (const rel of files) {
+    if (isDeniedPath(rel)) {
+      findings.push({ id: "denied-path", path: rel });
+      continue;
+    }
+    const abs = path.join(destRoot, rel);
+    const buf = await fs.readFile(abs);
+    if (buf.includes(0)) {
+      continue;
+    }
+    findings.push(...scanText(buf.toString("utf8"), rel));
+  }
+  return findings;
+}
+
+async function main() {
+  const dest = process.argv[2];
+  if (!dest) {
+    console.error("usage: node scan.mjs <dest>");
     process.exit(2);
   }
-  const hits = [];
-  walk(staging, hits, 0, staging);
-  hits.push(...cdnOriginalScanHits(staging));
-  if (hits.length > 0) {
-    console.error(hits.join("\n"));
-    process.exit(3);
+  const findings = await scanDest(dest);
+  if (findings.length) {
+    for (const item of findings) {
+      console.error(`${item.id}: ${item.path}`);
+    }
+    process.exit(1);
   }
+  console.log("scan clean");
 }
 
-main();
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  main();
+}

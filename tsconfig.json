@@ -1,22 +1,18 @@
 {
-  "extends": "./tsconfig.base.json",
-  "compileOnSave": false,
+  // https://nuxt.com/docs/guide/concepts/typescript
   "files": [],
   "references": [
     {
-      "path": "./packages/utilities"
+      "path": "./.nuxt/tsconfig.app.json"
     },
     {
-      "path": "./core/web"
+      "path": "./.nuxt/tsconfig.server.json"
     },
     {
-      "path": "./packages/likwidlibs"
+      "path": "./.nuxt/tsconfig.shared.json"
     },
     {
-      "path": "./packages/media-player"
-    },
-    {
-      "path": "./theme/core"
+      "path": "./.nuxt/tsconfig.node.json"
     }
   ]
 }

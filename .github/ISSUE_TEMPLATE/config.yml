@@ -4,5 +4,5 @@ contact_links:
     url: https://github.com/likwidmack/portfolio/security/advisories/new
     about: Use private vulnerability reporting. Do not file public issues for security reports.
   - name: Live site
-    url: https://likwidmack.com
-    about: The deployed portfolio, not this issue tracker.
+    url: https://tamaramack.github.io/
+    about: The published profile. This repository is the public source showcase, not the host.

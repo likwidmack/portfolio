@@ -1,5 +1,0 @@
-@use 'sass:meta';
-
-@layer theme {
-  @include meta.load-css('../globals');
-}

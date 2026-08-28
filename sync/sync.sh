@@ -1,160 +1,110 @@
 #!/usr/bin/env bash
-# Deterministic sanitizer: clone (or use) tamaramack/portfolio → keep-list copy → rewrite → scan.
 set -euo pipefail
 
+SOURCE_REPO="${SOURCE_REPO:-https://github.com/tamaramack/tamaramack.github.io.git}"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-SOURCE_REPO="${SOURCE_REPO:-https://github.com/tamaramack/portfolio.git}"
-DEST_DIR="${DEST_DIR:-$ROOT}"
-SOURCE_DIR=""
+DEST="${DEST:-$ROOT}"
 TAG=""
-SHA=""
-SKIP_CLONE=0
+SOURCE_DIR=""
 
 usage() {
-  echo "Usage: $0 [--source DIR] [--dest DIR] [--tag TAG] [--sha SHA] [--repo URL]" >&2
+  echo "usage: sync.sh [--source <clone>] [--dest <dir>] [--tag <tag-or-development>]" >&2
   exit 2
 }
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --source) SOURCE_DIR="$2"; SKIP_CLONE=1; shift 2 ;;
-    --dest) DEST_DIR="$2"; shift 2 ;;
+    --source) SOURCE_DIR="$2"; shift 2 ;;
+    --dest) DEST="$2"; shift 2 ;;
     --tag) TAG="$2"; shift 2 ;;
-    --sha) SHA="$2"; shift 2 ;;
-    --repo) SOURCE_REPO="$2"; shift 2 ;;
     -h|--help) usage ;;
-    *) echo "Unknown argument: $1" >&2; usage ;;
+    *) echo "unknown arg: $1" >&2; usage ;;
   esac
 done
 
-# Clone tamaramack/portfolio with TM_GH_TOKEN (tamaramack). Never print it.
-github_token() {
-  if [[ -n "${TM_GH_TOKEN:-}" ]]; then
-    printf '%s' "$TM_GH_TOKEN"
-    return 0
-  fi
-  if [[ -n "${GH_TOKEN:-}" ]]; then
-    printf '%s' "$GH_TOKEN"
-    return 0
-  fi
-  if [[ -n "${GITCONFIG_GITHUB_TOKEN:-}" ]]; then
-    printf '%s' "$GITCONFIG_GITHUB_TOKEN"
-    return 0
-  fi
-  python3 - <<'PY'
-import re
-from pathlib import Path
-text = Path.home().joinpath(".gitconfig").read_text()
-for pattern in (
-    r"url \"https://x-access-token:([^@]+)@github\.com/",
-    r"url \"https://[^:]+:([^@]+)@github\.com/",
-):
-    match = re.search(pattern, text)
-    if match:
-        print(match.group(1), end="")
-        raise SystemExit(0)
-raise SystemExit(1)
-PY
+list_semver_tags() {
+  git ls-remote --tags --refs "$SOURCE_REPO" \
+    | awk '{print $2}' \
+    | sed 's|refs/tags/||' \
+    | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' \
+    | sort -V
 }
 
-auth_clone_url() {
-  local url="$1"
-  local token=""
-  token="$(github_token 2>/dev/null || true)"
-  if [[ -n "$token" && "$url" == https://github.com/* ]]; then
-    echo "https://x-access-token:${token}@github.com/${url#https://github.com/}"
-    return 0
+next_tag() {
+  local meta="$DEST/.sync-meta.json"
+  local current=""
+  if [[ -f "$meta" ]]; then
+    current="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1])).get("sourceTag") or "")' "$meta")"
   fi
-  if [[ -z "$token" && "$url" == https://github.com/tamaramack/* ]]; then
-    echo "git@github.com-tamaramack:${url#https://github.com/}"
-    return 0
+  local newest
+  newest="$(list_semver_tags | tail -n 1 || true)"
+  if [[ -z "$newest" ]]; then
+    if [[ "$current" == "development" ]]; then
+      echo ""
+    else
+      echo "development"
+    fi
+    return
   fi
-  echo "$url"
+  if [[ "$newest" == "$current" ]]; then
+    echo ""
+    return
+  fi
+  echo "$newest"
 }
 
-# Mirror tamaramack/portfolio `main` unless a tag/branch is passed.
-# The private default branch is `development`; do not follow that HEAD.
-if [[ "$SKIP_CLONE" -eq 0 && -z "$TAG" ]]; then
-  TAG="main"
-fi
-
-if [[ "$SKIP_CLONE" -eq 0 ]]; then
-  SOURCE_DIR="$(mktemp -d "${TMPDIR:-/tmp}/portfolio-src.XXXXXX")"
-  CLONE_URL="$(auth_clone_url "$SOURCE_REPO")"
-  echo "Cloning ${SOURCE_REPO}@${TAG} into ${SOURCE_DIR}"
-  git clone --depth 1 --branch "$TAG" "$CLONE_URL" "$SOURCE_DIR"
-  SHA="$(git -C "$SOURCE_DIR" rev-parse HEAD)"
-fi
-
-if [[ ! -d "$SOURCE_DIR" ]]; then
-  echo "Source directory missing: $SOURCE_DIR" >&2
-  exit 3
-fi
-
-SHA="${SHA:-$(git -C "$SOURCE_DIR" rev-parse HEAD 2>/dev/null || echo unknown)}"
-TAG="${TAG:-unsynced}"
-
-STAGING="$(mktemp -d "${TMPDIR:-/tmp}/portfolio-stage.XXXXXX")"
-trap 'rm -rf "$STAGING"' EXIT
-
-ALLOWLIST="${ROOT}/sync/allowlist.txt"
-while IFS= read -r rel || [[ -n "$rel" ]]; do
-  [[ -z "$rel" || "$rel" == \#* ]] && continue
-  src_path="${SOURCE_DIR}/${rel}"
-  if [[ ! -e "$src_path" ]]; then
-    echo "allowlist miss (skipped): ${rel}"
-    continue
+if [[ -z "$TAG" ]]; then
+  TAG="$(next_tag)"
+  if [[ -z "$TAG" ]]; then
+    echo "No new public semver tag to sync."
+    exit 0
   fi
-  dest_path="${STAGING}/${rel}"
-  mkdir -p "$(dirname "$dest_path")"
-  if [[ -d "$src_path" ]]; then
-    mkdir -p "$dest_path"
-    cp -a "$src_path"/. "$dest_path"/
+fi
+
+WORKDIR="$(mktemp -d "${TMPDIR:-/tmp}/portfolio-sync.XXXXXX")"
+cleanup() { rm -rf "$WORKDIR"; }
+trap cleanup EXIT
+
+CLONE="$WORKDIR/source"
+STAGE="$WORKDIR/stage"
+mkdir -p "$STAGE"
+
+if [[ -n "$SOURCE_DIR" ]]; then
+  CLONE="$SOURCE_DIR"
+else
+  if [[ "$TAG" == "development" ]]; then
+    git clone --depth 1 --branch development "$SOURCE_REPO" "$CLONE"
   else
-    cp -a "$src_path" "$dest_path"
+    git clone --depth 1 --branch "$TAG" "$SOURCE_REPO" "$CLONE"
   fi
-done < "$ALLOWLIST"
-
-# Strip nested tool/dot directories copied from vendored packages.
-while IFS= read -r -d '' dir; do
-  rm -rf "$dir"
-done < <(find "$STAGING" -type d \( \
-  -name '.github' -o -name '.husky' -o -name '.vscode' -o -name '.agents' \
-  -o -name '.codex' -o -name '.opencode' -o -name '.git' \
-\) -print0 2>/dev/null || true)
-
-for leaked in scripts docker infra archive .github .env.sample .env.example AGENTS.md; do
-  if [[ -e "${STAGING}/${leaked}" ]]; then
-    echo "denied path leaked into staging: ${leaked}" >&2
-    exit 3
-  fi
-done
-
-node "${ROOT}/sync/rewrite.mjs" --staging "$STAGING" --tag "$TAG" --sha "$SHA"
-node "${ROOT}/sync/scan.mjs" --staging "$STAGING"
-
-# Replace allowlisted dest trees so dropped nested files do not linger.
-# Do not wipe dest-owned sync/, .github/, or sanitizer tests.
-mkdir -p "$DEST_DIR"
-while IFS= read -r rel || [[ -n "$rel" ]]; do
-  [[ -z "$rel" || "$rel" == \#* ]] && continue
-  src_path="${STAGING}/${rel}"
-  dest_path="${DEST_DIR}/${rel}"
-  [[ -e "$src_path" ]] || continue
-  rm -rf "$dest_path"
-  mkdir -p "$(dirname "$dest_path")"
-  cp -a "$src_path" "$dest_path"
-done < "$ALLOWLIST"
-
-for extra in .gitignore .sync-meta.json README.md package.json nx.json LICENSE; do
-  if [[ -e "${STAGING}/${extra}" ]]; then
-    cp -a "${STAGING}/${extra}" "${DEST_DIR}/${extra}"
-  fi
-done
-
-# Restore dest-owned LICENSE if rewrite left a source copy out.
-if [[ ! -f "${DEST_DIR}/LICENSE" && -f "${ROOT}/LICENSE" ]]; then
-  cp "${ROOT}/LICENSE" "${DEST_DIR}/LICENSE"
 fi
 
-echo "Sanitized ${TAG} (${SHA:0:7}) into ${DEST_DIR}"
+SHA="$(git -C "$CLONE" rev-parse HEAD)"
+META="$DEST/.sync-meta.json"
+if [[ -f "$META" ]]; then
+  EXISTING="$(python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); print(d.get("sourceTag"), d.get("sourceSha"))' "$META")"
+  if [[ "$EXISTING" == "$TAG $SHA" ]]; then
+    echo "Already synced $TAG ($SHA). No-op."
+    exit 0
+  fi
+fi
+
+node "$ROOT/sync/copy.mjs" "$CLONE" "$STAGE" "$ROOT/sync/allowlist.txt"
+node "$ROOT/sync/rewrite.mjs" "$STAGE"
+node "$ROOT/sync/scan.mjs" "$STAGE"
+node "$ROOT/sync/apply.mjs" "$STAGE" "$DEST"
+
+python3 - "$META" "$TAG" "$SHA" <<'PY'
+import json, sys, datetime
+path, tag, sha = sys.argv[1], sys.argv[2], sys.argv[3]
+json.dump({
+  "sourceRepo": "tamaramack/tamaramack.github.io",
+  "sourceTag": tag,
+  "sourceSha": sha,
+  "syncedAt": datetime.datetime.now(datetime.UTC).isoformat().replace("+00:00", "Z"),
+  "destRepo": "likwidmack/portfolio",
+}, open(path, "w"), indent=2)
+open(path, "a").write("\n")
+PY
+
+echo "synced $TAG ($SHA) into $DEST"

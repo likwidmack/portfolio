@@ -1,8 +1,8 @@
 {
-  "name": "portfolio-cursor-review",
+  "name": "portfolio-sync-review",
   "private": true,
   "type": "module",
   "dependencies": {
-    "@cursor/sdk": "^1.0.0"
+    "@cursor/sdk": "^1.0.6"
   }
 }
