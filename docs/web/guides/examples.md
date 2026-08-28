@@ -8,8 +8,6 @@ Practical examples for common tasks.
 
 ```vue
 <script setup lang="ts">
-import { useCdn } from '#shared/utils/cdn';
-
 const { cdnUrl, resolvePath, isEnabled } = useCdn();
 const heroImage = resolvePath('/images/hero.webp');
 const icon = resolvePath('/images/icon.svg');
@@ -187,24 +185,9 @@ npm run dev
 npm run start:ssl:4200
 ```
 
-### Docker Build
+`npm start` is an alias for the **dev** server. Production is `npm run build` (Nitro output). Local HTTP is port **4200**.
 
-```dockerfile
-FROM node:24-alpine
-
-WORKDIR /app
-COPY . .
-
-# Install dependencies
-RUN npm ci
-
-# Build with CDN
-ENV NUXT_APP_CDN_URL=https://cdn.example.com
-RUN npm run build
-
-EXPOSE 3000
-CMD ["npm", "start"]
-```
+`useCdn()` is auto-imported from `core/web/app/composables/useCdn.ts`. Path helpers for server code live on `#shared/utils/cdn`.
 
 ## Common Patterns
 

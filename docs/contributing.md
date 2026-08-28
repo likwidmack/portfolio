@@ -24,7 +24,8 @@ Treat every docs edit (new page, rewrite, or behavior change reflected in markdo
 
 ## Pull requests
 
-- PRs into `main` run [Tests](https://github.com/likwidmack/portfolio/actions/workflows/test.yml).
+- PRs into `main` run [Tests](https://github.com/likwidmack/portfolio/actions/workflows/test.yml) (`node --test tests/*.test.mjs`).
+- `npm test` runs Nx package tests locally when dependencies are installed.
 
 ## Security
 

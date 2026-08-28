@@ -2,14 +2,16 @@
 
 Configuration reference for environment variables across Local, Development, Test, and Production.
 
+This public tree documents how `@tgmc/web` selects Nitro presets and store adapters. Docker Compose and SAM templates are not in this checkout; `SYS_ENV` still drives the same adapter matrix in app code.
+
 ## Environment matrix
 
-| `SYS_ENV`     | Nitro preset  | Data store                                       | Typical trigger                                          |
+| `SYS_ENV`     | Nitro preset  | Data store                                       | Typical use                                              |
 | ------------- | ------------- | ------------------------------------------------ | -------------------------------------------------------- |
 | `local`       | `node-server` | SQLite (`DATABASE_URL=file:./data/local.sqlite`) | Developer machine                                        |
-| `development` | `node-server` | PostgreSQL                                       | Docker Compose / PR build on `development`               |
-| `test`        | `aws_lambda`  | DynamoDB                                         | Push to `main` (SAM, after CI)                           |
-| `production`  | `aws_lambda`  | DynamoDB                                         | GitHub Release `published` or manual `workflow_dispatch` |
+| `development` | `node-server` | PostgreSQL                                       | Postgres-backed node server                              |
+| `test`        | `aws_lambda`  | DynamoDB                                         | Lambda + DynamoDB (test)                                 |
+| `production`  | `aws_lambda`  | DynamoDB                                         | Lambda + DynamoDB (production)                           |
 
 ## SYS_ENV
 
@@ -241,6 +243,6 @@ npm run start:ssl:4200
 
 ## See Also
 
-- CDN Guide
+- [CDN examples](../guides/examples.md)
 - [SSL Setup](./ssl-setup.md)
 - [Quick Start](../guides/quickstart.md)

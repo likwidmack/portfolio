@@ -33,9 +33,7 @@ The app will be available at `http://localhost:4200`
 
 ```vue
 <script setup lang="ts">
-import { useCdn } from '#shared/utils/cdn';
-
-const { cdnUrl, resolvePath, isEnabled } = useCdn();
+const { resolvePath, isEnabled } = useCdn();
 const imageUrl = resolvePath('/images/hero.webp');
 </script>
 
@@ -43,6 +41,8 @@ const imageUrl = resolvePath('/images/hero.webp');
   <img v-if="isEnabled()" :src="imageUrl" alt="Hero" />
 </template>
 ```
+
+`useCdn()` is auto-imported from `core/web/app/composables/useCdn.ts`. Server path helpers import from `#shared/utils/cdn`.
 
 ### Server Code
 
@@ -109,4 +109,4 @@ See [SSL Setup](../setup/ssl-setup.md) for details.
 
 ---
 
-**Need more help?** See the full documentation index at `docs/README.md`
+**Need more help?** See the full documentation index: [docs/README.md](../../README.md).
