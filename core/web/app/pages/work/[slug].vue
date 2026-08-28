@@ -1,69 +1,81 @@
 <template lang="pug">
-.page-content.portfolio-page.case-study(v-if="study")
+.page-content.portfolio-page.case-study(v-if="study", data-fit="prose")
   NuxtLink.back-link(to="/work") ← All work
-  header.portfolio-hero
-    p.eyebrow-container {{ study.category }}
-    h1 {{ study.title }}
-    p.lead {{ study.summary }}
-    p.case-study__meta {{ study.role }} · {{ study.timeframe }}
-    span.case-study__privacy(v-if="study.confidentiality === 'sanitized'") Sanitized case study
+  .page-with-nav
+    AppWorkSubNav
+    div(data-region="body")
+      header.portfolio-hero
+        p.eyebrow-container {{ study.category }}
+        h1 {{ study.title }}
+        p.lead {{ study.summary }}
+        p.case-study__meta {{ study.role }} · {{ study.timeframe }}
+        span.case-study__privacy(v-if="study.confidentiality === 'sanitized'") Sanitized case study
 
-  figure.case-study__media(v-if="study.media[0]")
-    AppCaseStudyMedia(:item="study.media[0]", width="1440", height="810", eager)
-    figcaption(v-if="study.media[0].caption") {{ study.media[0].caption }}
+      figure.case-study__media(v-if="study.media[0]")
+        AppCaseStudyMedia(:item="study.media[0]", width="1440", height="810", eager)
+        figcaption(v-if="study.media[0].caption") {{ study.media[0].caption }}
 
-  .case-study__body
-    section(aria-labelledby="problem-heading")
-      p.eyebrow-container Context
-      h2#problem-heading The problem
-      p.lead {{ study.problem }}
+      .case-study__body
+        section(aria-labelledby="problem-heading")
+          p.eyebrow-container Context
+          h2#problem-heading The problem
+          p.lead {{ study.problem }}
 
-    section(aria-labelledby="constraints-heading")
-      h2#constraints-heading Constraints
-      ul.case-study__list
-        li(v-for="constraint in study.constraints", :key="constraint") {{ constraint }}
+        section(aria-labelledby="constraints-heading")
+          h2#constraints-heading Constraints
+          ul.case-study__list
+            li(v-for="constraint in study.constraints", :key="constraint") {{ constraint }}
 
-    section(aria-labelledby="approach-heading")
-      h2#approach-heading Approach
-      ol.case-study__list
-        li(v-for="step in study.approach", :key="step") {{ step }}
+        section(aria-labelledby="approach-heading")
+          h2#approach-heading Approach
+          ol.case-study__list
+            li(v-for="step in study.approach", :key="step") {{ step }}
 
-    section(aria-labelledby="evidence-heading")
-      h2#evidence-heading Evidence
-      dl.evidence-grid
-        div(v-for="item in study.evidence", :key="item.label")
-          dt {{ item.label }}
-          dd {{ item.value }}
-      .button-row.case-study__evidence-actions
-        UiButton(
-          label="Browse evidence examples",
-          type="button",
-          severity="secondary",
-          variant="outlined",
-          aria-label="Browse code, data, and styles evidence examples",
-          @click="evidenceOpen = true"
-        )
+        section(aria-labelledby="evidence-heading")
+          h2#evidence-heading Evidence
+          dl.evidence-grid
+            div(v-for="item in study.evidence", :key="item.label")
+              dt {{ item.label }}
+              dd {{ item.value }}
+          .button-row.case-study__evidence-actions
+            UiButton(
+              label="Browse evidence examples",
+              type="button",
+              severity="secondary",
+              variant="outlined",
+              aria-label="Browse code, data, and styles evidence examples",
+              @click="evidenceOpen = true"
+            )
 
-    section(v-if="study.media.length > 1", aria-labelledby="artifacts-heading")
-      h2#artifacts-heading Artifacts
-      .artifact-grid
-        figure(v-for="item in study.media.slice(1)", :key="item.src")
-          AppCaseStudyMedia(:item="item")
-          figcaption(v-if="item.caption") {{ item.caption }}
+        section(v-if="study.media.length > 1", aria-labelledby="artifacts-heading")
+          h2#artifacts-heading Artifacts
+          .artifact-grid
+            figure(v-for="item in study.media.slice(1)", :key="item.src")
+              AppCaseStudyMedia(:item="item")
+              figcaption(v-if="item.caption") {{ item.caption }}
 
-    section(aria-labelledby="technology-heading")
-      h2#technology-heading Technology
-      ul.tag-list
-        li(v-for="technology in study.technologies", :key="technology") {{ technology }}
+        section(aria-labelledby="technology-heading")
+          h2#technology-heading Technology
+          ul.tag-list
+            li(v-for="technology in study.technologies", :key="technology") {{ technology }}
 
-    nav.case-study__links(aria-label="Case study links")
-      NuxtLink(v-for="link in study.links", :key="link.href", :to="link.href") {{ link.label }} →
+        nav.case-study__links(aria-label="Case study links")
+          template(v-for="link in study.links", :key="link.href")
+            a(v-if="isStaticOrExternalHref(link.href)", :href="link.href") {{ link.label }} →
+            NuxtLink(v-else, :to="link.href") {{ link.label }} →
 
   AppEvidenceExamplesDialog(v-model:visible="evidenceOpen")
 </template>
 
 <script setup lang="ts">
 import type { CaseStudy } from '#shared/portfolio-types';
+
+/** Public static assets and absolute URLs must use `<a>`, not client-routed NuxtLink. */
+function isStaticOrExternalHref(href: string): boolean {
+  if (!href || href === '#') return true;
+  if (/^(https?:|mailto:)/i.test(href)) return true;
+  return href.startsWith('/d/') || href.startsWith('/i/') || href.startsWith('/v/');
+}
 
 const route = useRoute();
 const slug = computed(() => String(route.params.slug ?? ''));

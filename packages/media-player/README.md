@@ -39,6 +39,11 @@ npx nx run @tgmc/media-player:test
 
 `core/web` → `/media-player` (run `npm run build:libs` then `npm run dev`).
 
+## Docs
+
+- Workspace packages hub: [`docs/packages/README.md`](../../docs/packages/README.md)
+- MSE plan (limits / deferred work): `docs/plans/2026-07-27-001-feature-media-player-mse-plan.md`
+
 ## v1 limits
 
-See plan: `docs/plans/2026-07-27-001-feature-media-player-mse-plan.md` (live DVR, AES-128, multi-audio, LL-HLS deferred).
+See the MSE plan above (live DVR, AES-128, multi-audio, LL-HLS deferred).

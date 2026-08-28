@@ -9,17 +9,65 @@
 /// | rail     | Constrained block width           | Page content measure |
 /// | complex  | Foundation XY (`grid-x` / `cell`) | Multipass breakpoints, spans, offsets, nest/collapse |
 ///
-/// Use Foundation XY only for **complex** setups. Keep `data-algo` / aliases here for native intents.
-/// Decorative list/toc chrome lives on class selectors (`.toc`, swatch reset), not in track math.
+/// Page fit (`data-fit`) is orthogonal to algo:
+/// - `screen` — homepage / presentation / gallery / media (full viewport use)
+/// - `prose` — docs / blog / reading (full shell, readable measure for body copy)
+/// Content fit (min-width: 0, media-only aspect-ratio) is documented in `docs/packages/theme.md`.
+///
+/// Breakpoints: mobile 480 · tablet 768 · standard 1080 · widescreen 1440 · ultrawide 1920.
 @use '../tokens/variables' as *;
 
-// ─── Rail (page measure) ─────────────────────────────────────────────────────
+// ─── Rail / page shell ───────────────────────────────────────────────────────
 
 .page-content,
 .layout[data-algo='rail'] {
-  width: min(100% - (2 * var(--page-pad, 1rem)), var(--page-max, 90rem));
+  box-sizing: border-box;
+  width: 100%;
+  max-width: var(--page-shell-max, 90rem);
+  min-width: 0;
+  min-height: var(--page-fill-min, auto);
   margin-inline: auto;
+  padding-inline: var(--page-pad, 1rem);
   padding-block: 0 clamp(var(--space-5), 4vw, var(--space-12));
+}
+
+/// Immersive pages: fill the viewport horizontally and vertically.
+.page-content[data-fit='screen'],
+.layout[data-fit='screen'] {
+  max-width: var(--page-screen-max, 100%);
+  width: 100%;
+
+  > :where(header.home-hero, header.portfolio-hero, header[data-region='hero']):first-of-type {
+    min-height: max(22rem, calc(var(--page-fill-min, 100dvh) * 0.72));
+  }
+}
+
+/// Reading pages: shell uses the full available width; copy stays in a readable measure.
+.page-content[data-fit='prose'],
+.layout[data-fit='prose'] {
+  max-width: var(--page-shell-max, 90rem);
+  width: 100%;
+
+  :where(
+    [data-region='body'],
+    .prose,
+    .blog-body,
+    .docs-page__body,
+    .case-study__body,
+    .process-principles,
+    .decision-list
+  ) {
+    max-width: var(--prose-max, 42rem);
+  }
+
+  .page-with-nav {
+    width: 100%;
+  }
+
+  .page-with-nav > [data-region='body'] {
+    max-width: var(--prose-max, 42rem);
+    width: 100%;
+  }
 }
 
 // ─── Split (aside + main) → CSS Grid ─────────────────────────────────────────
@@ -29,9 +77,19 @@
   display: grid;
   gap: var(--section-gap);
   align-items: start;
+  width: 100%;
+  min-width: 0;
 
   @media (min-width: $breakpoint-tablet) {
     grid-template-columns: minmax(var(--card-min-compact), 14rem) minmax(0, 1fr);
+  }
+
+  @media (min-width: $breakpoint-widescreen) {
+    grid-template-columns: minmax(12rem, 16rem) minmax(0, 1fr);
+  }
+
+  @media (min-width: $breakpoint-ultrawide) {
+    grid-template-columns: minmax(14rem, 18rem) minmax(0, 1fr);
   }
 }
 
@@ -43,6 +101,7 @@
   grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--card-min)), 1fr));
   gap: clamp(var(--space-3), 2vw, var(--space-6));
   margin-bottom: var(--space-5);
+  width: 100%;
 
   &[data-layout='swatch'],
   &[data-layout='swatch-compact'],
@@ -72,6 +131,7 @@
   gap: var(--section-gap);
   align-items: stretch;
   margin-bottom: var(--section-gap);
+  width: 100%;
 
   > * {
     min-width: 0;

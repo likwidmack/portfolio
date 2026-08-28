@@ -1,6 +1,11 @@
 // @vitest-environment node
 
-import { assertAdminToken, parseBearerToken, secureCompare } from '@tgmc/web-layer-admin/server/utils/admin-auth';
+import {
+  assertAdminToken,
+  parseBearerToken,
+  resolveAdminToken,
+  secureCompare,
+} from '@tgmc/web-layer-admin/server/utils/admin-auth';
 import { describe, expect, it } from 'vitest';
 
 describe('secureCompare', () => {
@@ -17,6 +22,15 @@ describe('parseBearerToken', () => {
     expect(parseBearerToken('bearer abc123')).toBe('abc123');
     expect(parseBearerToken('Basic abc123')).toBeNull();
     expect(parseBearerToken(undefined)).toBeNull();
+  });
+});
+
+describe('resolveAdminToken', () => {
+  it('prefers process.env over baked runtime config', () => {
+    const previous = process.env.ADMIN_TOKEN;
+    process.env.ADMIN_TOKEN = 'from-env';
+    expect(resolveAdminToken('from-config')).toBe('from-env');
+    process.env.ADMIN_TOKEN = previous;
   });
 });
 

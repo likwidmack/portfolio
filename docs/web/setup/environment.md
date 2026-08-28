@@ -28,11 +28,11 @@ SYS_ENV=test npm run build   # aws_lambda preset
 - **Purpose**: Quiet primary-nav label for the current `SYS_ENV` (`runtimeConfig.public.sysEnv`)
 - **Visibility**: Nuxt build-mode layers (`$development` / `$test` → on; `$production` → off), **not** `SYS_ENV`. A `NODE_ENV=production` build hides the chip even when `SYS_ENV` is `development` or `test`.
 - **Public key**: `runtimeConfig.public.showEnvIndicator` (base default `false`; layers override)
-- **UI**: `AppPrimaryNav` via `resolveEnvIndicator` (`aria-label`: `Environment: <sysEnv>`)
+- **UI**: Quiet chip at the end of `AppPrimaryNav` actions (after contact), via `resolveEnvIndicator` (`aria-label`: `Environment: <sysEnv>`). Primary links are Work / About / Gallery / Writing / Code only.
 
 ## Database / AWS (private runtimeConfig)
 
-These map to Nuxt `runtimeConfig` private keys (`databaseUrl`, `dynamoTable`, `dynamoPostsTable`, `awsRegion`, `adminToken`). Prefer `NUXT_*` prefixes for runtime overrides (`firstNonEmptyEnv` in `core/web/resolve-process-env.ts` prefers `NUXT_*` over plain names).
+These map to Nuxt `runtimeConfig` private keys (`databaseUrl`, `dynamoTable`, `dynamoPostsTable`, `awsRegion`). Prefer `NUXT_*` prefixes for runtime overrides (`firstNonEmptyEnv` in `core/web/resolve-process-env.ts` prefers `NUXT_*` over plain names).
 
 Adapter selection and per-env key matrix: [docs/web/data-stores.md](../data-stores.md).
 
@@ -65,11 +65,11 @@ Adapter selection and per-env key matrix: [docs/web/data-stores.md](../data-stor
 
 ### ADMIN_TOKEN / NUXT_ADMIN_TOKEN
 
-- **Purpose**: Shared secret for blog admin write APIs (`Authorization: Bearer …`)
-- **Behavior**: When unset/empty, admin write routes always return `401` (fail closed). Public `runtimeConfig.public.adminWritesEnabled` is `true` for `test`/`production` builds (token expected via Lambda env); for local/development it reflects whether a token was present at build time. Never exposes the secret.
-- **Local usage**: set in `.env`, open `/admin`, paste the token (stored in `sessionStorage` for the browser session), then manage posts at `/admin/blog`.
-- **Test/prod**: set GitHub Environment secret `NUXT_ADMIN_TOKEN` (wired into SAM `AdminToken` → Lambda env).
+- **Purpose**: Shared secret for Docker-only admin APIs (`Authorization: Bearer …`) on `@tgmc/admin`
+- **Behavior**: When unset/empty, admin routes return `401` (fail closed). Not used by the public `@tgmc/web` app.
+- **Local usage**: set in `.env` / `.env.development` / `.env.test`, run `npm run docker:*:admin`, open `http://127.0.0.1:4400/admin`, paste the token (stored in `sessionStorage`).
 - **Example**: `ADMIN_TOKEN=change-me-local`
+- **See**: [admin.md](../features/admin.md)
 
 ### CORS_ALLOW_ORIGIN
 
@@ -127,10 +127,12 @@ DEPLOYMENT=server npm run build
 
 ### HOST
 
-- **Purpose**: Server hostname
+- **Purpose**: Public hostname identity for local / Docker (bind address is often `0.0.0.0` via `DOCKER_BIND_HOST`)
 - **Type**: String
-- **Default**: `localhost`
-- **Example**: `0.0.0.0`
+- **Local default**: `tgmc-portfolio.local`
+- **Development default**: `tgmc-portfolio.test`
+- **Do not use `*.dev`**: the `.dev` TLD is HSTS-preloaded; browsers refuse self-signed certificate exceptions
+- **Example**: `HOST=tgmc-portfolio.test`
 
 ### PORT
 
@@ -142,6 +144,8 @@ DEPLOYMENT=server npm run build
 ```bash
 HOST=0.0.0.0 PORT=4200 npm run dev
 ```
+
+Map `tgmc-portfolio.local` / `tgmc-portfolio.test` → `127.0.0.1` in the hosts file when using those names.
 
 ## Nx Cloud
 
@@ -198,10 +202,10 @@ Set `SYS_ENV=local` and `DATABASE_URL=file:./data/local.sqlite` (or a gitignored
 
 ```bash
 npm run db:migrate:local
-SYS_ENV=local DATABASE_URL=file:./data/local.sqlite ADMIN_TOKEN=change-me-local npm run dev
+SYS_ENV=local DATABASE_URL=file:./data/local.sqlite npm run dev
 ```
 
-Public blog: `/blog`. Admin: `/admin` → `/admin/blog`.
+Public blog: `/blog`. Admin (Docker only): `npm run docker:admin` → `http://127.0.0.1:4400/admin`.
 
 ### Development (Postgres)
 

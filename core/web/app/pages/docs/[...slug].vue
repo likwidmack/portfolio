@@ -1,5 +1,5 @@
 <template lang="pug">
-.page-content.portfolio-page.docs-page(v-if="page")
+.page-content.portfolio-page.docs-page(v-if="page", data-fit="prose")
   NuxtLink.back-link(to="/docs") ← All documentation
   header.portfolio-hero
     p.eyebrow-container {{ groupLabel }}

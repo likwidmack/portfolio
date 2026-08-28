@@ -7,16 +7,16 @@ mkdir -p "$SSL_DIR"
 
 # Git Bash converts `/CN=...` to `C:/Program Files/Git/CN=...`. `//CN=` becomes `/CN=` there.
 # Native Linux/WSL OpenSSL wants a single leading slash.
-subj="/CN=tgmc-portfolio.dev"
+subj="/CN=tgmc-portfolio.test"
 case "$(uname -s)" in
-  MINGW*|MSYS*|CYGWIN*) subj="//CN=tgmc-portfolio.dev" ;;
+  MINGW*|MSYS*|CYGWIN*) subj="//CN=tgmc-portfolio.test" ;;
 esac
 
 openssl req -x509 -newkey rsa:2048 -sha256 -nodes -days 365 \
   -keyout "$SSL_DIR/localhost-linux.key" \
   -out "$SSL_DIR/localhost-linux.crt" \
   -subj "$subj" \
-  -addext "subjectAltName=DNS:localhost,DNS:tgmc-portfolio.dev,DNS:www.tgmc-portfolio.dev,DNS:tgmc-portfolio.local,DNS:www.tgmc-portfolio.local,IP:127.0.0.1,IP:::1"
+  -addext "subjectAltName=DNS:localhost,DNS:tgmc-portfolio.test,DNS:www.tgmc-portfolio.test,DNS:tgmc-portfolio.local,DNS:www.tgmc-portfolio.local,IP:127.0.0.1,IP:::1"
 
 cp "$SSL_DIR/localhost-linux.key" "$SSL_DIR/localhost.key"
 cp "$SSL_DIR/localhost-linux.crt" "$SSL_DIR/localhost.crt"

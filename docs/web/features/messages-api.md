@@ -2,7 +2,7 @@
 
 `POST /api/messages` creates a contact message in the env-selected MessageStore (SQLite / Postgres / DynamoDB).
 
-`GET /api/messages` lists stored messages and **requires** an admin Bearer token (`Authorization: Bearer <ADMIN_TOKEN>` / `NUXT_ADMIN_TOKEN`). Unauthenticated list requests return 401.
+List and delete messages are available only on the Docker-only admin service (`GET|DELETE /api/admin/messages` on `@tgmc/admin`). See [admin.md](./admin.md).
 
 Public create validation:
 

@@ -58,10 +58,20 @@ export const assertAdminToken = (
 };
 
 /**
+ * Resolve admin token from runtime config with process.env fallbacks (Docker/Lambda).
+ */
+export const resolveAdminToken = (configured: string | undefined): string => {
+  const fromEnv = [process.env.NUXT_ADMIN_TOKEN, process.env.ADMIN_TOKEN]
+    .map((value) => value?.trim())
+    .find((value) => value);
+  return fromEnv || (configured ?? '').trim();
+};
+
+/**
  * Require a valid admin Bearer token on an H3 event or throw 401.
  */
 export const requireAdminToken = (event: H3Event, adminToken: string | undefined): void => {
-  const result = assertAdminToken(adminToken, getHeader(event, 'authorization'));
+  const result = assertAdminToken(resolveAdminToken(adminToken), getHeader(event, 'authorization'));
   if (!result.ok) {
     throw createError({
       statusCode: result.statusCode,

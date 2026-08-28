@@ -2,6 +2,8 @@
 
 Nx workspace plugin and generators for TGMC packages (`lib-gen`).
 
+**Docs hub:** [`docs/packages/README.md`](../../docs/packages/README.md) · catalog [`docs/README.md`](../../docs/README.md)
+
 ## Build
 
 ```bash

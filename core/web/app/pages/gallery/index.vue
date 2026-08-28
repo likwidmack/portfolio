@@ -1,5 +1,5 @@
 <template lang="pug">
-.page-content.portfolio-page.gallery-page
+.page-content.portfolio-page.gallery-page(data-fit="screen")
   header.portfolio-hero
     p.eyebrow-container {{ content.hero.eyebrow }}
     h1 {{ content.hero.title }}
@@ -27,16 +27,28 @@
       :eager="index < 2"
     )
 
-  section.gallery-grid(v-else, aria-label="Gallery grid")
+  section.gallery-grid(v-else, aria-label="Social feed grid")
     button.gallery-grid__tile(
-      v-for="post in visiblePosts",
-      :key="post.id",
+      v-for="tile in gridTiles",
+      :key="tile.post.id",
       type="button",
-      :aria-label="`Open ${post.title} in feed`",
-      @click="openInFeed(post.id)"
+      :data-aspect="tile.aspect",
+      :aria-label="`Open ${tile.post.title} in feed`",
+      @click="openInFeed(tile.post.id)"
     )
-      GalleryExhibit(:title="post.title", :exhibit="post.exhibit", :image="post.image", :image-alt="post.imageAlt")
-      span.gallery-grid__label {{ post.title }}
+      .gallery-grid__media
+        GalleryExhibit(
+          :title="tile.post.title",
+          :exhibit="tile.post.exhibit",
+          :image="tile.post.image",
+          :image-alt="tile.post.imageAlt"
+        )
+        span.gallery-grid__badge {{ tile.post.kind }}
+        span.gallery-grid__platform {{ tile.platformLabel }}
+      .gallery-grid__meta
+        span.gallery-grid__label {{ tile.post.title }}
+        span.gallery-grid__category {{ tile.post.categoryLabel }}
+        span.gallery-grid__stats(v-if="tile.engagement") {{ tile.engagement }}
 
   p(v-if="!visiblePosts.length") No posts match this filter.
 
@@ -53,6 +65,10 @@ import {
   filterGalleryPosts,
   flattenGalleryPosts,
   GALLERY_KIND_FILTERS,
+  GALLERY_PLATFORM_LABEL,
+  galleryEngagementLabel,
+  resolveGalleryAspect,
+  resolveGalleryPlatform,
   type GalleryContent,
   type GalleryFilterKind,
   type GalleryViewMode,
@@ -70,15 +86,15 @@ if (!galleryContent.value) {
 
 const content = computed(() => galleryContent.value as GalleryContent);
 const posts = computed(() => flattenGalleryPosts(content.value));
-const viewMode = ref<GalleryViewMode>('feed');
+const viewMode = ref<GalleryViewMode>('grid');
 const groupId = ref('all');
 const kindId = ref<GalleryFilterKind>('all');
 const activePostId = ref<string>('');
 const feedEl = ref<HTMLElement | null>(null);
 
 const viewOptions = [
-  { id: 'feed', label: 'Feed' },
   { id: 'grid', label: 'Grid' },
+  { id: 'feed', label: 'Feed' },
 ];
 const kindOptions = GALLERY_KIND_FILTERS;
 const groupOptions = computed(() => [
@@ -87,6 +103,22 @@ const groupOptions = computed(() => [
 ]);
 const visiblePosts = computed(() => filterGalleryPosts(posts.value, groupId.value, kindId.value));
 
+/**
+ * Precompute grid tile fields in script. Template-only imports of these helpers are
+ * dropped by `<script setup>` unused-import elision when the template is Pug, which
+ * leaves `_ctx.resolveGalleryAspect` undefined at render (see GalleryFeedCard).
+ */
+const gridTiles = computed(() =>
+  visiblePosts.value.map((post) => {
+    const platform = resolveGalleryPlatform(post);
+    return {
+      aspect: resolveGalleryAspect(post),
+      engagement: galleryEngagementLabel(post),
+      platformLabel: GALLERY_PLATFORM_LABEL[platform],
+      post,
+    };
+  })
+);
 usePortfolioSeo({
   title: content.value.seo.title,
   description: content.value.seo.description,
@@ -147,33 +179,145 @@ onBeforeUnmount(() => {
 .gallery-page {
   display: grid;
   gap: var(--section-gap, 2rem);
+  width: 100%;
 }
 
 .gallery-feed {
   display: grid;
   gap: 2rem;
-  max-width: 32rem;
+  width: 100%;
+  max-width: none;
+  min-height: max(24rem, calc(var(--page-fill-min, 100dvh) * 0.7));
   scroll-snap-type: y proximity;
 }
 
 .gallery-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 11rem), 1fr));
-  gap: 0.65rem;
+  grid-auto-flow: dense;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
+  gap: 0.75rem;
+  width: 100%;
 
   &__tile {
     display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
     padding: 0;
-    border: 0;
-    background: transparent;
+    border: 1px solid var(--border-color, var(--portfolio-rule));
+    border-radius: var(--border-radius-md, 0.75rem);
+    background: var(--surface-color, var(--main-background-secondary));
     color: inherit;
     cursor: pointer;
     text-align: left;
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+
+    &[data-aspect='tall'] {
+      aspect-ratio: 9 / 16;
+    }
+
+    &[data-aspect='wide'] {
+      aspect-ratio: 16 / 10;
+    }
+
+    &[data-aspect='square'] {
+      aspect-ratio: 1 / 1;
+    }
+
+    &:hover .gallery-grid__platform,
+    &:focus-visible .gallery-grid__platform {
+      border-color: var(--primary-color);
+      color: var(--primary-color);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--focus-ring, var(--primary-color));
+      outline-offset: 2px;
+    }
+  }
+
+  &__media {
+    position: relative;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  &__media :deep(img),
+  &__media :deep(video),
+  &__media :deep(.gallery-exhibit) {
+    min-height: 0;
+    max-width: 100%;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &__badge {
+    position: absolute;
+    z-index: 1;
+    top: 0.5rem;
+    left: 0.5rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: var(--border-radius-sm);
+    background: color-mix(in srgb, var(--main-background) 70%, transparent);
+    color: var(--text-color);
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  &__platform {
+    position: absolute;
+    left: 0.55rem;
+    bottom: 0.55rem;
+    z-index: 1;
+    display: inline-flex;
+    padding: 0.2rem 0.5rem;
+    border: 1px solid color-mix(in srgb, var(--text-color) 35%, transparent);
+    border-radius: var(--border-radius-pill, 999px);
+    background: color-mix(in srgb, var(--main-background) 78%, transparent);
+    color: var(--text-color);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  &__meta {
+    display: grid;
+    gap: 0.2rem;
+    padding: 0.55rem 0.65rem 0.7rem;
+    min-width: 0;
   }
 
   &__label {
-    padding: 0.45rem 0.15rem 0.7rem;
     font-size: 0.85rem;
+    font-weight: 600;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  &__category {
+    color: var(--text-secondary-color, var(--text-color));
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  &__stats {
+    color: var(--portfolio-teal);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+  }
+
+  @media (min-width: $breakpoint-tablet) {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+  }
+
+  @media (orientation: landscape) and (min-width: $breakpoint-standard) {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
   }
 }
 

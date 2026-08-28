@@ -1,5 +1,5 @@
 <template lang="pug">
-.page-content.portfolio-page.process-page
+.page-content.portfolio-page.process-page(data-fit="prose")
   header.portfolio-hero
     p.eyebrow-container Process
     h1 AI is part of the work. Judgment stays visible.

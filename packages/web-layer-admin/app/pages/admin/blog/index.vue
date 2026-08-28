@@ -50,7 +50,8 @@
 
 <script setup lang="ts">
 import type { BlogPost, BlogPostStatus } from '@tgmc/web-layer-admin/shared/blog-types';
-import { adminAuthHeaders, fetchErrorStatus, readAdminToken } from '../../../utils/admin-token';
+import { useAdminDatabase } from '../../../composables/useAdminDatabase';
+import { adminRequestHeaders, fetchErrorStatus, readAdminToken } from '../../../utils/admin-token';
 
 definePageMeta({
   breadcrumb: 'Admin Blog',
@@ -59,6 +60,7 @@ definePageMeta({
 type StatusFilter = 'all' | BlogPostStatus;
 
 const config = useRuntimeConfig();
+const { selected: adminDatabase } = useAdminDatabase();
 const writesEnabled = computed(() => Boolean(config.public.adminWritesEnabled));
 const errorMessage = ref('');
 const posts = ref<BlogPost[] | null>(null);
@@ -85,7 +87,7 @@ const formatDate = (iso: string) => {
   }
 };
 
-onMounted(async () => {
+const loadPosts = async () => {
   if (!writesEnabled.value) {
     pending.value = false;
     return;
@@ -95,9 +97,11 @@ onMounted(async () => {
     return;
   }
 
+  pending.value = true;
+  errorMessage.value = '';
   try {
     posts.value = await $fetch<BlogPost[]>('/api/admin/posts', {
-      headers: adminAuthHeaders(),
+      headers: adminRequestHeaders(),
     });
   } catch (error: unknown) {
     if (fetchErrorStatus(error) === 401) {
@@ -109,6 +113,14 @@ onMounted(async () => {
   } finally {
     pending.value = false;
   }
+};
+
+onMounted(() => {
+  void loadPosts();
+});
+
+watch(adminDatabase, () => {
+  void loadPosts(); // refetch when nav database selector changes
 });
 
 useHead({

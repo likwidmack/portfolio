@@ -57,44 +57,47 @@
   --color-purple: #{$css-purple-dark};
   --color-magenta: #{$css-magenta-dark};
 
-  // System Colors
+  // Brand roles (ember / crimson) + hue-scale compatibility aliases.
+  // `--tertiary-*` … `--denary-*` alias hue Sass (`$oxblood-*` … `$ink-*` / `$parchment-*`), not brand roles.
   --primary-default: #{$primary-default-color};
   --secondary-default: #{$secondary-default-color};
-  --tertiary-default: #{$tertiary-default-color};
-  --quaternary-default: #{$quaternary-default-color};
-  --quinary-default: #{$quinary-default-color};
-  --senary-default: #{$senary-default-color};
-  --septenary-default: #{$septenary-default-color};
-  --octonary-default: #{$octonary-default-color};
-  --nonary-default: #{$nonary-default-color};
-  --denary-default: #{$denary-default-color};
+  --tertiary-default: #{$oxblood-default};
+  --quaternary-default: #{$violet-default};
+  --quinary-default: #{$wine-default};
+  --senary-default: #{$sea-default};
+  --septenary-default: #{$olive-default};
+  --octonary-default: #{$plum-default};
+  --nonary-default: #{$taupe-default};
+  --denary-default: #{$ink-default};
 
   --primary-light-dark: #{$primary-color};
   --secondary-light-dark: #{$secondary-color};
-  --tertiary-light-dark: #{$tertiary-color};
-  --quaternary-light-dark: #{$quaternary-color};
-  --quinary-light-dark: #{$quinary-color};
-  --senary-light-dark: #{$senary-color};
-  --septenary-light-dark: #{$septenary-color};
-  --octonary-light-dark: #{$octonary-color};
-  --nonary-light-dark: #{$nonary-color};
-  --denary-light-dark: #{$denary-color};
+  --tertiary-light-dark: #{light-dark($oxblood-light, $oxblood-dark)};
+  --quaternary-light-dark: #{light-dark($violet-light, $violet-dark)};
+  --quinary-light-dark: #{light-dark($wine-light, $wine-dark)};
+  --senary-light-dark: #{light-dark($sea-light, $sea-dark)};
+  --septenary-light-dark: #{light-dark($olive-light, $olive-dark)};
+  --octonary-light-dark: #{light-dark($plum-light, $tangerine-dark)};
+  --nonary-light-dark: #{light-dark($taupe-light, $taupe-dark)};
+  --denary-light-dark: #{light-dark($ink-light, $parchment-dark)};
 
   --primary-color: #{$primary-color-dark};
   --secondary-color: #{$secondary-color-dark};
-  --tertiary-color: #{$tertiary-color-dark};
-  --quaternary-color: #{$quaternary-color-dark};
-  --quinary-color: #{$quinary-color-dark};
-  --senary-color: #{$senary-color-dark};
-  --septenary-color: #{$septenary-color-dark};
-  --octonary-color: #{$octonary-color-dark};
-  --nonary-color: #{$nonary-color-dark};
-  --denary-color: #{$denary-color-dark};
+  --tertiary-color: #{$oxblood-dark};
+  --quaternary-color: #{$violet-dark};
+  --quinary-color: #{$wine-dark};
+  --senary-color: #{$sea-dark};
+  --septenary-color: #{$olive-dark};
+  --octonary-color: #{$tangerine-dark};
+  --nonary-color: #{$taupe-dark};
+  --denary-color: #{$parchment-dark};
 
   --primary-inverted: #{$primary-color-light};
   --secondary-inverted: #{$secondary-color-light};
   // Alias for older `--primary-color-inverted` references.
   --primary-color-inverted: var(--primary-inverted);
+
+  --portfolio-teal: #{$portfolio-teal-dark};
 
   /* 1. Background (Main) */
   --main-background: #{$main-background-dark};
@@ -164,13 +167,26 @@
   --font-size-9xl: clamp(1.85rem, 1rem + 5.2vw, #{$font-size-9xl});
   --font-size-10xl: clamp(2rem, 1.1rem + 5.8vw, #{$font-size-10xl});
 
+  // Page fit measures — mobile 480 / tablet 768 / standard 1080 / widescreen 1440 / ultrawide 1920.
+  // `data-fit="screen"` fills the viewport; `data-fit="prose"` keeps a readable measure inside a full shell.
+  // See docs/packages/theme.md (page-fit tokens + content-must-fit-containers).
   --page-pad: clamp(#{$space-3}, 2.5vw, #{$space-8});
   --page-max: 90rem;
+  --page-shell-max: 90rem;
+  --page-screen-max: 100%;
   --prose-max: 42rem;
+  --page-chrome: 6.5rem;
+  --page-fill-min: calc(100dvh - var(--page-chrome));
+  --portfolio-max: var(--page-screen-max);
   --card-min: #{$card-min};
   --card-min-md: #{$card-min-md};
   --card-min-compact: #{$card-min-compact};
   --stack-min: #{$stack-min};
+  // Media / tile proportions — apply to media frames and image-led tiles, not text cards.
+  // Portrait-friendly by default; landscape overrides below and via `(orientation: landscape)`.
+  --surface-ratio: 5 / 4;
+  --card-ratio: 5 / 4;
+  --media-ratio: 4 / 3;
 
   // Radius (Sass `$radius-*` → CSS)
   --border-radius-sm: #{$radius-sm};
@@ -292,18 +308,20 @@
 
   --primary-color: #{$primary-color-light};
   --secondary-color: #{$secondary-color-light};
-  --tertiary-color: #{$tertiary-color-light};
-  --quaternary-color: #{$quaternary-color-light};
-  --quinary-color: #{$quinary-color-light};
-  --senary-color: #{$senary-color-light};
-  --septenary-color: #{$septenary-color-light};
-  --octonary-color: #{$octonary-color-light};
-  --nonary-color: #{$nonary-color-light};
-  --denary-color: #{$denary-color-light};
+  --tertiary-color: #{$oxblood-light};
+  --quaternary-color: #{$violet-light};
+  --quinary-color: #{$wine-light};
+  --senary-color: #{$sea-light};
+  --septenary-color: #{$olive-light};
+  --octonary-color: #{$plum-light};
+  --nonary-color: #{$taupe-light};
+  --denary-color: #{$ink-light};
 
   --primary-inverted: #{$primary-color-dark};
   --secondary-inverted: #{$secondary-color-dark};
   --primary-color-inverted: var(--primary-inverted);
+
+  --portfolio-teal: #{$portfolio-teal-light};
 
   --main-background: #{$main-background-light};
   --main-background-secondary: #{$main-background-light-secondary};
@@ -374,21 +392,71 @@
   :root {
     --breakpoint: #{$breakpoint-ultrawide};
     --font-size-default: #{$font-size-default * 1.25};
+    --page-pad: clamp(#{$space-6}, 3vw, #{$space-12});
+    --page-shell-max: 112rem;
+    --page-screen-max: 100%;
+    --prose-max: 48rem;
+    --page-chrome: 7rem;
+    --surface-ratio: 16 / 10;
+    --card-ratio: 16 / 10;
+    --media-ratio: 16 / 9;
   }
 }
 @media (max-width: #{$breakpoint-widescreen}) {
   :root {
     --breakpoint: #{$breakpoint-standard};
+    --page-shell-max: 80rem;
+    --prose-max: 42rem;
   }
 }
 @media (max-width: #{$breakpoint-standard}) {
   :root {
     --breakpoint: #{$breakpoint-tablet};
+    --page-shell-max: 100%;
+    --page-pad: clamp(#{$space-3}, 3vw, #{$space-6});
+    --prose-max: 40rem;
+    --page-chrome: 8.5rem;
   }
 }
 @media (max-width: #{$breakpoint-tablet}) {
   :root {
     --breakpoint: #{$breakpoint-mobile};
     --font-size-default: #{$font-size-default * 0.75};
+    --page-shell-max: 100%;
+    --page-screen-max: 100%;
+    --page-pad: #{$space-3};
+    --prose-max: 100%;
+    --page-chrome: 9rem;
+  }
+}
+@media (max-width: #{$breakpoint-mobile}) {
+  :root {
+    --page-pad: #{$space-2};
+    --page-chrome: 10rem;
+  }
+}
+
+// Horizontal / landscape screens: prefer wider-than-tall media and card surfaces.
+@media (orientation: landscape) {
+  :root {
+    --surface-ratio: 16 / 10;
+    --card-ratio: 16 / 10;
+    --media-ratio: 16 / 9;
+  }
+}
+
+@media (orientation: landscape) and (min-width: #{$breakpoint-standard}) {
+  :root {
+    --surface-ratio: 21 / 9;
+    --card-ratio: 16 / 9;
+    --media-ratio: 16 / 9;
+  }
+}
+
+@media (orientation: portrait) and (max-width: #{$breakpoint-tablet}) {
+  :root {
+    --surface-ratio: 4 / 5;
+    --card-ratio: 4 / 5;
+    --media-ratio: 4 / 3;
   }
 }

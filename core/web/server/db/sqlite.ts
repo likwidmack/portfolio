@@ -103,6 +103,8 @@ export const createSqliteMessageStore = (options: SqliteStoreOptions = {}): Mess
     `INSERT INTO messages (id, name, email, body, created_at) VALUES (@id, @name, @email, @body, @createdAt)`
   );
 
+  const deleteStmt = db.prepare(`DELETE FROM messages WHERE id = @id`);
+
   return {
     async list(): Promise<ContactMessage[]> {
       return listStmt.all() as ContactMessage[];
@@ -118,6 +120,11 @@ export const createSqliteMessageStore = (options: SqliteStoreOptions = {}): Mess
       };
       insertStmt.run(message);
       return message;
+    },
+
+    async delete(id: string): Promise<boolean> {
+      const result = deleteStmt.run({ id });
+      return result.changes > 0;
     },
 
     close(): void {

@@ -57,6 +57,11 @@ describe('createSqliteMessageStore', () => {
     expect(listed).toHaveLength(2);
     expect(listed.every((m) => m.id && m.createdAt)).toBe(true);
 
+    const deleted = await store.delete(listed[0].id);
+    expect(deleted).toBe(true);
+    expect(await store.list()).toHaveLength(1);
+    expect(await store.delete('missing-id')).toBe(false);
+
     store.close?.();
   });
 });

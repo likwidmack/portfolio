@@ -56,7 +56,7 @@ vi.mock('../../server/api/posts/store-options', () => ({
 describe('Nitro route handlers', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    useRuntimeConfig.mockReturnValue({ adminToken: 'secret', public: { sysEnv: 'local' } });
+    useRuntimeConfig.mockReturnValue({ public: { sysEnv: 'local' } });
     messageStoreOptionsFromRuntimeConfig.mockReturnValue({ sysEnv: 'local' });
     blogPostStoreOptionsFromRuntimeConfig.mockReturnValue({ sysEnv: 'local' });
     getMessageStore.mockReturnValue({ create: vi.fn(), list: vi.fn() });

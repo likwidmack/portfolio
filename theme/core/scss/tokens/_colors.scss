@@ -88,109 +88,89 @@ $css-purple-dark: #c084fc;
 $css-magenta-light: #c026d3;
 $css-magenta-dark: #e879f9;
 
-// System Colors
-//$primary-default-color: $css-blue-light; // primary color
-//$primary-color-light: color.adjust($primary-default-color, $lightness: -10%);
-//$primary-color-dark: color.adjust($primary-default-color, $saturation: -8%, $lightness: 10%);
-$primary-default-color: $css-blue-light; // primary color
-$primary-color-light: #132440; // color.adjust($primary-default-color, $lightness: -10%);
-$primary-color-dark: #60a5fa; //color.adjust($primary-default-color, $saturation: -8%, $lightness: 10%);
+// Hue scale (paired -light/-dark only — not brand roles).
+// CSS `--quaternary-color` … `--denary-color` / `--tertiary-*` remain compatibility aliases to these hues.
+$navy-default: $css-blue-light;
+$navy-light: #132440;
+$azure-dark: #60a5fa;
 
-//$secondary-default-color: $css-amber-light; // alternative to primary
-//$secondary-color-light: color.adjust($secondary-default-color,  $lightness: -10%);
-//$secondary-color-dark: color.adjust($secondary-default-color, $saturation: -8%, $lightness: 10%);
-$secondary-default-color: $css-green-light; // alternative to primary
-$secondary-color-light: #285a48; // color.adjust($secondary-default-color,  $lightness: -10%);
-$secondary-color-dark: #408a71; // color.adjust($secondary-default-color, $saturation: -8%, $lightness: 10%);
+$forest-default: $css-green-light;
+$forest-light: #285a48;
+$forest-dark: #408a71;
 
-//$tertiary-default-color: $css-red-light; // accent color
-//$tertiary-color-light: color.adjust($tertiary-default-color, $lightness: -15%);
-//$tertiary-color-dark: color.adjust($tertiary-default-color, $saturation: -10%, $lightness: -25%);
-$tertiary-default-color: $css-red-light; // accent color
-$tertiary-color-light: #360a14; // color.adjust($tertiary-default-color, $lightness: -15%);
-$tertiary-color-dark: #9e2a3a; // color.adjust($tertiary-default-color, $saturation: -10%, $lightness: -25%);
+$oxblood-default: $css-red-light;
+$oxblood-light: #360a14;
+$oxblood-dark: #9e2a3a;
 
-//$quaternary-default-color: $css-purple-light; // alternative to accent
-//$quaternary-color-light: color.adjust($quaternary-default-color, $lightness: -10%);
-//$quaternary-color-dark: color.adjust($quaternary-default-color, $saturation: -10%, $lightness: 10%);
-$quaternary-default-color: $css-purple-light; // alternative to accent
-$quaternary-color-light: #211832; // color.adjust($quaternary-default-color, $lightness: -10%);
-$quaternary-color-dark: #5c3e94; // color.adjust($quaternary-default-color, $saturation: -10%, $lightness: 10%);
+$violet-default: $css-purple-light;
+$violet-light: #211832;
+$violet-dark: #5c3e94;
 
-//$quinary-default-color: #00ffff;
-//$quinary-color-light: color.adjust($quinary-default-color,  $lightness: -20%);
-//$quinary-color-dark: color.adjust($quinary-default-color, $saturation: -15%, $lightness: 5%);
-$quinary-default-color: $css-magenta-light;
-$quinary-color-light: #4a0404; // color.adjust($quinary-default-color,  $lightness: -20%);
-$quinary-color-dark: #822659; // color.adjust($quinary-default-color, $saturation: -15%, $lightness: 5%);
+$wine-default: $css-magenta-light;
+$wine-light: #4a0404;
+$wine-dark: #822659;
 
-//$senary-default-color: #ffff00;
-//$senary-color-light: color.adjust($senary-default-color, $lightness: -25%);
-//$senary-color-dark: color.adjust($senary-default-color, $saturation: -18%);
-$senary-default-color: $css-teal-light;
-$senary-color-light: #15292b; // color.adjust($senary-default-color, $lightness: -25%);
-$senary-color-dark: #5a9690; // color.adjust($senary-default-color, $saturation: -18%);
+// Named `sea` (not `teal`) — `$css-teal-*` / `--portfolio-teal` own the teal signal.
+$sea-default: $css-teal-light;
+$sea-light: #15292b;
+$sea-dark: #5a9690;
 
-//$septenary-default-color: #ff00ff;
-//$septenary-color-light: color.adjust($septenary-default-color, $lightness: -10%);
-//$septenary-color-dark: color.adjust($septenary-default-color, $saturation: -8%, $lightness: 10%);
-$septenary-default-color: $css-lime-light;
-$septenary-color-light: #1b211a; // color.adjust($septenary-default-color, $lightness: -10%);
-$septenary-color-dark: #8bae66; // color.adjust($septenary-default-color, $saturation: -8%, $lightness: 10%);
+$olive-default: $css-lime-light;
+$olive-light: #1b211a;
+$olive-dark: #8bae66;
 
-//$octonary-default-color: #00ff00;
-//$octonary-color-light: color.adjust($octonary-default-color, $lightness: -10%);
-//$octonary-color-dark: color.adjust($octonary-default-color, $saturation: -8%, $lightness: 10%);
-$octonary-default-color: $css-orange-light;
-$octonary-color-light: #320a6b; // color.adjust($octonary-default-color, $lightness: -10%);
-$octonary-color-dark: #ff6500; // color.adjust($octonary-default-color, $saturation: -8%, $lightness: 10%);
+$plum-default: $css-orange-light;
+$plum-light: #320a6b;
+$tangerine-dark: #ff6500;
 
-//$nonary-default-color: #ff0000;
-//$nonary-color-light: color.adjust($nonary-default-color, $lightness: -18%);
-//$nonary-color-dark: color.adjust($nonary-default-color, $saturation: -10%, $lightness: 10%);
-$nonary-default-color: $css-amber-light;
-$nonary-color-light: #3a2525; // color.adjust($nonary-default-color, $lightness: -18%);
-$nonary-color-dark: #d2c1b6; // color.adjust($nonary-default-color, $saturation: -10%, $lightness: 10%);
+$taupe-default: $css-amber-light;
+$taupe-light: #3a2525;
+$taupe-dark: #d2c1b6;
 
-//$denary-default-color: #0000ff;
-//$denary-color-light: color.adjust($denary-default-color, $saturation: 10%, $lightness: -20%);
-//$denary-color-dark: color.adjust($denary-default-color, $saturation: -5%, $lightness: 25%);
-$denary-default-color: #0000bb;
-$denary-color-light: #1a1a1d; // color.adjust($denary-default-color, $saturation: 10%, $lightness: -20%);
-$denary-color-dark: #dcd7c9; // color.adjust($denary-default-color, $saturation: -5%, $lightness: 25%);
+$ink-default: #0000bb;
+$ink-light: #1a1a1d;
+$parchment-dark: #dcd7c9;
+
+// Brand roles — ember / crimson (PrimeVue-facing `--primary-color` / `--secondary-color` / `--accent-color`).
+$primary-color-light: #d9531d; // ember, darkened for light surfaces
+// Deep red from the "Portfolio system — dark minimal, deep red + clay" design pass
+// (source mockup used oklch(0.48 0.18 25); converted to sRGB hex here since several
+// call sites below run color.change()/color.adjust() on this token).
+$primary-color-dark: #ac1922; // deep red
+$primary-default-color: $primary-color-dark;
+
+$secondary-color-light: #6e1622; // crimson, darkened for light surfaces
+$secondary-color-dark: #8a6a56; // clay
+$secondary-default-color: $secondary-color-dark;
+
+$accent-color-light: $primary-color-light;
+$accent-color-dark: $primary-color-dark;
 
 $primary-color: light-dark($primary-color-light, $primary-color-dark);
 $secondary-color: light-dark($secondary-color-light, $secondary-color-dark);
-$tertiary-color: light-dark($tertiary-color-light, $tertiary-color-dark);
-$quaternary-color: light-dark($quaternary-color-light, $quaternary-color-dark);
-$quinary-color: light-dark($quinary-color-light, $quinary-color-dark);
-$senary-color: light-dark($senary-color-light, $senary-color-dark);
-$septenary-color: light-dark($septenary-color-light, $septenary-color-dark);
-$octonary-color: light-dark($octonary-color-light, $octonary-color-dark);
-$nonary-color: light-dark($nonary-color-light, $nonary-color-dark);
-$denary-color: light-dark($denary-color-light, $denary-color-dark);
+$accent-color: $primary-color;
 
 // Text Color Variables
-$text-color-dark: #e0e0e0;
-$text-color-light: #181818;
+$text-color-dark: #f2ece8;
+$text-color-light: #1c1412;
 
 /// Muted on-surface text — same ink family as `$text-color-*` (not inverted contrast).
 /// Dark mode → softer light ink; light mode → softer dark ink.
-$text-color-secondary-dark: #3b3b3b;
-$text-color-secondary-light: #b6b6b6;
+$text-color-secondary-dark: #baa8a0;
+$text-color-secondary-light: #5a4a42;
 
 $text-color: light-dark($text-color-light, $text-color-dark);
 $text-secondary-color: light-dark($text-color-secondary-light, $text-color-secondary-dark);
 
 // Background Colors
-$main-background-dark: #121212;
-$main-background-light: $color-white;
+$main-background-dark: #0f0908;
+$main-background-light: #faf6f3;
 
-$main-background-dark-secondary: $color-gray-dk;
-$main-background-light-secondary: $color-gray-lt;
+$main-background-dark-secondary: #16100e;
+$main-background-light-secondary: #f0e9e4;
 
-$main-background-dark-accent: color.adjust($quaternary-color-light, $lightness: -20%, $space: hsl);
-$main-background-light-accent: color.adjust($quaternary-color-dark, $lightness: 10%, $space: hsl);
+$main-background-dark-accent: color.adjust($violet-light, $lightness: -20%, $space: hsl);
+$main-background-light-accent: color.adjust($violet-dark, $lightness: 10%, $space: hsl);
 
 $main-background: light-dark($main-background-light, $main-background-dark);
 $main-background-secondary: light-dark($main-background-light-secondary, $main-background-dark-secondary);
@@ -198,19 +178,22 @@ $main-background-accent: light-dark($main-background-light-accent, $main-backgro
 
 $main-color: $primary-color;
 $main-secondary-color: $secondary-color;
-$accent-color: $tertiary-color;
 
-$success-light: #2e7d32;
-$success-dark: #3adb76;
+/// Portfolio teal signal (also drives semantic success). Do not overwrite `$css-teal-*` / `--color-teal`.
+$portfolio-teal-light: #146060;
+$portfolio-teal-dark: #1b7a7a;
 
-$warning-light: #ed6c02;
-$warning-dark: #ffae00;
+$success-light: $portfolio-teal-light;
+$success-dark: $portfolio-teal-dark;
 
-$alert-light: #d32f2f;
-$alert-dark: #cc4b37;
+$warning-light: #c26a1f;
+$warning-dark: #ff8c61;
 
-$error-light: #d32f2f;
-$error-dark: #cc4b37;
+$alert-light: #b33a0f;
+$alert-dark: #c1440e;
+
+$error-light: #b33a0f;
+$error-dark: #c1440e;
 
 $info-light: #0a0aef;
 $info-dark: #0288d1;
@@ -221,22 +204,22 @@ $alert: light-dark($alert-light, $alert-dark);
 $error: light-dark($error-light, $error-dark);
 $info: light-dark($info-light, $info-dark);
 
-$css-surface-light: $main-background-light;
-$css-surface-dark: $main-background-dark;
+$css-surface-light: #f0e9e4;
+$css-surface-dark: #16100e;
 /// Hover / nested surfaces — same family as the mode surface (not inverted ink).
-$css-surface-variant-light: $main-background-light-secondary;
-$css-surface-variant-dark: $main-background-dark-secondary;
+$css-surface-variant-light: #e6dcd5;
+$css-surface-variant-dark: #1c1412;
 
-$css-primary-light: $denary-color-light;
-$css-primary-dark: $denary-color-dark;
+$css-primary-light: $ink-light;
+$css-primary-dark: $parchment-dark;
 $css-primary-hover-light: color.adjust($css-primary-light, $lightness: -10%);
 $css-primary-hover-dark: color.adjust($css-primary-dark, $lightness: 10%);
 
-$css-border-light: $grey-200;
-$css-border-dark: $grey-600;
+$css-border-light: rgba(0, 0, 0, 0.08);
+$css-border-dark: rgba(255, 255, 255, 0.08);
 
-$css-focus-ring-light: $info-light;
-$css-focus-ring-dark: $info-dark;
+$css-focus-ring-light: $primary-color-light;
+$css-focus-ring-dark: $primary-color-dark;
 
 /// On-fill ink for solid + gradient chrome — opposite luminance of the composite
 /// (`background-color` AND `background-image` stops). Prefer `dyn-color-against-fill`
