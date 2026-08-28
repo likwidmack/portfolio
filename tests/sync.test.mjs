@@ -173,6 +173,11 @@ function assertCdnPlaceholder(destRoot, rel, originalText, kind) {
     case "js":
       assert.match(destBytes.toString("utf8"), /placeholder/);
       assert.doesNotMatch(destBytes.toString("utf8"), /hashed static public asset fixture/);
+      assert.doesNotMatch(destBytes.toString("utf8"), /helix-lab-original/);
+      break;
+    case "html":
+      assert.match(destBytes.toString("utf8"), /placeholder/);
+      assert.doesNotMatch(destBytes.toString("utf8"), /lab/);
       break;
     default: {
       const unexpected = kind;
