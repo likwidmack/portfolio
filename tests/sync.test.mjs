@@ -217,6 +217,14 @@ test("CDN objects under core/web/public become placeholders", () => {
 
   const readme = fs.readFileSync(path.join(dest, "core/web/public/README.md"), "utf8");
   assert.match(readme, /Public static assets/);
+  assert.equal(
+    fs.readFileSync(path.join(dest, "core/web/public/d/js/helix.js"), "utf8"),
+    "helix-lab-original\n",
+  );
+  assert.equal(
+    fs.readFileSync(path.join(dest, "core/web/public/d/htm/wire_tess.html"), "utf8"),
+    "<!doctype html>lab\n",
+  );
   assert.ok(fs.existsSync(path.join(dest, "core/web/public/.gitkeep")));
   assert.ok(fs.existsSync(path.join(dest, "core/web/nuxt.config.ts")));
 });
