@@ -23,4 +23,4 @@ App: `http://localhost:4200`.
 
 Tag releases on `tamaramack/portfolio` refresh this tree (or run **Actions → Sync public mirror**). Keep-list: `sync/allowlist.txt`.
 
-The sync workflow needs repository secret `GH_TOKEN` (fine-grained PAT as `likwidmack`: Contents read on `tamaramack/portfolio`; Contents and Pull requests write on this repo). Optional `CURSOR_API_KEY` runs a Cursor SDK review that comments on the sync PR and does not copy files from the private source.
+The sync workflow needs repository secret `TM_GH_TOKEN` (tamaramack PAT: Contents read on `tamaramack/portfolio`). Dest API / collaborator invite uses `LK_GH_TOKEN` (likwidmack PAT: Administration + Contents + Pull requests write on this repo). Optional `CURSOR_API_KEY` runs a Cursor SDK review that comments on the sync PR and does not copy files from the private source.

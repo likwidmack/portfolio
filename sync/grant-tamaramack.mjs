@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Invite tamaramack as admin collaborator on likwidmack/portfolio.
- * Uses GH_TOKEN or gitconfig GitHub token. Never prints the token.
+ * Uses LK_GH_TOKEN (likwidmack) to invite tamaramack. Never prints the token.
  */
 import fs from "node:fs";
 import https from "node:https";
@@ -17,13 +17,18 @@ function gitconfigToken() {
 }
 
 function token() {
-  return process.env.GH_TOKEN || process.env.GITCONFIG_GITHUB_TOKEN || gitconfigToken();
+  return (
+    process.env.LK_GH_TOKEN ||
+    process.env.GH_TOKEN ||
+    process.env.GITCONFIG_GITHUB_TOKEN ||
+    gitconfigToken()
+  );
 }
 
 function request(method, urlPath, body) {
   const auth = token();
   if (!auth) {
-    console.error("No GitHub token in GH_TOKEN / gitconfig");
+    console.error("No GitHub token in LK_GH_TOKEN / GH_TOKEN / gitconfig");
     process.exit(1);
   }
   const payload = body ? JSON.stringify(body) : null;

@@ -27,7 +27,12 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+# Clone tamaramack/portfolio with TM_GH_TOKEN (tamaramack). Never print it.
 github_token() {
+  if [[ -n "${TM_GH_TOKEN:-}" ]]; then
+    printf '%s' "$TM_GH_TOKEN"
+    return 0
+  fi
   if [[ -n "${GH_TOKEN:-}" ]]; then
     printf '%s' "$GH_TOKEN"
     return 0
