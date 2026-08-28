@@ -141,6 +141,8 @@ test("CDN objects under core/web/public are dropped", () => {
     "core/web/public/d/Resume2026.pdf",
     "core/web/public/favicon.ico",
     "core/web/public/README.md",
+    "core/web/public/entry.a1b2c3d4.js",
+    "core/web/public/placeholder.png",
   ];
   for (const rel of dropped) {
     assert.equal(fs.existsSync(path.join(dest, rel)), false, `leaked CDN object ${rel}`);
@@ -149,7 +151,8 @@ test("CDN objects under core/web/public are dropped", () => {
   assert.equal(fs.existsSync(path.join(dest, "core/web/public/i")), false);
   assert.equal(fs.existsSync(path.join(dest, "core/web/public/v")), false);
   assert.equal(fs.existsSync(path.join(dest, "core/web/public/d")), false);
-  assert.ok(fs.existsSync(path.join(dest, "core/web/public/.gitkeep")));
+  const publicDir = path.join(dest, "core/web/public");
+  assert.deepEqual(fs.readdirSync(publicDir), [".gitkeep"]);
   assert.ok(fs.existsSync(path.join(dest, "core/web/nuxt.config.ts")));
 });
 
@@ -166,6 +169,11 @@ test("a second sync removes dest files dropped since the last run", () => {
   const stale = path.join(dest, "docs/infra.md");
   fs.mkdirSync(path.dirname(stale), { recursive: true });
   fs.writeFileSync(stale, "account 305052780274 leftover");
+  const stub = path.join(dest, "core/web/public/i/portfolio/social-card.png");
+  fs.mkdirSync(path.dirname(stub), { recursive: true });
+  fs.writeFileSync(stub, "placeholder");
   runSync(dest);
   assert.equal(fs.existsSync(stale), false);
+  assert.equal(fs.existsSync(stub), false);
+  assert.deepEqual(fs.readdirSync(path.join(dest, "core/web/public")), [".gitkeep"]);
 });
