@@ -1,0 +1,54 @@
+{
+  "seo": {
+    "title": "Writing — Tamara Mack",
+    "description": "Statused essays, ADRs, and documentation-standard notes on building products, systems, and craft."
+  },
+  "hero": {
+    "eyebrow": "Writing",
+    "title": "Editorial grid",
+    "lede": "Statused essays, ADRs, and the documentation standard — not a flat blog list. Documentation is part of the definition of done."
+  },
+  "essays": [
+    {
+      "id": "definition-of-done",
+      "category": "Product",
+      "status": "planned",
+      "featured": true,
+      "title": "Documentation is the definition of done",
+      "excerpt": "No substantial feature is complete until requirements, architecture, security, operating behavior, and validation are written down.",
+      "href": "/docs"
+    },
+    {
+      "id": "adr-0001-local-first",
+      "category": "Architecture",
+      "status": "proposed",
+      "title": "ADR-0001 Local-first architecture",
+      "excerpt": "Outbound access is explicitly permitted, never assumed. Models stay inside the private boundary.",
+      "href": "/docs"
+    },
+    {
+      "id": "agent-permission-boundaries",
+      "category": "Security",
+      "status": "planned",
+      "title": "Agent permission boundaries",
+      "excerpt": "Financial agents analyze and propose. They cannot modify the ledger or execute payments.",
+      "href": "/docs"
+    },
+    {
+      "id": "implemented-is-not-validated",
+      "category": "Operations",
+      "status": "draft",
+      "title": "Implemented is not validated",
+      "excerpt": "Track design, implementation, tests, security review, and documentation as separate columns.",
+      "href": "/docs"
+    },
+    {
+      "id": "personal-data-boundary",
+      "category": "Privacy",
+      "status": "required",
+      "title": "Personal data never enters the product template",
+      "excerpt": "Core platform, private deployment, and product template stay on separate documentation tracks.",
+      "href": "/docs"
+    }
+  ]
+}

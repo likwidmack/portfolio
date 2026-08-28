@@ -1,0 +1,61 @@
+{
+  "slug": "media-systems",
+  "order": 1,
+  "title": "Media Systems",
+  "category": "Playback engineering",
+  "summary": "A sanitized view of resilient streaming interfaces—from newsroom and network-player shells to the portfolio's testable MSE/HLS package—where captions, recovery, and clear state matter as much as the bits on the wire.",
+  "role": "Senior Innovation Software Engineer — UI architecture, playback UX, captions and control racks, prototyping, and package boundaries",
+  "timeframe": "NBCUniversal / NDP player experience through ongoing @tgmc/media-player development",
+  "confidentiality": "sanitized",
+  "problem": "Streaming interfaces have to stay understandable while network conditions, browser capabilities, manifests, ads, captions, and playback state change underneath them—often on the same pages that also carry live data graphics.",
+  "constraints": [
+    "Employer details, proprietary ad paths, and unpublished outcomes remain sanitized.",
+    "Playback behavior varies across browsers, codecs, network conditions, and content-protection boundaries.",
+    "Control racks, caption cards, and failure states must help viewers recover without exposing implementation noise.",
+    "Browser-safe media utilities must stay separated from server and packaging boundaries so the same ideas travel into a public Nx package."
+  ],
+  "approach": [
+    "Model playback as explicit states the interface can explain rather than a single opaque loading condition.",
+    "Treat captions, accessibility affordances, and ad/interrupt paths as first-class UX—not afterthoughts bolted onto a transport layer.",
+    "Separate browser-safe media utilities from server and packaging boundaries; exercise them with unit tests, demos, and repeatable build targets.",
+    "Use progressive enhancement so unsupported paths fail clearly and preserve a useful next action.",
+    "Keep media UX aligned with the broader experience-system grammar: visible state, recovery, and inspectable proof."
+  ],
+  "evidence": [
+    {
+      "label": "Platform proof",
+      "value": "Sanitized NDP / newsroom player work: control racks, caption card UI, and HLS/media adapters under real network variance"
+    },
+    {
+      "label": "Implementation proof",
+      "value": "@tgmc/media-player MSE/HLS workspace package with browser-safe entry points"
+    },
+    { "label": "Quality proof", "value": "Unit-tested utilities and a supporting /media-player demonstration" },
+    {
+      "label": "Architecture proof",
+      "value": "Nuxt/Nx package boundaries that mirror how product UX and transport concerns stay split"
+    }
+  ],
+  "technologies": [
+    "TypeScript",
+    "Media Source Extensions",
+    "HLS",
+    "Vue",
+    "Nuxt",
+    "Vitest",
+    "Nx",
+    "Closed captions / a11y"
+  ],
+  "media": [
+    {
+      "type": "diagram",
+      "src": "/i/portfolio/media-system-flow.svg",
+      "alt": "Diagram showing manifest and segments flowing through playback state, interface feedback, and recovery controls"
+    }
+  ],
+  "links": [
+    { "label": "Open the media-player demonstration", "href": "/media-player" },
+    { "label": "Related experience systems story", "href": "/work/experience-systems" },
+    { "label": "Related data visualization story", "href": "/work/data-visualization" }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "name": "@tgmc/web",
+  "private": true,
+  "nx": {
+    "targets": {
+      "test": {
+        "options": {
+          "command": "bash scripts/test-web.sh"
+        }
+      }
+    }
+  }
+}

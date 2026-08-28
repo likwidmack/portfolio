@@ -1,0 +1,73 @@
+@use "themes/mytheme/variables/general";
+@use "themes/mytheme/variables/panel";
+@use "../../mixins";
+
+// core
+.p-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.p-panel-title {
+    line-height: 1;
+}
+
+.p-panel-header-icon {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    text-decoration: none;
+    overflow: hidden;
+    position: relative;
+}
+
+// theme
+.p-panel {
+    .p-panel-header {
+        border: panel.$panelHeaderBorder;
+        padding: panel.$panelHeaderPadding;
+        background: panel.$panelHeaderBg;
+        color: panel.$panelHeaderTextColor;
+        border-top-right-radius: general.$borderRadius;
+        border-top-left-radius: general.$borderRadius;
+
+        .p-panel-title {
+            font-weight: panel.$panelHeaderFontWeight;
+        }
+
+        .p-panel-header-icon {
+            @include mixins.action-icon();
+        }
+    }
+
+    &.p-panel-toggleable {
+        .p-panel-header {
+            padding: panel.$panelToggleableHeaderPadding;
+        }
+    }
+
+    .p-panel-content {
+        padding: panel.$panelContentPadding;
+        border: panel.$panelContentBorder;
+        background: panel.$panelContentBg;
+        color: panel.$panelContentTextColor;
+        border-top: 0 none;
+        
+        &:last-child {
+            border-bottom-right-radius: general.$borderRadius;
+            border-bottom-left-radius: general.$borderRadius;
+        }
+    }
+
+    .p-panel-footer {
+        padding: panel.$panelFooterPadding;
+        border: panel.$panelFooterBorder;
+        background: panel.$panelFooterBg;
+        color: panel.$panelFooterTextColor;
+        border-bottom-right-radius: general.$borderRadius;
+        border-bottom-left-radius: general.$borderRadius;
+        border-top: 0 none;
+    }
+}

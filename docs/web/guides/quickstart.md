@@ -1,0 +1,115 @@
+# Quick Start Guide
+
+Get up and running in 5 minutes.
+
+## Installation & Setup
+
+### 1. Prerequisites
+
+- Node.js **>= 24** (see repo `.nvmrc`)
+- npm
+- Git
+
+### 2. Install dependencies (repository root)
+
+```bash
+npm ci
+npm run db:migrate:local
+```
+
+### 3. Start the development server
+
+```bash
+npm run dev
+```
+
+The app will be available at `http://localhost:4200`
+
+---
+
+## Basic Usage
+
+### Vue Components
+
+```vue
+<script setup lang="ts">
+import { useCdn } from '#shared/utils/cdn';
+
+const { cdnUrl, resolvePath, isEnabled } = useCdn();
+const imageUrl = resolvePath('/images/hero.webp');
+</script>
+
+<template>
+  <img v-if="isEnabled()" :src="imageUrl" alt="Hero" />
+</template>
+```
+
+### Server Code
+
+```typescript
+import { resolveCdnPath } from '#shared/utils/cdn';
+
+export default defineEventHandler((event) => {
+  const config = useRuntimeConfig();
+  const cdnUrl = config.public.cdnUrl;
+  const logoUrl = resolveCdnPath('/images/logo.png', cdnUrl);
+  return { logoUrl };
+});
+```
+
+---
+
+## Common Commands
+
+| Command               | Purpose                                                                    |
+| --------------------- | -------------------------------------------------------------------------- |
+| `npm run dev`         | Start dev server                                                           |
+| `npm run build`       | Build for production                                                       |
+| `npm run preview`     | Preview built app (`cd core/web && npm run preview` after `npm run build`) |
+| `npm run test`        | Run tests                                                                  |
+| `npm run lint`        | Prettier + lint all Nx packages with a lint target                         |
+| `npm run format`      | Format code only                                                           |
+| `npm run lint:staged` | Prettier + Nx affected lint on staged files (same as pre-commit)           |
+
+Git hooks (after `npm install`): lint (Prettier + Nx) on commit; `npm test` on push. See [Git hooks](../../dev/git-hooks.md).
+
+---
+
+## With CDN
+
+Enable CDN for faster asset delivery:
+
+```bash
+NUXT_APP_CDN_URL=https://cdn.example.com npm run dev
+```
+
+See [CDN Guide](../features/cdn-guide.md) for full documentation.
+
+---
+
+## With HTTPS
+
+For local HTTPS development:
+
+```bash
+# Generate SSL certificates (once)
+npm run ssl:gen:windows  # or ssl:gen:linux for WSL/Linux
+
+# Start HTTPS server
+npm run start:ssl:4200
+```
+
+See [SSL Setup](../setup/ssl-setup.md) for details.
+
+---
+
+## Next Steps
+
+1. Explore the **[Project Structure](../reference/project-structure.md)**
+2. Check **[Code Examples](./examples.md)**
+3. Read **[CDN Quick Start](../features/cdn-quickstart.md)** for CDN usage
+4. Review **[TypeScript Configuration](../reference/typescript-config.md)**
+
+---
+
+**Need more help?** See the full documentation index at `docs/README.md`

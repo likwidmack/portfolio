@@ -1,0 +1,12 @@
+{
+  "id": "agentic-ui-exploration",
+  "date": "2026-08-02",
+  "source": "chatgpt",
+  "title": "Turn agent reasoning into interface state",
+  "promptExcerpt": "Explore a UI for agentic AI that keeps a person in control.",
+  "decision": "Represent interpretation, plan, pending action, approval, and result as separate states.",
+  "result": "The portfolio lab uses a visible approval gate and a deterministic replay that works without credentials.",
+  "learning": "Trust comes from understandable boundaries and recovery, not from displaying hidden chain-of-thought.",
+  "caseStudySlug": "human-controlled-ai-lab",
+  "privacyStatus": "sanitized"
+}

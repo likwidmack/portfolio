@@ -1,0 +1,177 @@
+/// Layout algorithms by structural intent (CUBE Composition).
+///
+/// | Intent   | Algorithm                         | Prefer when |
+/// |----------|-----------------------------------|-------------|
+/// | cluster  | Flex wrap + gap                   | Inline action/tag/link groups |
+/// | stack    | Grid column stretch               | Sequential full-width sections |
+/// | auto     | CSS Grid `auto-fit` / `minmax`    | Fluid equal-ish card clusters |
+/// | split    | CSS Grid named tracks             | Aside + main / sticky rail |
+/// | rail     | Constrained block width           | Page content measure |
+/// | complex  | Foundation XY (`grid-x` / `cell`) | Multipass breakpoints, spans, offsets, nest/collapse |
+///
+/// Page fit (`data-fit`) is orthogonal to algo:
+/// - `screen` — homepage / presentation / gallery / media (full viewport use)
+/// - `prose` — docs / blog / reading (full shell, readable measure for body copy)
+/// Content fit (min-width: 0, media-only aspect-ratio) is documented in `docs/packages/theme.md`.
+///
+/// Breakpoints: mobile 480 · tablet 768 · standard 1080 · widescreen 1440 · ultrawide 1920.
+@use '../tokens/variables' as *;
+
+// ─── Rail / page shell ───────────────────────────────────────────────────────
+
+.page-content,
+.layout[data-algo='rail'] {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: var(--page-shell-max, 90rem);
+  min-width: 0;
+  min-height: var(--page-fill-min, auto);
+  margin-inline: auto;
+  padding-inline: var(--page-pad, 1rem);
+  padding-block: 0 clamp(var(--space-5), 4vw, var(--space-12));
+}
+
+/// Immersive pages: fill the viewport horizontally and vertically.
+.page-content[data-fit='screen'],
+.layout[data-fit='screen'] {
+  max-width: var(--page-screen-max, 100%);
+  width: 100%;
+
+  > :where(header.home-hero, header.portfolio-hero, header[data-region='hero']):first-of-type {
+    min-height: max(22rem, calc(var(--page-fill-min, 100dvh) * 0.72));
+  }
+}
+
+/// Reading pages: shell uses the full available width; copy stays in a readable measure.
+.page-content[data-fit='prose'],
+.layout[data-fit='prose'] {
+  max-width: var(--page-shell-max, 90rem);
+  width: 100%;
+
+  :where(
+    [data-region='body'],
+    .prose,
+    .blog-body,
+    .docs-page__body,
+    .case-study__body,
+    .process-principles,
+    .decision-list
+  ) {
+    max-width: var(--prose-max, 42rem);
+  }
+
+  .page-with-nav {
+    width: 100%;
+  }
+
+  .page-with-nav > [data-region='body'] {
+    max-width: var(--prose-max, 42rem);
+    width: 100%;
+  }
+}
+
+// ─── Split (aside + main) → CSS Grid ─────────────────────────────────────────
+
+.page-with-nav,
+.layout[data-algo='split'] {
+  display: grid;
+  gap: var(--section-gap);
+  align-items: start;
+  width: 100%;
+  min-width: 0;
+
+  @media (min-width: $breakpoint-tablet) {
+    grid-template-columns: minmax(var(--card-min-compact), 14rem) minmax(0, 1fr);
+  }
+
+  @media (min-width: $breakpoint-widescreen) {
+    grid-template-columns: minmax(12rem, 16rem) minmax(0, 1fr);
+  }
+
+  @media (min-width: $breakpoint-ultrawide) {
+    grid-template-columns: minmax(14rem, 18rem) minmax(0, 1fr);
+  }
+}
+
+// ─── Auto (fluid cards) → CSS Grid auto-fit ──────────────────────────────────
+
+.auto-grid,
+.layout[data-algo='auto'] {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--card-min)), 1fr));
+  gap: clamp(var(--space-3), 2vw, var(--space-6));
+  margin-bottom: var(--space-5);
+  width: 100%;
+
+  &[data-layout='swatch'],
+  &[data-layout='swatch-compact'],
+  &[data-layout='surface'] {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--card-min-md)), 1fr));
+  }
+
+  &[data-layout='swatch'],
+  &[data-layout='swatch-compact'] {
+    gap: clamp(var(--space-2), 1.5vw, 0.85rem);
+    margin: 0 0 var(--space-6);
+    padding: 0;
+    list-style: none;
+  }
+
+  &[data-layout='swatch-compact'] {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--card-min-compact)), 1fr));
+  }
+}
+
+// ─── Stack (vertical sections) → CSS Grid ────────────────────────────────────
+
+.stack-grid,
+.layout[data-algo='stack'] {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--stack-min)), 1fr));
+  gap: var(--section-gap);
+  align-items: stretch;
+  margin-bottom: var(--section-gap);
+  width: 100%;
+
+  > * {
+    min-width: 0;
+  }
+}
+
+// ─── Cluster (inline groups) → Flex ──────────────────────────────────────────
+
+.button-row,
+.toc,
+.layout[data-algo='cluster'] {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.button-row {
+  margin: 0 0 var(--space-4);
+}
+
+.toc {
+  gap: var(--space-2) var(--space-4);
+  margin: 0 0 var(--section-gap);
+  padding: var(--space-3) 0;
+  border-block: 1px solid color-mix(in srgb, var(--border-color) 70%, transparent);
+
+  a {
+    font-variant: small-caps;
+    letter-spacing: 0.02em;
+  }
+}
+
+// ─── Complex (Foundation XY) — class contract only ───────────────────────────
+/// Prefer `.grid-x` + `.cell` (+ size/offset/collapse) when `$theme-enable-foundation`
+/// is on with `$theme-foundation-mode: 'layout'`. Theme does not re-skin those classes;
+/// nest XY inside `.page-content` (skip extra `.grid-container` unless you need ZF max-width).
+
+.layout[data-algo='complex'] {
+  // Marker for tooling/docs; structure comes from Foundation XY classes on children.
+  display: block;
+  min-width: 0;
+}

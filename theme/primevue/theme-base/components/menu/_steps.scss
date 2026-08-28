@@ -1,0 +1,116 @@
+@use "themes/mytheme/variables/general";
+@use "themes/mytheme/variables/menu";
+@use "../../mixins";
+
+@use 'sass:math';
+
+// core
+.p-steps {
+    position: relative;
+}
+
+.p-steps .p-steps-list {
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+    display: flex;
+}
+
+.p-steps-item {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    flex: 1 1 auto;
+    overflow: hidden;
+}
+
+.p-steps-item .p-menuitem-link {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.p-steps.p-steps-readonly .p-steps-item {
+    cursor: auto;
+}
+
+.p-steps-item.p-steps-current .p-menuitem-link {
+    cursor: default;
+}
+
+.p-steps-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.p-steps-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.p-steps-title {
+    display: block;
+}
+
+// theme
+.p-steps {
+    .p-steps-item {
+        .p-menuitem-link {
+            background: transparent;
+            transition: general.$listItemTransition;
+            border-radius: general.$borderRadius;
+            background: menu.$stepsItemBg;
+            outline-color: transparent;
+
+            .p-steps-number {
+                color: menu.$stepsItemNumberColor;
+                border: menu.$stepsItemBorder;
+                background: menu.$stepsItemBg;
+                min-width: menu.$stepsItemNumberWidth;
+                height: menu.$stepsItemNumberHeight;
+                line-height: menu.$stepsItemNumberHeight;
+                font-size: menu.$stepsItemNumberFontSize;
+                z-index: 1;
+                border-radius: menu.$stepsItemNumberBorderRadius;
+            }
+
+            .p-steps-title {
+                margin-top: general.$inlineSpacing;
+                color: menu.$stepsItemTextColor;
+            }
+
+            &:not(.p-disabled):focus-visible {
+                @include mixins.focused();
+            }
+        }
+
+        &.p-highlight {
+            .p-steps-number {
+                background: general.$highlightBg;
+                color: general.$highlightTextColor;
+            }
+
+            .p-steps-title {
+                font-weight: menu.$stepsItemActiveFontWeight;
+                color: general.$textColor;
+            }
+        }
+
+        &:before {
+            content:' ';
+            border-top: general.$divider;
+            width: 100%;
+            top: 50%;
+            left: 0;
+            display: block;
+            position: absolute;
+            margin-top: math.div(-1 * menu.$stepsItemNumberHeight, 2);
+        }
+    }
+}

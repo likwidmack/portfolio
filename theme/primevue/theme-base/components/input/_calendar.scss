@@ -1,0 +1,412 @@
+@use "themes/mytheme/variables/form";
+@use "themes/mytheme/variables/general";
+@use "../../mixins";
+
+// core
+.p-calendar {
+    display: inline-flex;
+    max-width: 100%;
+}
+
+.p-calendar .p-inputtext {
+    flex: 1 1 auto;
+    width: 1%;
+}
+
+.p-calendar-w-btn .p-inputtext {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.p-calendar-w-btn .p-datepicker-trigger {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.p-calendar .p-datepicker-trigger-icon {
+    cursor: pointer;
+}
+
+/* Fluid */
+.p-fluid .p-calendar {
+    display: flex;
+}
+
+.p-fluid .p-calendar .p-inputtext {
+    width: 1%;
+}
+
+/* Datepicker */
+.p-calendar .p-datepicker {
+    min-width: 100%;
+}
+
+.p-datepicker {
+    width: auto;
+}
+
+.p-datepicker-inline {
+    display: inline-block;
+    overflow-x: auto;
+}
+
+/* Header */
+.p-datepicker-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.p-datepicker-header .p-datepicker-title {
+    margin: 0 auto;
+}
+
+.p-datepicker-prev,
+.p-datepicker-next {
+    cursor: pointer;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Multiple Month DatePicker */
+.p-datepicker-multiple-month .p-datepicker-group-container {
+    display: flex;
+}
+
+.p-datepicker-multiple-month .p-datepicker-group-container .p-datepicker-group {
+    flex: 1 1 auto;
+}
+
+/* DatePicker Table */
+.p-datepicker table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.p-datepicker td > span {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    margin: 0 auto;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Month Picker */
+.p-monthpicker-month {
+    width: 33.3%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Year Picker */
+.p-yearpicker-year {
+    width: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+}
+
+/*  Button Bar */
+.p-datepicker-buttonbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Time Picker */
+.p-timepicker {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.p-timepicker button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+}
+
+.p-timepicker > div {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+/* Touch UI */
+.p-datepicker-touch-ui,
+.p-calendar .p-datepicker-touch-ui {
+    min-width: 80vw;
+}
+
+// theme
+.p-calendar {
+    &.p-invalid.p-component > .p-inputtext {
+        @include mixins.invalid-input();
+    }
+
+    &:not(.p-calendar-disabled).p-focus > .p-inputtext {
+        @include mixins.focused-input();
+    }
+}
+
+.p-datepicker {
+    padding: form.$calendarPadding;
+    background: form.$calendarInlineBg;
+    color: form.$calendarTextColor;
+    border: form.$calendarBorder;
+    border-radius: general.$borderRadius;
+
+    &:not(.p-datepicker-inline) {
+        background: form.$calendarBg;
+        border: form.$calendarOverlayBorder;
+        box-shadow: form.$inputOverlayShadow;
+
+        .p-datepicker-header {
+            background: form.$calendarHeaderBg;
+        }
+    }
+
+    .p-datepicker-header {
+        padding: form.$calendarHeaderPadding;
+        color: form.$calendarHeaderTextColor;
+        background: form.$calendarInlineHeaderBg;
+        font-weight: form.$calendarHeaderFontWeight;
+        margin: form.$inputListHeaderMargin;
+        border-bottom: form.$calendarHeaderBorder;
+        border-top-right-radius: general.$borderRadius;
+        border-top-left-radius: general.$borderRadius;
+
+        .p-datepicker-prev,
+        .p-datepicker-next {
+            @include mixins.action-icon();
+        }
+
+        .p-datepicker-title {
+            line-height: general.$actionIconHeight;
+
+            .p-datepicker-year,
+            .p-datepicker-month {
+                color: form.$calendarHeaderTextColor;
+                transition: general.$actionIconTransition;
+                font-weight: form.$calendarHeaderFontWeight;
+                padding: form.$calendarHeaderCellPadding;
+
+                &:enabled:hover {
+                    color: form.$calendarMonthYearHeaderHoverTextColor;
+                }
+            }
+
+            .p-datepicker-month {
+                margin-right: general.$inlineSpacing;
+            }
+        }
+    }
+
+    table {
+        font-size: general.$fontSize;
+        margin: form.$calendarTableMargin;
+
+        th {
+            padding: form.$calendarHeaderCellPadding;
+
+            > span {
+                width: form.$calendarCellDateWidth;
+                height: form.$calendarCellDateHeight;
+            }
+        }
+
+        td {
+            padding: form.$calendarCellDatePadding;
+
+            > span {
+                width: form.$calendarCellDateWidth;
+                height: form.$calendarCellDateHeight;
+                border-radius: form.$calendarCellDateBorderRadius;
+                transition: general.$listItemTransition;
+                border: form.$calendarCellDateBorder;
+                outline-color: transparent;
+
+                &.p-highlight {
+                    color: general.$highlightTextColor;
+                    background: general.$highlightBg;
+                }
+
+                &:focus {
+                    @include mixins.focused();
+                }
+            }
+
+            &.p-datepicker-today {
+                > span {
+                    background: form.$calendarCellDateTodayBg;
+                    color: form.$calendarCellDateTodayTextColor;
+                    border-color: form.$calendarCellDateTodayBorderColor;
+
+                    &.p-highlight {
+                        color: general.$highlightTextColor;
+                        background: general.$highlightBg;
+                    }
+                }
+            }
+        }
+    }
+
+    .p-datepicker-buttonbar {
+        padding: form.$calendarButtonBarPadding;
+        border-top: general.$divider;
+
+        .p-button {
+            width: auto;
+        }
+    }
+
+    .p-timepicker {
+        border-top: general.$divider;
+        padding: form.$calendarTimePickerPadding;
+
+        button {
+            @include mixins.action-icon();
+
+            &:last-child {
+                margin-top: 0.2em;
+            }
+        }
+
+        span {
+            font-size: form.$calendarTimePickerTimeFontSize;
+        }
+
+        > div {
+            padding: form.$calendarTimePickerElementPadding;
+        }
+    }
+
+    &.p-datepicker-timeonly {
+        .p-timepicker {
+            border-top: 0 none;
+        }
+    }
+
+    .p-monthpicker {
+        margin: form.$calendarTableMargin;
+
+        .p-monthpicker-month {
+            padding: form.$calendarCellDatePadding;
+            transition: general.$listItemTransition;
+            border-radius: general.$borderRadius;
+
+            &.p-highlight {
+                color: general.$highlightTextColor;
+                background: general.$highlightBg;
+            }
+        }
+    }
+
+    .p-yearpicker {
+        margin: form.$calendarTableMargin;
+
+        .p-yearpicker-year {
+            padding: form.$calendarCellDatePadding;
+            transition: general.$listItemTransition;
+            border-radius: general.$borderRadius;
+
+            &.p-highlight {
+                color: general.$highlightTextColor;
+                background: general.$highlightBg;
+            }
+        }
+    }
+
+    &.p-datepicker-multiple-month {
+        .p-datepicker-group {
+            border-left: general.$divider;
+            padding-right: form.$calendarPadding;
+            padding-left: form.$calendarPadding;
+            padding-top: 0;
+            padding-bottom: 0;
+
+            &:first-child {
+                padding-left: 0;
+                border-left: 0 none;
+            }
+
+            &:last-child {
+                padding-right: 0;
+            }
+        }
+    }
+
+    &.p-datepicker-mobile {
+        table {
+            th,
+            td {
+                padding: form.$calendarCellDatePaddingSM;
+            }
+        }
+    }
+
+    &:not(.p-disabled) {
+        table {
+            td {
+                span:not(.p-highlight):not(.p-disabled) {
+                    outline-color: transparent;
+
+                    &:hover {
+                        background: form.$calendarCellDateHoverBg;
+                    }
+
+                    &:focus {
+                        @include mixins.focused();
+                    }
+                }
+            }
+        }
+
+        .p-monthpicker {
+            .p-monthpicker-month {
+                &:not(.p-disabled) {
+                    outline-color: transparent;
+
+                    &:not(.p-highlight):hover {
+                        background: form.$calendarCellDateHoverBg;
+                    }
+
+                    &:focus {
+                        @include mixins.focused();
+                    }
+                }
+            }
+        }
+
+        .p-yearpicker {
+            .p-yearpicker-year {
+                &:not(.p-disabled) {
+                    outline-color: transparent;
+
+                    &:not(.p-highlight):hover {
+                        background: form.$calendarCellDateHoverBg;
+                    }
+
+                    &:focus {
+                        @include mixins.focused();
+                    }
+                }
+            }
+        }
+    }
+}

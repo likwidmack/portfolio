@@ -1,0 +1,8 @@
+{
+  "extends": "../tsconfig.package.spec.json",
+  "compilerOptions": {
+    "forceConsistentCasingInFileNames": true,
+    "lib": ["ES2022", "DOM"]
+  },
+  "include": ["vitest.config.mts", "tests/**/*.ts", "src/**/*.d.ts"]
+}

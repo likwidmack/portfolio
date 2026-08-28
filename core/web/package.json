@@ -1,0 +1,98 @@
+{
+  "name": "@tgmc/web",
+  "version": "1.3.19",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@tgmc/media-player": "*",
+    "@tgmc/theme": "*",
+    "@tgmc/utilities": "*",
+    "@tgmc/web-layer-admin": "*"
+  },
+  "scripts": {
+    "build": "nuxt build",
+    "build:static": "nuxt build --prerender",
+    "dev": "nuxt dev",
+    "format": "prettier -wl .",
+    "generate": "nuxt generate",
+    "generate:ssg": "npx nuxi generate",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "preview": "nuxt preview",
+    "serve": "nuxt serve",
+    "test": "node ./bin/run-vitest.mjs"
+  },
+  "nx": {
+    "targets": {
+      "build": {
+        "dependsOn": [
+          "^build"
+        ],
+        "inputs": [
+          "default",
+          "^default",
+          "{workspaceRoot}/docs/**/*.md",
+          {
+            "env": "SYS_ENV"
+          },
+          {
+            "env": "NITRO_PRESET"
+          }
+        ],
+        "outputs": [
+          "{workspaceRoot}/.output"
+        ]
+      },
+      "test": {
+        "executor": "nx:run-commands",
+        "dependsOn": [
+          "^build"
+        ],
+        "cache": true,
+        "inputs": [
+          "default",
+          "^default",
+          "{workspaceRoot}/docs/**/*.md"
+        ],
+        "outputs": [],
+        "options": {
+          "cwd": "{workspaceRoot}",
+          "command": "npm run test --workspace=@tgmc/web"
+        }
+      }
+    }
+  },
+  "prettier": {
+    "$schema": "https://json.schemastore.org/prettierrc",
+    "plugins": [
+      "prettier-plugin-organize-imports",
+      "@prettier/plugin-pug"
+    ],
+    "printWidth": 120,
+    "semi": true,
+    "singleQuote": true,
+    "tabWidth": 2,
+    "trailingComma": "es5",
+    "pugSingleQuote": false
+  },
+  "keywords": [
+    "nuxt",
+    "typescript",
+    "pug",
+    "vue",
+    "jsx",
+    "scss"
+  ],
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

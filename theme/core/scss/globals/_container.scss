@@ -1,0 +1,282 @@
+@use '../tokens' as *;
+@use 'mixins' as m;
+
+section,
+article,
+aside,
+.panel {
+  background-color: light-dark(rgba($css-surface-variant-light, 0.08), rgba($css-surface-variant-dark, 0.08));
+  box-shadow:
+    inset 0 -1px 0 rgba($color-gray-lt, 0.5),
+    inset 0 0 8px rgba($color-gray-lt, 0.15);
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+}
+
+section,
+article,
+.panel {
+  position: relative;
+  padding: 1.2rem 1.5rem 2rem;
+  border: 1px solid color-mix(in srgb, var(--gray-200) 30%, transparent);
+  @include m.backdrop-blur(lg);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background-image: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--gray-200) 80%, transparent),
+      transparent
+    );
+  }
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1px;
+    height: 100%;
+    background-image: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--gray-200) 80%, transparent),
+      transparent,
+      color-mix(in srgb, var(--gray-200) 30%, transparent)
+    );
+  }
+}
+
+/// Media frames inside sections/articles/cards follow `--media-ratio` (landscape on horizontal screens).
+/// Ratio applies to the media box only so captions/copy are not clipped.
+:is(section, article, .panel, .card) :is([data-region='media'], .card-media) {
+  max-width: 100%;
+  min-width: 0;
+  aspect-ratio: var(--media-ratio, 16 / 9);
+  overflow: hidden;
+
+  > :is(img, video) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    object-fit: cover;
+  }
+}
+
+:is(section, article, .panel, .card) figure {
+  max-width: 100%;
+  min-width: 0;
+
+  > :is(img, video) {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    aspect-ratio: var(--media-ratio, 16 / 9);
+    object-fit: cover;
+  }
+}
+
+/// Compact surface cards (stats / swatches): stay within the grid track.
+@media (orientation: landscape) {
+  .auto-grid[data-layout='surface'] > :is(.panel, [data-variant='stat']),
+  .auto-grid[data-layout='swatch'] > *,
+  .auto-grid[data-layout='swatch-compact'] > * {
+    min-width: 0;
+    max-width: 100%;
+  }
+}
+
+section {
+  $depth: 5;
+
+  box-shadow:
+    0 1px 4px rgba($color-black, 0.3),
+    inset 0 1px 0 color-mix(in srgb, var(--gray-200) 50%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, var(--gray-200) 10%, transparent),
+    inset 0 0 calc(2px * #{$depth}) calc(1px * #{$depth}) color-mix(in srgb, var(--gray-200) 40%, transparent);
+  background: {
+    color: light-dark(rgba($css-surface-light, 0.35), rgba($css-surface-dark, 0.22));
+    image:
+      radial-gradient(circle at 16% 20%, color-mix(in srgb, var(--secondary-color) 30%, transparent), transparent 32%),
+      radial-gradient(circle at 84% 8%, color-mix(in srgb, var(--tertiary-color) 22%, transparent), transparent 28%);
+  }
+  margin: 1rem auto 1.3rem;
+}
+
+article {
+  margin: 1rem auto;
+  padding: 1rem;
+}
+
+aside {
+  background-color: light-dark(rgba($css-surface-light, 0.5), rgba($css-surface-dark, 0.5));
+  box-shadow: inset 0 0 8px light-dark(rgba($css-surface-variant-light, 0.24), rgba($css-surface-variant-dark, 0.24));
+}
+
+// ─── Lists ───────────────────────────────────────────────────────────────────
+ul,
+ol {
+  margin: 0.75rem 0 0.75rem 1.5rem;
+  padding: 0;
+  line-height: 1.7;
+
+  li {
+    margin-bottom: 0.35rem;
+    color: var(--text-color);
+    font-size: var(--font-size-base);
+
+    &::marker {
+      color: var(--secondary-color);
+      font-weight: 700;
+    }
+
+    & > ul,
+    & > ol {
+      margin-top: 0.25rem;
+      margin-bottom: 0.25rem;
+    }
+  }
+
+  &.list {
+    margin: {
+      left: 0;
+      bottom: 1rem;
+    }
+    padding: 0;
+    list-style: none;
+
+    > li {
+      padding: 0.25rem 1rem;
+      margin: 0;
+    }
+  }
+}
+
+ul {
+  list-style-type: disc;
+
+  ul {
+    list-style-type: circle;
+
+    ul {
+      list-style-type: square;
+    }
+  }
+}
+
+ol {
+  list-style-type: decimal;
+
+  ol {
+    list-style-type: lower-alpha;
+
+    ol {
+      list-style-type: lower-roman;
+    }
+  }
+}
+
+// ─── Tables ──────────────────────────────────────────────────────────────────
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-size: var(--font-size-base);
+  line-height: 1.5;
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  box-shadow: -1px 3px 18px rgba($color-gray-dk, 0.2);
+
+  caption {
+    margin-bottom: 0.6rem;
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--text-color);
+    text-align: left;
+    opacity: 0.75;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  thead {
+    background-color: rgba($accent-soft, 0.14);
+    @include m.backdrop-blur(sm);
+
+    th {
+      padding: 0.75rem 1rem;
+      border-bottom: 2px solid rgba($accent-soft, 0.3);
+      color: var(--secondary-color);
+      font-weight: 700;
+      font-size: var(--font-size-sm);
+      text-align: left;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      text-shadow: 0 -1px 2px var(--text-secondary-color);
+    }
+  }
+
+  tbody {
+    tr {
+      border-bottom: 1px solid rgba($color-gray-md, 0.25);
+      transition: background-color 150ms ease;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      &:hover {
+        background-color: rgba($accent-soft, 0.07);
+      }
+
+      &:nth-child(even) {
+        background-color: rgba($color-black, 0.1);
+
+        &:hover {
+          background-color: color-mix(in srgb, $accent-soft 12%, rgba($color-black, 0.05));
+        }
+      }
+    }
+
+    td {
+      padding: 0.65rem 1rem;
+      color: var(--text-color);
+      vertical-align: middle;
+
+      &:first-child {
+        font-weight: 500;
+      }
+
+      // numeric column helper
+      &[data-type='number'] {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+    }
+  }
+
+  tfoot {
+    background-color: rgba($color-gray-dk, 0.12);
+
+    td,
+    th {
+      padding: 0.65rem 1rem;
+      font-weight: 600;
+      border-top: 2px solid rgba($color-gray-md, 0.15);
+      color: var(--text-color);
+    }
+  }
+}
+
+// Scrollable wrapper for wide tables
+.table-wrap {
+  overflow-x: auto;
+  border-radius: var(--border-radius-md);
+  -webkit-overflow-scrolling: touch;
+}

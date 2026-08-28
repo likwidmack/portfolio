@@ -1,0 +1,46 @@
+{
+  "name": "@tgmc/theme-foundation",
+  "version": "6.9.0",
+  "private": true,
+  "description": "Thin workspace wrapper over Foundation Sites SCSS/JS for @tgmc/theme layers.",
+  "license": "MIT",
+  "main": "./dist/js/foundation.js",
+  "module": "./dist/js/foundation.esm.js",
+  "types": "./dist/js/foundation.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/js/foundation.d.ts",
+      "import": "./dist/js/foundation.esm.js",
+      "default": "./dist/js/foundation.js"
+    },
+    "./scss": "./scss/_index.scss",
+    "./scss/*": "./scss/*",
+    "./scss/foundation": "./scss/foundation.scss",
+    "./scss/layout": "./scss/layout.scss",
+    "./scss/vendor/normalize": "./scss/vendor/normalize.scss",
+    "./scss/settings": "./scss/settings/_settings.scss",
+    "./_vendor/*": "./_vendor/*",
+    "./js/*": "./js/*",
+    "./dist/js/*": "./dist/js/*"
+  },
+  "files": [
+    "scss",
+    "js",
+    "dist/js",
+    "_vendor",
+    "!**/*.map"
+  ],
+  "peerDependencies": {
+    "jquery": ">=3.6.0",
+    "motion-ui": "latest",
+    "what-input": ">=5.2.10"
+  },
+  "keywords": [
+    "css",
+    "scss",
+    "sass",
+    "foundation",
+    "tgmc-theme"
+  ]
+}

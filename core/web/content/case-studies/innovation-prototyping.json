@@ -1,0 +1,97 @@
+{
+  "slug": "innovation-prototyping",
+  "order": 2,
+  "title": "Innovation Prototyping",
+  "category": "Creative technology and generative pipelines",
+  "summary": "Sanitized experiments that turn uncertain ideas into scenes, interactions, and visual systems people can evaluate early—bridging generative art direction with the same spatial and visualization instincts used in shipped AR and data work.",
+  "role": "Creative technologist and software engineer — concept framing, UI, real-time prototypes, generative workflows, and decision journals",
+  "timeframe": "Selected explorations and client-adjacent laboratories, 2021–2026",
+  "confidentiality": "sanitized",
+  "problem": "Innovation teams need enough fidelity to feel a future experience, but enough flexibility to change direction before a concept becomes expensive—whether the next artifact is a storyboard, a WebGL scene, a map encoding, or a generated keyframe.",
+  "constraints": [
+    "Client and employer-specific material remains abstracted or removed.",
+    "Generated imagery needs deliberate art direction, privacy review, and traceable iteration.",
+    "Spatial and visualization depth for event AR, WebXR, and newsroom graphics lives in dedicated sibling stories; this story focuses on the decision-framed pipeline.",
+    "The August launch focuses on one strong Manhattan 2150 proof scene; a full six-shot film remains post-launch scope."
+  ],
+  "approach": [
+    "Frame each prototype around the decision it needs to unlock—try-on feel, narrative beat, encoding clarity—not around a preferred tool.",
+    "Move between storyboard, interface sketch, real-time scene, map or diagram, and generated image without treating any one artifact as the final truth.",
+    "Reuse spatial laboratory habits (Three.js wireframes, helix and tesseract motion) and visualization literacy (SVG encodings, network metaphors) so generative work stays grounded in systems thinking.",
+    "Record prompt and composition decisions in a sanitized journal so iteration is inspectable.",
+    "Package the strongest shot and six-frame storyboard as evidence of a repeatable creative pipeline that can hand off to production AR or product UX."
+  ],
+  "evidence": [
+    { "label": "Hero proof", "value": "One polished Manhattan 2150 animated-scene keyframe" },
+    { "label": "Narrative proof", "value": "Six-shot storyboard with production intent and motion notes" },
+    { "label": "Workflow proof", "value": "Sanitized prompt-refinement decision card" },
+    {
+      "label": "Shared laboratory proof",
+      "value": "Tesseract/helix WebGL labs and motion studies also cited in Spatial Experiences"
+    },
+    {
+      "label": "Pipeline handoff proof",
+      "value": "Same decision framing used across AR event kits and readable data encodings in sibling stories"
+    }
+  ],
+  "technologies": [
+    "Adobe Photoshop",
+    "Adobe Firefly",
+    "Midjourney",
+    "Three.js",
+    "WebXR",
+    "Generative AI",
+    "Storyboarding",
+    "SVG"
+  ],
+  "media": [
+    {
+      "type": "image",
+      "src": "/i/portfolio/manhattan-2150-keyframe.png",
+      "alt": "Futuristic Manhattan skyline keyframe for the Manhattan 2150 concept"
+    },
+    {
+      "type": "image",
+      "src": "/i/portfolio/manhattan-2150-storyboard.png",
+      "alt": "Six-frame Manhattan 2150 storyboard showing the planned visual sequence"
+    },
+    {
+      "type": "image",
+      "src": "/i/portfolio/generated/vimg-crystal-volume.webp",
+      "alt": "Transparent crystalline cube floating above clouds with a star field visible through its facets",
+      "caption": "Human-directed Midjourney study exploring translucent volume, atmosphere, and impossible scale."
+    },
+    {
+      "type": "image",
+      "src": "/i/portfolio/generated/vimg-cosmic-network.webp",
+      "alt": "Glowing lattice of branching cosmic filaments rendered as an abstract spatial network",
+      "caption": "Human-directed Midjourney study translating network topology into a luminous spatial system."
+    },
+    {
+      "type": "image",
+      "src": "/i/portfolio/generated/vimg-algorithmic-helix.webp",
+      "alt": "Iridescent sculptural helix with translucent coral, blue, violet, and gold surfaces",
+      "caption": "Human-directed Midjourney study exploring color, material, and algorithmic form."
+    },
+    {
+      "type": "video",
+      "src": "/v/portfolio/generated/vimg-crystal-binary-helix.mp4",
+      "poster": "/i/portfolio/generated/vimg-algorithmic-helix.webp",
+      "alt": "Animated macro view moving along a crystalline DNA helix filled with colorful binary digits",
+      "caption": "Motion study — a five-second human-directed Midjourney exploration of data becoming biological form."
+    },
+    {
+      "type": "video",
+      "src": "/v/portfolio/generated/vimg-tesseract-framework.mp4",
+      "poster": "/i/tesseract/blue-8-cell-simple.png",
+      "alt": "Animated nested transparent tesseract cubes glowing inside a reflective digital chamber",
+      "caption": "Motion study — a five-second human-directed Midjourney exploration of dimensional interfaces and recursive space."
+    }
+  ],
+  "links": [
+    { "label": "Read the AI-assisted process", "href": "/process" },
+    { "label": "Related spatial experiences story", "href": "/work/spatial-experiences" },
+    { "label": "Related data visualization story", "href": "/work/data-visualization" },
+    { "label": "Open the advanced tesseract lab", "href": "/d/htm/adv_wire_tess.html" }
+  ]
+}

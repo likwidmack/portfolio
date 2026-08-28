@@ -1,0 +1,23 @@
+# GitHub Pages (publish source: /docs).
+title: portfolio
+description: Tamara Mack web portfolio — Nx + Nuxt 4 (public sanitized source)
+url: https://likwidmack.github.io
+baseurl: /portfolio
+repository: likwidmack/portfolio
+theme: jekyll-theme-cayman
+markdown: kramdown
+kramdown:
+  input: GFM
+  hard_wrap: false
+plugins:
+  - jekyll-relative-links
+  - jekyll-seo-tag
+  - jekyll-sitemap
+relative_links:
+  enabled: true
+  collections: true
+defaults:
+  - scope:
+      path: ''
+    values:
+      layout: default

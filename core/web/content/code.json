@@ -1,0 +1,47 @@
+{
+  "seo": {
+    "title": "Code — Tamara Mack",
+    "description": "Workspace repositories and packages — editor aesthetic, repos not bio."
+  },
+  "hero": {
+    "eyebrow": "Code",
+    "title": "Repositories",
+    "lede": "Editor aesthetic for the monorepo surface — packages and paths, not a biography."
+  },
+  "windowTitle": "~/code/repos — editor aesthetic, repos not bio",
+  "explorer": ["portfolio/", "packages/utilities", "packages/media-player", "theme/core"],
+  "repos": [
+    {
+      "id": "portfolio",
+      "name": "portfolio",
+      "language": "TypeScript",
+      "description": "Nx + Nuxt 4 monorepo. Theme tokens, SAM, four-env topology.",
+      "updated": "2d",
+      "href": "#"
+    },
+    {
+      "id": "utilities",
+      "name": "utilities",
+      "language": "TypeScript",
+      "description": "Node / browser / universal entries. No window at module load.",
+      "updated": "5d",
+      "href": "#"
+    },
+    {
+      "id": "media-player",
+      "name": "media-player",
+      "language": "Vue",
+      "description": "Framework-free leaf player used by gallery exhibits.",
+      "updated": "1w",
+      "href": "#"
+    },
+    {
+      "id": "theme",
+      "name": "theme",
+      "language": "SCSS",
+      "description": "Packaged design tokens consumed via @tgmc/theme dist.",
+      "updated": "3d",
+      "href": "#"
+    }
+  ]
+}

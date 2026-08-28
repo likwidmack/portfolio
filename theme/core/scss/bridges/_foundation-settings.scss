@@ -1,0 +1,59 @@
+/// Foundation Sites settings bridge — parallel to `@tgmc/theme` tokens.
+///
+/// Loaded before Foundation `_global.scss` when `$theme-enable-foundation` is true.
+/// Palette / greys stay **concrete hex** (Foundation `scale-color` math cannot use `var()`).
+/// Runtime light/dark follows theme via `--foundation-*` CSS aliases in `_root.scss`
+/// (see `applyFoundationBridge`, which clears inline overrides so aliases win).
+@use '../tokens/colors' as *;
+@use '../tokens/variables' as *;
+
+// ─── Palette (ZF `$foundation-palette` keys) ─────────────────────────────────
+// Canonical compile-time defaults use shared default / semantic-dark tokens.
+$foundation-palette: (
+  primary: $primary-default-color,
+  secondary: $secondary-default-color,
+  success: $success-dark,
+  warning: $warning-dark,
+  alert: $error-dark,
+) !default;
+
+$primary-color: $primary-default-color !default;
+$secondary-color: $secondary-default-color !default;
+$success-color: $success-dark !default;
+$warning-color: $warning-dark !default;
+$alert-color: $error-dark !default;
+
+// ─── Neutrals (parallel to theme greys / defaults) ────────────────────────────
+$light-gray: $grey-200 !default;
+$medium-gray: $grey-400 !default;
+$dark-gray: $grey-600 !default;
+$black: $default-black !default;
+$white: $default-white !default;
+
+// ─── Body / type (dark-first compile baseline; runtime via CSS aliases) ───────
+$body-font-family: $text-font-family !default;
+$body-background: $main-background-dark !default;
+$body-font-color: $text-color-dark !default;
+$header-color: $text-color-dark !default;
+$global-font-size: $font-size-alt !default;
+$global-lineheight: 1.5 !default;
+
+// ─── Shape / measure (parallel to `--border-radius-md` / `--page-max`) ────────
+$global-radius: $radius-md !default;
+$global-width: 90rem !default; // matches `--page-max` in `_root.scss`
+$grid-container: $global-width !default;
+$grid-container-max: $global-width !default;
+$grid-row-width: $global-width !default;
+
+// ─── Grid mode ───────────────────────────────────────────────────────────────
+$xy-grid: true !default;
+$global-flexbox: true !default;
+
+// ─── Breakpoints (from `$breakpoint-*`, not hard-copied ZF defaults) ─────────
+$breakpoints: (
+  small: 0,
+  medium: $breakpoint-tablet,
+  large: $breakpoint-standard,
+  xlarge: $breakpoint-widescreen,
+  xxlarge: $breakpoint-ultrawide,
+) !default;

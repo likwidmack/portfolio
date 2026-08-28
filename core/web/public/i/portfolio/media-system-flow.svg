@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 810" role="img" aria-labelledby="title desc">
+  <title id="title">Media system recovery flow</title>
+  <desc id="desc">Manifest and segments move through playback state into interface feedback, with recovery controls returning to playback.</desc>
+  <rect width="1440" height="810" fill="#171513"/>
+  <g fill="none" stroke="#ff766a" stroke-width="5">
+    <path d="M250 405H430"/>
+    <path d="M690 405H870"/>
+    <path d="M1130 405h110v180H720"/>
+    <path d="M720 585H470v-78"/>
+  </g>
+  <g fill="#f7f1e7" font-family="Arial, sans-serif">
+    <text x="90" y="90" font-size="36" font-weight="700">Playback is a visible state machine</text>
+    <text x="90" y="135" font-size="22" fill="#cbbbaa">The viewer gets an explanation and a recovery path, not an opaque spinner.</text>
+  </g>
+  <g font-family="Arial, sans-serif" text-anchor="middle">
+    <g>
+      <rect x="70" y="315" width="180" height="180" rx="24" fill="#27231f" stroke="#6e6259" stroke-width="3"/>
+      <text x="160" y="395" fill="#ff766a" font-size="24" font-weight="700">Manifest</text>
+      <text x="160" y="432" fill="#f7f1e7" font-size="19">+ segments</text>
+    </g>
+    <g>
+      <rect x="430" y="275" width="260" height="260" rx="30" fill="#fffaf1"/>
+      <text x="560" y="370" fill="#171513" font-size="26" font-weight="700">Playback state</text>
+      <text x="560" y="412" fill="#5d5149" font-size="19">ready &#183; loading</text>
+      <text x="560" y="445" fill="#5d5149" font-size="19">stalled &#183; unsupported</text>
+    </g>
+    <g>
+      <rect x="870" y="315" width="260" height="180" rx="24" fill="#27231f" stroke="#6e6259" stroke-width="3"/>
+      <text x="1000" y="395" fill="#ff766a" font-size="24" font-weight="700">Interface feedback</text>
+      <text x="1000" y="432" fill="#f7f1e7" font-size="19">status + next action</text>
+    </g>
+    <g>
+      <rect x="590" y="570" width="260" height="120" rx="24" fill="#ff766a"/>
+      <text x="720" y="620" fill="#171513" font-size="24" font-weight="700">Recovery controls</text>
+      <text x="720" y="655" fill="#171513" font-size="19">retry &#183; switch &#183; explain</text>
+    </g>
+  </g>
+</svg>

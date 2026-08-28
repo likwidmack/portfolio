@@ -1,0 +1,179 @@
+@use "themes/mytheme/variables/general";
+@use "themes/mytheme/variables/message";
+@use "../../mixins";
+
+// core
+.p-toast {
+    width: 25rem;
+    white-space: pre-line;
+    word-break: break-word;
+}
+
+.p-toast-message-icon {
+    flex-shrink: 0;
+}
+
+.p-toast-message-content {
+    display: flex;
+    align-items: flex-start;
+}
+
+.p-toast-message-text {
+    flex: 1 1 auto;
+}
+
+.p-toast-top-center {
+    transform: translateX(-50%);
+}
+
+.p-toast-bottom-center {
+    transform: translateX(-50%);
+}
+
+.p-toast-center {
+    min-width: 20vw;
+    transform: translate(-50%, -50%);
+}
+
+.p-toast-icon-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+}
+
+.p-toast-icon-close.p-link {
+    cursor: pointer;
+}
+
+/* Animations */
+.p-toast-message-enter-from {
+    opacity: 0;
+    -webkit-transform: translateY(50%);
+    -ms-transform: translateY(50%);
+    transform: translateY(50%);
+}
+
+.p-toast-message-leave-from {
+    max-height: 1000px;
+}
+
+.p-toast .p-toast-message.p-toast-message-leave-to {
+    max-height: 0;
+    opacity: 0;
+    margin-bottom: 0;
+    overflow: hidden;
+}
+
+.p-toast-message-enter-active {
+    -webkit-transition: transform 0.3s, opacity 0.3s;
+    transition: transform 0.3s, opacity 0.3s;
+}
+
+.p-toast-message-leave-active {
+    -webkit-transition: max-height 0.45s cubic-bezier(0, 1, 0, 1), opacity 0.3s, margin-bottom 0.3s;
+    transition: max-height 0.45s cubic-bezier(0, 1, 0, 1), opacity 0.3s, margin-bottom 0.3s;
+}
+
+// theme
+.p-toast {
+    opacity: message.$toastOpacity;
+
+    .p-toast-message {
+        margin: message.$toastMargin;
+        box-shadow: message.$toastShadow;
+        border-radius: general.$borderRadius;
+
+        .p-toast-message-content {
+            padding: message.$toastPadding;
+            border-width: message.$toastBorderWidth;
+
+            .p-toast-message-text {
+                margin: message.$toastMessageTextMargin;
+            }
+
+            .p-toast-message-icon {
+                font-size: message.$toastIconFontSize;
+
+                &.p-icon {
+                    width: message.$toastIconFontSize;
+                    height: message.$toastIconFontSize;
+                }
+            }
+
+            .p-toast-summary {
+                font-weight: message.$toastTitleFontWeight;
+            }
+
+            .p-toast-detail {
+                margin: message.$toastDetailMargin;
+            }
+        }
+
+        .p-toast-icon-close {
+            width: message.$toastIconFontSize;
+            height: message.$toastIconFontSize;
+            border-radius: general.$actionIconBorderRadius;
+            background: transparent;
+            transition: general.$actionIconTransition;
+            outline-color: transparent;
+
+            &:hover {
+                background: rgba(255, 255, 255, 0.5);
+            }
+
+            &:focus-visible {
+                @include mixins.focused();
+            }
+        }
+
+        &.p-toast-message-info {
+            background: message.$infoMessageBg;
+            border: message.$infoMessageBorder;
+            border-width: message.$messageBorderWidth;
+            color: message.$infoMessageTextColor;
+
+            .p-toast-message-icon,
+            .p-toast-icon-close {
+                color: message.$infoMessageIconColor;
+            }
+        }
+
+        &.p-toast-message-success {
+            background: message.$successMessageBg;
+            border: message.$successMessageBorder;
+            border-width: message.$messageBorderWidth;
+            color: message.$successMessageTextColor;
+
+            .p-toast-message-icon,
+            .p-toast-icon-close {
+                color: message.$successMessageIconColor;
+            }
+        }
+
+        &.p-toast-message-warn {
+            background: message.$warningMessageBg;
+            border: message.$warningMessageBorder;
+            border-width: message.$messageBorderWidth;
+            color: message.$warningMessageTextColor;
+
+            .p-toast-message-icon,
+            .p-toast-icon-close {
+                color: message.$warningMessageIconColor;
+            }
+        }
+
+        &.p-toast-message-error {
+            background: message.$errorMessageBg;
+            border: message.$errorMessageBorder;
+            border-width: message.$messageBorderWidth;
+            color: message.$errorMessageTextColor;
+
+            .p-toast-message-icon,
+            .p-toast-icon-close {
+                color: message.$errorMessageIconColor;
+            }
+        }
+    }
+}

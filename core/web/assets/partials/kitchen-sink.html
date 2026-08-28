@@ -1,0 +1,720 @@
+<div class="kitchen">
+  <header class="body-header">
+    <h1 class="docs-page-title">Kitchen Sink <small>Foundation Styles</small></h1>
+    <p class="docs-description lead">Everything but.</p>
+    <p>Basic styles, themes, and color manipulation.</p>
+  </header>
+
+  <h2 id="abide" class="docs-heading" data-magellan-target="abide">
+    Abide<a class="docs-heading-icon" href="#abide"></a>
+  </h2>
+  <div class="docs-code-live">
+    <form data-abide="2v15jo-abide" novalidate="">
+      <div class="grid-x grid-margin-x">
+        <div class="cell">
+          <div aria-live="assertive" class="alert callout" data-abide-error="" style="display: none">
+            <p><i class="fi-alert"></i> There are some errors in your form.</p>
+          </div>
+        </div>
+      </div>
+      <div class="grid-x grid-margin-x">
+        <div class="cell small-12">
+          <label
+            >Number Required
+            <input
+              aria-describedby="exampleHelpTextNumber"
+              pattern="number"
+              placeholder="1234"
+              required=""
+              type="text"
+            />
+            <span class="form-error" role="alert"> Yo, you had better fill this out, it's required. </span>
+          </label>
+          <p id="exampleHelpTextNumber" class="help-text">Here's how you use this input field!</p>
+        </div>
+        <div class="cell small-12">
+          <label
+            >Nothing Required!
+            <input
+              aria-describedby="exampleHelpTextNothing"
+              data-abide-ignore=""
+              placeholder="Use me, or don't"
+              type="text"
+            />
+          </label>
+          <p id="exampleHelpTextNothing" class="help-text">This input is ignored by Abide using `data-abide-ignore`</p>
+        </div>
+        <div class="cell small-12">
+          <label
+            >Password Required
+            <input
+              id="password"
+              aria-describedby="exampleHelpTextPassword"
+              placeholder="yeti4preZ"
+              required=""
+              type="password"
+            />
+            <span class="form-error" role="alert"> I'm required! </span>
+            <p id="exampleHelpTextPassword" class="help-text">Enter a password please.</p>
+          </label>
+        </div>
+        <div class="cell small-12">
+          <label
+            >Re-enter Password
+            <input
+              aria-describedby="exampleHelpText2"
+              data-equalto="password"
+              pattern="alpha_numeric"
+              placeholder="yeti4preZ"
+              required=""
+              type="password"
+            />
+            <span class="form-error" role="alert"> Hey, passwords are supposed to match! </span>
+          </label>
+          <p id="exampleHelpText2" class="help-text">
+            This field is using the `data-equalto="password"` attribute, causing it to match the password field above.
+          </p>
+        </div>
+      </div>
+      <div class="grid-x grid-margin-x">
+        <div class="cell medium-6">
+          <label
+            >URL Pattern, not required, but throws error if it doesn't match the Regular Expression for a valid URL.
+            <input pattern="url" placeholder="https://get.foundation" type="text" />
+          </label>
+        </div>
+        <div class="cell medium-6">
+          <label
+            >European Cars, Choose One, it can't be the blank option.
+            <select id="select" required="">
+              <option value=""></option>
+              <option value="volvo">Volvo</option>
+              <option value="saab">Saab</option>
+              <option value="mercedes">Mercedes</option>
+              <option value="audi">Audi</option>
+            </select>
+          </label>
+        </div>
+      </div>
+      <div class="grid-x grid-margin-x">
+        <fieldset class="cell medium-6">
+          <legend>Choose Your Favorite, and this is required, so you have to pick one.</legend>
+          <input id="pokemonRed" name="pokemon" type="radio" value="Red" /><label for="pokemonRed">Red</label>
+          <input id="pokemonBlue" name="pokemon" required="" type="radio" value="Blue" /><label for="pokemonBlue"
+            >Blue</label
+          >
+          <input id="pokemonYellow" name="pokemon" type="radio" value="Yellow" /><label for="pokemonYellow"
+            >Yellow</label
+          >
+        </fieldset>
+        <fieldset class="cell medium-6">
+          <legend>Choose Your Favorite - not required, you can leave this one blank.</legend>
+          <input id="pocketsRed" name="pockets" type="radio" value="Red" /><label for="pocketsRed">Red</label>
+          <input id="pocketsBlue" name="pockets" type="radio" value="Blue" /><label for="pocketsBlue">Blue</label>
+          <input id="pocketsYellow" name="pockets" type="radio" value="Yellow" /><label for="pocketsYellow"
+            >Yellow</label
+          >
+        </fieldset>
+        <fieldset class="cell medium-6">
+          <legend>Check these out</legend>
+          <input id="checkbox1" type="checkbox" /><label for="checkbox1">Checkbox 1</label>
+          <input id="checkbox2" required="" type="checkbox" /><label for="checkbox2">Checkbox 2</label>
+          <input id="checkbox3" type="checkbox" /><label for="checkbox3">Checkbox 3</label>
+        </fieldset>
+      </div>
+      <div class="grid-x grid-margin-x">
+        <fieldset class="cell medium-6">
+          <button class="button" type="submit" value="Submit">Submit</button>
+        </fieldset>
+        <fieldset class="cell medium-6">
+          <button class="button" type="reset" value="Reset">Reset</button>
+        </fieldset>
+      </div>
+    </form>
+  </div>
+  <hr />
+
+  <h2 id="badge" class="docs-heading" data-magellan-target="badge">
+    Badge<a class="docs-heading-icon" href="#badge"></a>
+  </h2>
+  <div class="docs-code-live">
+    <span class="primary badge">1</span>
+    <span class="secondary badge">2</span>
+    <span class="success badge">3</span>
+    <span class="alert badge">A</span>
+    <span class="warning badge">B</span>
+    <span class="info badge">C</span>
+  </div>
+  <hr />
+
+  <h2 id="breadcrumbs" class="docs-heading" data-magellan-target="breadcrumbs">
+    Breadcrumbs<a class="docs-heading-icon" href="#breadcrumbs"></a>
+  </h2>
+  <div class="docs-code-live">
+    <nav aria-label="You are here:" role="navigation">
+      <ul class="breadcrumbs">
+        <li><a href="#0">Home</a></li>
+        <li><a href="#0">Features</a></li>
+        <li class="disabled">Gene Splicing</li>
+        <li><span class="show-for-sr">Current: </span> Cloning</li>
+      </ul>
+    </nav>
+  </div>
+  <hr />
+
+  <h2 id="button" class="docs-heading" data-magellan-target="button">
+    Button<a class="docs-heading-icon" href="#button"></a>
+  </h2>
+  <div class="docs-code-live">
+    <!-- Anchors (links) -->
+    <a class="button" href="#0">Learn More</a>
+    <a class="button" href="#features">View All Features</a>
+
+    <hr class="sub-line" />
+    <h4>Button Sizes</h4>
+    <div>
+      <a class="button tiny" href="#">So Tiny</a>
+      <a class="button small" href="#">So Small</a>
+      <a class="button" href="#">So Basic</a>
+      <a class="button large" href="#">So Large</a>
+      <a class="button expanded" href="#">Such Expand</a>
+      <a class="button small expanded" href="#">Wow, Small Expand</a>
+    </div>
+
+    <!-- Buttons (actions) -->
+    <hr class="sub-line" />
+    <h4>Action Buttons</h4>
+    <div>
+      <button class="button primary">Primary</button>
+      <button class="button secondary">Secondary</button>
+      <button class="button success">Success</button>
+      <button class="button alert">Alert</button>
+      <button class="button warning">Warning</button>
+      <button class="button info">Info</button>
+    </div>
+
+    <hr class="sub-line" />
+    <h4>Hollow Buttons</h4>
+    <div>
+      <button class="hollow button" href="#">Primary</button>
+      <button class="hollow button secondary" href="#">Secondary</button>
+      <button class="hollow button success" href="#">Success</button>
+      <button class="hollow button alert" href="#">Alert</button>
+      <button class="hollow button info" href="#">Info</button>
+      <button class="hollow button" href="#" disabled>Disabled</button>
+    </div>
+
+    <hr class="sub-line" />
+    <h4>Button Group</h4>
+    <div class="button-group">
+      <a class="button">One</a>
+      <a class="button">Two</a>
+      <a class="button">Three</a>
+    </div>
+
+    <hr class="sub-line" />
+    <h4>Text Buttons</h4>
+    <div>
+      <a class="clear button" href="#">Primary</a>
+      <a class="clear button secondary" href="#">Secondary</a>
+      <a class="clear button success" href="#">Success</a>
+      <a class="clear button alert" href="#">Alert</a>
+      <a class="clear button warning" href="#">Warning</a>
+      <a class="clear button" href="#" disabled>Disabled</a>
+    </div>
+  </div>
+  <hr />
+
+  <h2 id="callout" class="docs-heading" data-magellan-target="callout">
+    Callout<a class="docs-heading-icon" href="#callout"></a>
+  </h2>
+  <div class="docs-code-live">
+    <div class="callout">
+      <h5>This is a callout.</h5>
+      <p>It has an easy to override visual style, and is appropriately subdued.</p>
+      <a href="#0">It's dangerous to go alone, take this.</a>
+    </div>
+
+    <div class="callout primary">
+      <h5>This is a primary callout.</h5>
+      <p>It has an easy to override visual style, and is appropriately subdued.</p>
+      <a href="#0">It's dangerous to go alone, take this.</a>
+    </div>
+
+    <div class="callout secondary">
+      <h5>This is a secondary callout</h5>
+      <p>It has an easy to override visual style, and is appropriately subdued.</p>
+      <a href="#0">It's dangerous to go alone, take this.</a>
+    </div>
+
+    <div class="callout success">
+      <h5>This is a success callout</h5>
+      <p>It has an easy to override visual style, and is appropriately subdued.</p>
+      <a href="#0">It's dangerous to go alone, take this.</a>
+    </div>
+
+    <div class="callout info">
+      <h5>This is an info callout</h5>
+      <p>It has an easy to override visual style, and is appropriately subdued.</p>
+      <a href="#0">It's dangerous to go alone, take this.</a>
+    </div>
+
+    <div class="callout warning">
+      <h5>This is a warning callout</h5>
+      <p>It has an easy to override visual style, and is appropriately subdued.</p>
+      <a href="#0">It's dangerous to go alone, take this.</a>
+    </div>
+
+    <div class="callout alert">
+      <h5>This is an alert callout</h5>
+      <p>It has an easy to override visual style, and is appropriately subdued.</p>
+      <a href="#0">It's dangerous to go alone, take this.</a>
+    </div>
+  </div>
+  <hr />
+
+  <h2 id="close-button" class="docs-heading" data-magellan-target="close-button">
+    Close Button<a class="docs-heading-icon" href="#close-button"></a>
+  </h2>
+  <div class="docs-code-live">
+    <div class="callout" data-closable="">
+      <button aria-label="Close alert" class="close-button" data-close="" type="button">
+        <span aria-hidden="true">×</span>
+      </button>
+      <p>This is a close button example.</p>
+    </div>
+  </div>
+  <hr />
+
+  <h2 id="flex-grid" class="docs-heading" data-magellan-target="flex-grid">
+    Flex Grid<a class="docs-heading-icon" href="#flex-grid"></a>
+  </h2>
+  <div class="grid-container full">
+    <div class="grid-x display">
+      <div class="cell small-6">6 columns</div>
+      <div class="cell small-6">6 columns</div>
+    </div>
+    <div class="grid-x display">
+      <div class="cell medium-6 large-4">12/6/4 columns</div>
+      <div class="cell medium-6 large-8">12/6/8 columns</div>
+    </div>
+    <div class="grid-x display">
+      <div class="cell small-2 medium-3 large-4">2/3/4 columns</div>
+      <div class="cell small-4 medium-3 large-4">4/3/4 columns</div>
+      <div class="cell small-6 large-4">6/6/4 columns</div>
+    </div>
+    <div class="grid-x display">
+      <div class="cell large-3">12/12/3 columns</div>
+      <div class="cell large-6">12/12/6 columns</div>
+      <div class="cell large-3">12/12/3 columns</div>
+    </div>
+    <div class="grid-x display">
+      <div class="cell small-6 large-2">6/6/2 columns</div>
+      <div class="cell small-6 large-8">6/6/8 columns</div>
+      <div class="cell small-12 large-2">12/12/2 columns</div>
+    </div>
+    <div class="grid-x display">
+      <div class="cell small-3">3 columns</div>
+      <div class="cell small-9">9 columns</div>
+    </div>
+    <div class="grid-x display">
+      <div class="cell medium-8 large-4">12/8/4 columns</div>
+      <div class="cell medium-4 large-8">12/4/8 columns</div>
+    </div>
+  </div>
+  <hr />
+
+  <h2 id="responsive-embed" class="docs-heading" data-magellan-target="responsive-embed">
+    Responsive Embed<a class="docs-heading-icon" href="#responsive-embed"></a>
+  </h2>
+  <div class="docs-code-live">
+    <div class="responsive-embed">
+      <iframe
+        width="560"
+        height="315"
+        src="https://www.youtube-nocookie.com/embed/F7WgLq-U2SA?si=iqzWKYrdy9fQc4mc"
+        title="YouTube video player"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen
+      ></iframe>
+    </div>
+  </div>
+  <hr />
+
+  <h2 id="float-classes" class="docs-heading" data-magellan-target="float-classes">
+    Float Classes<a class="docs-heading-icon" href="#float-classes"></a>
+  </h2>
+  <div class="docs-code-live">
+    <div class="callout clearfix">
+      <a class="button float-left">Left</a>
+      <a class="button float-right">Right</a>
+    </div>
+  </div>
+  <hr />
+
+  <h2 id="forms" class="docs-heading" data-magellan-target="forms">
+    Forms<a class="docs-heading-icon" href="#forms"></a>
+  </h2>
+  <div class="docs-code-live">
+    <form>
+      <label
+        >Input Label
+        <input aria-describedby="exampleHelpText" placeholder=".small-12.columns" type="text" />
+      </label>
+      <p id="exampleHelpText" class="help-text">Here's how you use this input field!</p>
+      <label>
+        How many puppies?
+        <input type="number" value="100" />
+      </label>
+      <label>
+        What books did you read over summer break?
+        <textarea placeholder="None"></textarea>
+      </label>
+      <label
+        >Select Menu
+        <select>
+          <option value="husker">Husker</option>
+          <option value="starbuck">Starbuck</option>
+          <option value="hotdog">Hot Dog</option>
+          <option value="apollo">Apollo</option>
+        </select>
+      </label>
+      <div class="grid-x grid-margin-x">
+        <fieldset class="cell large-6">
+          <legend>Choose Your Favorite</legend>
+          <input id="formRed" name="pokemon" required="" type="radio" value="Red" /><label for="formRed">Red</label>
+          <input id="formBlue" name="pokemon" type="radio" value="Blue" /><label for="formBlue">Blue</label>
+          <input id="formYellow" name="pokemon" type="radio" value="Yellow" /><label for="formYellow">Yellow</label>
+        </fieldset>
+        <fieldset class="cell large-6">
+          <legend>Check these out</legend>
+          <input id="formCheckbox1" type="checkbox" /><label for="formCheckbox1">Checkbox 1</label>
+          <input id="formCheckbox2" type="checkbox" /><label for="formCheckbox2">Checkbox 2</label>
+          <input id="formCheckbox3" type="checkbox" /><label for="formCheckbox3">Checkbox 3</label>
+        </fieldset>
+      </div>
+      <div class="grid-x grid-margin-x">
+        <div class="cell small-3">
+          <label class="text-right middle" for="middle-label">Label</label>
+        </div>
+        <div class="cell small-9">
+          <input id="middle-label" placeholder="Right- and middle-aligned text input" type="text" />
+        </div>
+      </div>
+      <div class="input-group">
+        <span class="input-group-label">$</span>
+        <input class="input-group-field" type="url" />
+        <div class="input-group-button">
+          <input class="button" type="submit" value="Submit" />
+        </div>
+      </div>
+    </form>
+  </div>
+  <hr />
+
+  <h2 id="interchange" class="docs-heading" data-magellan-target="interchange">
+    Interchange<a class="docs-heading-icon" href="#interchange"></a>
+  </h2>
+  <div class="docs-code-live">
+    <img
+      id="8qccuy-interchange"
+      alt=""
+      data-events="resize"
+      data-interchange="[@/assets/img/interchange/small.jpg, small], [@/assets/img/interchange/medium.jpg, medium], [@/assets/img/interchange/large.jpg, large]"
+      data-resize="8qccuy-interchange"
+      src="@/assets/img/interchange/medium.jpg"
+    />
+  </div>
+  <hr />
+
+  <h2 id="label" class="docs-heading" data-magellan-target="label">
+    Label<a class="docs-heading-icon" href="#label"></a>
+  </h2>
+  <div class="docs-code-live">
+    <span class="primary label">Primary Label</span>
+    <span class="secondary label">Secondary Label</span>
+    <span class="success label">Success Label</span>
+    <span class="alert label">Alert Label</span>
+    <span class="warning label">Warning Label</span>
+  </div>
+  <hr />
+
+  <h2 id="magellan" class="docs-heading" data-magellan-target="magellan">
+    Magellan<a class="docs-heading-icon" href="#magellan"></a>
+  </h2>
+  <ul
+    id="3wl9o6-magellan"
+    class="horizontal menu"
+    data-events="resize"
+    data-magellan="cprugx-magellan"
+    data-resize="3wl9o6-magellan"
+    data-scroll="3wl9o6-magellan"
+  >
+    <li><a href="#first">First Arrival</a></li>
+    <li><a href="#second">Second Arrival</a></li>
+    <li><a href="#third">Third Arrival</a></li>
+  </ul>
+  <hr />
+
+  <h2 id="media-object" class="docs-heading" data-magellan-target="media-object">
+    Media Object<a class="docs-heading-icon" href="#media-object"></a>
+  </h2>
+  <div class="docs-code-live">
+    <div class="media-object">
+      <div class="media-object-section">
+        <img alt="" src="https://placeimg.com/200/200/people" />
+      </div>
+      <div class="media-object-section">
+        <h4>Dreams feel real while we're in them.</h4>
+        <p>
+          I'm going to improvise. Listen, there's something you should know about me... about inception. An idea is like
+          a virus, resilient, highly contagious. The smallest seed of an idea can grow. It can grow to define or destroy
+          you.
+        </p>
+      </div>
+    </div>
+  </div>
+  <hr />
+
+  <h2 id="menu" class="docs-heading" data-magellan-target="menu">Menu<a class="docs-heading-icon" href="#menu"></a></h2>
+  <div class="docs-code-live">
+    <ul class="menu">
+      <li>
+        <a href="#0"><i class="fi-list"></i> <span>One</span></a>
+      </li>
+      <li>
+        <a href="#0"><i class="fi-list"></i> <span>Two</span></a>
+      </li>
+      <li>
+        <a href="#0"><i class="fi-list"></i> <span>Three</span></a>
+      </li>
+      <li>
+        <a href="#0"><i class="fi-list"></i> <span>Four</span></a>
+      </li>
+    </ul>
+  </div>
+  <hr />
+
+  <h2 id="pagination" class="docs-heading" data-magellan-target="pagination">
+    Pagination<a class="docs-heading-icon" href="#pagination"></a>
+  </h2>
+  <div class="docs-code-live" aria-label="Pagination" role="navigation">
+    <ul class="pagination">
+      <li class="disabled">Previous <span class="show-for-sr">page</span></li>
+      <li class="current"><span class="show-for-sr">You're on page</span> 1</li>
+      <li><a aria-label="Page 2" href="#0">2</a></li>
+      <li><a aria-label="Page 3" href="#0">3</a></li>
+      <li><a aria-label="Page 4" href="#0">4</a></li>
+      <li aria-hidden="true" class="ellipsis"></li>
+      <li><a aria-label="Page 12" href="#0">12</a></li>
+      <li><a aria-label="Page 13" href="#0">13</a></li>
+      <li>
+        <a aria-label="Next page" href="#0">Next <span class="show-for-sr">page</span></a>
+      </li>
+    </ul>
+  </div>
+  <hr />
+
+  <h2 id="progress-bar" class="docs-heading" data-magellan-target="progress-bar">
+    Progress Bar<a class="docs-heading-icon" href="#progress-bar"></a>
+  </h2>
+  <div class="docs-code-live">
+    <div
+      aria-valuemax="100"
+      aria-valuemin="0"
+      aria-valuenow="25"
+      aria-valuetext="25 percent"
+      class="primary progress"
+      role="progressbar"
+      tabindex="0"
+    >
+      <div class="progress-meter" style="width: 25%">
+        <p class="progress-meter-text">25%</p>
+      </div>
+    </div>
+
+    <div class="warning progress">
+      <div class="progress-meter" style="width: 50%">
+        <p class="progress-meter-text">50%</p>
+      </div>
+    </div>
+
+    <div class="alert progress">
+      <div class="progress-meter" style="width: 75%">
+        <p class="progress-meter-text">75%</p>
+      </div>
+    </div>
+
+    <div
+      aria-valuemax="100"
+      aria-valuemin="0"
+      aria-valuenow="100"
+      aria-valuetext="100 percent"
+      class="success progress"
+      role="progressbar"
+      tabindex="0"
+    >
+      <div class="progress-meter" style="width: 100%">
+        <p class="progress-meter-text">100%</p>
+      </div>
+    </div>
+  </div>
+  <hr />
+
+  <h2 id="switch" class="docs-heading" data-magellan-target="switch">
+    Switch<a class="docs-heading-icon" href="#switch"></a>
+  </h2>
+  <div class="docs-code-live">
+    <div class="switch tiny">
+      <input id="tinySwitch" class="switch-input" name="exampleSwitch" type="checkbox" />
+      <label class="switch-paddle" for="tinySwitch">
+        <span class="show-for-sr">Tiny Sandwiches Enabled</span>
+      </label>
+    </div>
+
+    <div class="switch small">
+      <input id="smallSwitch" class="switch-input" name="exampleSwitch" type="checkbox" />
+      <label class="switch-paddle" for="smallSwitch">
+        <span class="show-for-sr">Small Portions Only</span>
+      </label>
+    </div>
+
+    <div class="switch large">
+      <input id="largeSwitch" class="switch-input" name="exampleSwitch" type="checkbox" />
+      <label class="switch-paddle" for="largeSwitch">
+        <span class="show-for-sr">Show Large Elephants</span>
+      </label>
+    </div>
+  </div>
+  <hr />
+
+  <h2 id="table" class="docs-heading" data-magellan-target="table">
+    Table<a class="docs-heading-icon" href="#table"></a>
+  </h2>
+  <div class="docs-code-live">
+    <table>
+      <thead>
+        <tr>
+          <th>Table Header</th>
+          <th>Table Header</th>
+          <th>Table Header</th>
+          <th>Table Header</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Content Goes Here</td>
+          <td>This is longer content Donec id elit non mi porta gravida at eget metus.</td>
+          <td>Content Goes Here</td>
+          <td>Content Goes Here</td>
+        </tr>
+        <tr>
+          <td>Content Goes Here</td>
+          <td>This is longer Content Goes Here Donec id elit non mi porta gravida at eget metus.</td>
+          <td>Content Goes Here</td>
+          <td>Content Goes Here</td>
+        </tr>
+        <tr>
+          <td>Content Goes Here</td>
+          <td>This is longer Content Goes Here Donec id elit non mi porta gravida at eget metus.</td>
+          <td>Content Goes Here</td>
+          <td>Content Goes Here</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <hr />
+
+  <h2 id="thumbnail" class="docs-heading" data-magellan-target="thumbnail">
+    Thumbnail<a class="docs-heading-icon" href="#thumbnail"></a>
+  </h2>
+  <div class="docs-code-live">
+    <div class="grid-x grid-margin-x">
+      <div class="cell small-4">
+        <img alt="Photo of Uranus." class="thumbnail" src="@/assets/img/thumbnail/01.jpg" />
+      </div>
+      <div class="cell small-4">
+        <img alt="Photo of Neptune." class="thumbnail" src="@/assets/img/thumbnail/02.jpg" />
+      </div>
+      <div class="cell small-4">
+        <img alt="Photo of Pluto." class="thumbnail" src="@/assets/img/thumbnail/03.jpg" />
+      </div>
+    </div>
+  </div>
+  <hr />
+
+  <h2 id="title-bar" class="docs-heading" data-magellan-target="title-bar">
+    Title Bar<a class="docs-heading-icon" href="#title-bar"></a>
+  </h2>
+  <div class="docs-code-live">
+    <div class="title-bar">
+      <div class="title-bar-left">
+        <button class="menu-icon" type="button"></button>
+        <span class="title-bar-title">Foundation</span>
+      </div>
+      <div class="title-bar-right">
+        <button class="menu-icon" type="button"></button>
+      </div>
+    </div>
+  </div>
+  <hr />
+
+  <h2 id="top-bar" class="docs-heading" data-magellan-target="top-bar">
+    Top Bar<a class="docs-heading-icon" href="#top-bar"></a>
+  </h2>
+  <div class="docs-code-live">
+    <div class="top-bar">
+      <div class="top-bar-left">
+        <ul class="menu">
+          <li class="menu-text" role="none">Site Title</li>
+          <li class="t" role="none">One</li>
+          <li role="none"><a href="#0" role="menuitem">Two</a></li>
+          <li role="none"><a href="#0" role="menuitem">Three</a></li>
+        </ul>
+      </div>
+      <div class="top-bar-right">
+        <ul class="menu">
+          <li><input placeholder="Search" type="search" /></li>
+          <li>
+            <button class="button" type="button">Search</button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <hr />
+
+  <h2 id="visibility-classes" class="docs-heading" data-magellan-target="visibility-classes">
+    Visibility Classes<a class="docs-heading-icon" href="#visibility-classes"></a>
+  </h2>
+  <div class="docs-code-live">
+    <p>You are on a small screen or larger.</p>
+    <p class="show-for-medium">You are on a medium screen or larger.</p>
+    <p class="show-for-large">You are on a large screen or larger.</p>
+    <p class="show-for-small-only">You are <em>definitely</em> on a small screen.</p>
+    <p class="show-for-medium-only">You are <em>definitely</em> on a medium screen.</p>
+    <p class="show-for-large-only">You are <em>definitely</em> on a large screen.</p>
+
+    <p class="hide-for-medium">You are <em>not</em> on a medium screen or larger.</p>
+    <p class="hide-for-large">You are <em>not</em> on a large screen or larger.</p>
+    <p class="hide-for-small-only">You are <em>definitely not</em> on a small screen.</p>
+    <p class="hide-for-medium-only">You are <em>definitely not</em> on a medium screen.</p>
+    <p class="hide-for-large-only">You are <em>definitely not</em> on a large screen.</p>
+    <p class="hide">Can't touch this.</p>
+
+    <p class="invisible">Can sort of touch this.</p>
+
+    <p class="show-for-landscape">You are in landscape orientation.</p>
+    <p class="show-for-portrait">You are in portrait orientation.</p>
+
+    <p class="show-for-sr">This text can only be read by a screen reader.</p>
+    <p>There's a line of text above this one, you just can't see it.</p>
+
+    <p aria-hidden="true">This text can be seen, but won't be read by a screen reader.</p>
+
+    <p><a class="show-on-focus" href="#mainContent">Skip to Content</a></p>
+    <header id="header" role="banner"></header>
+    <main id="mainContent" role="main" tabindex="0"></main>
+  </div>
+</div>

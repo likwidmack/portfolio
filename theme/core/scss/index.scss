@@ -1,0 +1,7 @@
+@use 'config' as *;
+@use 'layers/normalize';
+@use 'layers/foundation';
+@use 'layers/primevue';
+@use 'layers/theme';
+
+@layer normalize, foundation, primevue, theme;

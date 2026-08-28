@@ -1,0 +1,77 @@
+{
+  "slug": "experience-systems",
+  "order": 6,
+  "title": "Experience Systems",
+  "category": "UX from basics to complex workflows",
+  "summary": "How design tokens, component libraries, accessibility baselines, and domain workflows stay coherent—from marketing clarity to offline-capable operational software and human-controlled AI flows.",
+  "role": "Principal UI engineer — design systems, interaction models, accessibility, and complex product UX",
+  "timeframe": "Design-system packages, consulting-site baselines, show-operations MVP, and portfolio UX surfaces, 2019–2026",
+  "confidentiality": "sanitized",
+  "problem": "Teams ship both simple public journeys and dense internal tools. Without a shared grammar for state, recovery, and accessibility, basic pages drift and complex workflows become unteachable.",
+  "constraints": [
+    "Client and employer design systems remain referenced only at the pattern level; proprietary tokens and brand kits stay out of public copy.",
+    "Basic marketing UX must meet WCAG-minded baselines (skip links, landmarks, focus, and reduced motion) without waiting for a redesign.",
+    "Complex domains—show hierarchies, dependencies, offline queues, and approval gates—need typed models and reversible actions, not only prettier screens.",
+    "Proof surfaces (kitchen sinks, Storybook, and axe/Playwright checks) have to travel with the system so quality is inspectable."
+  ],
+  "approach": [
+    "Anchor basic UX in tokens, constrained component sets, and content-driven pages so marketing and admin previews share one visual language.",
+    "Raise the floor with accessibility as architecture: route announcers, skip links, forced-colors awareness, and automated axe coverage where the stack allows.",
+    "Model complex UX as domain contracts—workspace → show → segment → entry, with lock, version, dependency, and impact—before decorating the UI.",
+    "Design recovery and offline paths as visible states (queue, conflict, retry) rather than silent background magic.",
+    "Keep human approval in agentic flows: interpreted goals, bounded plans, and explicit approve/reject before irreversible work.",
+    "Expose the system through /styles kitchen-sink lanes, Storybook libraries, and decision journals so hiring teams can inspect the grammar."
+  ],
+  "evidence": [
+    {
+      "label": "Design-system proof",
+      "value": "@tgmc/theme tokens with Foundation and PrimeVue bridges plus /styles kitchen-sink lanes"
+    },
+    {
+      "label": "Basic UX proof",
+      "value": "Content-driven public sites with theme toggle, landmarks, adaptive media, and accessibility e2e gates"
+    },
+    {
+      "label": "Complex UX proof",
+      "value": "Show-operations hierarchy with dependencies, impact propagation, realtime updates, and offline mutation queues"
+    },
+    {
+      "label": "Agent UX proof",
+      "value": "Human-Controlled AI Lab approve/reject contract with deterministic replay fallback"
+    },
+    { "label": "Library proof", "value": "Storybook and jsx-a11y–linted component packages for product teams" }
+  ],
+  "technologies": [
+    "Vue",
+    "Nuxt",
+    "PrimeVue",
+    "Design tokens",
+    "SCSS",
+    "Storybook",
+    "Playwright + axe",
+    "@nuxt/a11y",
+    "Pinia",
+    "NestJS",
+    "Dexie / IndexedDB"
+  ],
+  "media": [
+    {
+      "type": "diagram",
+      "src": "/i/portfolio/experience-systems-flow.svg",
+      "alt": "Layers showing basic UX, complex UX, and proof surfaces on a shared tokens and accessibility foundation"
+    },
+    {
+      "type": "diagram",
+      "src": "/i/portfolio/agent-approval-flow.svg",
+      "alt": "Flow diagram from fuzzy goal to interpreted plan, approval gate, and prototype brief"
+    }
+  ],
+  "links": [
+    { "label": "Open the styles kitchen sink", "href": "/styles" },
+    { "label": "Try the Human-Controlled AI Lab", "href": "/ai-lab" },
+    { "label": "Read the AI Lab story", "href": "/work/human-controlled-ai-lab" },
+    { "label": "Related media systems story", "href": "/work/media-systems" },
+    { "label": "Related spatial experiences story", "href": "/work/spatial-experiences" },
+    { "label": "Review the decision journal", "href": "/process" }
+  ]
+}
