@@ -13,7 +13,7 @@ export function usePortfolioSeo(input: PortfolioSeoInput): void {
     ? input.image.startsWith('http')
       ? input.image
       : `${base}${input.image}`
-    : `${base}/i/portfolio/social-card.png`;
+    : 'https://raw.githubusercontent.com/likwidmack/portfolio/main/.github/social-preview.png';
 
   useSeoMeta({
     title: input.title,
