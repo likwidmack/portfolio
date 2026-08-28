@@ -94,6 +94,7 @@ test("app packages survive and private internals do not", () => {
   assert.match(readme, /likwidmack\.com/);
   assert.match(readme, /Table of contents/);
   assert.match(readme, /Quick start/);
+  assert.match(readme, /\.github\/social-preview\.png/);
   assert.doesNotMatch(
     readme,
     /tamaramack|sanitized|TM_GH_TOKEN|LK_GH_TOKEN|private source|public mirror|Synced from/i,
@@ -129,30 +130,94 @@ test("app packages survive and private internals do not", () => {
     "utf8",
   );
   assert.doesNotMatch(architecture, /\]\([^)]*cicd\.md\)|\]\([^)]*docker\.md\)|\]\([^)]*infra\.md\)/);
+
+  const seo = fs.readFileSync(path.join(dest, "core/web/app/composables/usePortfolioSeo.ts"), "utf8");
+  assert.match(seo, /\/i\/portfolio\/social-card\.png/);
+  assert.doesNotMatch(seo, /social-preview\.png/);
 });
 
-test("CDN objects under core/web/public are dropped", () => {
+function assertCdnPlaceholder(destRoot, rel, originalText, kind) {
+  const destFile = path.join(destRoot, rel);
+  const srcFile = path.join(fixture, rel);
+  assert.ok(fs.existsSync(destFile), `missing ${rel}`);
+  const destBytes = fs.readFileSync(destFile);
+  const srcBytes = fs.readFileSync(srcFile);
+  assert.equal(srcBytes.toString("utf8"), originalText, `${rel} fixture original drifted`);
+  assert.notEqual(Buffer.compare(destBytes, srcBytes), 0, `${rel} must not copy the fixture original`);
+  assert.ok(destBytes.length > 0 && destBytes.length < 2048, `${rel} must be a tiny placeholder`);
+  switch (kind) {
+    case "png":
+      assert.equal(destBytes.subarray(0, 8).toString("hex"), "89504e470d0a1a0a");
+      break;
+    case "jpg":
+      assert.equal(destBytes[0], 0xff);
+      assert.equal(destBytes[1], 0xd8);
+      break;
+    case "webp":
+      assert.equal(destBytes.subarray(0, 4).toString("ascii"), "RIFF");
+      assert.equal(destBytes.subarray(8, 12).toString("ascii"), "WEBP");
+      break;
+    case "svg":
+      assert.match(destBytes.toString("utf8"), /<svg\b/);
+      break;
+    case "ico":
+      assert.equal(destBytes.readUInt16LE(0), 0);
+      assert.equal(destBytes.readUInt16LE(2), 1);
+      break;
+    case "mp4":
+      assert.match(destBytes.toString("latin1"), /ftyp/);
+      break;
+    case "pdf":
+      assert.equal(destBytes.subarray(0, 5).toString("ascii"), "%PDF-");
+      break;
+    case "js":
+      assert.match(destBytes.toString("utf8"), /placeholder/);
+      assert.doesNotMatch(destBytes.toString("utf8"), /hashed static public asset fixture/);
+      break;
+    default: {
+      const unexpected = kind;
+      throw new Error(`unhandled placeholder kind: ${unexpected}`);
+    }
+  }
+}
+
+test("CDN objects under core/web/public become placeholders", () => {
   const dest = fs.mkdtempSync(path.join(os.tmpdir(), "portfolio-dest-"));
   runSync(dest);
 
-  const dropped = [
-    "core/web/public/i/portfolio/social-card.png",
+  assertCdnPlaceholder(dest, "core/web/public/i/portfolio/social-card.png", "cdn-card", "png");
+  assertCdnPlaceholder(dest, "core/web/public/placeholder.png", "placeholder\n", "png");
+  assertCdnPlaceholder(dest, "core/web/public/favicon.ico", "cdn-favicon", "ico");
+  assertCdnPlaceholder(
+    dest,
     "core/web/public/v/portfolio/generated/clip.mp4",
-    "core/web/public/d/Resume2026.pdf",
-    "core/web/public/favicon.ico",
-    "core/web/public/README.md",
+    "cdn-clip",
+    "mp4",
+  );
+  assertCdnPlaceholder(dest, "core/web/public/d/Resume2026.pdf", "cdn-pdf", "pdf");
+  assertCdnPlaceholder(
+    dest,
+    "core/web/public/i/portfolio/data-visualization-flow.svg",
+    "cdn-svg-original\n",
+    "svg",
+  );
+  assertCdnPlaceholder(
+    dest,
+    "core/web/public/i/portfolio/generated/vimg-crystal-volume.webp",
+    "cdn-webp\n",
+    "webp",
+  );
+  assertCdnPlaceholder(dest, "core/web/public/i/profile_pic_1.jpg", "cdn-jpg\n", "jpg");
+  assertCdnPlaceholder(
+    dest,
     "core/web/public/entry.a1b2c3d4.js",
-    "core/web/public/placeholder.png",
-  ];
-  for (const rel of dropped) {
-    assert.equal(fs.existsSync(path.join(dest, rel)), false, `leaked CDN object ${rel}`);
-  }
+    "/* hashed static public asset fixture */\n",
+    "js",
+  );
 
-  assert.equal(fs.existsSync(path.join(dest, "core/web/public/i")), false);
-  assert.equal(fs.existsSync(path.join(dest, "core/web/public/v")), false);
-  assert.equal(fs.existsSync(path.join(dest, "core/web/public/d")), false);
-  const publicDir = path.join(dest, "core/web/public");
-  assert.deepEqual(fs.readdirSync(publicDir), [".gitkeep"]);
+  const readme = fs.readFileSync(path.join(dest, "core/web/public/README.md"), "utf8");
+  assert.match(readme, /Public static assets/);
+  assert.ok(fs.existsSync(path.join(dest, "core/web/public/.gitkeep")));
   assert.ok(fs.existsSync(path.join(dest, "core/web/nuxt.config.ts")));
 });
 
@@ -174,6 +239,5 @@ test("a second sync removes dest files dropped since the last run", () => {
   fs.writeFileSync(stub, "placeholder");
   runSync(dest);
   assert.equal(fs.existsSync(stale), false);
-  assert.equal(fs.existsSync(stub), false);
-  assert.deepEqual(fs.readdirSync(path.join(dest, "core/web/public")), [".gitkeep"]);
+  assertCdnPlaceholder(dest, "core/web/public/i/portfolio/social-card.png", "cdn-card", "png");
 });
