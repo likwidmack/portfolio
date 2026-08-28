@@ -18,6 +18,15 @@ const PRIVATE_REL_PATHS = [
   "core/web/tests/scripts",
 ];
 
+/** CloudFront/S3 payloads under Nuxt `public/`. */
+const CDN_PUBLIC_REL_PATHS = [
+  "core/web/public/i",
+  "core/web/public/v",
+  "core/web/public/d",
+  "core/web/public/favicon.ico",
+  "core/web/public/README.md",
+];
+
 function parseArgs(argv) {
   const out = {};
   for (let i = 2; i < argv.length; i += 1) {
@@ -218,6 +227,19 @@ function rmRf(target) {
 function dropPrivatePaths(staging) {
   for (const rel of PRIVATE_REL_PATHS) {
     rmRf(path.join(staging, rel));
+  }
+}
+
+function stripCdnPublicAssets(staging) {
+  for (const rel of CDN_PUBLIC_REL_PATHS) {
+    rmRf(path.join(staging, rel));
+  }
+  const publicDir = path.join(staging, "core/web/public");
+  if (!fs.existsSync(path.dirname(publicDir))) return;
+  fs.mkdirSync(publicDir, { recursive: true });
+  const gitkeep = path.join(publicDir, ".gitkeep");
+  if (!fs.existsSync(gitkeep)) {
+    fs.writeFileSync(gitkeep, "");
   }
 }
 
@@ -447,6 +469,7 @@ function main() {
   const sha = args.sha || "unknown";
   stripEnvFiles(staging);
   dropPrivatePaths(staging);
+  stripCdnPublicAssets(staging);
   rewritePackageJson(staging, tag);
   rewriteNxJson(staging);
   rewriteTsconfig(staging);
