@@ -73,7 +73,10 @@ test("app packages survive and private internals do not", () => {
   assert.equal(meta.sourceTag, "v1.3.19");
 
   const readme = fs.readFileSync(path.join(dest, "README.md"), "utf8");
+  assert.match(readme, /^# tgmc-portfolio/m);
   assert.match(readme, /likwidmack\.com/);
+  assert.match(readme, /Table of contents/);
+  assert.match(readme, /Quick start/);
   assert.doesNotMatch(
     readme,
     /tamaramack|sanitized|TM_GH_TOKEN|LK_GH_TOKEN|private source|public mirror|Synced from/i,

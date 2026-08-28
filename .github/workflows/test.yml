@@ -1,4 +1,4 @@
-name: Sanitizer tests
+name: Tests
 
 on:
   push:
