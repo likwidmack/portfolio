@@ -1,0 +1,6 @@
+{
+  "references": [
+    { "path": "./core/web" },
+    { "path": "./core/web-e2e" }
+  ]
+}

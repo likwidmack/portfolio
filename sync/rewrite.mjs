@@ -86,6 +86,19 @@ function rewritePackageJson(staging, tag) {
   writeJson(file, pkg);
 }
 
+function rewriteTsconfig(staging) {
+  const file = path.join(staging, "tsconfig.json");
+  if (!fs.existsSync(file)) return;
+  const ts = readJson(file);
+  if (!Array.isArray(ts.references)) return;
+  ts.references = ts.references.filter((ref) => {
+    const rel = ref && ref.path;
+    if (typeof rel !== "string") return false;
+    return fs.existsSync(path.join(staging, rel));
+  });
+  writeJson(file, ts);
+}
+
 function rewriteNxJson(staging) {
   const file = path.join(staging, "nx.json");
   if (!fs.existsSync(file)) return;
@@ -436,6 +449,7 @@ function main() {
   dropPrivatePaths(staging);
   rewritePackageJson(staging, tag);
   rewriteNxJson(staging);
+  rewriteTsconfig(staging);
   rewriteNestedPackageRepos(staging);
   rewriteMarkdownRepos(path.join(staging, "docs"));
   rewriteWebTestTarget(staging);
