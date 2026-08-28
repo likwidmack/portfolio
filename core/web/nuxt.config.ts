@@ -219,9 +219,7 @@ export default defineNuxtConfig({
     autoImport: true,
     dirs: ['stores'],
   },
-  // Merge base app props. On AWS, `cdnURL` (from `NUXT_APP_CDN_URL`) rewrites hashed
-  // `_nuxt` + favicon to CloudFront — never set `vite.base` / router base to the CDN.
-  // `.output/public` is synced to S3 by SAM; Lambda CodeUri is server-only.
+  // Merge base app props; `cdnURL` (not baseURL) points hashed assets at the CDN origin.
   app: {
     ...(configProps.app(siteDescription, siteTitle, CDN_URL) as any),
     ...(CDN_URL ? { cdnURL: CDN_URL } : {}),
@@ -305,10 +303,6 @@ export default defineNuxtConfig({
       // (streamifyResponse) returns a prelude+body payload APIGW cannot parse → 500.
       streaming: false,
     },
-    // AWS: do not serve `public/` from Lambda. SAM stages `.output/public` beside
-    // `server/` and syncs it to the private assets bucket + CloudFront after deploy.
-    // Local/Docker `node-server` keeps Nitro's default static serving.
-    ...(nitroPreset === 'aws_lambda' ? { serveStatic: false as const } : {}),
     logLevel: debug ? 5 : isDev ? 3 : 0,
     inlineDynamicImports: true,
     output: outputObj,

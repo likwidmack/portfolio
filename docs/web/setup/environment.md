@@ -28,7 +28,7 @@ SYS_ENV=test npm run build   # aws_lambda preset
 - **Purpose**: Quiet primary-nav label for the current `SYS_ENV` (`runtimeConfig.public.sysEnv`)
 - **Visibility**: Nuxt build-mode layers (`$development` / `$test` → on; `$production` → off), **not** `SYS_ENV`. A `NODE_ENV=production` build hides the chip even when `SYS_ENV` is `development` or `test`.
 - **Public key**: `runtimeConfig.public.showEnvIndicator` (base default `false`; layers override)
-- **UI**: Quiet chip at the end of `AppPrimaryNav` actions (after contact), via `resolveEnvIndicator` (`aria-label`: `Environment: <sysEnv>`). Primary links are Work / About / Gallery / Writing / Code only.
+- **UI**: `AppPrimaryNav` via `resolveEnvIndicator` (`aria-label`: `Environment: <sysEnv>`)
 
 ## Database / AWS (private runtimeConfig)
 
@@ -127,12 +127,10 @@ DEPLOYMENT=server npm run build
 
 ### HOST
 
-- **Purpose**: Public hostname identity for local / Docker (bind address is often `0.0.0.0` via `DOCKER_BIND_HOST`)
+- **Purpose**: Server hostname
 - **Type**: String
-- **Local default**: `tgmc-portfolio.local`
-- **Development default**: `tgmc-portfolio.test`
-- **Do not use `*.dev`**: the `.dev` TLD is HSTS-preloaded; browsers refuse self-signed certificate exceptions
-- **Example**: `HOST=tgmc-portfolio.test`
+- **Default**: `localhost`
+- **Example**: `0.0.0.0`
 
 ### PORT
 
@@ -144,8 +142,6 @@ DEPLOYMENT=server npm run build
 ```bash
 HOST=0.0.0.0 PORT=4200 npm run dev
 ```
-
-Map `tgmc-portfolio.local` / `tgmc-portfolio.test` → `127.0.0.1` in the hosts file when using those names.
 
 ## Nx Cloud
 
@@ -234,11 +230,13 @@ npm run start:ssl:4200
 
 ## Related Files
 
+- `.env.example` / `.env.*.example` — environment templates
 - `nuxt.config.ts` — Nitro preset + runtimeConfig wiring
 - `server/db/` — MessageStore / BlogPostStore adapters selected by `SYS_ENV`
 - `package.json` — npm scripts
 
 ## See Also
 
+- CDN Guide
 - [SSL Setup](./ssl-setup.md)
 - [Quick Start](../guides/quickstart.md)

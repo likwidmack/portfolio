@@ -72,19 +72,18 @@ auth_clone_url() {
   echo "$url"
 }
 
+# Mirror tamaramack/portfolio `main` unless a tag/branch is passed.
+# The private default branch is `development`; do not follow that HEAD.
+if [[ "$SKIP_CLONE" -eq 0 && -z "$TAG" ]]; then
+  TAG="main"
+fi
+
 if [[ "$SKIP_CLONE" -eq 0 ]]; then
   SOURCE_DIR="$(mktemp -d "${TMPDIR:-/tmp}/portfolio-src.XXXXXX")"
   CLONE_URL="$(auth_clone_url "$SOURCE_REPO")"
-  echo "Cloning ${SOURCE_REPO} into ${SOURCE_DIR}"
-  if [[ -n "$TAG" ]]; then
-    git clone --depth 1 --branch "$TAG" "$CLONE_URL" "$SOURCE_DIR"
-  else
-    git clone --depth 1 "$CLONE_URL" "$SOURCE_DIR"
-  fi
+  echo "Cloning ${SOURCE_REPO}@${TAG} into ${SOURCE_DIR}"
+  git clone --depth 1 --branch "$TAG" "$CLONE_URL" "$SOURCE_DIR"
   SHA="$(git -C "$SOURCE_DIR" rev-parse HEAD)"
-  if [[ -z "$TAG" ]]; then
-    TAG="$(git -C "$SOURCE_DIR" describe --tags --exact-match HEAD 2>/dev/null || true)"
-  fi
 fi
 
 if [[ ! -d "$SOURCE_DIR" ]]; then

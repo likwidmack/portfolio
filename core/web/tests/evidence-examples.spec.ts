@@ -38,9 +38,7 @@ describe('evidence examples dialog', () => {
     expect(dialog).toContain('#panel-styles');
     expect(indexPage).toContain('AppEvidenceExamplesDialog');
     expect(indexPage).toContain('Browse evidence examples');
-    expect(indexPage).toContain('AppWorkSubNav');
     expect(studyPage).toContain('AppEvidenceExamplesDialog');
     expect(studyPage).toContain('Browse evidence examples');
-    expect(studyPage).toContain('AppWorkSubNav');
   });
 });

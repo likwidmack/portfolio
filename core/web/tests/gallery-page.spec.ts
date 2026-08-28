@@ -13,9 +13,7 @@ describe('gallery hub', () => {
     const nav = await readFile(navPath, 'utf8');
     expect(nuxtConfig).not.toContain("'/gallery': { redirect:");
     expect(nav).toContain('to="/gallery"');
-    expect(nav).not.toContain('to="/docs"');
-    expect(nav).not.toContain('to="/ai-lab"');
-    expect(nav).not.toContain('to="/process"');
+    expect(nav).toContain('to="/docs"');
   });
 
   it('loads a filterable feed from the gallery collection', async () => {
@@ -24,35 +22,8 @@ describe('gallery hub', () => {
     expect(page).toContain("fetchContentCollection<GalleryContent>('gallery'");
     expect(page).toContain('AppBrowseToolbar');
     expect(page).toContain('GalleryFeedCard');
-    expect(page).toContain('gallery-grid__stats');
-    expect(page).toContain('--portfolio-teal');
-    expect(page).toContain("ref<GalleryViewMode>('grid')");
     expect(page).not.toContain('queryCollection(');
     expect(data).toContain('"id": "reels"');
-    expect(data).toContain('"platform": "reels"');
     expect(data).toContain('vimg-tesseract-framework.mp4');
-  });
-
-  it('imports and uses gallery aspect/platform helpers in script setup', async () => {
-    const page = await readFile(galleryPagePath, 'utf8');
-    // Imports alone are not enough: Pug + script-setup can elide template-only imports.
-    for (const name of [
-      'GALLERY_PLATFORM_LABEL',
-      'galleryEngagementLabel',
-      'resolveGalleryAspect',
-      'resolveGalleryPlatform',
-    ] as const) {
-      expect(page).toContain(name);
-    }
-    expect(page).toContain("from '#shared/gallery-types'");
-    expect(page).toContain('gridTiles');
-    expect(page).toContain('resolveGalleryAspect(post)');
-    expect(page).toContain('resolveGalleryPlatform(post)');
-    expect(page).toContain('galleryEngagementLabel(post)');
-    expect(page).toContain('GALLERY_PLATFORM_LABEL[platform]');
-    // Template must not call helpers directly on _ctx (regression of the instance warning).
-    expect(page).not.toMatch(/:data-aspect="resolveGalleryAspect\(/);
-    expect(page).not.toMatch(/GALLERY_PLATFORM_LABEL\[resolveGalleryPlatform\(/);
-    expect(page).not.toMatch(/galleryEngagementLabel\(post\)\}\}/);
   });
 });

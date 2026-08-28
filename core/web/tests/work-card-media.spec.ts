@@ -62,18 +62,15 @@ describe('work card media rendering contract', () => {
     }
   });
 
-  it('keeps work-card media filling its cell without clipping copy', async () => {
+  it('unifies card media intrinsic size at 16:10', async () => {
     const card = await readFile(join(root, 'app/components/AppWorkCard.vue'), 'utf8');
     const styles = await readFile(join(root, 'assets/css/portfolio-launch.scss'), 'utf8');
 
     expect(card).toContain('width="640"');
     expect(card).toContain('height="400"');
-    expect(styles).toContain('--work-card-media-ratio: var(--media-ratio');
+    expect(styles).toContain('--work-card-media-ratio: 16 / 10');
     expect(styles).toContain('position: absolute');
     expect(styles).toContain('inset: 0');
-    expect(styles).toContain('(orientation: landscape)');
-    expect(styles).toContain('grid-template-columns: minmax(12rem, 38%) minmax(0, 1fr)');
-    expect(styles).toContain('aspect-ratio: unset');
   });
 
   it('resolves an existing public asset for every published story card', async () => {
@@ -110,9 +107,9 @@ describe('work card media rendering contract', () => {
 
   it('keeps diagram SVGs as ASCII-safe UTF-8 with intrinsic size attributes', async () => {
     const diagrams = [
-      'public/i/portfolio/experience-systems-flow.svg',
-      'public/i/portfolio/data-visualization-flow.svg',
-      'public/i/portfolio/spatial-experience-flow.svg',
+      'public/img/portfolio/experience-systems-flow.svg',
+      'public/img/portfolio/data-visualization-flow.svg',
+      'public/img/portfolio/spatial-experience-flow.svg',
     ];
 
     for (const rel of diagrams) {
@@ -121,10 +118,9 @@ describe('work card media rendering contract', () => {
         expect(buf[i], `${rel} must stay 7-bit/UTF-8 safe at ${i}`).toBeLessThan(0x80);
       }
       const text = buf.toString('utf8');
-      expect(text).toMatch(/<svg\b/);
-      expect(text).toContain('http://www.w3.org/2000/svg');
-      expect(text).toMatch(/width="1"/);
-      expect(text).toMatch(/height="1"/);
+      expect(text).toMatch(/width="1440"/);
+      expect(text).toMatch(/height="810"/);
+      expect(text).toContain('&#183;');
     }
   });
 });

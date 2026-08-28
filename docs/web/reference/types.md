@@ -72,6 +72,5 @@ TypeScript paths configured in `tsconfig.app.json`:
 ## Related Documentation
 
 - **Detailed Guide**: `types/README.md`
-- **TypeScript Config**: [typescript-config.md](./typescript-config.md)
-- **Project Structure**: [project-structure.md](./project-structure.md)
-- **Docs sync checklist**: [contributing.md](../../contributing.md#whenever-documentation-is-altered)
+- **Import Cleanup**: See `reference/cleanup-summary.md`
+- **TypeScript Config**: `reference/typescript-config.md`

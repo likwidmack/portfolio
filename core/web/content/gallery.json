@@ -4,9 +4,9 @@
     "description": "A social-style feed of scripts, reels, spatial studies, and creative technology samples from Tamara Mack."
   },
   "hero": {
-    "eyebrow": "social feed",
+    "eyebrow": "sample shelf",
     "title": "A gallery of experiments, systems, and spatial toys.",
-    "lede": "Scan it like Shorts and Reels, or open the feed. Filter by medium and group by series — automation, code, spatial studies, and systems with personality."
+    "lede": "Scroll it like a reel or scan it as a grid. Filter by medium and group by series — automation, code, spatial studies, and systems with personality."
   },
   "categories": [
     {
@@ -19,10 +19,6 @@
           "id": "tesseract-framework-reel",
           "title": "Tesseract framework loop",
           "type": "Generated reel",
-          "platform": "reels",
-          "aspect": "tall",
-          "views": 19800,
-          "likes": 1200,
           "summary": "A looping spatial scaffold used as a stand-in for multidimensional interface systems.",
           "role": "Motion study for the home motif.",
           "stack": ["generated video", "spatial motif"],
@@ -31,8 +27,8 @@
           "exhibit": {
             "kind": "media",
             "mediaType": "video",
-            "src": "/v/portfolio/generated/vimg-tesseract-framework.mp4",
-            "poster": "/i/tesseract/schlegel-wireframe-8-cell.png",
+            "src": "/video/portfolio/generated/vimg-tesseract-framework.mp4",
+            "poster": "/img/tesseract/schlegel-wireframe-8-cell.png",
             "alt": "Generated tesseract framework animation",
             "caption": "Loop: tesseract framework"
           }
@@ -41,10 +37,6 @@
           "id": "crystal-binary-helix-reel",
           "title": "Crystal binary helix",
           "type": "Generated reel",
-          "platform": "shorts",
-          "aspect": "tall",
-          "views": 48200,
-          "likes": 3100,
           "summary": "A crystalline helix used as a visual analog for algorithmic structure without pretending it is production telemetry.",
           "role": "Texture and rhythm for the feed.",
           "stack": ["generated video", "volume study"],
@@ -53,8 +45,8 @@
           "exhibit": {
             "kind": "media",
             "mediaType": "video",
-            "src": "/v/portfolio/generated/vimg-crystal-binary-helix.mp4",
-            "poster": "/i/portfolio/generated/vimg-crystal-volume.webp",
+            "src": "/video/portfolio/generated/vimg-crystal-binary-helix.mp4",
+            "poster": "/img/portfolio/generated/vimg-crystal-volume.webp",
             "alt": "Generated crystal helix animation",
             "caption": "Loop: crystal binary helix"
           }
@@ -63,10 +55,6 @@
           "id": "algorithmic-helix-still",
           "title": "Algorithmic helix still",
           "type": "Generated still",
-          "platform": "still",
-          "aspect": "square",
-          "views": 6400,
-          "likes": 410,
           "summary": "A still cut from the helix series — square crop for grid browsing, full frame in the feed.",
           "stack": ["generated image"],
           "motif": "spectrum",
@@ -74,7 +62,7 @@
           "exhibit": {
             "kind": "media",
             "mediaType": "image",
-            "src": "/i/portfolio/generated/vimg-algorithmic-helix.webp",
+            "src": "/img/portfolio/generated/vimg-algorithmic-helix.webp",
             "alt": "Generated algorithmic helix still",
             "caption": "Still from the helix series"
           }
@@ -83,10 +71,6 @@
           "id": "cosmic-network-still",
           "title": "Cosmic network",
           "type": "Generated still",
-          "platform": "still",
-          "aspect": "square",
-          "views": 5100,
-          "likes": 280,
           "summary": "Node field used as a mood board for connected systems and latent-space sketches.",
           "stack": ["generated image"],
           "motif": "nodes",
@@ -94,7 +78,7 @@
           "exhibit": {
             "kind": "media",
             "mediaType": "image",
-            "src": "/i/portfolio/generated/vimg-cosmic-network.webp",
+            "src": "/img/portfolio/generated/vimg-cosmic-network.webp",
             "alt": "Generated cosmic network still",
             "caption": "Node field study"
           }
@@ -103,10 +87,6 @@
           "id": "manhattan-keyframe",
           "title": "Manhattan 2150 keyframe",
           "type": "Story still",
-          "platform": "still",
-          "aspect": "wide",
-          "views": 8700,
-          "likes": 620,
           "summary": "A cinematic keyframe from the Manhattan 2150 spatial narrative studies.",
           "href": "/work/spatial-experiences",
           "hrefLabel": "Read the spatial story",
@@ -116,7 +96,7 @@
           "exhibit": {
             "kind": "media",
             "mediaType": "image",
-            "src": "/i/portfolio/manhattan-2150-keyframe.png",
+            "src": "/img/portfolio/manhattan-2150-keyframe.png",
             "alt": "Manhattan 2150 cinematic keyframe",
             "caption": "Keyframe from the spatial story"
           }
@@ -133,10 +113,6 @@
           "id": "content-refactor-tools",
           "title": "Content refactor helpers",
           "type": "Node scripts",
-          "platform": "code",
-          "aspect": "square",
-          "views": 2400,
-          "likes": 180,
           "summary": "A cluster of repo scripts for parsing, reshaping, and enriching structured content so cleanup work stays repeatable instead of becoming a one-off editing session.",
           "role": "Designed for safe iteration on local content and design-token data.",
           "stack": ["Node.js", "JSON transforms", "CLI workflows"],
@@ -153,10 +129,6 @@
           "id": "deploy-ops-helpers",
           "title": "Deployment and environment helpers",
           "type": "Workflow utilities",
-          "platform": "code",
-          "aspect": "square",
-          "views": 1900,
-          "likes": 140,
           "summary": "Scripts that normalize environment setup, deploy behavior, and release support so local, test, and cloud work feel like one system instead of three unrelated rituals.",
           "role": "Focused on reducing friction across multi-env delivery.",
           "stack": ["Node.js", "Nx", "AWS/SAM", "GitHub workflows"],
@@ -181,10 +153,6 @@
           "id": "syntax-pipeline",
           "title": "Syntax rendering pipeline",
           "type": "Shared rendering utilities",
-          "platform": "code",
-          "aspect": "square",
-          "views": 3200,
-          "likes": 260,
           "summary": "Composable syntax-formatting helpers that normalize language aliases and produce consistent, styled markup across multiple content types without burying behavior in giant conditionals.",
           "role": "Built for clarity, reuse, and predictable output.",
           "stack": ["TypeScript", "HTML transforms", "content rendering"],
@@ -203,10 +171,6 @@
           "id": "agentic-ui-helpers",
           "title": "Agentic UI support patterns",
           "type": "UX-oriented app code",
-          "platform": "code",
-          "aspect": "square",
-          "views": 4100,
-          "likes": 390,
           "summary": "Small helpers that keep tool-using flows legible: state snapshots, graceful fallbacks, and UI decisions that keep humans in the loop instead of trapped in hidden automation.",
           "role": "Centered on explainability and resilient interaction design.",
           "stack": ["Vue", "Nuxt", "TypeScript", "UX systems"],
@@ -231,10 +195,6 @@
           "id": "webxr-loft",
           "title": "WebXR concept spaces",
           "type": "Immersive prototype",
-          "platform": "youtube",
-          "aspect": "wide",
-          "views": 12400,
-          "likes": 840,
           "summary": "Browser-based spatial sketches that let collaborators move through an idea, test scale, and react to atmosphere before a concept becomes a production commitment.",
           "role": "Built to make abstract product direction feel inhabitable.",
           "stack": ["WebXR", "Three.js", "interaction prototyping"],
@@ -243,7 +203,7 @@
           "exhibit": {
             "kind": "media",
             "mediaType": "image",
-            "src": "/i/tesseract/schlegel-wireframe-8-cell.png",
+            "src": "/img/tesseract/schlegel-wireframe-8-cell.png",
             "alt": "Wireframe hypercube used as a stand-in visual for immersive prototype work",
             "caption": "Spatial stand-in: Schlegel wireframe of an 8-cell."
           }
@@ -252,10 +212,6 @@
           "id": "manhattan-storyboard",
           "title": "Manhattan 2150 storyboard",
           "type": "Spatial narrative",
-          "platform": "still",
-          "aspect": "wide",
-          "views": 7300,
-          "likes": 510,
           "summary": "A storyboard panel that holds lighting, scale, and camera intent before a scene becomes a production commitment.",
           "href": "/work/spatial-experiences",
           "hrefLabel": "Read the spatial story",
@@ -264,7 +220,7 @@
           "exhibit": {
             "kind": "media",
             "mediaType": "image",
-            "src": "/i/portfolio/manhattan-2150-storyboard.png",
+            "src": "/img/portfolio/manhattan-2150-storyboard.png",
             "alt": "Manhattan 2150 storyboard panel",
             "caption": "Storyboard before production lighting."
           }
@@ -281,10 +237,6 @@
           "id": "data-story-boards",
           "title": "Data stories with mood",
           "type": "Visualization + product framing",
-          "platform": "viz",
-          "aspect": "wide",
-          "views": 5600,
-          "likes": 430,
           "summary": "Dashboards and visual explanations designed to be readable, persuasive, and a little bit alive, so the story behind the numbers arrives with the metrics.",
           "role": "Useful when teams need insight plus emotional context.",
           "stack": ["data viz", "front-end systems", "storytelling"],
@@ -305,10 +257,6 @@
           "id": "prototype-acceleration",
           "title": "Prototype acceleration across disciplines",
           "type": "Cross-functional delivery",
-          "platform": "viz",
-          "aspect": "square",
-          "views": 4800,
-          "likes": 360,
           "summary": "A working style built around translating fuzzy product ideas into demos people can click, compare, and react to quickly across design, engineering, and innovation teams.",
           "role": "The thread connecting the rest of the gallery.",
           "stack": ["rapid prototyping", "systems thinking", "product collaboration"],

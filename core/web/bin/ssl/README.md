@@ -5,9 +5,7 @@ This folder contains local development certificates used by Nuxt dev server HTTP
 Files:
 
 - `localhost.key` and `localhost.crt` (default pair used by `core/web/nuxt.config.ts` and docker:dev)
-- SANs: `localhost`, `tgmc-portfolio.test`, `www.tgmc-portfolio.test`, `tgmc-portfolio.local`, `www.tgmc-portfolio.local`, `127.0.0.1`, `::1`
-
-Do **not** use `*.dev` hostnames for local HTTPS. The `.dev` TLD is HSTS-preloaded in major browsers, so self-signed certificates cannot get an “Add exception” bypass.
+- SANs: `localhost`, `tgmc-portfolio.dev`, `www.tgmc-portfolio.dev`, `tgmc-portfolio.local`, `www.tgmc-portfolio.local`, `127.0.0.1`, `::1`
 
 Generate or refresh certs:
 

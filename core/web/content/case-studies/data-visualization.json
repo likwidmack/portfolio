@@ -43,12 +43,12 @@
   "media": [
     {
       "type": "diagram",
-      "src": "/i/portfolio/data-visualization-flow.svg",
+      "src": "/img/portfolio/data-visualization-flow.svg",
       "alt": "Pipeline from data ingest through visual encoding to accessible presentation"
     },
     {
       "type": "image",
-      "src": "/i/portfolio/generated/vimg-cosmic-network.webp",
+      "src": "/img/portfolio/generated/vimg-cosmic-network.webp",
       "alt": "Glowing lattice of branching cosmic filaments rendered as an abstract spatial network",
       "caption": "Visual metaphor — network topology as a readable spatial system, used when explaining dependency graphs to non-specialists."
     }

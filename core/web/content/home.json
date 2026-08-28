@@ -1,37 +1,20 @@
 {
   "seo": {
-    "title": "Tamara Mack — Principal UI/UX Software Engineer & Creative Technologist",
-    "description": "Tamara Mack is a Principal UI/UX Software Engineer & Creative Technologist, Founder of HyperActivity — designing human-centered interfaces for systems that think, act, and create."
+    "title": "Tamara Mack — Creative Technologist",
+    "description": "Tamara Mack is a creative technologist — principal and distinguished software engineer and software architect — designing human-centered interfaces for systems that think, act, and create."
   },
   "hero": {
-    "eyebrow": "Principal UI/UX Software Engineer & Creative Technologist, Founder of HyperActivity",
+    "eyebrow": "Principal & Distinguished SE · Software Architect",
     "brand": "Tamara Mack",
     "signature": "LIKWIDMACK",
-    "title": "Interfaces built the way they",
-    "titleAccent": "get shipped.",
+    "title": "Creative Technologist",
     "lede": "Designing human-centered interfaces for systems that think, act, and create.",
     "availability": "Available for principal and distinguished engineering roles, architecture leadership, and select creative-technology engagements.",
-    "currentlyLabel": "Currently",
     "primaryActionLabel": "View selected work",
     "primaryActionHref": "/work",
-    "secondaryActionLabel": "Download CV",
-    "secondaryActionHref": "/d/Resume2026.pdf",
-    "visualCaption": "A tesseract motif for interfaces that reveal more than one dimension.",
-    "stats": [
-      {
-        "value": "15+",
-        "label": "years turning problems into software"
-      },
-      {
-        "value": "4",
-        "label": "lanes: front-end, full-stack, architecture, creative tech"
-      },
-      {
-        "value": "3",
-        "label": "degrees across software, finance, and media"
-      }
-    ],
-    "disciplines": ["UI/UX Engineering", "Creative Technology", "Software Architecture", "Agentic Interfaces"]
+    "secondaryActionLabel": "Try the AI Lab",
+    "secondaryActionHref": "/ai-lab",
+    "visualCaption": "A tesseract motif for interfaces that reveal more than one dimension."
   },
   "featuredWork": {
     "eyebrow": "Selected proof",
