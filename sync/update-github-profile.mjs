@@ -1,13 +1,38 @@
 #!/usr/bin/env node
 /**
  * Set likwidmack/portfolio About, homepage, and topics.
- * Uses LK_GH_TOKEN. Never prints the token.
+ * Uses LK_GH_TOKEN with Administration: write. Never prints the token.
+ * Fine-grained PATs that can only read the repo return 403; treat that like an unset secret.
  */
 import fs from "node:fs";
 import https from "node:https";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+
+export function isAdminTokenDenied(status) {
+  return status === 401 || status === 403;
+}
+
+export function formatGithubError(status, data) {
+  let detail = `HTTP ${status}`;
+  try {
+    const parsed = JSON.parse(data);
+    if (parsed && typeof parsed.message === "string" && parsed.message.trim()) {
+      detail = `${detail}: ${parsed.message}`;
+    }
+  } catch {
+    // keep status-only detail
+  }
+  return detail;
+}
+
+function skipDeniedToken(label, status, data) {
+  const detail = formatGithubError(status, data);
+  console.log(
+    `::warning::${label} skipped (${detail}). LK_GH_TOKEN needs Administration: write on likwidmack/portfolio, or unset the secret to skip this job.`,
+  );
+}
 
 const OWNER = "likwidmack";
 const REPO = "portfolio";
@@ -86,14 +111,22 @@ async function main() {
     description: DESCRIPTION,
     homepage: HOMEPAGE,
   });
+  if (isAdminTokenDenied(meta.status)) {
+    skipDeniedToken("repo profile update", meta.status, meta.data);
+    return;
+  }
   if (meta.status !== 200) {
-    console.error(`repo profile update failed: HTTP ${meta.status}`);
+    console.error(`repo profile update failed: ${formatGithubError(meta.status, meta.data)}`);
     process.exit(1);
   }
 
   const topicRes = await request("PUT", `/repos/${OWNER}/${REPO}/topics`, { names: topics });
+  if (isAdminTokenDenied(topicRes.status)) {
+    skipDeniedToken("repo topics update", topicRes.status, topicRes.data);
+    return;
+  }
   if (topicRes.status !== 200) {
-    console.error(`repo topics update failed: HTTP ${topicRes.status}`);
+    console.error(`repo topics update failed: ${formatGithubError(topicRes.status, topicRes.data)}`);
     process.exit(1);
   }
 
@@ -103,4 +136,7 @@ async function main() {
   console.log(`topics: ${topics.join(", ")}`);
 }
 
-main();
+const isDirectRun = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+if (isDirectRun) {
+  main();
+}
