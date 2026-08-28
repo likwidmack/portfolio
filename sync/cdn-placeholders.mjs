@@ -68,6 +68,7 @@ export const PDF_STUB = Buffer.from(
 );
 
 export const HASHED_JS_STUB = Buffer.from("/* placeholder */\n", "utf8");
+export const HTML_STUB = Buffer.from("<!doctype html><title>placeholder</title>\n", "utf8");
 
 const MEDIA_BY_EXT = new Map([
   [".png", PNG_1X1],
@@ -80,6 +81,12 @@ const MEDIA_BY_EXT = new Map([
   [".mp4", MP4_STUB],
   [".webm", WEBM_STUB],
   [".pdf", PDF_STUB],
+  [".html", HTML_STUB],
+  [".htm", HTML_STUB],
+  [".js", HASHED_JS_STUB],
+  [".mjs", HASHED_JS_STUB],
+  [".cjs", HASHED_JS_STUB],
+  [".css", HASHED_JS_STUB],
 ]);
 
 const HASHED_STATIC_RE = /(?:^|\/)[^/]+\.[a-f0-9]{8,}\.(js|mjs|cjs|css)$/i;
@@ -109,7 +116,7 @@ function walkPublic(dir, onFile) {
 /**
  * Replace CDN binaries and hashed static assets under `core/web/public`
  * with tiny same-type placeholders. Preserve relative paths and the tree.
- * HTML labs and non-hashed scripts are left as source.
+ * HTML labs and scripts are replaced with tiny stubs.
  */
 export function applyCdnPlaceholders(staging) {
   const publicDir = path.join(staging, "core/web/public");
