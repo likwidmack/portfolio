@@ -131,6 +131,28 @@ test("app packages survive and private internals do not", () => {
   assert.doesNotMatch(architecture, /\]\([^)]*cicd\.md\)|\]\([^)]*docker\.md\)|\]\([^)]*infra\.md\)/);
 });
 
+test("CDN objects under core/web/public are dropped", () => {
+  const dest = fs.mkdtempSync(path.join(os.tmpdir(), "portfolio-dest-"));
+  runSync(dest);
+
+  const dropped = [
+    "core/web/public/i/portfolio/social-card.png",
+    "core/web/public/v/portfolio/generated/clip.mp4",
+    "core/web/public/d/Resume2026.pdf",
+    "core/web/public/favicon.ico",
+    "core/web/public/README.md",
+  ];
+  for (const rel of dropped) {
+    assert.equal(fs.existsSync(path.join(dest, rel)), false, `leaked CDN object ${rel}`);
+  }
+
+  assert.equal(fs.existsSync(path.join(dest, "core/web/public/i")), false);
+  assert.equal(fs.existsSync(path.join(dest, "core/web/public/v")), false);
+  assert.equal(fs.existsSync(path.join(dest, "core/web/public/d")), false);
+  assert.ok(fs.existsSync(path.join(dest, "core/web/public/.gitkeep")));
+  assert.ok(fs.existsSync(path.join(dest, "core/web/nuxt.config.ts")));
+});
+
 test("branch tags keep the source package version", () => {
   const dest = fs.mkdtempSync(path.join(os.tmpdir(), "portfolio-dest-"));
   runSync(dest, "development");
