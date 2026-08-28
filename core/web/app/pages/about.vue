@@ -1,42 +1,33 @@
 <template lang="pug">
-.page-content.about
-  header(data-region="hero")
-    p.eyebrow-container {{ aboutContent.hero.eyebrow }}
-    h1.display {{ aboutContent.hero.title }}
-    p.lead {{ aboutContent.hero.lede }}
-    .button-row(aria-label="Primary actions")
-      UiButton(
-        as="a",
-        :href="primaryResume.href",
-        download,
-        icon="pi pi-download",
-        :label="aboutContent.hero.primaryActionLabel"
-      )
-      UiButton(
-        as="a",
-        :href="aboutContent.hero.secondaryActionHref",
-        icon="pi pi-send",
-        variant="outlined",
-        severity="secondary",
-        :label="aboutContent.hero.secondaryActionLabel"
-      )
-      UiButton(
-        as="a",
-        href="/other/data/Tamara-Mack-UI-AI-Portfolio-2026.pdf",
-        download,
-        icon="pi pi-file-pdf",
-        variant="outlined",
-        severity="secondary",
-        label="Download portfolio PDF",
-        @click="trackDeckDownload"
-      )
-
-  .page-with-nav
-    AppPageNav(:items="_navItems")
+.page-content.about.about-cv(data-fit="prose")
+  .page-with-nav.about-cv__layout
+    aside.about-cv__sidebar
+      figure.about-cv__portrait
+        img(src="/i/profile_pic_1.jpg", alt="Portrait of Tamara Mack", width="480", height="480", loading="lazy")
+      p.eyebrow-container {{ aboutContent.hero.eyebrow }}
+      p.about-cv__name {{ aboutContent.hero.name }}
+      p.about-cv__role {{ aboutContent.hero.role }}
+      dl.about-cv__contact
+        div
+          dt Mail
+          dd
+            a(href="mailto:likwidmack@gmail.com") likwidmack@gmail.com
+        div
+          dt GitHub
+          dd
+            a(href="https://github.com/tamaramack", rel="noopener noreferrer", target="_blank") tamaramack
+      AppPageNav(:items="_navItems", label="On this page")
+      .about-cv__actions(aria-label="Primary actions")
+        a.about-cv__resume(:href="primaryResume.href", download, @click="trackResumeDownload(primaryResume.key)")
+          span.pi.pi-download(aria-hidden="true")
+          span {{ aboutContent.hero.primaryActionLabel }}
+        a.about-cv__contact(:href="aboutContent.hero.secondaryActionHref", @click="trackContact") {{ aboutContent.hero.secondaryActionLabel }}
 
     div(data-region="body")
-      section#summary(aria-labelledby="about-summary-heading")
-        h2#about-summary-heading.title {{ aboutContent.intro.heading }}
+      header#summary.about-cv__intro(aria-labelledby="about-summary-heading")
+        h1#about-summary-heading.display {{ aboutContent.hero.title }}
+        p.lead {{ aboutContent.hero.lede }}
+        h2.title {{ aboutContent.intro.heading }}
         .auto-grid(data-region="intro")
           p(v-for="paragraph in aboutContent.intro.paragraphs", :key="paragraph") {{ paragraph }}
 
@@ -100,15 +91,24 @@
             p(data-type="panel-title") {{ resume.title }}
             p(data-type="kicker") {{ resume.meta }}
             .button-row
-              UiButton(
-                as="a",
+              a.about-cv__resume.about-cv__resume--inline(
                 :href="resume.href",
                 download,
-                icon="pi pi-file-pdf",
-                label="Download PDF",
-                size="small",
                 @click="trackResumeDownload(resume.key)"
               )
+                span.pi.pi-file-pdf(aria-hidden="true")
+                span Download PDF
+        .button-row.about-cv__deck
+          UiButton(
+            as="a",
+            href="/d/Tamara-Mack-UI-AI-Portfolio-2026.pdf",
+            download,
+            icon="pi pi-file-pdf",
+            variant="outlined",
+            severity="secondary",
+            label="Download portfolio PDF",
+            @click="trackDeckDownload"
+          )
 </template>
 
 <script setup lang="ts">
@@ -125,7 +125,7 @@ type ResumeKey =
   | 'seniorFullStackContract';
 
 const resumeFiles: Partial<Record<ResumeKey, string>> = {
-  general: '/other/data/Tamara G Mack_Resume_2026.pdf',
+  general: '/d/Resume2026.pdf',
 } as const;
 
 type ResumeData = {
@@ -162,7 +162,9 @@ type AboutContent = {
   hero: {
     eyebrow: string;
     lede: string;
+    name: string;
     primaryActionLabel: string;
+    role: string;
     secondaryActionHref: string;
     secondaryActionLabel: string;
     title: string;
@@ -202,6 +204,7 @@ const pageDescription =
 const { track } = usePortfolioAnalytics();
 const trackDeckDownload = () => track('deck_download', { placement: 'about' });
 const trackResumeDownload = (resumeKey: ResumeKey) => track('resume_download', { resume: resumeKey });
+const trackContact = () => track('contact_click', { placement: 'about-sidebar' });
 
 const { data: resumeContent } = await useContentAsyncData('resume-content', () =>
   fetchContentCollection<AboutContent>('resume', { mode: 'first' })
@@ -227,7 +230,7 @@ const fallbackResume: ResumeLink = {
   key: 'general',
   title: 'General Resume',
   meta: '2026 PDF',
-  href: resumeFiles.general ?? '/other/data/Tamara G Mack_Resume_2026.pdf',
+  href: resumeFiles.general ?? '/d/Resume2026.pdf',
 };
 
 const primaryResume = computed(
@@ -250,43 +253,185 @@ usePortfolioSeo({ title: pageTitle, description: pageDescription, path: '/about'
 </script>
 
 <style lang="scss" scoped>
-.about {
+.about-cv {
   display: grid;
   gap: var(--section-gap, 2rem);
 
-  section {
+  section,
+  .about-cv__intro {
     width: 100%;
   }
 
-  .display {
-    animation: neonPulse 2s ease-in-out infinite;
+  &__layout {
+    align-items: start;
   }
 
-  [data-region='hero'] {
-    position: relative;
+  &__sidebar {
     display: grid;
-    gap: 0.75rem;
-    padding-bottom: 0.5rem;
+    gap: 0.85rem;
+    padding: 1rem 1.1rem;
+    border: 1px solid var(--border-color, var(--portfolio-rule));
+    border-radius: var(--border-radius-md, 0.5rem);
+    background: var(--surface-color, var(--main-background-secondary));
+    min-width: 0;
 
-    &::after {
-      position: absolute;
-      right: 0;
-      bottom: 0;
-      color: color-mix(in srgb, var(--primary-color) 28%, transparent);
-      content: '</>';
-      font-size: clamp(2rem, 8vw, 5rem);
-      line-height: 1;
-      pointer-events: none;
+    @media (min-width: $breakpoint-tablet) {
+      position: sticky;
+      top: calc(var(--page-chrome, 6.5rem) + 0.75rem);
+      z-index: 1;
     }
 
-    .button-row {
-      margin-bottom: 0;
+    :deep(.page-nav) {
+      position: static;
+      margin: 0;
+      padding: 0;
+      background: transparent;
     }
 
-    :deep(a.p-button),
-    :deep(a.btn) {
+    :deep(.page-nav [data-label]) {
+      color: var(--text-secondary-color, inherit);
+    }
+  }
+
+  &__portrait {
+    margin: 0;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    border-radius: var(--border-radius-md);
+    background: var(--surface-color);
+
+    img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  &__contact {
+    display: grid;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0.75rem 0;
+    border-block: 1px solid var(--border-color, var(--portfolio-rule));
+    font-size: 0.85rem;
+
+    div {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    dt {
+      color: var(--text-secondary-color, var(--text-color));
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    dd {
+      margin: 0;
+      overflow-wrap: anywhere;
+      text-align: right;
+    }
+
+    a {
+      color: inherit;
+    }
+  }
+
+  &__name {
+    margin: 0;
+    font-size: clamp(1.35rem, 2.5vw, 1.75rem);
+    font-weight: 700;
+    line-height: 1.15;
+  }
+
+  &__role {
+    margin: 0;
+    color: var(--text-secondary-color, inherit);
+    font-size: var(--font-size-sm);
+    line-height: 1.4;
+  }
+
+  &__actions {
+    display: grid;
+    gap: 0.55rem;
+    margin-top: 0.35rem;
+  }
+
+  &__resume {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    min-height: 2.75rem;
+    padding: 0.55rem 0.9rem;
+    border: 1px solid var(--portfolio-teal);
+    border-radius: var(--border-radius-md, 0.5rem);
+    background: var(--portfolio-teal);
+    color: var(--button-fg, #f2ece8);
+    font-size: var(--font-size-sm);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    text-transform: uppercase;
+
+    &:hover,
+    &:focus-visible {
+      filter: brightness(1.08);
+      outline: none;
       text-decoration: none;
     }
+
+    &:focus-visible {
+      box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--portfolio-teal) 35%, transparent);
+    }
+
+    &--inline {
+      justify-self: start;
+      min-height: 2.25rem;
+      padding-block: 0.4rem;
+      font-size: var(--font-size-xs);
+    }
+  }
+
+  &__contact {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.75rem;
+    padding: 0.55rem 0.9rem;
+    border: 1px solid var(--border-color, currentColor);
+    border-radius: var(--border-radius-md, 0.5rem);
+    color: var(--text-color);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-decoration: none;
+    text-transform: uppercase;
+
+    &:hover,
+    &:focus-visible {
+      border-color: var(--primary-color);
+      color: var(--primary-color);
+      outline: none;
+    }
+  }
+
+  &__intro {
+    display: grid;
+    gap: 0.75rem;
+    min-width: 0;
+  }
+
+  &__deck {
+    margin-top: 0.5rem;
+  }
+
+  .display {
+    margin: 0;
+    font-size: clamp(1.75rem, 4vw, 2.75rem);
+    line-height: 1.15;
   }
 
   [data-region='body'] {
@@ -348,7 +493,6 @@ usePortfolioSeo({ title: pageTitle, description: pageDescription, path: '/about'
     border: 2px solid var(--primary-color);
     border-radius: 50%;
     background: var(--surface-color);
-    box-shadow: 0 0 0 0.3rem color-mix(in srgb, var(--primary-color) 16%, transparent);
   }
 
   .panel[data-variant='timeline'],

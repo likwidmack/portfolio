@@ -8,6 +8,11 @@ describe('CDN middleware scope', () => {
     expect(isStaticAsset('/fonts/Inter.woff2?v=2')).toBe(true);
   });
 
+  it('treats public PDF and HTML files as static assets', () => {
+    expect(isStaticAsset('/d/resume.pdf')).toBe(true);
+    expect(isStaticAsset('/d/htm/case-study.html')).toBe(true);
+  });
+
   it('does not treat query-string fake extensions as assets', () => {
     expect(isStaticAsset('/api/messages?x=.js')).toBe(false);
     expect(isStaticAsset('/about#section.css')).toBe(false);
@@ -30,9 +35,19 @@ describe('cdnStaticAssetRedirectUrl', () => {
     );
   });
 
-  it('does not redirect HTML or API paths, or when CDN is unset', () => {
+  it('does not redirect SPA routes or API paths, or when CDN is unset', () => {
     expect(cdnStaticAssetRedirectUrl('/favicon.ico', undefined)).toBeUndefined();
     expect(cdnStaticAssetRedirectUrl('/', 'https://cdn.example.com')).toBeUndefined();
+    expect(cdnStaticAssetRedirectUrl('/about', 'https://cdn.example.com')).toBeUndefined();
     expect(cdnStaticAssetRedirectUrl('/api/greet', 'https://cdn.example.com')).toBeUndefined();
+  });
+
+  it('redirects public PDF and HTML files to the CDN origin', () => {
+    expect(cdnStaticAssetRedirectUrl('/d/resume.pdf', 'https://cdn.example.com')).toBe(
+      'https://cdn.example.com/d/resume.pdf'
+    );
+    expect(cdnStaticAssetRedirectUrl('/d/htm/case-study.html', 'https://d3.cloudfront.net')).toBe(
+      'https://d3.cloudfront.net/d/htm/case-study.html'
+    );
   });
 });

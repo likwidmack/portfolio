@@ -1,13 +1,12 @@
 {
   "name": "@tgmc/web",
-  "version": "1.3.7",
+  "version": "1.3.20",
   "private": true,
   "type": "module",
   "dependencies": {
     "@tgmc/media-player": "*",
     "@tgmc/theme": "*",
-    "@tgmc/utilities": "*",
-    "@tgmc/web-layer-admin": "*"
+    "@tgmc/utilities": "*"
   },
   "scripts": {
     "build": "nuxt build",

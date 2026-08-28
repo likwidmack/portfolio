@@ -13,6 +13,8 @@ const ALLOWED = new Set<keyof Collections>([
   'resume',
   'product',
   'gallery',
+  'code',
+  'writing',
   'docs',
   'caseStudies',
   'decisionCards',

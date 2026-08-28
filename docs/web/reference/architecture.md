@@ -1,61 +1,28 @@
-# Application architecture (example spec)
+# Application architecture
 
-This page is an in-app technical spec example: narrative plus UML-style source. The live SVG diagram on [`/product`](/product) uses the same topology without a Mermaid runtime.
+As-built architecture for `@tgmc/web` (Nuxt 4 + Nitro) in the TGMC Nx monorepo. Diagrams document **what exists today** — not a target-state redesign.
 
-## Context
+Live SVG on [`/product`](/product) (`AppArchitectureDiagram`) shares the content-API topology without a Mermaid runtime. Full Mermaid sources live in the pages below and render in-app under `/docs`.
 
-`@tgmc/web` is a Nuxt 4 app in an Nx monorepo. Page copy and case studies load through Nitro (`GET /api/content/:collection`) so client WASM SQLite is not used during SPA navigations.
+## Diagram set
 
-## Container view
+| Diagram                     | Type              | Page                                                         |
+| --------------------------- | ----------------- | ------------------------------------------------------------ |
+| System context & containers | C4 L1–L2          | [System C4](./system-c4.md)                                  |
+| Four-environment deployment | Deployment        | [System C4 § Deployment](./system-c4.md#deployment-topology) |
+| API inventory & store UML   | Component / class | [API & store UML](./api-uml.md)                              |
+| Site map & page wireframes  | Wireframes        | [Site wireframes](./site-wireframes.md)                      |
+| Complex process sequences   | UML sequence      | [Process sequences](./process-sequences.md)                  |
 
-```mermaid
-flowchart TB
-  subgraph Client[Browser]
-    Nav[AppPrimaryNav]
-    Gallery[/gallery feed + grid]
-    Docs[/docs catalog]
-    Work[/work case studies]
-  end
-  subgraph Nitro[Nitro server]
-    Api["/api/content/:collection"]
-    Content[(Content SQLite)]
-  end
-  subgraph Repo[Repository]
-    GalleryJson[content/gallery.json]
-    DocsTree["docs/**/*.md"]
-    Cases[content/case-studies]
-  end
-  Nav --> Gallery
-  Nav --> Docs
-  Nav --> Work
-  Gallery --> Api
-  Docs --> Api
-  Work --> Api
-  Api --> Content
-  GalleryJson --> Content
-  DocsTree --> Content
-  Cases --> Content
-```
+## Context (short)
 
-## Sequence: open a spec
+Public chrome: `AppPrimaryNav` is **Work / About / Gallery / Writing / Code**. Docs, AI Lab, and Process are **Work sub-nav** (`AppWorkSubNav` on `/work` and `/work/[slug]`).
 
-```mermaid
-sequenceDiagram
-  actor Visitor
-  participant Catalog as /docs
-  participant Page as /docs/:slug
-  participant Api as /api/content/docs
-  Visitor->>Catalog: filter + group
-  Catalog->>Api: mode=all
-  Api-->>Catalog: path, title, description
-  Visitor->>Page: open card
-  Page->>Api: mode=first&path=/web/...
-  Api-->>Page: body AST
-  Page-->>Visitor: ContentRenderer
-```
+Page copy, gallery, and case studies load through Nitro (`GET /api/content/:collection`) so client WASM SQLite is not used during SPA navigations. Durable contact messages and blog posts use MessageStore / BlogPostStore adapters selected by `SYS_ENV` (SQLite → Postgres → DynamoDB). Test/prod HTML and API run on Lambda behind HTTP API; hashed assets go to S3/CloudFront.
 
 ## Related
 
 - [Page data loading](../features/page-data-loading.md)
 - [Gallery and docs hubs](../features/gallery-and-docs.md)
+- [Data stores](../data-stores.md)
 - [Project structure](./project-structure.md)

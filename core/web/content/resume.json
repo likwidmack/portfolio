@@ -1,16 +1,19 @@
 {
   "hero": {
-    "eyebrow": "About Tamara G Mack",
+    "eyebrow": "Digital CV",
+    "name": "Tamara Mack",
+    "role": "Principal UI/UX Software Engineer & Creative Technologist, Founder of HyperActivity",
     "title": "I turn fuzzy ideas into working software people can try.",
-    "lede": "I am a creative technologist — a principal and distinguished software engineer and software architect — who blends front-end craft, full-stack architecture, and creative technology to move ideas from sketch to shipped experience.",
-    "primaryActionLabel": "Download resume",
+    "lede": "I am a creative technologist — Founder & Principal Architect, and a principal and distinguished software engineer and software architect — who blends front-end craft, full-stack architecture, and creative technology to move ideas from sketch to shipped experience.",
+    "primaryActionLabel": "Download résumé",
     "secondaryActionLabel": "Start a conversation",
     "secondaryActionHref": "mailto:likwidmack@gmail.com"
   },
   "intro": {
     "heading": "Building at the edge of possible and practical",
     "paragraphs": [
-      "I work best where product ambition, user experience, and technical uncertainty meet. As a creative technologist — and as a principal / distinguished software engineer and software architect — that has meant building interactive prototypes, event-driven digital releases, data-rich visualizations, and exploratory XR/3D concepts at Nike that help teams validate what should become real.",
+      "I work best where product ambition, user experience, and technical uncertainty meet. As Founder & Principal Architect of an AI-first technology consultancy, I lead software and UI architecture, agentic interface design, frontend modernization, and specialized engineering delivery for modern products.",
+      "As a creative technologist — and as a principal / distinguished software engineer and software architect — that has meant building interactive prototypes, event-driven digital releases, data-rich visualizations, and exploratory XR/3D concepts at Nike that help teams validate what should become real.",
       "Before that, I shipped gaming interfaces, fintech dashboards, media playback systems, healthcare tools, internal business apps, and client websites. The throughline is simple: make complex systems feel usable, fast, and alive."
     ]
   },
@@ -48,20 +51,31 @@
     {
       "kicker": "Lead",
       "title": "Momentum without mystery",
-      "body": "Design docs, technical specifications, CI/CD workflows, test coverage, and cross-functional collaboration that keep high-ambiguity work moving."
+      "body": "Design docs, technical specifications, engineering standards, CI/CD workflows, test coverage, and cross-functional collaboration that keep high-ambiguity work moving."
     }
   ],
   "experienceHeading": "Selected experience",
   "experienceIntro": "A combined view of the resume files, edited into a shorter story of impact and range.",
   "experience": [
     {
+      "company": "HyperActivity LLC",
+      "period": "2026 - Present",
+      "role": "Founder & Principal Architect",
+      "highlights": [
+        "Founded and lead an AI-first technology consultancy focused on software architecture, intelligent user interfaces, agentic systems, frontend modernization, and specialized engineering delivery.",
+        "Define software and UI architecture, technical requirements, delivery strategy, staffing, milestones, and engineering standards for client engagements.",
+        "Design agentic AI and human-centered interfaces with emphasis on transparency, user control, system state, approval workflows, and responsible automation.",
+        "Lead advanced frontend architecture across interactive applications, design systems, browser-based media, real-time visualization, 3D, WebXR, and spatial-computing technologies."
+      ]
+    },
+    {
       "company": "Nike",
-      "period": "2022 - Present",
+      "period": "2022 - 2026",
       "role": "Senior Innovation Software Engineer",
       "highlights": [
         "Built Vue.js front ends and Python/AWS Lambda services with DynamoDB for rapid concept validation in the Technology Innovations Office.",
-        "Supported the Nike Sport Moment Experience team with event-driven, promotional, and marketing releases across digital platforms.",
-        "Created proofs of concept across XR, dynamic 3D modeling, advanced data visualization, and generative AI to inform future product directions."
+        "Supported the Nike Sport Moment Experiences (SME) team with event-driven, promotional, and marketing releases across digital platforms.",
+        "Created proofs of concept across immersive XR, dynamic 3D modeling, advanced data visualization, and generative AI to inform future product directions."
       ]
     },
     {
@@ -124,7 +138,19 @@
     },
     {
       "title": "Delivery craft",
-      "skills": ["Git", "Jira", "Scrum", "TypeDoc", "Jest", "Mocha", "ESLint", "CI/CD", "Azure DevOps", "Confluence"]
+      "skills": [
+        "Git",
+        "Bash",
+        "Jira",
+        "Scrum",
+        "TypeDoc",
+        "Jest",
+        "Mocha",
+        "ESLint",
+        "CI/CD",
+        "Azure DevOps",
+        "Confluence"
+      ]
     },
     {
       "title": "Creative technology",

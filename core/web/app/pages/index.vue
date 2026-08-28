@@ -1,12 +1,18 @@
 <template lang="pug">
-.page-content.portfolio-page.home
+.page-content.portfolio-page.home(data-fit="screen")
   header.home-hero
     .home-hero__copy
       p.eyebrow-container {{ content.hero.eyebrow }}
       p.home-hero__name {{ content.hero.brand }}
-      h1 {{ content.hero.title }}
+      h1
+        | {{ content.hero.title }}
+        |
+        span.home-hero__title-accent {{ content.hero.titleAccent }}
       p.home-hero__lede {{ content.hero.lede }}
-      p.home-hero__availability {{ content.hero.availability }}
+      ul.home-hero__stats(aria-label="Career highlights")
+        li(v-for="stat in content.hero.stats", :key="stat.label")
+          strong {{ stat.value }}
+          span {{ stat.label }}
       .button-row
         UiButton(as="a", :href="content.hero.primaryActionHref", :label="content.hero.primaryActionLabel")
         UiButton(
@@ -14,25 +20,54 @@
           :href="content.hero.secondaryActionHref",
           :label="content.hero.secondaryActionLabel",
           variant="outlined",
-          severity="secondary"
+          severity="secondary",
+          download
         )
+      ul.home-hero__disciplines(aria-label="Disciplines")
+        li(v-for="discipline in content.hero.disciplines", :key="discipline") {{ discipline }}
     figure.home-hero__visual
       span.home-hero__signature {{ content.hero.signature }}
-      img(
-        src="/img/tesseract/schlegel-wireframe-8-cell.png",
-        alt="Tesseract wireframe representing multidimensional interface systems",
-        width="720",
-        height="720",
-        loading="eager",
-        fetchpriority="high"
-      )
+      .home-hero__visual-media
+        img(
+          src="/i/tesseract/schlegel-wireframe-8-cell.png",
+          alt="Tesseract wireframe representing multidimensional interface systems",
+          width="720",
+          height="720",
+          loading="eager",
+          fetchpriority="high"
+        )
+        video(
+          v-if="showAmbientVideo",
+          ref="ambientVideo",
+          src="/v/portfolio/generated/vimg-tesseract-framework.mp4",
+          muted,
+          loop,
+          playsinline,
+          preload="metadata",
+          aria-hidden="true"
+        )
+        button.home-hero__visual-pause(
+          v-if="showAmbientVideo",
+          type="button",
+          :aria-pressed="videoPaused ? 'true' : 'false'",
+          @click="toggleAmbientVideo"
+        ) {{ videoPaused ? 'Play' : 'Pause' }}
+      p.home-hero__currently
+        strong {{ content.hero.currentlyLabel }}
+        | {{ content.hero.availability }}
       figcaption {{ content.hero.visualCaption }}
+      p.home-hero__brand {{ content.hero.brand }}
+
+  ul.home-hero__tags(aria-label="Areas of focus")
+    li(v-for="tag in content.hero.tags", :key="tag") {{ tag }}
 
   section.home-section(aria-labelledby="featured-work-heading")
-    header.section-intro
-      p.eyebrow-container {{ content.featuredWork.eyebrow }}
-      h2#featured-work-heading {{ content.featuredWork.heading }}
-      p.lead {{ content.featuredWork.lede }}
+    header.section-intro.section-intro--split
+      div
+        p.eyebrow-container {{ content.featuredWork.eyebrow }}
+        h2#featured-work-heading {{ content.featuredWork.heading }}
+        p.lead {{ content.featuredWork.lede }}
+      NuxtLink.section-intro__view-all(to="/work") View all ({{ featuredStudies.length }}) →
     .work-grid
       AppWorkCard(v-for="study in featuredStudies", :key="study.slug", :study="study")
 
@@ -88,6 +123,52 @@ const featuredStudies = computed(() => {
 });
 const { track } = usePortfolioAnalytics();
 const trackContact = () => track('contact_click', { placement: 'home' });
+
+const ambientVideo = ref<HTMLVideoElement | null>(null);
+const videoPaused = ref(false);
+const motionPreference = useState<string>('portfolio-motion', () => 'system');
+
+const prefersReducedMotion = ref(false);
+const showAmbientVideo = computed(() => {
+  if (motionPreference.value === 'reduced') return false;
+  if (motionPreference.value === 'playful') return true;
+  return !prefersReducedMotion.value;
+});
+
+const syncAmbientPlayback = async () => {
+  const el = ambientVideo.value;
+  if (!el || !showAmbientVideo.value) return;
+  if (videoPaused.value) {
+    el.pause();
+    return;
+  }
+  try {
+    await el.play();
+  } catch {
+    videoPaused.value = true;
+  }
+};
+
+const toggleAmbientVideo = () => {
+  videoPaused.value = !videoPaused.value;
+  void syncAmbientPlayback();
+};
+
+onMounted(() => {
+  if (!import.meta.client) return;
+  const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+  prefersReducedMotion.value = media.matches;
+  const onChange = () => {
+    prefersReducedMotion.value = media.matches;
+  };
+  media.addEventListener('change', onChange);
+  onBeforeUnmount(() => media.removeEventListener('change', onChange));
+  void nextTick(() => syncAmbientPlayback());
+});
+
+watch([showAmbientVideo, ambientVideo], () => {
+  void nextTick(() => syncAmbientPlayback());
+});
 
 usePortfolioSeo({
   title: content.value.seo.title,

@@ -16,10 +16,16 @@ describe('about page content', () => {
 
     expect(aboutPage).toContain("fetchContentCollection<AboutContent>('resume'");
     expect(aboutPage).not.toContain('queryCollection(');
+    expect(aboutPage).toContain('about-cv__sidebar');
+    expect(aboutPage).toContain('about-cv__resume');
+    expect(aboutPage).toContain('--portfolio-teal');
+    expect(resumeData).toContain('Digital CV');
+    expect(resumeData).toContain('Founder of HyperActivity');
     expect(resumeData).toContain('What I build');
     expect(resumeData).toContain('Selected experience');
     expect(resumeData).toContain('Stack I reach for');
     expect(resumeData).toContain('Nike Sport Moment Experience');
+    expect(resumeData).toContain('HyperActivity LLC');
     expect(resumeData).toContain('NBCNews.com');
     expect(resumeData).toContain('Bittrex.com');
   });
@@ -28,10 +34,13 @@ describe('about page content', () => {
     const aboutPage = await readFile(aboutPagePath, 'utf8');
     const resumeData = await readFile(resumeDataPath, 'utf8');
 
-    expect(aboutPage).toContain('/other/data/Tamara G Mack_Resume_2026.pdf');
-    expect(aboutPage).not.toContain('/other/assets/data/');
-    expect(aboutPage).not.toContain('/other/data/Tamara G Mack_Frontend Developer_Remote_20260226.pdf');
+    expect(aboutPage).toContain('/d/Resume2026.pdf');
+    expect(aboutPage).not.toContain('/d/assets/');
+    expect(aboutPage).not.toContain('/d/Tamara G Mack_Frontend Developer_Remote_20260226.pdf');
     expect(resumeData).toContain('"key": "general"');
+    expect(resumeData).toContain('HyperActivity LLC');
+    expect(resumeData).toContain('Founder & Principal Architect');
+    expect(resumeData).toContain('"period": "2022 - 2026"');
     expect(resumeData).not.toContain('"key": "seniorFullStack"');
     expect(resumeData).toContain('Role-specific variants can be shared on request');
   });
@@ -39,12 +48,12 @@ describe('about page content', () => {
   it('uses local UI wrappers for richer About page elements', async () => {
     const aboutPage = await readFile(aboutPagePath, 'utf8');
 
-    // The About page uses local UI wrappers for richer UX. Check for the
-    // primary wrappers that appear in the page template. `UiCard` is not
-    // required on this page and should not be asserted here.
+    // Timeline/tags stay on UI wrappers; primary résumé CTA is a teal native link
+    // (portfolio signal color), with UiButton only for the portfolio deck download.
     expect(aboutPage).toContain('UiButton');
     expect(aboutPage).toContain('UiTimeline');
     expect(aboutPage).toContain('UiTag');
+    expect(aboutPage).toContain('AppPageNav');
     expect(aboutPage).not.toContain('PrimeButton');
     expect(aboutPage).not.toContain('PrimeCard');
     expect(aboutPage).not.toContain('PrimeTimeline');

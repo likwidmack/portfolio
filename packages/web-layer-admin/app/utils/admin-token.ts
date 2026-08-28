@@ -1,6 +1,7 @@
 /**
  * Client helper for the V1 admin shared-secret token (sessionStorage).
  */
+import { adminDatabaseHeader } from './admin-database';
 export const ADMIN_TOKEN_STORAGE_KEY = 'portfolio.adminToken';
 
 export const readAdminToken = (): string => {
@@ -30,6 +31,12 @@ export const adminAuthHeaders = (): Record<string, string> => {
   const token = readAdminToken();
   return token ? { Authorization: `Bearer ${token}` } : {};
 };
+
+/** Bearer token + selected database — use on every admin $fetch. */
+export const adminRequestHeaders = (): Record<string, string> => ({
+  ...adminAuthHeaders(),
+  ...adminDatabaseHeader(),
+});
 
 type FetchErrorShape = { statusCode?: number; statusMessage?: string };
 

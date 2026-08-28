@@ -28,10 +28,10 @@ const personJsonLd = {
   '@type': 'Person',
   name: 'Tamara Mack',
   alternateName: 'LIKWIDMACK',
-  jobTitle: 'Creative Technologist',
+  jobTitle: 'Principal UI/UX Software Engineer & Creative Technologist, Founder of HyperActivity',
   url: config.public.siteUrl,
   description:
-    'Creative technologist; principal and distinguished software engineer and software architect designing human-centered interfaces for systems that think, act, and create.',
+    'Principal UI/UX Software Engineer & Creative Technologist, Founder of HyperActivity — designing human-centered interfaces for systems that think, act, and create.',
 };
 
 useHead({

@@ -5,6 +5,7 @@
  */
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import {
+  DeleteCommand,
   DynamoDBDocumentClient,
   PutCommand,
   ScanCommand,
@@ -48,6 +49,17 @@ const createMessage = async (
   return message;
 };
 
+const deleteMessage = async ({ tableName, docClient }: DynamoMessageStoreContext, id: string): Promise<boolean> => {
+  const result = await docClient.send(
+    new DeleteCommand({
+      TableName: tableName,
+      Key: { id },
+      ReturnValues: 'ALL_OLD',
+    })
+  );
+  return Boolean(result.Attributes);
+};
+
 /**
  * Create a DynamoDB-backed MessageStore.
  */
@@ -76,5 +88,6 @@ export const createDynamoMessageStore = (options: DynamoMessageStoreOptions = {}
   return {
     list: () => listMessages(context),
     create: (input) => createMessage(context, input),
+    delete: (id) => deleteMessage(context, id),
   };
 };

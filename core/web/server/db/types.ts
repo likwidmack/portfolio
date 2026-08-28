@@ -26,6 +26,8 @@ export interface CreateContactMessageInput {
 export interface MessageStore {
   list(): Promise<ContactMessage[]>;
   create(input: CreateContactMessageInput): Promise<ContactMessage>;
+  /** Remove a message by id. Returns false when no row existed. */
+  delete(id: string): Promise<boolean>;
   /** Optional cleanup for pooled / file-backed clients (tests, graceful shutdown). */
   close?(): Promise<void> | void;
 }

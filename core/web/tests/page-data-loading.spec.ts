@@ -30,6 +30,11 @@ describe('SPA page data loading', () => {
     expect(helper).toContain('withContentQueryLock');
     expect(fetchHelper).toContain('/api/content/');
     expect(api).toContain('queryCollection(event, collection)');
+    // Code + Writing shelves must be allowlisted or /code and /blog 500 with empty content.
+    for (const collection of ['code', 'writing', 'gallery', 'home'] as const) {
+      expect(fetchHelper).toMatch(new RegExp(`['"]${collection}['"]`));
+      expect(api).toMatch(new RegExp(`['"]${collection}['"]`));
+    }
     expect(home).toContain('useContentAsyncData');
     expect(home).toContain('fetchContentCollection');
     expect(home).toContain('computed(() => homeContent.value');

@@ -1,5 +1,5 @@
 <template lang="pug">
-.page-content.portfolio-page.docs-index
+.page-content.portfolio-page.docs-index(data-fit="prose")
   header.portfolio-hero
     p.eyebrow-container Technical documentation
     h1 Specs, runbooks, and examples

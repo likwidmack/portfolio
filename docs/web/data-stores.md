@@ -28,22 +28,22 @@ Empty baked `runtimeConfig` strings are treated as unset (`nonEmpty` / `firstNon
 
 ## Keys by environment (templates)
 
-| Key                                              | local                  | development          | test                      | production                                       |
-| ------------------------------------------------ | ---------------------- | -------------------- | ------------------------- | ------------------------------------------------ |
-| `SYS_ENV`                                        | `local`                | `development`        | `test`                    | `production`                                     |
-| `HOST`                                           | `tgmc-portfolio.local` | `tgmc-portfolio.dev` | `localhost` (local proxy) | unused on Lambda                                 |
-| `PORT`                                           | `4200`                 | `4200`               | `4300` (local proxy)      | unused on Lambda                                 |
-| `DATABASE_URL` / `NUXT_DATABASE_URL`             | SQLite file URL        | Postgres URL         | unused                    | unused                                           |
-| `DYNAMO_TABLE` / `NUXT_DYNAMO_TABLE`             | —                      | —                    | required                  | required                                         |
-| `DYNAMO_POSTS_TABLE` / `NUXT_DYNAMO_POSTS_TABLE` | —                      | —                    | required                  | required                                         |
-| `AWS_REGION` / `NUXT_AWS_REGION`                 | —                      | —                    | required (`us-west-2`)    | required                                         |
-| `ADMIN_TOKEN` / `NUXT_ADMIN_TOKEN`               | optional               | optional             | secret                    | secret                                           |
-| `SITE_URL` / `NUXT_PUBLIC_SITE_URL`              | yes                    | yes                  | yes                       | HTTPS required                                   |
-| `OPENAI_MODEL` / `NUXT_OPENAI_MODEL`             | yes                    | yes                  | yes                       | yes                                              |
-| `OPENAI_API_KEY` / `NUXT_OPENAI_API_KEY`         | secret if live         | secret if live       | secret if live            | secret if live                                   |
-| `AI_LAB_*` / `NUXT_*`                            | optional               | optional             | optional                  | gated in CD                                      |
-| `CORS_ALLOW_ORIGIN`                              | —                      | —                    | `*` (test)                | `https://likwidmack.com` (must match `SITE_URL`) |
-| `NUXT_APP_CDN_URL`                               | optional               | optional             | CloudFront                | CloudFront                                       |
+| Key                                              | local                  | development           | test                      | production                                       |
+| ------------------------------------------------ | ---------------------- | --------------------- | ------------------------- | ------------------------------------------------ |
+| `SYS_ENV`                                        | `local`                | `development`         | `test`                    | `production`                                     |
+| `HOST`                                           | `tgmc-portfolio.local` | `tgmc-portfolio.test` | `localhost` (local proxy) | unused on Lambda                                 |
+| `PORT`                                           | `4200`                 | `4200`                | `4300` (local proxy)      | unused on Lambda                                 |
+| `DATABASE_URL` / `NUXT_DATABASE_URL`             | SQLite file URL        | Postgres URL          | unused                    | unused                                           |
+| `DYNAMO_TABLE` / `NUXT_DYNAMO_TABLE`             | —                      | —                     | required                  | required                                         |
+| `DYNAMO_POSTS_TABLE` / `NUXT_DYNAMO_POSTS_TABLE` | —                      | —                     | required                  | required                                         |
+| `AWS_REGION` / `NUXT_AWS_REGION`                 | —                      | —                     | required (`us-west-2`)    | required                                         |
+| `ADMIN_TOKEN` / `NUXT_ADMIN_TOKEN`               | Docker admin only      | Docker admin only     | Docker admin only         | —                                                |
+| `SITE_URL` / `NUXT_PUBLIC_SITE_URL`              | yes                    | yes                   | yes                       | HTTPS required                                   |
+| `OPENAI_MODEL` / `NUXT_OPENAI_MODEL`             | yes                    | yes                   | yes                       | yes                                              |
+| `OPENAI_API_KEY` / `NUXT_OPENAI_API_KEY`         | secret if live         | secret if live        | secret if live            | secret if live                                   |
+| `AI_LAB_*` / `NUXT_*`                            | optional               | optional              | optional                  | gated in CD                                      |
+| `CORS_ALLOW_ORIGIN`                              | —                      | —                     | `*` (test)                | `https://likwidmack.com` (must match `SITE_URL`) |
+| `NUXT_APP_CDN_URL`                               | optional               | optional              | CloudFront                | CloudFront                                       |
 
 ## Where values are injected
 

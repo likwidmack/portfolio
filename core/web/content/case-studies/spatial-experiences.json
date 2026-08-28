@@ -53,39 +53,39 @@
   "media": [
     {
       "type": "diagram",
-      "src": "/img/portfolio/spatial-experience-flow.svg",
+      "src": "/i/portfolio/spatial-experience-flow.svg",
       "alt": "Flow from concept through capability gates into a real-time scene and interface recovery loop"
     },
     {
       "type": "image",
-      "src": "/img/tesseract/blue-8-cell-simple.png",
+      "src": "/i/tesseract/blue-8-cell-simple.png",
       "alt": "Blue wireframe eight-cell tesseract projection used as a spatial laboratory motif",
       "caption": "Portfolio laboratory — Schlegel-style 8-cell used to practice projection, orbit, and dimensional metaphor."
     },
     {
       "type": "image",
-      "src": "/img/tesseract/schlegel-wireframe-8-cell.png",
+      "src": "/i/tesseract/schlegel-wireframe-8-cell.png",
       "alt": "Detailed Schlegel wireframe of an eight-cell tesseract",
       "caption": "Wireframe study — structural clarity before materials, bloom, or generative dressing."
     },
     {
       "type": "video",
-      "src": "/video/portfolio/generated/vimg-tesseract-framework.mp4",
-      "poster": "/img/tesseract/blue-8-cell-simple.png",
+      "src": "/v/portfolio/generated/vimg-tesseract-framework.mp4",
+      "poster": "/i/tesseract/blue-8-cell-simple.png",
       "alt": "Animated nested transparent tesseract cubes glowing inside a reflective digital chamber",
       "caption": "Motion study — recursive space as an interface metaphor, directed for the portfolio laboratory."
     },
     {
       "type": "video",
-      "src": "/video/portfolio/generated/vimg-crystal-binary-helix.mp4",
-      "poster": "/img/portfolio/generated/vimg-algorithmic-helix.webp",
+      "src": "/v/portfolio/generated/vimg-crystal-binary-helix.mp4",
+      "poster": "/i/portfolio/generated/vimg-algorithmic-helix.webp",
       "alt": "Animated macro view moving along a crystalline DNA helix filled with colorful binary digits",
       "caption": "Motion study — algorithmic form bridging data, biology, and real-time sculpture."
     }
   ],
   "links": [
-    { "label": "Open the advanced tesseract wireframe lab", "href": "/htm/adv_wire_tess.html" },
-    { "label": "Open the basic tesseract wireframe lab", "href": "/htm/wire_tess.html" },
+    { "label": "Open the advanced tesseract wireframe lab", "href": "/d/htm/adv_wire_tess.html" },
+    { "label": "Open the basic tesseract wireframe lab", "href": "/d/htm/wire_tess.html" },
     { "label": "Related creative prototyping story", "href": "/work/innovation-prototyping" },
     { "label": "Related experience systems story", "href": "/work/experience-systems" }
   ]

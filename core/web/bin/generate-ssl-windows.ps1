@@ -11,8 +11,8 @@ if (-not (Test-Path $sslDir)) {
 & openssl req -x509 -newkey rsa:2048 -sha256 -nodes -days 365 `
   -keyout "$sslDir\localhost-windows.key" `
   -out "$sslDir\localhost-windows.crt" `
-  -subj "/CN=tgmc-portfolio.dev" `
-  -addext "subjectAltName=DNS:localhost,DNS:tgmc-portfolio.dev,DNS:www.tgmc-portfolio.dev,DNS:tgmc-portfolio.local,DNS:www.tgmc-portfolio.local,IP:127.0.0.1,IP:::1"
+  -subj "/CN=tgmc-portfolio.test" `
+  -addext "subjectAltName=DNS:localhost,DNS:tgmc-portfolio.test,DNS:www.tgmc-portfolio.test,DNS:tgmc-portfolio.local,DNS:www.tgmc-portfolio.local,IP:127.0.0.1,IP:::1"
 
 Copy-Item "$sslDir\localhost-windows.key" "$sslDir\localhost.key" -Force
 Copy-Item "$sslDir\localhost-windows.crt" "$sslDir\localhost.crt" -Force

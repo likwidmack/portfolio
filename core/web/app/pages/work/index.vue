@@ -1,5 +1,5 @@
 <template lang="pug">
-.page-content.portfolio-page.work-index
+.page-content.portfolio-page.work-index(data-fit="screen")
   header.portfolio-hero
     p.eyebrow-container Selected work
     h1 Proof-led stories
@@ -14,8 +14,11 @@
         @click="evidenceOpen = true"
       )
 
-  section.work-grid(aria-label="Case studies")
-    AppWorkCard(v-for="study in studies", :key="study.slug", :study="study")
+  .page-with-nav
+    AppWorkSubNav
+    div(data-region="body")
+      section.work-grid(aria-label="Case studies")
+        AppWorkCard(v-for="study in studies", :key="study.slug", :study="study")
 
   AppEvidenceExamplesDialog(v-model:visible="evidenceOpen")
 </template>

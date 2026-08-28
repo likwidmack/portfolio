@@ -10,6 +10,9 @@
     "./server/utils/admin-auth": "./server/utils/admin-auth.ts",
     "./server/utils/admin-handler": "./server/utils/admin-handler.ts",
     "./server/utils/admin-blog-api": "./server/utils/admin-blog-api.ts",
+    "./app/utils/admin-token": "./app/utils/admin-token.ts",
+    "./app/utils/admin-database": "./app/utils/admin-database.ts",
+    "./app/composables/useAdminDatabase": "./app/composables/useAdminDatabase.ts",
     "./shared/blog-types": "./shared/blog-types.ts"
   },
   "files": [

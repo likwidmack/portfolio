@@ -40,12 +40,12 @@
   "media": [
     {
       "type": "diagram",
-      "src": "/img/portfolio/agent-approval-flow.svg",
+      "src": "/i/portfolio/agent-approval-flow.svg",
       "alt": "Flow diagram from fuzzy goal to interpreted plan, approval gate, and prototype brief"
     },
     {
       "type": "diagram",
-      "src": "/img/portfolio/experience-systems-flow.svg",
+      "src": "/i/portfolio/experience-systems-flow.svg",
       "alt": "Layers showing basic UX, complex UX, and proof surfaces on a shared tokens and accessibility foundation"
     }
   ],
