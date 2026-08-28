@@ -94,7 +94,7 @@ test("app packages survive and private internals do not", () => {
   assert.match(readme, /likwidmack\.com/);
   assert.match(readme, /Table of contents/);
   assert.match(readme, /Quick start/);
-  assert.match(readme, /\.github\/social-preview\.png/);
+  assert.match(readme, /repository-images\.githubusercontent\.com\/1349135003\//);
   assert.doesNotMatch(
     readme,
     /tamaramack|sanitized|TM_GH_TOKEN|LK_GH_TOKEN|private source|public mirror|Synced from/i,
@@ -132,7 +132,7 @@ test("app packages survive and private internals do not", () => {
   assert.doesNotMatch(architecture, /\]\([^)]*cicd\.md\)|\]\([^)]*docker\.md\)|\]\([^)]*infra\.md\)/);
 
   const seo = fs.readFileSync(path.join(dest, "core/web/app/composables/usePortfolioSeo.ts"), "utf8");
-  assert.match(seo, /social-preview\.png/);
+  assert.match(seo, /repository-images\.githubusercontent\.com\/1349135003\//);
   assert.doesNotMatch(seo, /social-card\.png/);
 });
 
