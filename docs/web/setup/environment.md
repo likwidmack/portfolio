@@ -11,17 +11,6 @@ Configuration reference for environment variables across Local, Development, Tes
 | `test`        | `aws_lambda`  | DynamoDB                                         | Push to `main` (SAM, after CI)                           |
 | `production`  | `aws_lambda`  | DynamoDB                                         | GitHub Release `published` or manual `workflow_dispatch` |
 
-Legacy `SYS_ENV=remote` is treated as `development` (`.output/development` and Postgres store selection). All four envs write `{workspaceRoot}/.output/<sysEnv>` via `scripts/nitro-output-dir.mjs`.
-
-CI/CD triggers, Docker/SAM commands, and GitHub Environment secrets: [docs/cicd.md](../../cicd.md).
-
-Example templates (no secrets):
-
-- [`.env.example`](https://github.com/likwidmack/portfolio/blob/development/.env.example) — local defaults
-- [`.env.development.example`](https://github.com/likwidmack/portfolio/blob/development/.env.development.example)
-- [`.env.test.example`](https://github.com/likwidmack/portfolio/blob/development/.env.test.example)
-- [`.env.production.example`](https://github.com/likwidmack/portfolio/blob/development/.env.production.example)
-
 ## SYS_ENV
 
 - **Purpose**: Selects Nitro preset, build output layout, and MessageStore adapter
@@ -118,7 +107,7 @@ NUXT_APP_CDN_URL=https://cdn.example.com npm run build
 NODE_ENV=production npm run build
 ```
 
-Canonical runtime for CI/CD/Docker/SAM is **Node.js 24** (see [docs/cicd.md](../../cicd.md)).
+Canonical runtime is **Node.js 24** (`.nvmrc`).
 
 ## Deployment
 
@@ -140,8 +129,8 @@ DEPLOYMENT=server npm run build
 
 - **Purpose**: Public hostname identity for local / Docker (bind address is often `0.0.0.0` via `DOCKER_BIND_HOST`)
 - **Type**: String
-- **Local default**: `tgmc-portfolio.local` (`.env.example`)
-- **Docker development default**: `tgmc-portfolio.test` (`.env.development.example`)
+- **Local default**: `tgmc-portfolio.local`
+- **Development default**: `tgmc-portfolio.test`
 - **Do not use `*.dev`**: the `.dev` TLD is HSTS-preloaded; browsers refuse self-signed certificate exceptions
 - **Example**: `HOST=tgmc-portfolio.test`
 
@@ -164,21 +153,16 @@ Map `tgmc-portfolio.local` / `tgmc-portfolio.test` → `127.0.0.1` in the hosts 
 
 - **Purpose**: Authenticates Nx CLI to [Nx Cloud](https://cloud.nx.app) for remote build/test/lint cache
 - **Type**: String (secret)
-- **Workspace**: `nx.json` → `nxCloudId`
+- **Workspace**: optional Nx Cloud remote cache
 - **Local**: Optional — set in `.env` (or shell) so `nx` / `npm run dev` can read/write the remote cache
-- **CI**: **Required** — GitHub repository secret `NX_CLOUD_ACCESS_TOKEN` (see [docs/cicd.md](../../cicd.md))
+- **CI**: optional GitHub Actions secret `NX_CLOUD_ACCESS_TOKEN`
 
-Create a token in Nx Cloud → your workspace → **Access Tokens**. Do not commit real tokens to `.env.example`.
+Create a token in Nx Cloud → your workspace → **Access Tokens**. Do not commit real tokens.
 
 ```bash
 # Local (after copying token into .env or exporting)
 export NX_CLOUD_ACCESS_TOKEN=your-token
 npm run test
-```
-
-```bash
-# GitHub Actions (one-time)
-gh secret set NX_CLOUD_ACCESS_TOKEN --body "your-token"
 ```
 
 ## HTTPS
@@ -188,7 +172,7 @@ gh secret set NX_CLOUD_ACCESS_TOKEN --body "your-token"
 - **Purpose**: Enable HTTPS/SSL
 - **Type**: Boolean (1/0)
 - **Default**: 0
-- **Usage**: Requires SSL certificates in `bin/ssl/`
+- **Usage**: Requires SSL certificates in `core/web/bin/ssl/`
 
 ```bash
 HTTPS=1 npm run dev
@@ -198,13 +182,13 @@ HTTPS=1 npm run dev
 
 - **Purpose**: Custom SSL certificate path
 - **Type**: String
-- **Default**: `bin/ssl/localhost.crt` (via `core/web/bin/ssl/`)
+- **Default**: `core/web/bin/ssl/localhost.crt`
 
 ### SSL_KEY
 
 - **Purpose**: Custom SSL key path
 - **Type**: String
-- **Default**: `bin/ssl/localhost.key`
+- **Default**: `core/web/bin/ssl/localhost.key`
 
 ```bash
 HTTPS=1 SSL_CERT=/path/to/cert.crt SSL_KEY=/path/to/key.key npm run dev
@@ -214,7 +198,7 @@ HTTPS=1 SSL_CERT=/path/to/cert.crt SSL_KEY=/path/to/key.key npm run dev
 
 ### Local (SQLite)
 
-Copy `.env.example` to `.env` (defaults: `SYS_ENV=local`, `DATABASE_URL=file:./data/local.sqlite`). The SQLite file lives under `data/` (gitignored).
+Set `SYS_ENV=local` and `DATABASE_URL=file:./data/local.sqlite` (or a gitignored `.env`). The SQLite file lives under `data/` (gitignored).
 
 ```bash
 npm run db:migrate:local
@@ -223,7 +207,7 @@ SYS_ENV=local DATABASE_URL=file:./data/local.sqlite ADMIN_TOKEN=change-me-local 
 
 Public blog: `/blog`. Admin: `/admin` → `/admin/blog`.
 
-### Development (Postgres / Docker)
+### Development (Postgres)
 
 ```bash
 SYS_ENV=development DATABASE_URL=postgres://portfolio:portfolio@localhost:5432/portfolio npm run start
@@ -250,13 +234,11 @@ npm run start:ssl:4200
 
 ## Related Files
 
-- `.env.example` / `.env.*.example` — environment templates
 - `nuxt.config.ts` — Nitro preset + runtimeConfig wiring
 - `server/db/` — MessageStore / BlogPostStore adapters selected by `SYS_ENV`
 - `package.json` — npm scripts
 
 ## See Also
 
-- [CDN Guide](../features/cdn-guide.md)
 - [SSL Setup](./ssl-setup.md)
 - [Quick Start](../guides/quickstart.md)

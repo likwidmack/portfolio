@@ -14,10 +14,16 @@
   ],
   "scripts": {
     "build": "nx build @tgmc/web",
+    "build:libs": "npm run build --workspace=@tgmc/utilities --workspace=@tgmc/media-player --workspace=@tgmc/likwidlibs",
     "dev": "nx nuxt dev",
     "start": "nx dev @tgmc/web",
-    "lint": "nx run-many -t lint --parallel=3",
+    "start:ssl:4200": "env HTTPS=1 PORT=4200 nx dev @tgmc/web",
+    "ssl:gen:linux": "bash core/web/bin/generate-ssl-linux.sh",
+    "ssl:gen:windows": "powershell -ExecutionPolicy Bypass -File core/web/bin/generate-ssl-windows.ps1",
+    "format": "prettier -wl .",
+    "lint": "npm run format && nx run-many -t lint --parallel=3",
     "test": "nx run-many -t test --parallel=3",
+    "db:migrate:local": "node core/web/bin/db-migrate-local.mjs",
     "postinstall": "npm run build --workspace=@tgmc/theme && nuxt prepare core/web",
     "sync:public": "bash ./sync/sync.sh"
   },

@@ -6,9 +6,9 @@ The Nuxt app exposes two browse hubs that share the same pattern: a **root page*
 | ------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- |
 | [`/gallery`](/gallery)    | Social-style sample feed (reels, stills, code, diagrams)            | **Primary nav** label Gallery                                       |
 | [`/docs`](/docs)          | Technical documentation sourced from the repo `docs/` markdown tree | **Work sub-nav** (`AppWorkSubNav`) — not in `AppPrimaryNav`         |
-| [`/docs/...`](/docs/cicd) | Individual spec / runbook rendered from that markdown               | Linked from the docs catalog; Work sub-nav stays on Work pages only |
+| [`/docs/...`](/docs/contributing) | Individual spec / runbook rendered from that markdown               | Linked from the docs catalog; Work sub-nav stays on Work pages only |
 
-Public primary rail is **Work / About / Gallery / Writing / Code**. Docs, AI Lab (`/ai-lab`), and Process (`/process`) live under Work — see [portfolio-august-launch.md](../../portfolio-august-launch.md#public-information-architecture).
+Public primary rail is **Work / About / Gallery / Writing / Code**. Docs, AI Lab (`/ai-lab`), and Process (`/process`) live under Work.
 
 ## Gallery
 

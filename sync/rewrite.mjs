@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import path from "node:path";
+import { applyPublicDocs } from "./public-docs.mjs";
 
 const PRIVATE_REL_PATHS = [
   "docs/infra.md",
@@ -67,10 +68,18 @@ function rewritePackageJson(staging, tag) {
   pkg.license = "MIT";
   pkg.scripts = {
     build: "nx build @tgmc/web",
+    "build:libs":
+      "npm run build --workspace=@tgmc/utilities --workspace=@tgmc/media-player --workspace=@tgmc/likwidlibs",
     dev: "nx nuxt dev",
     start: "nx dev @tgmc/web",
-    lint: "nx run-many -t lint --parallel=3",
+    "start:ssl:4200": "env HTTPS=1 PORT=4200 nx dev @tgmc/web",
+    "ssl:gen:linux": "bash core/web/bin/generate-ssl-linux.sh",
+    "ssl:gen:windows":
+      "powershell -ExecutionPolicy Bypass -File core/web/bin/generate-ssl-windows.ps1",
+    format: "prettier -wl .",
+    lint: "npm run format && nx run-many -t lint --parallel=3",
     test: "nx run-many -t test --parallel=3",
+    "db:migrate:local": "node core/web/bin/db-migrate-local.mjs",
     postinstall: "npm run build --workspace=@tgmc/theme && nuxt prepare core/web",
     "sync:public": "bash ./sync/sync.sh",
   };
@@ -176,6 +185,8 @@ defaults:
       path: ''
     values:
       layout: default
+exclude:
+  - plans/
 `,
   );
 }
@@ -333,6 +344,68 @@ See [docs/contributing.md](docs/contributing.md).
   );
 }
 
+function writeDbMigrateLocal(staging) {
+  const file = path.join(staging, "core/web/bin/db-migrate-local.mjs");
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  fs.writeFileSync(
+    file,
+    `#!/usr/bin/env node
+import Database from "better-sqlite3";
+import { mkdirSync, readdirSync, readFileSync } from "node:fs";
+import { dirname, isAbsolute, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const root = resolve(__dirname, "../../..");
+const migrationsDir = resolve(root, "core/web/server/db/migrations");
+
+export const DEFAULT_DATABASE_URL = "file:./data/local.sqlite";
+
+export const resolveSqlitePath = (databaseUrl = DEFAULT_DATABASE_URL, repoRoot = root) => {
+  const trimmed = databaseUrl.trim();
+  const withoutScheme = trimmed.startsWith("file:") ? trimmed.slice("file:".length) : trimmed;
+  if (isAbsolute(withoutScheme)) {
+    return withoutScheme;
+  }
+  return resolve(repoRoot, withoutScheme);
+};
+
+export const listMigrationSqlFiles = (dir = migrationsDir) =>
+  readdirSync(dir)
+    .filter((name) => name.endsWith(".sql"))
+    .sort()
+    .map((name) => join(dir, name));
+
+export const applyLocalSqliteMigration = (dbPath, sqlPaths = listMigrationSqlFiles()) => {
+  const paths = Array.isArray(sqlPaths) ? sqlPaths : [sqlPaths];
+  mkdirSync(dirname(dbPath), { recursive: true });
+  const db = new Database(dbPath);
+  try {
+    for (const sqlPath of paths) {
+      const sql = readFileSync(sqlPath, "utf8");
+      db.exec(sql);
+    }
+  } finally {
+    db.close();
+  }
+  return { dbPath, sqlPaths: paths };
+};
+
+const isMain = process.argv[1] && resolve(fileURLToPath(import.meta.url)) === resolve(process.argv[1]);
+
+if (isMain) {
+  const databaseUrl = process.env.DATABASE_URL || DEFAULT_DATABASE_URL;
+  const dbPath = resolveSqlitePath(databaseUrl);
+  const result = applyLocalSqliteMigration(dbPath);
+  for (const sqlPath of result.sqlPaths) {
+    console.log(\`[db:migrate:local] Applied \${sqlPath}\`);
+  }
+  console.log(\`[db:migrate:local] Database: \${result.dbPath}\`);
+}
+`,
+  );
+}
+
 function writeSyncMeta(staging, tag, sha) {
   writeJson(path.join(staging, ".sync-meta.json"), {
     sourceRepo: "tamaramack/portfolio",
@@ -364,6 +437,8 @@ function main() {
   writeGitignore(staging);
   writeReadme(staging);
   writeSyncMeta(staging, tag, sha);
+  writeDbMigrateLocal(staging);
+  applyPublicDocs(staging);
 }
 
 main();

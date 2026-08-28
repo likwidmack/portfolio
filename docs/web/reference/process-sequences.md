@@ -137,6 +137,4 @@ sequenceDiagram
 ## Related
 
 - [Messages API](../features/messages-api.md)
-- [CI/CD](../../cicd.md)
-- [Infra](../../infra.md)
 - [Architecture hub](./architecture.md)

@@ -1,12 +1,8 @@
 # Documentation
 
-Canonical instructions for **tgmc-portfolio** live in this folder. The [root README](../README.md) is a GitHub landing page (badges, quick start, links).
+Canonical instructions for **tgmc-portfolio** live in this folder. The [root README](https://github.com/likwidmack/portfolio#readme) is a GitHub landing page (badges, quick start, links).
 
-**GitHub Pages** publishes this tree (Jekyll Cayman). Source: `/docs`. Workflow: [`.github/workflows/pages.yml`](../.github/workflows/pages.yml).
-
-**AI agents:** [agents/README.md](./agents/README.md) · [agents/map.md](./agents/map.md) · generated checklist [`AGENTS.md`](https://github.com/likwidmack/portfolio/blob/development/AGENTS.md)
-
-**Humans:** [web/guides/quickstart.md](./web/guides/quickstart.md) · [cicd.md](./cicd.md)
+**Start here:** [web/guides/quickstart.md](./web/guides/quickstart.md)
 
 ## Catalog (by directory)
 
@@ -14,27 +10,11 @@ Instructions are grouped the same way as the repo. Prefer these pages over dupli
 
 ### `docs/` (this tree)
 
-| File                                                       | Topic                                               |
-| ---------------------------------------------------------- | --------------------------------------------------- |
-| [index.md](./index.md)                                     | GitHub Pages home                                   |
-| [README.md](./README.md)                                   | This catalog (GitHub tree view)                     |
-| [cicd.md](./cicd.md)                                       | Four-env CI/CD, workflows, OIDC, versioning, CDN/S3 |
-| [templates/nuxt-ssr-cicd/](./templates/nuxt-ssr-cicd/)     | Portable Nuxt SSR CI/CD template for other agents   |
-| [templates/commit-pr-rules/](./templates/commit-pr-rules/) | Portable commit, PR, merge, and ruleset template    |
-| [docker.md](./docker.md)                                   | Compose local/dev/test, host `.output`, ports       |
-| [infra.md](./infra.md)                                     | SAM Lambda + DynamoDB + CloudFront                  |
-| [contributing.md](./contributing.md)                       | How to change docs and code                         |
-| [portfolio-august-launch.md](./portfolio-august-launch.md) | Public IA, restyle layouts, QA, release gates       |
-
-### `docs/agents/`
-
-| File                                                    | Topic                                                 |
-| ------------------------------------------------------- | ----------------------------------------------------- |
-| [README.md](./agents/README.md)                         | AI agent onboarding (commands, conventions, pitfalls) |
-| [map.md](./agents/map.md)                               | Repo map: directory → purpose → source of truth       |
-| [shared-cdn-handoff.md](./agents/shared-cdn-handoff.md) | Archived brief: shared test CDN with HyperActivity    |
-
-Root [`AGENTS.md`](https://github.com/likwidmack/portfolio/blob/development/AGENTS.md) is a **generated checklist**. Edit `scripts/update-agents.mjs` or pages here; do not hand-edit `AGENTS.md`.
+| File                                   | Topic                             |
+| -------------------------------------- | --------------------------------- |
+| [index.md](./index.md)                 | GitHub Pages home                 |
+| [README.md](./README.md)               | This catalog (GitHub tree view)   |
+| [contributing.md](./contributing.md)   | How to change docs and code       |
 
 ### `docs/web/` — Nuxt app (`@tgmc/web`)
 
@@ -45,8 +25,6 @@ Root [`AGENTS.md`](https://github.com/likwidmack/portfolio/blob/development/AGEN
 | [web/guides/examples.md](./web/guides/examples.md)                         | CDN and feature examples                 |
 | [web/setup/environment.md](./web/setup/environment.md)                     | `SYS_ENV`, secrets, runtimeConfig        |
 | [web/setup/ssl-setup.md](./web/setup/ssl-setup.md)                         | Local HTTPS certs                        |
-| [web/features/cdn-guide.md](./web/features/cdn-guide.md)                   | CDN / `NUXT_APP_CDN_URL`                 |
-| [web/features/cdn-quickstart.md](./web/features/cdn-quickstart.md)         | CDN cheat sheet                          |
 | [web/features/messages-api.md](./web/features/messages-api.md)             | Contact messages API                     |
 | [web/features/page-data-loading.md](./web/features/page-data-loading.md)   | `useContentAsyncData`                    |
 | [web/features/gallery-and-docs.md](./web/features/gallery-and-docs.md)     | `/gallery` grid + `/docs` (Work sub-nav) |
@@ -73,29 +51,22 @@ Root [`AGENTS.md`](https://github.com/likwidmack/portfolio/blob/development/AGEN
 | File                                                                   | Topic                               |
 | ---------------------------------------------------------------------- | ----------------------------------- |
 | [dev/README.md](./dev/README.md)                                       | Developer tooling index             |
-| [dev/git-hooks.md](./dev/git-hooks.md)                                 | Husky, lint-staged, LF line endings |
-| [dev/github-access.md](./dev/github-access.md)                         | GitHub About, topics, Pages, `gh`   |
 | [dev/npm-security-overrides.md](./dev/npm-security-overrides.md)       | npm overrides                       |
 | [dev/encapsulation-remediation.md](./dev/encapsulation-remediation.md) | Layer / import boundaries           |
 
 ### Design history (not runbooks)
 
-| Directory                                  | Topic                                 |
-| ------------------------------------------ | ------------------------------------- |
-| [superpowers/specs/](./superpowers/specs/) | Locked design specs                   |
-| [superpowers/plans/](./superpowers/plans/) | Implementation plans                  |
-| [plans/](./plans/)                         | Feature plans (e.g. media-player MSE) |
+| Directory          | Topic                                      |
+| ------------------ | ------------------------------------------ |
+| [plans/](./plans/) | Feature plans (e.g. media-player MSE)      |
 
 These are excluded from the GitHub Pages build (`docs/_config.yml`).
 
 ### Code trees (pointers only)
 
-| Path                                          | Use                                                        |
-| --------------------------------------------- | ---------------------------------------------------------- |
-| [`core/web/`](../core/web/)                   | Nuxt app source; config `nuxt.config.ts`                   |
-| [`docker/`](../docker/)                       | Dockerfiles + Compose; details in [docker.md](./docker.md) |
-| [`infra/sam/`](../infra/sam/)                 | SAM template; details in [infra.md](./infra.md)            |
-| [`packages/`](../packages/)                   | `utilities`, `media-player`, `likwidlibs`                  |
-| [`theme/core/`](../theme/core/)               | Packaged theme (`@tgmc/theme`)                             |
-| [`scripts/`](../scripts/)                     | migrate, SAM, GitHub env, `update-agents.mjs`              |
-| [`.github/workflows/`](../.github/workflows/) | CI/CD YAML; narrative in [cicd.md](./cicd.md)              |
+| Path                                          | Use                                      |
+| --------------------------------------------- | ---------------------------------------- |
+| [`core/web/`](../core/web/)                   | Nuxt app source; config `nuxt.config.ts` |
+| [`packages/`](../packages/)                   | `utilities`, `media-player`, `likwidlibs`, `web-layer-admin` |
+| [`theme/core/`](../theme/core/)               | Packaged theme (`@tgmc/theme`)           |
+| [`.github/workflows/`](../.github/workflows/) | Tests, sync, and GitHub profile YAML     |

@@ -243,6 +243,5 @@ if (!imageUrl) {
 
 ## See Also
 
-- [CDN Guide](../features/cdn-guide.md)
 - [Quick Start](./quickstart.md)
 - [TypeScript Configuration](../reference/typescript-config.md)

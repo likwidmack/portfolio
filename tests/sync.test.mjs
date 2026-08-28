@@ -59,9 +59,13 @@ test("app packages survive and private internals do not", () => {
   assert.equal(pkg.version, "1.3.19");
   assert.equal(pkg.scripts["docker:local"], undefined);
   assert.equal(pkg.scripts.dev, "nx nuxt dev");
+  assert.equal(pkg.scripts["db:migrate:local"], "node core/web/bin/db-migrate-local.mjs");
+  assert.equal(pkg.scripts.format, "prettier -wl .");
+  assert.equal(pkg.scripts["build:libs"]?.includes("@tgmc/utilities"), true);
   assert.match(pkg.repository.url, /likwidmack\/portfolio/);
   assert.doesNotMatch(pkg.description, /sanitized/i);
   assert.match(pkg.description, /Nx \+ Nuxt 4 SSR portfolio/);
+  assert.ok(fs.existsSync(path.join(dest, "core/web/bin/db-migrate-local.mjs")));
 
   const web = JSON.parse(fs.readFileSync(path.join(dest, "core/web/package.json"), "utf8"));
   assert.equal(web.nx.targets.test.options.command, "npm run test --workspace=@tgmc/web");
@@ -86,6 +90,33 @@ test("app packages survive and private internals do not", () => {
   const docsReadme = fs.readFileSync(path.join(dest, "docs/README.md"), "utf8");
   assert.match(docsReadme, /likwidmack\/portfolio/);
   assert.doesNotMatch(docsReadme, /tamaramack\/portfolio/);
+  assert.doesNotMatch(
+    docsReadme,
+    /cicd\.md|docker\.md|infra\.md|docs\/agents|github-access|pages\.yml|AGENTS\.md|git-hooks/,
+  );
+
+  const contributing = fs.readFileSync(path.join(dest, "docs/contributing.md"), "utf8");
+  assert.match(contributing, /docs\/README\.md/);
+  assert.doesNotMatch(
+    contributing,
+    /cicd\.md|github-access|agents\/README|AGENTS\.md|git-hooks|docker\/|infra\/sam/,
+  );
+
+  const quickstart = fs.readFileSync(path.join(dest, "docs/web/guides/quickstart.md"), "utf8");
+  assert.match(quickstart, /npm run db:migrate:local/);
+  assert.doesNotMatch(quickstart, /git-hooks|cdn-guide|cdn-quickstart/);
+
+  const catalog = fs.readFileSync(path.join(dest, "docs/_catalog.md"), "utf8");
+  assert.doesNotMatch(
+    catalog,
+    /cicd\.md|docker\.md|infra\.md|agents\/README|github-access|AGENTS\.md/,
+  );
+
+  const architecture = fs.readFileSync(
+    path.join(dest, "docs/web/reference/architecture.md"),
+    "utf8",
+  );
+  assert.doesNotMatch(architecture, /\]\([^)]*cicd\.md\)|\]\([^)]*docker\.md\)|\]\([^)]*infra\.md\)/);
 });
 
 test("branch tags keep the source package version", () => {

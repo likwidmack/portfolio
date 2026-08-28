@@ -157,4 +157,3 @@ Public list/detail use `GET /api/posts` and `GET /api/posts/:slug`. Primary visi
 
 - [Architecture hub](./architecture.md)
 - [Gallery and docs](../features/gallery-and-docs.md)
-- [Portfolio August launch IA](../../portfolio-august-launch.md)

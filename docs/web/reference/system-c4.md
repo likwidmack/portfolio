@@ -1,6 +1,6 @@
 # System architecture (C4)
 
-C4-style views of the portfolio site and surrounding systems. Source of truth: `core/web`, `packages/*`, `theme/core`, `infra/sam`, `docker/`.
+C4-style views of the portfolio site and surrounding systems. Source of truth: `core/web`, `packages/*`, `theme/core`.
 
 ## System context (Level 1)
 
@@ -113,18 +113,17 @@ flowchart TB
 
 | `SYS_ENV`     | Nitro preset  | Output                | Durable stores | How run                                |
 | ------------- | ------------- | --------------------- | -------------- | -------------------------------------- |
-| `local`       | `node-server` | `.output/local`       | SQLite         | `npm run dev` / `docker:local` `:4200` |
-| `development` | `node-server` | `.output/development` | Postgres       | `docker:dev` web `:4200` + api `:4100` |
-| `test`        | `aws_lambda`  | `.output/test`        | DynamoDB       | SAM test / `docker:test` `:4300`       |
+| `local`       | `node-server` | `.output/local`       | SQLite         | `npm run dev` `:4200`                  |
+| `development` | `node-server` | `.output/development` | Postgres       | `npm run start` `:4200`                |
+| `test`        | `aws_lambda`  | `.output/test`        | DynamoDB       | Lambda / HTTP API                      |
 | `production`  | `aws_lambda`  | `.output/production`  | DynamoDB       | SAM prod                               |
 
 ```mermaid
 flowchart TB
   Build["npm run build SYS_ENV"] --> Out[".output/sysEnv"]
-  Out --> LocalDocker["docker:local SQLite :4200"]
-  Out --> DevDocker["docker:dev Postgres :4200/:4100"]
-  Out --> TestDocker["docker:test DynamoDB Local + RIE :4300"]
-  Out --> SAM["sam-build → Lambda + HTTP API"]
+  Out --> LocalDev["npm run dev SQLite :4200"]
+  Out --> DevPg["development Postgres :4200"]
+  Out --> SAM["Lambda + HTTP API"]
   SAM --> Tables[(Messages + Posts tables)]
   SAM --> Assets[S3 / CloudFront assets]
 ```
@@ -133,8 +132,6 @@ flowchart TB
 
 - SQLite/Postgres never back MessageStore/BlogPostStore on Lambda.
 - Content on test/prod uses an in-memory dump restored from the Nitro output.
-- Docker does **not** emulate S3/CDN; `docker:local` and `docker:dev` both use host `:4200` (exclusive).
-- Test CDN is the shared HyperActivity stack; production uses stack-owned CloudFront.
 
 ## Package boundaries
 
@@ -152,4 +149,3 @@ flowchart TB
 - [Architecture hub](./architecture.md)
 - [API & store UML](./api-uml.md)
 - [Data stores](../data-stores.md)
-- [Infra](../../infra.md) · [Docker](../../docker.md) · [CI/CD](../../cicd.md)

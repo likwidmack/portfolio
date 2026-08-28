@@ -18,7 +18,7 @@ npm run ssl:gen:linux
 
 On Git Bash for Windows, the script uses `-subj //CN=...` so MSYS does not rewrite `/CN=` to `C:/Program Files/Git/CN=...`.
 
-This generates certificates in `bin/ssl/` directory.
+This generates certificates in `core/web/bin/ssl/`.
 
 ## Start HTTPS Server
 
@@ -28,10 +28,9 @@ npm run start:ssl:4200
 
 The application will be available at:
 
-| Stack                                             | URL                                 | Hosts file                       |
-| ------------------------------------------------- | ----------------------------------- | -------------------------------- |
-| Local (`npm run start:ssl:4200` / `docker:local`) | `https://tgmc-portfolio.local:4200` | `127.0.0.1 tgmc-portfolio.local` |
-| Docker development (`docker:dev`)                 | `https://tgmc-portfolio.test:4200`  | `127.0.0.1 tgmc-portfolio.test`  |
+| Stack                              | URL                                 | Hosts file                       |
+| ---------------------------------- | ----------------------------------- | -------------------------------- |
+| Local (`npm run start:ssl:4200`)   | `https://tgmc-portfolio.local:4200` | `127.0.0.1 tgmc-portfolio.local` |
 
 Certs include SANs for `localhost`, `tgmc-portfolio.local`, `www.tgmc-portfolio.local`, `tgmc-portfolio.test`, `www.tgmc-portfolio.test`, `127.0.0.1`, and `::1`.
 
@@ -44,7 +43,7 @@ Default certs (after generate scripts):
 - `core/web/bin/ssl/localhost.crt`
 - `core/web/bin/ssl/localhost.key`
 
-When `HTTPS=1` is set, Nuxt and `docker:dev` (`docker/nitro-ssl-entrypoint.sh`) use these files. Override with `SSL_CERT` / `SSL_KEY`.
+When `HTTPS=1` is set, Nuxt uses these files. Override with `SSL_CERT` / `SSL_KEY`.
 
 ## Scripts
 
@@ -64,14 +63,14 @@ This is normal for self-signed certificates. Click "Advanced" and proceed to loc
 
 1. Ensure you have administrative privileges
 2. Try the other script if on hybrid system
-3. Check `bin/ssl/` directory exists
+3. Check `core/web/bin/ssl/` directory exists
 
 ### Port Already in Use
 
 Change port in command:
 
 ```bash
-HTTPS=1 npm run dev -- --port 3000
+HTTPS=1 npm run dev -- --port 4317
 ```
 
 ## Related Files
@@ -79,7 +78,6 @@ HTTPS=1 npm run dev -- --port 3000
 - `core/web/bin/ssl/README.md` - Cert filenames and SAN list
 - `core/web/bin/generate-ssl-*.sh|.ps1` - Certificate generation scripts
 - `core/web/nuxt.config.ts` - HTTPS configuration
-- `docker/nitro-ssl-entrypoint.sh` - docker:dev TLS
 
 ## See Also
 

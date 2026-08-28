@@ -9,7 +9,7 @@
 | `test`        | DynamoDB                             | `DYNAMO_TABLE` / `NUXT_DYNAMO_TABLE`, `DYNAMO_POSTS_TABLE` / `NUXT_DYNAMO_POSTS_TABLE`, `AWS_REGION` / `NUXT_AWS_REGION` |
 | `production`  | DynamoDB                             | same as test                                                                                                             |
 
-**Rule:** SQLite and Postgres are for **local / development** (and local Docker) only. **test** and **production** use **DynamoDB** for MessageStore / BlogPostStore — never SQLite or Postgres on Lambda.
+**Rule:** SQLite and Postgres are for **local / development** only. **test** and **production** use **DynamoDB** for MessageStore / BlogPostStore — never SQLite or Postgres on Lambda.
 
 ### Nuxt Content (separate from MessageStore / BlogPostStore)
 
@@ -20,11 +20,11 @@
 
 Content is not stored in DynamoDB; the in-memory dump is the serverless-safe path. Do not point Content at `/tmp/*.sqlite` or Postgres on test/prod.
 
-The in-app `/docs` hub parses markdown from the repo `docs/` directory **in place** (see [gallery-and-docs.md](./features/gallery-and-docs.md)). Those files are not copied into `core/web/content/`. Slim `Dockerfile.app` copies host `.output/<SYS_ENV>` (docs are already dumped into the Nitro build); SAM/Lambda only ships the dump.
+The in-app `/docs` hub parses markdown from the repo `docs/` directory **in place** (see [gallery-and-docs.md](./features/gallery-and-docs.md)). Those files are not copied into `core/web/content/`.
 
 Factories: `server/db/index.ts` (messages), `server/db/blog-store.ts` (posts).  
 Runtime wiring: `server/api/{messages,posts}/store-options.ts`.  
-Empty baked `runtimeConfig` strings are treated as unset (`nonEmpty` / `firstNonEmptyEnv`) so Docker and Lambda env can supply real values. Prefer `NUXT_*` when both plain and Nuxt names are set.
+Empty baked `runtimeConfig` strings are treated as unset (`nonEmpty` / `firstNonEmptyEnv`) so process env can supply real values. Prefer `NUXT_*` when both plain and Nuxt names are set.
 
 ## Keys by environment (templates)
 
@@ -45,22 +45,13 @@ Empty baked `runtimeConfig` strings are treated as unset (`nonEmpty` / `firstNon
 | `CORS_ALLOW_ORIGIN`                              | —                      | —                     | `*` (test)                | `https://likwidmack.com` (must match `SITE_URL`) |
 | `NUXT_APP_CDN_URL`                               | optional               | optional              | CloudFront                | CloudFront                                       |
 
-Templates (no secrets): `.env.example`, `.env.development.example`, `.env.test.example`, `.env.production.example`.
-
 ## Where values are injected
 
-| Env                     | Source                                                                                                                                        |
-| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| local                   | `.env.example` (+ optional `.env`) via `scripts/docker-compose.mjs` → `${VAR}` in `docker-compose.local.yml`; host `./data` volume for SQLite |
-| development             | `.env.development.example` (+ optional `.env.development`) via `scripts/docker-compose.mjs` → `${VAR}` in `docker-compose.dev.yml`            |
-| test (local parity)     | `.env.test.example` (+ optional `.env.test`) via `scripts/docker-compose.mjs` → `${VAR}` in `docker-compose.test.yml`                         |
-| test / production (AWS) | SAM `NitroFunction` env (`infra/sam/template.yaml`) + CD parameter overrides                                                                  |
+Local and development reads process env (`SYS_ENV`, `DATABASE_URL` / `NUXT_DATABASE_URL`). Test and production map adapter keys (`DYNAMO_TABLE`, `DYNAMO_POSTS_TABLE`, `AWS_REGION`) through Nitro `runtimeConfig`.
 
 ## Verify
 
 ```bash
 npm run db:migrate:local
 cd core/web && npx vitest run server/db tests/resolve-process-env.spec.ts
-npm run docker:dev    # Postgres
-npm run docker:test   # Dynamo Local (ensureNitroOutput first)
 ```
