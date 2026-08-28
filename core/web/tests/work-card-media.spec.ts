@@ -62,15 +62,18 @@ describe('work card media rendering contract', () => {
     }
   });
 
-  it('unifies card media intrinsic size at 16:10', async () => {
+  it('keeps work-card media filling its cell without clipping copy', async () => {
     const card = await readFile(join(root, 'app/components/AppWorkCard.vue'), 'utf8');
     const styles = await readFile(join(root, 'assets/css/portfolio-launch.scss'), 'utf8');
 
     expect(card).toContain('width="640"');
     expect(card).toContain('height="400"');
-    expect(styles).toContain('--work-card-media-ratio: 16 / 10');
+    expect(styles).toContain('--work-card-media-ratio: var(--media-ratio');
     expect(styles).toContain('position: absolute');
     expect(styles).toContain('inset: 0');
+    expect(styles).toContain('(orientation: landscape)');
+    expect(styles).toContain('grid-template-columns: minmax(12rem, 38%) minmax(0, 1fr)');
+    expect(styles).toContain('aspect-ratio: unset');
   });
 
   it('resolves an existing public asset for every published story card', async () => {
@@ -107,9 +110,9 @@ describe('work card media rendering contract', () => {
 
   it('keeps diagram SVGs as ASCII-safe UTF-8 with intrinsic size attributes', async () => {
     const diagrams = [
-      'public/img/portfolio/experience-systems-flow.svg',
-      'public/img/portfolio/data-visualization-flow.svg',
-      'public/img/portfolio/spatial-experience-flow.svg',
+      'public/i/portfolio/experience-systems-flow.svg',
+      'public/i/portfolio/data-visualization-flow.svg',
+      'public/i/portfolio/spatial-experience-flow.svg',
     ];
 
     for (const rel of diagrams) {

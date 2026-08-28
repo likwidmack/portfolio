@@ -53,7 +53,8 @@
 
 <script setup lang="ts">
 import { normalizeSlug, type BlogPost, type BlogPostStatus } from '@tgmc/web-layer-admin/shared/blog-types';
-import { adminAuthHeaders, fetchErrorMessage, fetchErrorStatus, readAdminToken } from '../../../utils/admin-token';
+import { useAdminDatabase } from '../../../composables/useAdminDatabase';
+import { adminRequestHeaders, fetchErrorMessage, fetchErrorStatus, readAdminToken } from '../../../utils/admin-token';
 
 definePageMeta({
   breadcrumb: 'Admin Blog',
@@ -61,6 +62,7 @@ definePageMeta({
 
 const route = useRoute();
 const config = useRuntimeConfig();
+const { selected: adminDatabase } = useAdminDatabase();
 const writesEnabled = computed(() => Boolean(config.public.adminWritesEnabled));
 
 const idParam = computed(() => String(route.params.id || ''));
@@ -93,7 +95,7 @@ watch(
   }
 );
 
-onMounted(async () => {
+const loadPost = async () => {
   if (!writesEnabled.value) {
     return;
   }
@@ -103,12 +105,14 @@ onMounted(async () => {
   }
 
   if (isNew.value) {
+    loadError.value = '';
     return;
   }
 
+  loadError.value = '';
   try {
     const post = await $fetch<BlogPost>(`/api/admin/posts/${idParam.value}`, {
-      headers: adminAuthHeaders(),
+      headers: adminRequestHeaders(),
     });
     form.title = post.title;
     form.slug = post.slug;
@@ -123,6 +127,14 @@ onMounted(async () => {
     }
     loadError.value = status === 404 ? 'Post not found.' : 'Unable to load post.';
   }
+};
+
+onMounted(() => {
+  void loadPost();
+});
+
+watch(adminDatabase, () => {
+  void loadPost(); // edit form reloads from the newly selected backend
 });
 
 const onSave = async () => {
@@ -140,7 +152,7 @@ const onSave = async () => {
     if (isNew.value) {
       const created = await $fetch<BlogPost>('/api/admin/posts', {
         method: 'POST',
-        headers: adminAuthHeaders(),
+        headers: adminRequestHeaders(),
         body: payload,
       });
       formSeverity.value = 'success';
@@ -151,7 +163,7 @@ const onSave = async () => {
 
     await $fetch(`/api/admin/posts/${idParam.value}`, {
       method: 'PUT',
-      headers: adminAuthHeaders(),
+      headers: adminRequestHeaders(),
       body: payload,
     });
     formSeverity.value = 'success';
@@ -179,7 +191,7 @@ const onDelete = async () => {
   try {
     await $fetch(`/api/admin/posts/${idParam.value}`, {
       method: 'DELETE',
-      headers: adminAuthHeaders(),
+      headers: adminRequestHeaders(),
     });
     await navigateTo('/admin/blog');
   } catch (error: unknown) {

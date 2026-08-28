@@ -89,6 +89,12 @@ export const createPostgresMessageStore = (options: PostgresStoreOptions = {}): 
       return message;
     },
 
+    async delete(id: string): Promise<boolean> {
+      await ensureSchema();
+      const result = await pool.query(`DELETE FROM messages WHERE id = $1`, [id]);
+      return (result.rowCount ?? 0) > 0;
+    },
+
     async close(): Promise<void> {
       await pool.end();
     },

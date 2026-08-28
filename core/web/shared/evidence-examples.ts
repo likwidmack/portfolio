@@ -98,7 +98,7 @@ player.on('state', (state) => {
   "media": [
     {
       "type": "diagram",
-      "src": "/img/portfolio/media-system-flow.svg",
+      "src": "/i/portfolio/media-system-flow.svg",
       "alt": "Playback state recovery flow"
     }
   ]

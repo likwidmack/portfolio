@@ -9,6 +9,8 @@ export type CreateContactMessageResult =
 
 export const listContactMessages = (store: MessageStore): Promise<ContactMessage[]> => store.list();
 
+export const deleteContactMessage = async (store: MessageStore, id: string): Promise<boolean> => store.delete(id);
+
 export const createContactMessageFromBody = async (
   store: MessageStore,
   body: unknown

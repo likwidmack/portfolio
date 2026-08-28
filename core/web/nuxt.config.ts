@@ -32,33 +32,12 @@ const databaseUrl = firstNonEmptyEnv(process.env, 'NUXT_DATABASE_URL', 'DATABASE
 const dynamoTable = firstNonEmptyEnv(process.env, 'NUXT_DYNAMO_TABLE', 'DYNAMO_TABLE') ?? '';
 const dynamoPostsTable = firstNonEmptyEnv(process.env, 'NUXT_DYNAMO_POSTS_TABLE', 'DYNAMO_POSTS_TABLE') ?? '';
 const awsRegion = firstNonEmptyEnv(process.env, 'NUXT_AWS_REGION', 'AWS_REGION') ?? '';
-const adminToken = firstNonEmptyEnv(process.env, 'NUXT_ADMIN_TOKEN', 'ADMIN_TOKEN') ?? '';
 const siteUrl = firstNonEmptyEnv(process.env, 'NUXT_PUBLIC_SITE_URL', 'SITE_URL') ?? 'http://localhost:4200';
 const openaiApiKey = firstNonEmptyEnv(process.env, 'NUXT_OPENAI_API_KEY', 'OPENAI_API_KEY') ?? '';
 const openaiModel = firstNonEmptyEnv(process.env, 'NUXT_OPENAI_MODEL', 'OPENAI_MODEL') ?? 'gpt-5.6-luna';
 const aiLabLiveEnabledRaw =
   firstNonEmptyEnv(process.env, 'NUXT_PUBLIC_AI_LAB_LIVE_ENABLED', 'AI_LAB_LIVE_ENABLED') ?? '0';
 const aiLabSigningSecret = firstNonEmptyEnv(process.env, 'NUXT_AI_LAB_SIGNING_SECRET', 'AI_LAB_SIGNING_SECRET') ?? '';
-
-/**
- * Whether the admin UI should advertise write capability.
- * Local/dev: only when a token is present at build time.
- * Test/prod: true so Lambda-injected NUXT_ADMIN_TOKEN enables the UI; APIs still fail closed if unset.
- */
-const adminWritesEnabledFor = (sysEnv: SysEnv, token: string): boolean => {
-  switch (sysEnv) {
-    case 'test':
-    case 'production':
-      return true;
-    case 'local':
-    case 'development':
-      return Boolean(token);
-    default: {
-      const _exhaustive: never = sysEnv;
-      return _exhaustive;
-    }
-  }
-};
 
 /**
  * Nitro preset for a given SYS_ENV.
@@ -99,8 +78,6 @@ const contentDatabaseForLambda =
 const debug = env === 'local';
 const isDev = !['production'].includes(node);
 const isLocalDev = isDev && debug;
-const adminWritesEnabled = adminWritesEnabledFor(env, adminToken);
-
 // Optional CDN origin (absolute http(s) only). Used for `app.cdnURL` asset
 // rewrite — never as `vite.base` / router base (relative values like `./`
 // produce broken routes such as `//admin/blog`).
@@ -189,7 +166,6 @@ const viteProps = configProps.vite();
 export default defineNuxtConfig({
   // Local `./layers/*` auto-scanned (e.g. 1.base). Publishable layers use `extends`.
   // Do not also list auto-scanned `./layers/*` paths in `extends` (double-merge).
-  extends: ['@tgmc/web-layer-admin'],
   modules,
   // Lambda Content: in-memory SQLite from build dump (no writable Content DB file).
   ...(contentDatabaseForLambda
@@ -219,7 +195,9 @@ export default defineNuxtConfig({
     autoImport: true,
     dirs: ['stores'],
   },
-  // Merge base app props; `cdnURL` (not baseURL) points hashed assets at the CDN origin.
+  // Merge base app props. On AWS, `cdnURL` (from `NUXT_APP_CDN_URL`) rewrites hashed
+  // `_nuxt` + favicon to CloudFront — never set `vite.base` / router base to the CDN.
+  // `.output/public` is synced to S3 by SAM; Lambda CodeUri is server-only.
   app: {
     ...(configProps.app(siteDescription, siteTitle, CDN_URL) as any),
     ...(CDN_URL ? { cdnURL: CDN_URL } : {}),
@@ -238,7 +216,6 @@ export default defineNuxtConfig({
     dynamoTable,
     dynamoPostsTable,
     awsRegion,
-    adminToken,
     openaiApiKey,
     openaiModel,
     aiLabSigningSecret,
@@ -258,8 +235,6 @@ export default defineNuxtConfig({
       sysEnv: env,
       /** Fail-closed default; `$development` / `$test` layers flip this on. */
       showEnvIndicator: false,
-      /** True when admin UI writes are expected (never exposes the secret). */
-      adminWritesEnabled,
       siteUrl,
       aiLabLiveEnabled: aiLabLiveEnabledRaw === '1' && Boolean(openaiApiKey && aiLabSigningSecret),
     },
@@ -303,6 +278,10 @@ export default defineNuxtConfig({
       // (streamifyResponse) returns a prelude+body payload APIGW cannot parse → 500.
       streaming: false,
     },
+    // AWS: do not serve `public/` from Lambda. SAM stages `.output/public` beside
+    // `server/` and syncs it to the private assets bucket + CloudFront after deploy.
+    // Local/Docker `node-server` keeps Nitro's default static serving.
+    ...(nitroPreset === 'aws_lambda' ? { serveStatic: false as const } : {}),
     logLevel: debug ? 5 : isDev ? 3 : 0,
     inlineDynamicImports: true,
     output: outputObj,

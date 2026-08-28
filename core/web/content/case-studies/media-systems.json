@@ -49,7 +49,7 @@
   "media": [
     {
       "type": "diagram",
-      "src": "/img/portfolio/media-system-flow.svg",
+      "src": "/i/portfolio/media-system-flow.svg",
       "alt": "Diagram showing manifest and segments flowing through playback state, interface feedback, and recovery controls"
     }
   ],

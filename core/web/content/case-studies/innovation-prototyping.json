@@ -47,43 +47,43 @@
   "media": [
     {
       "type": "image",
-      "src": "/img/portfolio/manhattan-2150-keyframe.png",
+      "src": "/i/portfolio/manhattan-2150-keyframe.png",
       "alt": "Futuristic Manhattan skyline keyframe for the Manhattan 2150 concept"
     },
     {
       "type": "image",
-      "src": "/img/portfolio/manhattan-2150-storyboard.png",
+      "src": "/i/portfolio/manhattan-2150-storyboard.png",
       "alt": "Six-frame Manhattan 2150 storyboard showing the planned visual sequence"
     },
     {
       "type": "image",
-      "src": "/img/portfolio/generated/vimg-crystal-volume.webp",
+      "src": "/i/portfolio/generated/vimg-crystal-volume.webp",
       "alt": "Transparent crystalline cube floating above clouds with a star field visible through its facets",
       "caption": "Human-directed Midjourney study exploring translucent volume, atmosphere, and impossible scale."
     },
     {
       "type": "image",
-      "src": "/img/portfolio/generated/vimg-cosmic-network.webp",
+      "src": "/i/portfolio/generated/vimg-cosmic-network.webp",
       "alt": "Glowing lattice of branching cosmic filaments rendered as an abstract spatial network",
       "caption": "Human-directed Midjourney study translating network topology into a luminous spatial system."
     },
     {
       "type": "image",
-      "src": "/img/portfolio/generated/vimg-algorithmic-helix.webp",
+      "src": "/i/portfolio/generated/vimg-algorithmic-helix.webp",
       "alt": "Iridescent sculptural helix with translucent coral, blue, violet, and gold surfaces",
       "caption": "Human-directed Midjourney study exploring color, material, and algorithmic form."
     },
     {
       "type": "video",
-      "src": "/video/portfolio/generated/vimg-crystal-binary-helix.mp4",
-      "poster": "/img/portfolio/generated/vimg-algorithmic-helix.webp",
+      "src": "/v/portfolio/generated/vimg-crystal-binary-helix.mp4",
+      "poster": "/i/portfolio/generated/vimg-algorithmic-helix.webp",
       "alt": "Animated macro view moving along a crystalline DNA helix filled with colorful binary digits",
       "caption": "Motion study — a five-second human-directed Midjourney exploration of data becoming biological form."
     },
     {
       "type": "video",
-      "src": "/video/portfolio/generated/vimg-tesseract-framework.mp4",
-      "poster": "/img/tesseract/blue-8-cell-simple.png",
+      "src": "/v/portfolio/generated/vimg-tesseract-framework.mp4",
+      "poster": "/i/tesseract/blue-8-cell-simple.png",
       "alt": "Animated nested transparent tesseract cubes glowing inside a reflective digital chamber",
       "caption": "Motion study — a five-second human-directed Midjourney exploration of dimensional interfaces and recursive space."
     }
@@ -92,6 +92,6 @@
     { "label": "Read the AI-assisted process", "href": "/process" },
     { "label": "Related spatial experiences story", "href": "/work/spatial-experiences" },
     { "label": "Related data visualization story", "href": "/work/data-visualization" },
-    { "label": "Open the advanced tesseract lab", "href": "/htm/adv_wire_tess.html" }
+    { "label": "Open the advanced tesseract lab", "href": "/d/htm/adv_wire_tess.html" }
   ]
 }

@@ -56,35 +56,47 @@ function pause() {
 }
 </script>
 
-<template>
-  <main class="media-player-demo">
-    <h1>Media player (package demo)</h1>
-    <p>Thin validation page for <code>@tgmc/media-player</code>. Sample URLs are public CDNs.</p>
-    <ClientOnly>
-      <video ref="videoRef" class="media-player-demo__video" controls playsinline />
-      <div class="media-player-demo__controls">
-        <button type="button" @click="play">Play</button>
-        <button type="button" @click="pause">Pause</button>
-      </div>
-      <p>
-        Mode: <strong>{{ mode }}</strong>
-      </p>
-      <ul>
-        <li v-for="(line, i) in log" :key="i">{{ line }}</li>
-      </ul>
-    </ClientOnly>
-  </main>
+<template lang="pug">
+.page-content.media-player-demo(data-fit="screen")
+  header(data-region="hero")
+    h1 Media player
+    p Thin validation page for&nbsp;
+      code @tgmc/media-player
+      | . Sample URLs are public CDNs.
+  ClientOnly
+    .media-player-demo__stage
+      video.media-player-demo__video(ref="videoRef", controls, playsinline)
+      .media-player-demo__controls
+        button(type="button", @click="play") Play
+        button(type="button", @click="pause") Pause
+      p
+        | Mode:&nbsp;
+        strong {{ mode }}
+      ul
+        li(v-for="(line, i) in log", :key="i") {{ line }}
 </template>
 
-<style scoped>
-.media-player-demo__video {
+<style scoped lang="scss">
+.media-player-demo__stage {
+  display: grid;
+  gap: 1rem;
   width: 100%;
-  max-width: 720px;
-  background: #000;
+  min-height: max(18rem, calc(var(--page-fill-min, 100dvh) * 0.55));
 }
+
+.media-player-demo__video {
+  display: block;
+  width: 100%;
+  max-width: none;
+  min-height: min(70dvh, 40rem);
+  background: #000;
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
+}
+
 .media-player-demo__controls {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
-  margin: 0.75rem 0;
 }
 </style>
