@@ -258,3 +258,13 @@ test("a second sync removes dest files dropped since the last run", () => {
   assert.equal(fs.existsSync(stale), false);
   assertCdnPlaceholder(dest, "core/web/public/i/portfolio/social-card.png", "cdn-card", "png");
 });
+
+test("dest-owned GitHub social preview is the real 1280x640 image", () => {
+  const file = path.join(root, ".github/social-preview.png");
+  assert.ok(fs.existsSync(file), "missing .github/social-preview.png");
+  const buf = fs.readFileSync(file);
+  assert.equal(buf.subarray(0, 8).toString("hex"), "89504e470d0a1a0a");
+  assert.equal(buf.readUInt32BE(16), 1280);
+  assert.equal(buf.readUInt32BE(20), 640);
+  assert.ok(buf.length > 10_000, "social preview must not be a 1x1 placeholder");
+});
