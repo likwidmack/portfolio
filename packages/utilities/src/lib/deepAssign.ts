@@ -1,6 +1,9 @@
 import deepSet from './deepSet.js';
 import { isClass, isObject } from './index.js';
 
+const isUnsafePropertyKey = (prop: string): boolean =>
+  prop === '__proto__' || prop === 'constructor' || prop === 'prototype';
+
 /**
  * Deeply merges one or more source objects into `rootObj` (mutates and returns it).
  *
@@ -22,6 +25,7 @@ export const deepAssign = (rootObj: any = {}, ...objs: any[]) => {
     const o: any = objs.shift() as any;
     for (const [prop, value] of Object.entries(o)) {
       if (!Object.prototype.hasOwnProperty.call(o, prop)) continue;
+      if (isUnsafePropertyKey(prop)) continue;
       assignObj(rootObj, prop, value);
     }
   }
@@ -30,6 +34,8 @@ export const deepAssign = (rootObj: any = {}, ...objs: any[]) => {
 };
 
 function assignObj(rootObj: any, prop: string, value: any): void {
+  if (isUnsafePropertyKey(prop)) return;
+
   if (Array.isArray(value) && Array.isArray(rootObj[prop])) {
     rootObj[prop] = deepSet(rootObj[prop] as any, value);
   } else if (isObject(value) && (isObject(rootObj[prop]) || isClass(rootObj[prop]))) {
