@@ -4,7 +4,7 @@ Canonical instructions for **tgmc-portfolio** live in this folder. The [root REA
 
 **GitHub Pages** publishes this tree (Jekyll Cayman). Source: `/docs`. Workflow: [`.github/workflows/pages.yml`](../.github/workflows/pages.yml).
 
-**AI agents:** [agents/README.md](./agents/README.md) · [agents/map.md](./agents/map.md) · generated checklist [`AGENTS.md`](https://github.com/tamaramack/portfolio/blob/development/AGENTS.md)
+**AI agents:** [agents/README.md](./agents/README.md) · [agents/map.md](./agents/map.md) · generated checklist [`AGENTS.md`](https://github.com/likwidmack/portfolio/blob/development/AGENTS.md)
 
 **Humans:** [web/guides/quickstart.md](./web/guides/quickstart.md) · [cicd.md](./cicd.md)
 
@@ -34,7 +34,7 @@ Instructions are grouped the same way as the repo. Prefer these pages over dupli
 | [map.md](./agents/map.md)                               | Repo map: directory → purpose → source of truth       |
 | [shared-cdn-handoff.md](./agents/shared-cdn-handoff.md) | Archived brief: shared test CDN with HyperActivity    |
 
-Root [`AGENTS.md`](https://github.com/tamaramack/portfolio/blob/development/AGENTS.md) is a **generated checklist**. Edit `scripts/update-agents.mjs` or pages here; do not hand-edit `AGENTS.md`.
+Root [`AGENTS.md`](https://github.com/likwidmack/portfolio/blob/development/AGENTS.md) is a **generated checklist**. Edit `scripts/update-agents.mjs` or pages here; do not hand-edit `AGENTS.md`.
 
 ### `docs/web/` — Nuxt app (`@tgmc/web`)
 

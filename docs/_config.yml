@@ -1,6 +1,6 @@
 # GitHub Pages (publish source: /docs).
 title: portfolio
-description: Tamara Mack web portfolio — Nx + Nuxt 4 (public sanitized source)
+description: Tamara Mack web portfolio — Nx + Nuxt 4
 url: https://likwidmack.github.io
 baseurl: /portfolio
 repository: likwidmack/portfolio

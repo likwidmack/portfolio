@@ -17,10 +17,10 @@ CI/CD triggers, Docker/SAM commands, and GitHub Environment secrets: [docs/cicd.
 
 Example templates (no secrets):
 
-- [`.env.example`](https://github.com/tamaramack/portfolio/blob/development/.env.example) — local defaults
-- [`.env.development.example`](https://github.com/tamaramack/portfolio/blob/development/.env.development.example)
-- [`.env.test.example`](https://github.com/tamaramack/portfolio/blob/development/.env.test.example)
-- [`.env.production.example`](https://github.com/tamaramack/portfolio/blob/development/.env.production.example)
+- [`.env.example`](https://github.com/likwidmack/portfolio/blob/development/.env.example) — local defaults
+- [`.env.development.example`](https://github.com/likwidmack/portfolio/blob/development/.env.development.example)
+- [`.env.test.example`](https://github.com/likwidmack/portfolio/blob/development/.env.test.example)
+- [`.env.production.example`](https://github.com/likwidmack/portfolio/blob/development/.env.production.example)
 
 ## SYS_ENV
 

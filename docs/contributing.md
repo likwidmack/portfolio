@@ -4,7 +4,7 @@
 
 1. Put durable instructions under [`docs/`](./), categorized by directory (see the catalog).
 2. Link new pages from `docs/README.md` **and** `docs/_catalog.md` (GitHub Pages include).
-3. Keep the [root README](https://github.com/tamaramack/portfolio#readme) short: badges, one quick start, links into `docs/`.
+3. Keep the [root README](https://github.com/likwidmack/portfolio#readme) short: badges, one quick start, links into `docs/`.
 4. GitHub **About**, **topics**, and **Website** are not in Git. When those change, update [`docs/dev/github-access.md`](./dev/github-access.md) and `package.json` `keywords`, then run the documented `gh repo edit`.
 5. Package READMEs (`docker/`, `infra/sam/`, `packages/*`) stay operational or package-local; they should point here for topology.
 

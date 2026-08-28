@@ -1,6 +1,6 @@
 # `@tgmc/utilities` reference
 
-Package README (quick start + tables): [`packages/utilities/README.md`](https://github.com/tamaramack/portfolio/blob/development/packages/utilities/README.md).
+Package README (quick start + tables): [`packages/utilities/README.md`](https://github.com/likwidmack/portfolio/blob/development/packages/utilities/README.md).
 
 This page expands usage notes, entry boundaries, and API behavior for agents and app developers.
 
@@ -140,5 +140,5 @@ Browser modules use `// @vitest-environment jsdom` on individual specs. Default 
 
 ## Design history
 
-- [Lambda-ready entry split](https://github.com/tamaramack/portfolio/blob/development/docs/superpowers/specs/2026-07-28-utilities-lambda-ready-design.md)
-- [Harden + storage move](https://github.com/tamaramack/portfolio/blob/development/docs/superpowers/specs/2026-07-29-utilities-harden-and-storage-move-design.md)
+- [Lambda-ready entry split](https://github.com/likwidmack/portfolio/blob/development/docs/superpowers/specs/2026-07-28-utilities-lambda-ready-design.md)
+- [Harden + storage move](https://github.com/likwidmack/portfolio/blob/development/docs/superpowers/specs/2026-07-29-utilities-harden-and-storage-move-design.md)
