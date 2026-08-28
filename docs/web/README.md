@@ -2,7 +2,7 @@
 
 Guides for the Nuxt app `@tgmc/web` (`core/web`).
 
-**Hub:** [Catalog](../) · **Agents:** [docs/agents/README.md](../agents/) · **CI/CD:** [docs/cicd.md](../cicd.md) · **Public IA / launch:** [portfolio-august-launch.md](../portfolio-august-launch.md)
+**Hub:** [Catalog](../)
 
 ## Public chrome (restyle IA)
 
@@ -32,7 +32,6 @@ Theme tokens and `data-fit`: [packages/theme.md](../packages/theme.md). Gallery 
 
 ## Features
 
-- [CDN guide](./features/cdn-guide.md) · [CDN quick start](./features/cdn-quickstart.md)
 - [Messages API](./features/messages-api.md)
 - [Page data loading](./features/page-data-loading.md)
 - [Gallery and technical docs](./features/gallery-and-docs.md)
@@ -51,6 +50,8 @@ Theme tokens and `data-fit`: [packages/theme.md](../packages/theme.md). Gallery 
 From **repo root** (not `core/web` alone):
 
 ```bash
+npm ci
+npm run db:migrate:local
 npm run dev
 npm run build
 npm test
@@ -64,4 +65,3 @@ NUXT_APP_CDN_URL=https://cdn.example.com npm run build
 | ------------------------- | ---------------------------------- |
 | `core/web/nuxt.config.ts` | Aliases, Nitro, runtimeConfig, CDN |
 | `core/web/package.json`   | App scripts                        |
-| `.env*.example`           | Env templates                      |

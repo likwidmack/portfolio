@@ -108,7 +108,6 @@ Build with `npm run build:libs` or `npm run build --workspace=@tgmc/<name>`:
 - App Vitest: `core/web/tests/`, `server/**/*.spec.ts`
 - Page-fit contract: `tests/page-fit.spec.ts`
 - Docs packaging: `tests/docs-source.spec.ts`
-- E2E: `core/web-e2e/` (Cypress)
 
 ## Documentation structure
 

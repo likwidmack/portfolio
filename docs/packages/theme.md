@@ -97,6 +97,6 @@ When changing layout SCSS or card templates:
 
 Portfolio signal teal is `--portfolio-teal` (and `--success`); do not overwrite chroma `--color-teal` / `$css-teal-*`. Applied controls: About Digital CV résumé button (`.about-cv__resume`), Gallery view/like stats (`.gallery-grid__stats` / `.gallery-feed-card__stats`), and Code language tags (`.code-page__lang`). Surfaces/text/borders keep existing keys (`--main-background`, `--surface-color`, `--text-color`, `--border-color`).
 
-Personalization accents (`ember` / `crimson`) live in `core/web/shared/personalization.ts` and rebind brand CSS vars per resolved light/dark mode. Coral-era sources are snapshotted under `archive/v2/` (not imported by the app).
+Personalization accents (`ember` / `crimson`) live in `core/web/shared/personalization.ts` and rebind brand CSS vars per resolved light/dark mode.
 
-Home / nav chrome breakpoints in `portfolio-launch.scss` use Sass `$breakpoint-*` (stack Home hero and wrap the five-link primary nav below `$breakpoint-standard` = 1080px). Work Related links reuse `.page-nav` (sticky aside from tablet up; compact horizontal rail on small viewports) via `AppWorkSubNav` — see [portfolio-august-launch.md](../portfolio-august-launch.md#public-information-architecture).
+Home / nav chrome breakpoints in `portfolio-launch.scss` use Sass `$breakpoint-*` (stack Home hero and wrap the five-link primary nav below `$breakpoint-standard` = 1080px). Work Related links reuse `.page-nav` (sticky aside from tablet up; compact horizontal rail on small viewports) via `AppWorkSubNav`.

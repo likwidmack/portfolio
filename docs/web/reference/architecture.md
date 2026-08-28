@@ -16,7 +16,7 @@ Live SVG on [`/product`](/product) (`AppArchitectureDiagram`) shares the content
 
 ## Context (short)
 
-Public chrome: `AppPrimaryNav` is **Work / About / Gallery / Writing / Code**. Docs, AI Lab, and Process are **Work sub-nav** (`AppWorkSubNav` on `/work` and `/work/[slug]`). Full IA: [portfolio-august-launch.md](../../portfolio-august-launch.md#public-information-architecture).
+Public chrome: `AppPrimaryNav` is **Work / About / Gallery / Writing / Code**. Docs, AI Lab, and Process are **Work sub-nav** (`AppWorkSubNav` on `/work` and `/work/[slug]`).
 
 Page copy, gallery, and case studies load through Nitro (`GET /api/content/:collection`) so client WASM SQLite is not used during SPA navigations. Durable contact messages and blog posts use MessageStore / BlogPostStore adapters selected by `SYS_ENV` (SQLite → Postgres → DynamoDB). Test/prod HTML and API run on Lambda behind HTTP API; hashed assets go to S3/CloudFront.
 
@@ -25,6 +25,4 @@ Page copy, gallery, and case studies load through Nitro (`GET /api/content/:coll
 - [Page data loading](../features/page-data-loading.md)
 - [Gallery and docs hubs](../features/gallery-and-docs.md)
 - [Data stores](../data-stores.md)
-- [CI/CD](../../cicd.md) · [Docker](../../docker.md) · [SAM / infra](../../infra.md)
 - [Project structure](./project-structure.md)
-- [August launch IA](../../portfolio-august-launch.md#public-information-architecture)

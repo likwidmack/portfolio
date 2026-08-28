@@ -61,17 +61,15 @@ export default defineEventHandler((event) => {
 
 ## Common Commands
 
-| Command               | Purpose                                                                    |
-| --------------------- | -------------------------------------------------------------------------- |
-| `npm run dev`         | Start dev server                                                           |
-| `npm run build`       | Build for production                                                       |
-| `npm run preview`     | Preview built app (`cd core/web && npm run preview` after `npm run build`) |
-| `npm run test`        | Run tests                                                                  |
-| `npm run lint`        | Prettier + lint all Nx packages with a lint target                         |
-| `npm run format`      | Format code only                                                           |
-| `npm run lint:staged` | Prettier + Nx affected lint on staged files (same as pre-commit)           |
-
-Git hooks (after `npm install`): lint (Prettier + Nx) on commit; `npm test` on push. See [Git hooks](../../dev/git-hooks.md).
+| Command                    | Purpose                                                                    |
+| -------------------------- | -------------------------------------------------------------------------- |
+| `npm run dev`              | Start dev server                                                           |
+| `npm run db:migrate:local` | Apply local SQLite migrations                                              |
+| `npm run build`            | Build for production                                                       |
+| `npm run build:libs`       | Build workspace libraries                                                  |
+| `npm run test`             | Run tests                                                                  |
+| `npm run lint`             | Prettier + lint all Nx packages with a lint target                         |
+| `npm run format`           | Format code only                                                           |
 
 ---
 
@@ -83,7 +81,7 @@ Enable CDN for faster asset delivery:
 NUXT_APP_CDN_URL=https://cdn.example.com npm run dev
 ```
 
-See [CDN Guide](../features/cdn-guide.md) for full documentation.
+See [Code Examples](./examples.md) for CDN usage.
 
 ---
 
@@ -93,7 +91,7 @@ For local HTTPS development:
 
 ```bash
 # Generate SSL certificates (once)
-npm run ssl:gen:windows  # or ssl:gen:linux for WSL/Linux
+npm run ssl:gen:linux  # or ssl:gen:windows on PowerShell
 
 # Start HTTPS server
 npm run start:ssl:4200
@@ -107,8 +105,7 @@ See [SSL Setup](../setup/ssl-setup.md) for details.
 
 1. Explore the **[Project Structure](../reference/project-structure.md)**
 2. Check **[Code Examples](./examples.md)**
-3. Read **[CDN Quick Start](../features/cdn-quickstart.md)** for CDN usage
-4. Review **[TypeScript Configuration](../reference/typescript-config.md)**
+3. Review **[TypeScript Configuration](../reference/typescript-config.md)**
 
 ---
 

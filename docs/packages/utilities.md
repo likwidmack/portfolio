@@ -1,6 +1,6 @@
 # `@tgmc/utilities` reference
 
-Package README (quick start + tables): [`packages/utilities/README.md`](https://github.com/likwidmack/portfolio/blob/development/packages/utilities/README.md).
+Package README (quick start + tables): [`packages/utilities/README.md`](https://github.com/likwidmack/portfolio/blob/main/packages/utilities/README.md).
 
 This page expands usage notes, entry boundaries, and API behavior for agents and app developers.
 
@@ -134,11 +134,7 @@ npx nx run @tgmc/utilities:test
 npm test
 ```
 
-Nx `test` only depends on `^build` (dependency packages). This package’s own `test` target also depends on `build` so `dist/` exists for consumers. Root `scripts/test-web.sh` builds `@tgmc/utilities` and `@tgmc/media-player` before web Vitest, because web imports resolve through package `exports` → `dist/*` (not the `tgmc-portfolio` → `src` condition).
+Nx `test` only depends on `^build` (dependency packages). This package’s own `test` target also depends on `build` so `dist/` exists for consumers. Root `npm test` builds dependency packages before web Vitest, because web imports resolve through package `exports` → `dist/*`.
 
 Browser modules use `// @vitest-environment jsdom` on individual specs. Default Vitest environment for the package is `node`.
 
-## Design history
-
-- [Lambda-ready entry split](https://github.com/likwidmack/portfolio/blob/development/docs/superpowers/specs/2026-07-28-utilities-lambda-ready-design.md)
-- [Harden + storage move](https://github.com/likwidmack/portfolio/blob/development/docs/superpowers/specs/2026-07-29-utilities-harden-and-storage-move-design.md)
