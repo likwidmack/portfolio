@@ -158,7 +158,7 @@
     "yauzl": "^3.2.1"
   },
   "author": "Tamara G Mack",
-  "description": "Public sanitized source for Tamara Mack’s Nx + Nuxt 4 portfolio.",
+  "description": "Tamara Mack’s Nx + Nuxt 4 portfolio.",
   "homepage": "https://likwidmack.com",
   "keywords": [
     "nuxt",

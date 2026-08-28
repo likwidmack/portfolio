@@ -56,8 +56,7 @@ function rewritePackageJson(staging, tag) {
   pkg.name = "portfolio";
   pkg.version = publicVersion(tag, pkg.version);
   pkg.private = true;
-  pkg.description =
-    "Public sanitized source for Tamara Mack’s Nx + Nuxt 4 portfolio.";
+  pkg.description = "Tamara Mack’s Nx + Nuxt 4 portfolio.";
   pkg.homepage = "https://likwidmack.com";
   pkg.bugs = { url: "https://github.com/likwidmack/portfolio/issues" };
   pkg.repository = {
@@ -155,7 +154,7 @@ function rewriteDocsConfig(staging) {
     file,
     `# GitHub Pages (publish source: /docs).
 title: portfolio
-description: Tamara Mack web portfolio — Nx + Nuxt 4 (public sanitized source)
+description: Tamara Mack web portfolio — Nx + Nuxt 4
 url: https://likwidmack.github.io
 baseurl: /portfolio
 repository: likwidmack/portfolio
@@ -204,6 +203,21 @@ function stripEnvFiles(dir) {
   }
 }
 
+function rewriteMarkdownRepos(dir) {
+  if (!fs.existsSync(dir)) return;
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      rewriteMarkdownRepos(full);
+      continue;
+    }
+    if (!/\.(md|yml)$/.test(entry.name)) continue;
+    const text = fs.readFileSync(full, "utf8");
+    const next = text.replaceAll("tamaramack/portfolio", "likwidmack/portfolio");
+    if (next !== text) fs.writeFileSync(full, next);
+  }
+}
+
 function writeGitignore(staging) {
   fs.writeFileSync(
     path.join(staging, ".gitignore"),
@@ -232,18 +246,12 @@ function writeGitignore(staging) {
   );
 }
 
-function writeReadme(staging, tag, sha) {
+function writeReadme(staging) {
   fs.writeFileSync(
     path.join(staging, "README.md"),
     `# portfolio
 
-Public, sanitized source for Tamara Mack’s Nx + Nuxt 4 portfolio.
-
-- Live site: [likwidmack.com](https://likwidmack.com)
-- Private source of truth: \`tamaramack/portfolio\`
-- This mirror: [likwidmack/portfolio](https://github.com/likwidmack/portfolio)
-
-Synced from \`${tag}\` (\`${sha.slice(0, 7)}\`). Private env templates, AWS/SAM and Docker internals, GitHub admin scripts, agent/dot-directory tooling, archives, and admin packages are omitted.
+Nx + Nuxt 4 portfolio for [likwidmack.com](https://likwidmack.com).
 
 ## Run locally
 
@@ -256,11 +264,7 @@ npm run dev
 
 App: \`http://localhost:4200\`.
 
-## Sync
-
-Tag releases on \`tamaramack/portfolio\` refresh this tree (or run **Actions → Sync public mirror**). Keep-list: \`sync/allowlist.txt\`.
-
-The sync workflow needs repository secret \`TM_GH_TOKEN\` (tamaramack PAT: Contents read on \`tamaramack/portfolio\`). Dest API / collaborator invite uses \`LK_GH_TOKEN\` (likwidmack PAT: Administration + Contents + Pull requests write on this repo). Optional \`CURSOR_API_KEY\` runs a Cursor SDK review that comments on the sync PR and does not copy files from the private source.
+See [\`docs/\`](./docs/) for setup notes and package docs.
 `,
   );
 }
@@ -289,11 +293,12 @@ function main() {
   rewritePackageJson(staging, tag);
   rewriteNxJson(staging);
   rewriteNestedPackageRepos(staging);
+  rewriteMarkdownRepos(path.join(staging, "docs"));
   rewriteWebTestTarget(staging);
   rewriteLintStaged(staging);
   rewriteDocsConfig(staging);
   writeGitignore(staging);
-  writeReadme(staging, tag, sha);
+  writeReadme(staging);
   writeSyncMeta(staging, tag, sha);
 }
 

@@ -60,6 +60,7 @@ test("app packages survive and private internals do not", () => {
   assert.equal(pkg.scripts["docker:local"], undefined);
   assert.equal(pkg.scripts.dev, "nx nuxt dev");
   assert.match(pkg.repository.url, /likwidmack\/portfolio/);
+  assert.doesNotMatch(pkg.description, /sanitized/i);
 
   const web = JSON.parse(fs.readFileSync(path.join(dest, "core/web/package.json"), "utf8"));
   assert.equal(web.nx.targets.test.options.command, "npm run test --workspace=@tgmc/web");
@@ -72,8 +73,15 @@ test("app packages survive and private internals do not", () => {
   assert.equal(meta.sourceTag, "v1.3.19");
 
   const readme = fs.readFileSync(path.join(dest, "README.md"), "utf8");
-  assert.match(readme, /TM_GH_TOKEN/);
-  assert.match(readme, /LK_GH_TOKEN/);
+  assert.match(readme, /likwidmack\.com/);
+  assert.doesNotMatch(
+    readme,
+    /tamaramack|sanitized|TM_GH_TOKEN|LK_GH_TOKEN|private source|public mirror|Synced from/i,
+  );
+
+  const docsReadme = fs.readFileSync(path.join(dest, "docs/README.md"), "utf8");
+  assert.match(docsReadme, /likwidmack\/portfolio/);
+  assert.doesNotMatch(docsReadme, /tamaramack\/portfolio/);
 });
 
 test("branch tags keep the source package version", () => {

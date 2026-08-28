@@ -2,7 +2,7 @@
 
 Instructions are grouped the same way as the repo. Prefer these pages over duplicating setup in package READMEs.
 
-On GitHub Pages, use the **topic** links (themed HTML). Filenames in the GitHub tree catalog: [docs/README.md](https://github.com/tamaramack/portfolio/blob/development/docs/README.md).
+On GitHub Pages, use the **topic** links (themed HTML). Filenames in the GitHub tree catalog: [docs/README.md](https://github.com/likwidmack/portfolio/blob/development/docs/README.md).
 
 ### This tree
 
@@ -24,7 +24,7 @@ On GitHub Pages, use the **topic** links (themed HTML). Filenames in the GitHub 
 | [Repo map](agents/map.html)                          | `agents/map.md`                                         |
 | [Shared CDN handoff](agents/shared-cdn-handoff.html) | `agents/shared-cdn-handoff.md` (archived; see infra.md) |
 
-Root [AGENTS.md](https://github.com/tamaramack/portfolio/blob/development/AGENTS.md) is a **generated checklist**. Edit `scripts/update-agents.mjs` or pages here; do not hand-edit `AGENTS.md`.
+Root [AGENTS.md](https://github.com/likwidmack/portfolio/blob/development/AGENTS.md) is a **generated checklist**. Edit `scripts/update-agents.mjs` or pages here; do not hand-edit `AGENTS.md`.
 
 ### App (`@tgmc/web`)
 
@@ -74,18 +74,18 @@ These directories are **not** built into Pages. Open them on GitHub:
 
 | Topic                | On GitHub                                                                                                  |
 | -------------------- | ---------------------------------------------------------------------------------------------------------- |
-| Locked design specs  | [docs/superpowers/specs/](https://github.com/tamaramack/portfolio/tree/development/docs/superpowers/specs) |
-| Implementation plans | [docs/superpowers/plans/](https://github.com/tamaramack/portfolio/tree/development/docs/superpowers/plans) |
-| Feature plans        | [docs/plans/](https://github.com/tamaramack/portfolio/tree/development/docs/plans)                         |
+| Locked design specs  | [docs/superpowers/specs/](https://github.com/likwidmack/portfolio/tree/development/docs/superpowers/specs) |
+| Implementation plans | [docs/superpowers/plans/](https://github.com/likwidmack/portfolio/tree/development/docs/superpowers/plans) |
+| Feature plans        | [docs/plans/](https://github.com/likwidmack/portfolio/tree/development/docs/plans)                         |
 
 ### Code trees (on GitHub)
 
 | Path                                                                                               | Use                                           |
 | -------------------------------------------------------------------------------------------------- | --------------------------------------------- |
-| [`core/web/`](https://github.com/tamaramack/portfolio/tree/development/core/web)                   | Nuxt app; `nuxt.config.ts`                    |
-| [`docker/`](https://github.com/tamaramack/portfolio/tree/development/docker)                       | Compose + Dockerfiles; [Docker](docker.html)  |
-| [`infra/sam/`](https://github.com/tamaramack/portfolio/tree/development/infra/sam)                 | SAM template; [SAM / AWS](infra.html)         |
-| [`packages/`](https://github.com/tamaramack/portfolio/tree/development/packages)                   | `utilities`, `media-player`, `likwidlibs`     |
-| [`theme/core/`](https://github.com/tamaramack/portfolio/tree/development/theme/core)               | `@tgmc/theme`                                 |
-| [`scripts/`](https://github.com/tamaramack/portfolio/tree/development/scripts)                     | migrate, SAM, GitHub env, `update-agents.mjs` |
-| [`.github/workflows/`](https://github.com/tamaramack/portfolio/tree/development/.github/workflows) | CI/CD YAML; [CI/CD](cicd.html)                |
+| [`core/web/`](https://github.com/likwidmack/portfolio/tree/development/core/web)                   | Nuxt app; `nuxt.config.ts`                    |
+| [`docker/`](https://github.com/likwidmack/portfolio/tree/development/docker)                       | Compose + Dockerfiles; [Docker](docker.html)  |
+| [`infra/sam/`](https://github.com/likwidmack/portfolio/tree/development/infra/sam)                 | SAM template; [SAM / AWS](infra.html)         |
+| [`packages/`](https://github.com/likwidmack/portfolio/tree/development/packages)                   | `utilities`, `media-player`, `likwidlibs`     |
+| [`theme/core/`](https://github.com/likwidmack/portfolio/tree/development/theme/core)               | `@tgmc/theme`                                 |
+| [`scripts/`](https://github.com/likwidmack/portfolio/tree/development/scripts)                     | migrate, SAM, GitHub env, `update-agents.mjs` |
+| [`.github/workflows/`](https://github.com/likwidmack/portfolio/tree/development/.github/workflows) | CI/CD YAML; [CI/CD](cicd.html)                |
