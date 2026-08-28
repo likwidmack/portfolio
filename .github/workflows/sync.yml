@@ -1,0 +1,89 @@
+name: Sync public mirror
+
+on:
+  schedule:
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Source tag (v0.0.14). Empty = default branch HEAD."
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sanitize:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.meta.outputs.tag }}
+      sha: ${{ steps.meta.outputs.sha }}
+      branch: ${{ steps.meta.outputs.branch }}
+      skipped: ${{ steps.meta.outputs.skipped }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Sync from tamaramack/portfolio
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          SOURCE_REF: ${{ inputs.ref }}
+        run: |
+          chmod +x sync/sync.sh
+          extra=()
+          if [ -n "${SOURCE_REF}" ]; then
+            extra+=(--tag "${SOURCE_REF}")
+          fi
+          bash sync/sync.sh "${extra[@]}"
+      - id: meta
+        run: |
+          python3 - <<'PY'
+          import json, os
+          meta = json.load(open(".sync-meta.json"))
+          tag = meta.get("sourceTag") or "head"
+          sha = meta.get("sourceSha") or "unknown"
+          branch = f"sync/{tag}"
+          print(f"tag={tag}")
+          print(f"sha={sha}")
+          print(f"branch={branch}")
+          with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+              fh.write(f"tag={tag}\nsha={sha}\nbranch={branch}\nskipped=false\n")
+          PY
+      - name: Open sync PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B "${{ steps.meta.outputs.branch }}"
+          git add -A
+          git diff --cached --quiet && echo "No changes" && exit 0
+          git commit -m "sync: tamaramack/portfolio ${{ steps.meta.outputs.tag }} (${{ steps.meta.outputs.sha }})"
+          git push -u origin "${{ steps.meta.outputs.branch }}"
+          gh pr create --fill --base main --head "${{ steps.meta.outputs.branch }}" || true
+
+  review:
+    needs: sanitize
+    if: needs.sanitize.outputs.skipped != 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Cursor review
+        working-directory: .github/scripts
+        env:
+          CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
+          SOURCE_TAG: ${{ needs.sanitize.outputs.tag }}
+          DEST_BRANCH: ${{ needs.sanitize.outputs.branch }}
+        run: |
+          if [ -z "${CURSOR_API_KEY}" ]; then
+            echo "CURSOR_API_KEY missing; skip review"
+            exit 0
+          fi
+          npm install
+          node review.mjs

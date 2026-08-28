@@ -1,0 +1,693 @@
+@use '../tokens/variables' as *;
+@use '../tokens/colors' as *;
+
+:root {
+  --syntax-bg-rgb: 8 14 28;
+  --syntax-bg: rgb(var(--syntax-bg-rgb) / 0.75);
+  --syntax-border: rgb(var(--rgb-accent-soft) / 0.22);
+  --syntax-text: #d6e7ff;
+  --syntax-muted: #8ba3c8;
+  --syntax-selection: rgb(var(--rgb-accent-soft) / 0.25);
+
+  --syntax-keyword: #c792ea;
+  --syntax-string: #c3e88d;
+  --syntax-number: #f78c6c;
+  --syntax-function: #82aaff;
+  --syntax-variable: #f7d67f;
+  --syntax-operator: #89ddff;
+  --syntax-comment: #6e7fa6;
+  --syntax-tag: #f07178;
+  --syntax-attr: #ffcb6b;
+  --syntax-class: #ffcb6b;
+  --syntax-regex: #ecc48d;
+  --syntax-link: #72e8ff;
+  --syntax-emphasis: #b4c8ff;
+}
+
+/// Shared shell chrome for bare blocks and UiCodeBlock frames.
+@mixin syntax-shell {
+  position: relative;
+  margin: 1rem 0;
+  overflow: auto;
+  font-family: $code-font-family;
+  font-size: var(--font-size-sm);
+  line-height: 1.7;
+  tab-size: 2;
+
+  &:focus,
+  &:focus-visible,
+  &:hover {
+    opacity: 1;
+  }
+}
+
+/// Language pill on blocks and frames (`data-language` / Prism class).
+@mixin syntax-language-badge {
+  content: attr(data-language);
+  display: inline-block;
+  position: absolute;
+  top: 0.55rem;
+  right: 0.7rem;
+  z-index: 1;
+  padding: 0.1rem 0.45rem;
+  border-radius: var(--border-radius-pill);
+  border: 1px solid color-mix(in srgb, var(--secondary-color) 24%, rgba($default-white, 0.5));
+  background-color: color-mix(in srgb, var(--secondary-color) 68%, rgba($default-white, 0.25));
+  color: color-mix(in srgb, rgba($default-white, 0.85) 62%, var(--secondary-color));
+  font-size: 0.54rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+// Prism / HLJS / Shiki / bare Ui blocks
+pre[class*='language-'],
+pre code[class*='language-'],
+pre code.hljs,
+pre .hljs,
+pre .shiki,
+.syntax-block {
+  @include syntax-shell;
+  display: block;
+  padding: 1rem 1.2rem;
+}
+
+pre {
+  &[class*='language-'] code,
+  .hljs,
+  .shiki code {
+    background-color: transparent;
+    border: 0;
+    padding: 0;
+    color: inherit;
+    white-space: pre;
+  }
+
+  &[class*='language-'],
+  .hljs,
+  .shiki {
+    &::selection,
+    *::selection {
+      background-color: color-mix(in srgb, var(--secondary-color) 33%, transparent);
+    }
+  }
+}
+
+// UiCodeBlock frame: shared shell + dedicated gutter column.
+.syntax-frame {
+  @include syntax-shell;
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  padding: 0;
+  border: 1px solid color-mix(in srgb, var(--secondary-color) 32%, var(--text-secondary-color));
+  border-radius: var(--border-radius-md);
+  background-color: color-mix(in srgb, var(--secondary-color) 20%, rgba(0, 0, 0, 0.75));
+  color: color-mix(in srgb, var(--secondary-color) 8%, var(--gray-100));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 8px 20px rgba(0, 0, 0, 0.28);
+  -webkit-backdrop-filter: blur(var(--blur-md));
+  backdrop-filter: blur(var(--blur-md));
+  opacity: 0.65;
+
+  .syntax-line-numbers {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 2.2rem 0.65rem 1rem 0.85rem;
+    list-style: none;
+    border-right: 1px solid color-mix(in srgb, var(--secondary-color) 28%, transparent);
+    background: color-mix(in srgb, var(--secondary-color) 18%, rgba(0, 0, 0, 0.72));
+    color: color-mix(in srgb, var(--secondary-color) 30%, rgba($default-white, 0.85));
+    text-align: right;
+    user-select: none;
+
+    li {
+      margin: 0;
+      padding: 0;
+      min-height: 2.2em;
+      font-size: 0.8em;
+      font-variant-numeric: tabular-nums;
+      line-height: 1.5;
+    }
+
+    span {
+      display: block;
+    }
+  }
+
+  .syntax-code-pane {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  // Nested pre already sits inside shell chrome.
+  .syntax-block,
+  pre.syntax-block,
+  pre[class*='language-'] {
+    margin: 0;
+    padding: 1rem 1.2rem;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    opacity: 1;
+    overflow: visible;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .syntax-block[data-language]::before,
+  pre[data-language]::before,
+  pre[class*='language-']::before {
+    display: none;
+  }
+}
+
+// Language badge (blocks + frames)
+pre[class*='language-']::before,
+pre[data-language]::before,
+.syntax-block[data-language]::before,
+.syntax-frame[data-language]::before {
+  @include syntax-language-badge;
+}
+
+// Inline code (non-highlighted)
+:not(pre) > code {
+  border-radius: var(--border-radius-sm);
+  background-color: color-mix(in srgb, var(--secondary-color) 24%, transparent);
+  border: 1px solid color-mix(in srgb, var(--secondary-color) 45%, var(--text-secondary-color));
+  color: color-mix(in srgb, var(--secondary-color) 47%, var(--text-color));
+  text-shadow: 0 -1px 1px var(--text-secondary-color);
+  padding: 0.14em 0.44em;
+}
+
+// ─── Language badge labels & per-language accent overrides ───────────────────
+// LANGUAGE_ALIASES in shared/syntax/constants.ts defines the canonical mapping:
+//   htm → html
+//   c / cc / cxx / c++ / cplusplus → cpp
+//   css / sass / scss → scss
+//   js / jsx → javascript
+//   ts / tsx → typescript
+//   sh / shell / terminal / zsh → bash
+//   md / mdown → markdown
+//   py → python
+//
+// After normalization the tokenizers set data-language to the canonical name and
+// replace any language-* class with the canonical form (e.g. language-bash).
+// The class-based alias selectors below cover raw/un-normalized markup that may
+// still carry the original alias class (e.g. class="language-sh").
+pre {
+  // ── HTML ──────────────────────────────────────────────────────────────────
+  // htm → html
+  &.language-html,
+  &.language-htm,
+  &[data-language='html'] {
+    &::before {
+      content: 'HTML';
+    }
+
+    --syntax-keyword: #ff7b91;
+    --syntax-attr: #ffd580;
+    --syntax-string: #b5f4a5;
+  }
+
+  // ── SCSS / CSS / Sass ─────────────────────────────────────────────────────
+  // css → scss, sass → scss (canonical is always 'scss')
+  &.language-css,
+  &.language-scss,
+  &.language-sass,
+  &[data-language='scss'] {
+    &::before {
+      content: 'CSS/SCSS';
+    }
+  }
+
+  // ── JavaScript ────────────────────────────────────────────────────────────
+  // js → javascript, jsx → javascript
+  &.language-javascript,
+  &.language-js,
+  &.language-jsx,
+  &[data-language='javascript'] {
+    &::before {
+      content: 'JavaScript';
+    }
+  }
+
+  // ── TypeScript ────────────────────────────────────────────────────────────
+  // ts → typescript, tsx → typescript
+  &.language-typescript,
+  &.language-ts,
+  &.language-tsx,
+  &[data-language='typescript'] {
+    &::before {
+      content: 'TypeScript';
+    }
+  }
+
+  // Shared accent overrides for both JS and TS (identical variable set).
+  &.language-javascript,
+  &.language-js,
+  &.language-jsx,
+  &.language-typescript,
+  &.language-ts,
+  &.language-tsx,
+  &[data-language='javascript'],
+  &[data-language='typescript'] {
+    --syntax-function: #89ddff;
+    --syntax-variable: #ffcb6b;
+  }
+
+  // ── C++ ───────────────────────────────────────────────────────────────────
+  // c / cc / cxx → cpp  (c++ and cplusplus omitted — special chars / unusual as class names)
+  &.language-cpp,
+  &.language-c,
+  &.language-cc,
+  &.language-cxx,
+  &[data-language='cpp'] {
+    &::before {
+      content: 'C++';
+    }
+
+    --syntax-keyword: #bb9af7;
+    --syntax-class: #7dcfff;
+    --syntax-variable: #ff9e64;
+  }
+
+  // ── Python ────────────────────────────────────────────────────────────────
+  // py → python
+  &.language-python,
+  &.language-py,
+  &[data-language='python'] {
+    &::before {
+      content: 'Python';
+    }
+
+    --syntax-keyword: #9ece6a;
+    --syntax-function: #7aa2f7;
+    --syntax-number: #ff9e64;
+  }
+
+  // ── Bash / Shell ──────────────────────────────────────────────────────────
+  // sh / shell / terminal / zsh → bash (all in LANGUAGE_ALIASES → applyTerminalSyntax runs on all)
+  &.language-bash,
+  &.language-sh,
+  &.language-shell,
+  &.language-terminal,
+  &.language-zsh,
+  &[data-language='bash'] {
+    &::before {
+      content: 'Bash';
+    }
+
+    --syntax-bg-rgb: 5 10 18;
+    --syntax-bg: rgb(var(--syntax-bg-rgb) / 0.8);
+    --syntax-text: #d8fbd0;
+    --syntax-comment: #6f8f68;
+    --syntax-keyword: #8ef0a7;
+    --syntax-function: var(--syntax-link);
+    --syntax-variable: #fbe28f;
+    --syntax-string: #b5f4a5;
+    --syntax-number: #8ac7ff;
+  }
+
+  // ── Markdown ──────────────────────────────────────────────────────────────
+  // md / mdown → markdown
+  &.language-markdown,
+  &.language-md,
+  &.language-mdown,
+  &[data-language='markdown'] {
+    &::before {
+      content: 'Markdown';
+    }
+
+    --syntax-keyword: #89ddff;
+    --syntax-comment: #7c8fb1;
+
+    // Keep markdown link labels distinct from the base operator hue.
+    .token.keyword.link {
+      color: var(--syntax-link);
+      text-decoration: underline;
+      text-underline-offset: 0.15em;
+    }
+  }
+}
+
+// ─── Prism tokens ─────────────────────────────────────────────────────────────
+.token {
+  &.comment,
+  &.prolog,
+  &.doctype,
+  &.cdata {
+    color: var(--syntax-comment);
+    font-style: italic;
+  }
+
+  &.punctuation,
+  &.operator,
+  &.entity,
+  &.url {
+    color: var(--syntax-operator);
+  }
+
+  &.keyword,
+  &.atrule,
+  &.rule {
+    color: var(--syntax-keyword);
+  }
+
+  // Standalone reserved fallback (also matched by .keyword.reserved compound below).
+  &.reserved {
+    color: var(--syntax-keyword);
+    font-weight: 600;
+  }
+
+  &.function,
+  &.function-variable,
+  &.method {
+    color: var(--syntax-function);
+  }
+
+  &.class-name,
+  &.builtin,
+  &.namespace {
+    color: var(--syntax-class);
+  }
+
+  // Primitive-type labels emitted by style (SCSS) and python tokenizers.
+  &.type {
+    color: var(--syntax-class);
+  }
+
+  // C++ preprocessor directives (#include, #define, etc.).
+  &.preprocessor {
+    color: var(--syntax-keyword);
+  }
+
+  &.string,
+  &.char,
+  &.inserted {
+    color: var(--syntax-string);
+  }
+
+  &.number,
+  &.boolean,
+  &.constant,
+  &.symbol,
+  &.deleted {
+    color: var(--syntax-number);
+  }
+
+  &.variable,
+  &.parameter,
+  &.property {
+    color: var(--syntax-variable);
+  }
+
+  // Base identifier fallback; also targeted by compound-class rules below.
+  &.identifier {
+    color: #b8d7ff;
+  }
+
+  &.regex,
+  &.important {
+    color: var(--syntax-regex);
+  }
+
+  &.tag,
+  &.selector {
+    color: var(--syntax-tag);
+  }
+
+  &.attr-name,
+  &.attribute {
+    color: var(--syntax-attr);
+  }
+
+  &.attr-value {
+    color: var(--syntax-string);
+  }
+
+  // ─── Compound token classes (shared/syntax custom tokenizers) ───────────────
+  //
+  // The custom tokenizers in shared/syntax emit multi-class spans such as
+  // `class="token keyword reserved"`. CSS class-selectors like `.token.keyword`
+  // already match, but the compound selectors below give explicit control over
+  // styling and make the mapping between tokenizer output and visual style clear.
+
+  // JS/TS/Python/C++ reserved words — only font-weight needed; color inherited from .token.keyword.
+  &.keyword {
+    &.reserved {
+      font-weight: 600;
+    }
+
+    // C++ preprocessor directives — only font-style needed; color inherited from .token.keyword.
+    &.preprocessor {
+      font-style: normal;
+    }
+
+    &.heading {
+      color: var(--syntax-function);
+      font-weight: 700;
+    }
+
+    &.strong {
+      color: var(--syntax-variable);
+      font-weight: 700;
+    }
+
+    &.emphasis {
+      color: var(--syntax-emphasis);
+      font-style: italic;
+    }
+
+    // Markdown link label `[text]` part.
+    &.link {
+      color: var(--syntax-operator);
+      text-decoration: underline;
+      text-underline-offset: 0.15em;
+    }
+  }
+
+  // JS/TS function names detected before a `(`.
+  &.function.identifier {
+    color: var(--syntax-function);
+  }
+
+  // JS/TS class / interface / enum names.
+  &.class-name.identifier {
+    color: var(--syntax-class);
+  }
+
+  // JS/TS variable names — both ordering variants produced by the tokenizer.
+  &.variable.identifier,
+  &.identifier.variable {
+    color: var(--syntax-variable);
+  }
+
+  // Markdown blockquotes tokenized as `comment quote`.
+  &.comment.quote {
+    color: var(--syntax-comment);
+    font-style: italic;
+  }
+}
+
+// ─── Highlight.js aliases ────────────────────────────────────────────────────
+.hljs {
+  &-comment,
+  &-quote {
+    color: var(--syntax-comment);
+    font-style: italic;
+  }
+
+  &-keyword,
+  &-selector-tag,
+  &-literal {
+    color: var(--syntax-keyword);
+  }
+
+  &-title,
+  &-title.function_,
+  &-attribute {
+    color: var(--syntax-function);
+  }
+
+  &-string,
+  &-addition {
+    color: var(--syntax-string);
+  }
+
+  &-number,
+  &-symbol,
+  &-bullet,
+  &-deletion {
+    color: var(--syntax-number);
+  }
+
+  &-variable,
+  &-template-variable,
+  &-property {
+    color: var(--syntax-variable);
+  }
+
+  &-operator,
+  &-punctuation {
+    color: var(--syntax-operator);
+  }
+
+  &-built_in,
+  &-type {
+    color: var(--syntax-class);
+  }
+
+  &-tag,
+  &-name,
+  &-selector-id,
+  &-selector-class {
+    color: var(--syntax-tag);
+  }
+
+  &-regexp,
+  &-link {
+    color: var(--syntax-regex);
+  }
+}
+
+.hljs-meta {
+  .hljs-keyword {
+    color: var(--syntax-keyword);
+  }
+  .hljs-string {
+    color: var(--syntax-string);
+  }
+}
+
+.hljs-function,
+.hljs-class {
+  .hljs-title {
+    color: var(--syntax-function);
+  }
+}
+
+// ─── Optional line highlighting helpers ──────────────────────────────────────
+.line-highlight {
+  display: block;
+  margin: 0 -1.2rem;
+  padding: 0 1.2rem;
+  background: rgb(var(--rgb-accent-soft) / 0.12);
+}
+
+.line-dim {
+  opacity: 0.55;
+}
+
+// ─── Responsive overrides ────────────────────────────────────────────────────
+@media (max-width: $breakpoint-standard) {
+  pre[class*='language-'],
+  pre code[class*='language-'],
+  pre code.hljs,
+  pre .hljs,
+  pre .shiki,
+  .syntax-block,
+  .syntax-frame .syntax-block,
+  .syntax-frame pre[class*='language-'] {
+    padding: 0.9rem 1rem;
+  }
+
+  .line-highlight {
+    margin: 0 -1rem;
+    padding: 0 1rem;
+  }
+}
+
+@media (max-width: $breakpoint-tablet) {
+  pre[class*='language-'],
+  pre code[class*='language-'],
+  pre code.hljs,
+  pre .hljs,
+  pre .shiki,
+  .syntax-block,
+  .syntax-frame {
+    font-size: calc(var(--font-size-sm) * 0.95);
+    line-height: 1.6;
+  }
+
+  pre[class*='language-'],
+  pre code[class*='language-'],
+  pre code.hljs,
+  pre .hljs,
+  pre .shiki,
+  .syntax-block,
+  .syntax-frame .syntax-block,
+  .syntax-frame pre[class*='language-'] {
+    padding: 0.8rem 0.85rem;
+  }
+
+  pre[class*='language-']::before,
+  pre[data-language]::before,
+  .syntax-block[data-language]::before,
+  .syntax-frame[data-language]::before {
+    top: 0.4rem;
+    right: 0.45rem;
+    font-size: 0.62rem;
+    padding: 0.08rem 0.38rem;
+  }
+
+  .line-highlight {
+    margin: 0 -0.85rem;
+    padding: 0 0.85rem;
+  }
+}
+
+@media (max-width: $breakpoint-mobile) {
+  pre[class*='language-'],
+  pre code[class*='language-'],
+  pre code.hljs,
+  pre .hljs,
+  pre .shiki,
+  .syntax-block,
+  .syntax-frame {
+    margin: 0.75rem 0;
+    font-size: calc(var(--font-size-sm) * 0.9);
+    border-radius: var(--border-radius-sm);
+  }
+
+  pre[class*='language-'],
+  pre code[class*='language-'],
+  pre code.hljs,
+  pre .hljs,
+  pre .shiki,
+  .syntax-block,
+  .syntax-frame .syntax-block,
+  .syntax-frame pre[class*='language-'] {
+    padding: 0.7rem 0.7rem;
+  }
+
+  pre[class*='language-']::before,
+  pre[data-language]::before,
+  .syntax-block[data-language]::before,
+  .syntax-frame[data-language]::before {
+    top: 0.32rem;
+    right: 0.32rem;
+    font-size: 0.58rem;
+    letter-spacing: 0.04em;
+  }
+
+  .line-highlight {
+    margin: 0 -0.7rem;
+    padding: 0 0.7rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  pre[class*='language-'],
+  pre .hljs,
+  pre .shiki,
+  .syntax-frame {
+    transition: none;
+  }
+}

@@ -1,0 +1,77 @@
+@use "themes/mytheme/variables/general";
+@use "themes/mytheme/variables/panel";
+@use "../../mixins";
+
+// core
+.p-fieldset-legend > a,
+.p-fieldset-legend > span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.p-fieldset-toggleable .p-fieldset-legend a {
+    cursor: pointer;
+    user-select: none;
+    overflow: hidden;
+    position: relative;
+    text-decoration: none;
+}
+
+.p-fieldset-legend-text {
+    line-height: 1;
+}
+
+// theme
+.p-fieldset {
+    border: panel.$panelContentBorder;
+    background: panel.$panelContentBg;
+    color: panel.$panelContentTextColor;
+    border-radius: general.$borderRadius;
+
+    .p-fieldset-legend {
+        padding: panel.$panelHeaderPadding;
+        border: panel.$panelHeaderBorder;
+        color: panel.$panelHeaderTextColor;
+        background: panel.$panelHeaderBg;
+        font-weight: panel.$panelHeaderFontWeight;
+        border-radius: general.$borderRadius;
+    }
+
+    &.p-fieldset-toggleable {
+        .p-fieldset-legend {
+            padding: 0;
+            transition: general.$actionIconTransition;
+
+            a {
+                padding: panel.$panelHeaderPadding;
+                color: panel.$panelHeaderTextColor;
+                border-radius: general.$borderRadius;
+                transition: general.$listItemTransition;
+                outline-color: transparent;
+
+                .p-fieldset-toggler {
+                    margin-right: general.$inlineSpacing;
+                }
+
+                &:focus-visible {
+                    @include mixins.focused();
+                }
+
+                &:hover {
+                    color: panel.$panelHeaderTextHoverColor;
+                }
+            }
+
+            &:hover {
+                background: panel.$panelHeaderHoverBg;
+                border-color: panel.$panelHeaderHoverBorderColor;
+                color: panel.$panelHeaderTextHoverColor;
+            }
+        }
+    }
+
+    .p-fieldset-content {
+        padding: panel.$panelContentPadding;
+    }
+}

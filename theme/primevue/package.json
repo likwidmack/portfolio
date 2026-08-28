@@ -1,0 +1,29 @@
+{
+  "name": "@tgmc/theme-primevue",
+  "version": "3.52.0",
+  "private": true,
+  "description": "Thin workspace wrapper over PrimeVue Sass themes for @tgmc/theme layers.",
+  "license": "MIT",
+  "exports": {
+    "./package.json": "./package.json",
+    "./theme-base": "./theme-base/_components.scss",
+    "./theme-base/*": "./theme-base/*",
+    "./themes/*": "./themes/*",
+    "./themes/mytheme": "./themes/mytheme/theme.scss",
+    "./themes/aura/aura-light/indigo": "./themes/aura/aura-light/indigo/theme.scss",
+    "./themes/aura/aura-dark/indigo": "./themes/aura/aura-dark/indigo/theme.scss",
+    "./themes/lara/lara-light/blue": "./themes/lara/lara-light/blue/theme.scss",
+    "./themes/lara/lara-dark/blue": "./themes/lara/lara-dark/blue/theme.scss"
+  },
+  "files": [
+    "theme-base",
+    "themes"
+  ],
+  "keywords": [
+    "primevue",
+    "scss",
+    "sass",
+    "theme",
+    "tgmc-theme"
+  ]
+}

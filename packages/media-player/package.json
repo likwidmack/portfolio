@@ -1,0 +1,73 @@
+{
+  "name": "@tgmc/media-player",
+  "version": "0.0.1",
+  "type": "module",
+  "description": "Media player helpers for TGMC apps.",
+  "author": "Tamara G Mack",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:likwidmack/portfolio.git",
+    "directory": "packages/media-player"
+  },
+  "homepage": "https://github.com/likwidmack/portfolio/tree/main/packages/media-player",
+  "bugs": {
+    "url": "https://github.com/likwidmack/portfolio/issues"
+  },
+  "keywords": [
+    "media",
+    "player",
+    "typescript",
+    "tgmc"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "tgmc-portfolio": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.lib.json",
+    "prepublishOnly": "npm run build"
+  },
+  "files": [
+    "dist",
+    "!**/*.tsbuildinfo"
+  ],
+  "nx": {
+    "targets": {
+      "build": {
+        "executor": "@nx/js:tsc",
+        "outputs": [
+          "{options.outputPath}"
+        ],
+        "options": {
+          "outputPath": "packages/media-player/dist",
+          "main": "packages/media-player/src/index.ts",
+          "tsConfig": "packages/media-player/tsconfig.lib.json",
+          "rootDir": "packages/media-player/src",
+          "generatePackageJson": false
+        }
+      },
+      "test": {
+        "dependsOn": [
+          "build"
+        ]
+      }
+    }
+  },
+  "dependencies": {
+    "m3u8-parser": "^7.2.0",
+    "mux.js": "^6.3.0",
+    "tslib": "^2.3.0"
+  }
+}

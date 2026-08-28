@@ -1,0 +1,114 @@
+@use "themes/mytheme/variables/data";
+@use "themes/mytheme/variables/form";
+@use "themes/mytheme/variables/general";
+@use "themes/mytheme/variables/panel";
+@use "../../mixins";
+
+@use 'sass:color';
+
+// core
+.p-organizationchart-table {
+    border-spacing: 0;
+    border-collapse: separate;
+    margin: 0 auto;
+}
+
+.p-organizationchart-table > tbody > tr > td {
+    text-align: center;
+    vertical-align: top;
+    padding: 0 0.75rem;
+}
+
+.p-organizationchart-node-content {
+    display: inline-block;
+    position: relative;
+}
+
+.p-organizationchart-node-content .p-node-toggler {
+    position: absolute;
+    bottom: -0.75rem;
+    margin-left: -0.75rem;
+    z-index: 2;
+    left: 50%;
+    user-select: none;
+    cursor: pointer;
+    width: 1.5rem;
+    height: 1.5rem;
+    text-decoration: none;
+}
+
+.p-organizationchart-node-content .p-node-toggler .p-node-toggler-icon {
+    position: relative;
+    top: 0.25rem;
+}
+
+.p-organizationchart-line-down {
+    margin: 0 auto;
+    height: 20px;
+    width: 1px;
+}
+
+.p-organizationchart-line-right {
+    border-radius: 0;
+}
+
+.p-organizationchart-line-left {
+    border-radius: 0;
+}
+
+.p-organizationchart-selectable-node {
+    cursor: pointer;
+}
+
+// theme
+.p-organizationchart {
+    .p-organizationchart-node-content {
+        &.p-organizationchart-selectable-node:not(.p-highlight):hover {
+            background: form.$inputListItemHoverBg;
+            color: form.$inputListItemTextHoverColor;
+        }
+
+        &.p-highlight {
+            background: general.$highlightBg;
+            color: general.$highlightTextColor;
+
+            .p-node-toggler {
+                i {
+                    color: mixins.shade-mix(general.$highlightBg, 25%);
+                }
+            }
+        }
+    }
+
+    .p-organizationchart-line-down {
+        background: data.$organizationChartConnectorColor;
+    }
+
+    .p-organizationchart-line-left {
+        border-right: panel.$panelContentBorder;
+        border-color: data.$organizationChartConnectorColor;
+    }
+
+    .p-organizationchart-line-top {
+        border-top: panel.$panelContentBorder;
+        border-color: data.$organizationChartConnectorColor;
+    }
+
+    .p-organizationchart-node-content {
+        border: panel.$panelContentBorder;
+        background: panel.$panelContentBg;
+        color: panel.$panelContentTextColor;
+        padding: panel.$panelContentPadding;
+    }
+
+    .p-organizationchart-node-content .p-node-toggler {
+        background: inherit;
+        color: inherit;
+        border-radius: 50%;
+        outline-color: transparent;
+
+        &:focus-visible {
+            @include mixins.focused();
+        }
+    }
+}

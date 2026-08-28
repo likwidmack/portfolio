@@ -1,0 +1,10 @@
+{
+  "extends": ["../../.eslintrc.json"],
+  "ignorePatterns": ["!**/*", ".nuxt/**", ".output/**", "node_modules", "**/vitest.config.*.timestamp*"],
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx", "*.js", "*.jsx", "*.vue"],
+      "rules": {}
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+@use 'sass:meta';
+@use '../config' as *;
+
+@if $theme-enable-normalize {
+  @layer normalize {
+    @include meta.load-css('contents/normalize');
+  }
+}

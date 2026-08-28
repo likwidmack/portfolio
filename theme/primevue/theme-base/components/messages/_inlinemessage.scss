@@ -1,0 +1,89 @@
+@use "themes/mytheme/variables/general";
+@use "themes/mytheme/variables/message";
+
+// core
+.p-inline-message {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: top;
+}
+
+.p-inline-message-icon {
+    flex-shrink: 0;
+}
+
+.p-inline-message-icon-only .p-inline-message-text {
+    visibility: hidden;
+    width: 0;
+}
+
+.p-fluid .p-inline-message {
+    display: flex;
+}
+
+// theme
+.p-inline-message {
+    padding: message.$inlineMessagePadding;
+    margin: message.$inlineMessageMargin;
+    border-radius: general.$borderRadius;
+
+    &.p-inline-message-info {
+        background: message.$infoMessageBg;
+        border: message.$infoMessageBorder;
+        border-width: message.$inlineMessageBorderWidth;
+        color: message.$infoMessageTextColor;
+
+        .p-inline-message-icon {
+            color: message.$infoMessageIconColor;
+        }
+    }
+
+    &.p-inline-message-success {
+        background: message.$successMessageBg;
+        border: message.$successMessageBorder;
+        border-width: message.$inlineMessageBorderWidth;
+        color: message.$successMessageTextColor;
+
+        .p-inline-message-icon {
+            color: message.$successMessageIconColor;
+        }
+    }
+
+    &.p-inline-message-warn {
+        background: message.$warningMessageBg;
+        border: message.$warningMessageBorder;
+        border-width: message.$inlineMessageBorderWidth;
+        color: message.$warningMessageTextColor;
+
+        .p-inline-message-icon {
+            color: message.$warningMessageIconColor;
+        }
+    }
+
+    &.p-inline-message-error {
+        background: message.$errorMessageBg;
+        border: message.$errorMessageBorder;
+        border-width: message.$inlineMessageBorderWidth;
+        color: message.$errorMessageTextColor;
+
+        .p-inline-message-icon {
+            color: message.$errorMessageIconColor;
+        }
+    }
+
+    .p-inline-message-icon {
+        font-size: message.$inlineMessageIconFontSize;
+        margin-right: general.$inlineSpacing;
+    }
+
+    .p-inline-message-text {
+        font-size: message.$inlineMessageTextFontSize;
+    }
+
+    &.p-inline-message-icon-only {
+        .p-inline-message-icon {
+            margin-right: 0;
+        }
+    }
+}

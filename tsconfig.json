@@ -1,0 +1,25 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compileOnSave": false,
+  "files": [],
+  "references": [
+    {
+      "path": "./packages/utilities"
+    },
+    {
+      "path": "./core/web-e2e"
+    },
+    {
+      "path": "./core/web"
+    },
+    {
+      "path": "./packages/likwidlibs"
+    },
+    {
+      "path": "./packages/media-player"
+    },
+    {
+      "path": "./theme/core"
+    }
+  ]
+}

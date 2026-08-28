@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 810" role="img" aria-labelledby="title desc">
+  <title id="title">Human-controlled agent approval flow</title>
+  <desc id="desc">A fuzzy goal becomes an interpreted plan and pauses at an approval gate before a prototype brief is created.</desc>
+  <rect width="1440" height="810" fill="#f7f1e7"/>
+  <text x="90" y="100" fill="#171513" font-family="Arial, sans-serif" font-size="38" font-weight="700">No approval, no action</text>
+  <text x="90" y="145" fill="#5d5149" font-family="Arial, sans-serif" font-size="22">The interface separates interpretation from execution.</text>
+  <g fill="none" stroke="#d94c42" stroke-width="5">
+    <path d="M310 390H430"/>
+    <path d="M700 390H820"/>
+    <path d="M1080 390h100"/>
+    <path d="M950 520v95H700"/>
+  </g>
+  <g font-family="Arial, sans-serif" text-anchor="middle">
+    <g>
+      <rect x="80" y="290" width="230" height="200" rx="28" fill="#fffaf1" stroke="#cbbbaa" stroke-width="3"/>
+      <text x="195" y="375" fill="#171513" font-size="26" font-weight="700">Fuzzy goal</text>
+      <text x="195" y="417" fill="#5d5149" font-size="19">≤ 240 characters</text>
+    </g>
+    <g>
+      <rect x="430" y="260" width="270" height="260" rx="28" fill="#171513"/>
+      <text x="565" y="350" fill="#ff766a" font-size="26" font-weight="700">Interpreted plan</text>
+      <text x="565" y="395" fill="#f7f1e7" font-size="19">goal &#183; &le; 3 steps</text>
+      <text x="565" y="430" fill="#f7f1e7" font-size="19">one pending action</text>
+    </g>
+    <g>
+      <rect x="820" y="260" width="260" height="260" rx="130" fill="#d94c42"/>
+      <text x="950" y="375" fill="#fffaf1" font-size="28" font-weight="700">Approve?</text>
+      <text x="950" y="420" fill="#fffaf1" font-size="19">yes / reject</text>
+    </g>
+    <g>
+      <rect x="1180" y="290" width="190" height="200" rx="28" fill="#fffaf1" stroke="#cbbbaa" stroke-width="3"/>
+      <text x="1275" y="375" fill="#171513" font-size="25" font-weight="700">Brief</text>
+      <text x="1275" y="417" fill="#5d5149" font-size="18">only after yes</text>
+    </g>
+    <g>
+      <rect x="570" y="615" width="260" height="105" rx="24" fill="#ece2d4"/>
+      <text x="700" y="660" fill="#171513" font-size="23" font-weight="700">Stop safely</text>
+      <text x="700" y="694" fill="#5d5149" font-size="18">nothing generated</text>
+    </g>
+  </g>
+</svg>

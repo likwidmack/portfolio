@@ -1,0 +1,7 @@
+@import '../../bridges/foundation-settings';
+@import '../../../../foundation/scss/foundation';
+
+$global-flexbox: true !global;
+$xy-grid: true !global;
+
+@include foundation-everything($prototype: false);

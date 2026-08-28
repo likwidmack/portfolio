@@ -1,0 +1,92 @@
+{
+  "slug": "spatial-experiences",
+  "order": 4,
+  "title": "Spatial Experiences",
+  "category": "3D, AR, and WebXR",
+  "summary": "Sanitized view of marker-based AR, model viewers, WebXR entry points, and WebGL laboratories used to prove athletic and brand stories in space—not only on a flat page.",
+  "role": "Creative technologist and software engineer — scene architecture, capability gates, interaction hints, and packaging for event deployments",
+  "timeframe": "Nike Digital Athlete / SME experiences and ongoing portfolio laboratories, 2021–2026",
+  "confidentiality": "sanitized",
+  "problem": "Event and brand teams need enough spatial fidelity for people to feel a product or venue story, while devices, browsers, cameras, and networks fail in uneven ways that a flat marketing page never has to explain.",
+  "constraints": [
+    "Employer, athlete, and campaign-specific assets remain abstracted or removed.",
+    "WebXR, camera permissions, and model formats differ across iOS Quick Look, Android Scene Viewer, desktop WebGL, and headset paths.",
+    "Marker tracking and large GLTF/GLB payloads must degrade into a useful 2D path instead of a blank canvas.",
+    "Packaging for Men's World Cup, World Athletics Championships, and playground builds had to stay reproducible without treating any single demo as the only truth."
+  ],
+  "approach": [
+    "Start from the decision the scene must unlock: try-on feel, venue presence, or geometric literacy—not from a library preference.",
+    "Separate capability detection (WebXR session, camera, and model-viewer modes) from the scene graph so unsupported devices get an honest next action.",
+    "Prototype with Three.js and Babylon.js where real-time interaction matters; use Google model-viewer for Quick Look, Scene Viewer, and WebXR packaging when distribution beats custom engine work.",
+    "Ship marker-based AR (AR.js, Three.js, and GLTF) with QR entry, UI hints, and troubleshooting affordances as first-class product surfaces.",
+    "Keep a personal WebGL laboratory—tesseract wireframes, orbit controls, and helix motion—so spatial intuition stays inspectable outside any client repository."
+  ],
+  "evidence": [
+    {
+      "label": "Event AR proof",
+      "value": "Marker-based World Athletics Championships 2022 AR path with Three.js and AR.js"
+    },
+    {
+      "label": "Toolkit proof",
+      "value": "Digital Athlete Kit workspaces packaging Babylon, Three, and model-viewer playgrounds for MWC/WAC builds"
+    },
+    {
+      "label": "WebXR proof",
+      "value": "US Open / Fashion Week SME demos with ARButton, Babylon canvas, and scene JSON"
+    },
+    {
+      "label": "Laboratory proof",
+      "value": "Public tesseract wireframe HTML labs and helix/tesseract motion studies in this portfolio"
+    }
+  ],
+  "technologies": [
+    "Three.js",
+    "Babylon.js",
+    "WebXR",
+    "AR.js",
+    "Google model-viewer",
+    "GLTF / GLB",
+    "Vue",
+    "Vite",
+    "WebGL"
+  ],
+  "media": [
+    {
+      "type": "diagram",
+      "src": "/i/portfolio/spatial-experience-flow.svg",
+      "alt": "Flow from concept through capability gates into a real-time scene and interface recovery loop"
+    },
+    {
+      "type": "image",
+      "src": "/i/tesseract/blue-8-cell-simple.png",
+      "alt": "Blue wireframe eight-cell tesseract projection used as a spatial laboratory motif",
+      "caption": "Portfolio laboratory — Schlegel-style 8-cell used to practice projection, orbit, and dimensional metaphor."
+    },
+    {
+      "type": "image",
+      "src": "/i/tesseract/schlegel-wireframe-8-cell.png",
+      "alt": "Detailed Schlegel wireframe of an eight-cell tesseract",
+      "caption": "Wireframe study — structural clarity before materials, bloom, or generative dressing."
+    },
+    {
+      "type": "video",
+      "src": "/v/portfolio/generated/vimg-tesseract-framework.mp4",
+      "poster": "/i/tesseract/blue-8-cell-simple.png",
+      "alt": "Animated nested transparent tesseract cubes glowing inside a reflective digital chamber",
+      "caption": "Motion study — recursive space as an interface metaphor, directed for the portfolio laboratory."
+    },
+    {
+      "type": "video",
+      "src": "/v/portfolio/generated/vimg-crystal-binary-helix.mp4",
+      "poster": "/i/portfolio/generated/vimg-algorithmic-helix.webp",
+      "alt": "Animated macro view moving along a crystalline DNA helix filled with colorful binary digits",
+      "caption": "Motion study — algorithmic form bridging data, biology, and real-time sculpture."
+    }
+  ],
+  "links": [
+    { "label": "Open the advanced tesseract wireframe lab", "href": "/d/htm/adv_wire_tess.html" },
+    { "label": "Open the basic tesseract wireframe lab", "href": "/d/htm/wire_tess.html" },
+    { "label": "Related creative prototyping story", "href": "/work/innovation-prototyping" },
+    { "label": "Related experience systems story", "href": "/work/experience-systems" }
+  ]
+}

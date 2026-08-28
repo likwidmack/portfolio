@@ -1,0 +1,124 @@
+@use 'base-colors' as *;
+@use 'colors' as *;
+@use 'contrast' as *;
+
+/// Structural properties only — safe to use on pseudo-elements (::file-selector-button etc.)
+/// because this mixin emits no nested state rules (no `&.is-disabled`, `&:hover`, etc.).
+@mixin button-base-struct {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  width: fit-content;
+  min-height: var(--form-control-height, 2.5rem);
+  padding: 0.62rem 1rem;
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  user-select: none;
+  cursor: pointer;
+  transform: translateY(0) scale(1);
+  text-decoration: none;
+  border: {
+    width: 1px;
+    style: solid;
+    color: color-mix(in srgb, var(--text-secondary-color) 25%, transparent);
+  }
+  // Ink contrasts solid `background-color` AND translucent gradient image stops.
+  @include contrast-fill(var(--primary-color), var(--button-bg), var(--button-fg));
+}
+
+/// Structural button styles + interactive state rules (native controls + `.btn`).
+/// Do NOT apply to pseudo-elements (::file-selector-button, ::-webkit-file-upload-button)
+/// because SCSS expands `&.is-disabled` into invalid CSS that lightningcss rejects.
+@mixin button-base {
+  @include button-base-struct;
+
+  &:hover {
+    text-decoration: none;
+    background-color: var(--primary-color-hover);
+    filter: saturate(1.05) brightness(1.04);
+    transform: translateY(-1px);
+  }
+
+  &:focus-visible,
+  &:focus {
+    outline: none;
+    border-color: var(--secondary-color);
+    box-shadow:
+      0 0 0 3px var(--focus-ring),
+      var(--button-shadow-hover);
+  }
+
+  &:active {
+    text-decoration: none;
+    filter: saturate(0.96);
+    transform: translateY(1px) scale(0.995);
+    background-color: var(--primary-color-active);
+  }
+
+  &:disabled,
+  &[aria-disabled='true'],
+  &.is-disabled {
+    transform: none;
+    box-shadow: none;
+    filter: none;
+    background-color: var(--primary-color-disabled);
+    color: var(--text-color-disabled);
+    border-color: rgba($color-white, 0.18);
+  }
+}
+
+/// Visual polish shared by `.btn` and PrimeVue `.p-button`.
+@mixin button-theme {
+  text-decoration: none;
+  text-shadow: 1px -1px 1px color-mix(in srgb, var(--button-fg) 35%, transparent);
+  box-shadow: var(--button-shadow);
+  border-radius: var(--button-radius);
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    background-color 220ms ease,
+    background-image 220ms ease,
+    border-color 180ms ease,
+    outline-color 180ms ease,
+    color 180ms ease,
+    filter 180ms ease;
+
+  &:hover {
+    text-decoration: none;
+  }
+
+  &:focus-visible,
+  &:focus {
+    box-shadow:
+      0 0 0 3px var(--focus-ring),
+      var(--button-shadow-hover);
+  }
+
+  &:disabled,
+  &[aria-disabled='true'],
+  &.is-disabled {
+    opacity: 0.6;
+    pointer-events: none;
+    cursor: not-allowed;
+  }
+}
+
+@mixin button-size-sm {
+  min-height: 2rem;
+  padding: 0.45rem 0.8rem;
+  font-size: var(--font-size-sm);
+}
+
+@mixin button-size-lg {
+  min-height: 3rem;
+  padding: 0.75rem 1.3rem;
+  font-size: var(--font-size-lg);
+}
+
+@mixin button-size-full {
+  width: 100%;
+}

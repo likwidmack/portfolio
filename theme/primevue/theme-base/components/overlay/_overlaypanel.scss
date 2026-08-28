@@ -1,0 +1,144 @@
+@use "sass:color";
+@use "sass:list";
+@use "../../mixins";
+@use "themes/mytheme/variables/button";
+@use "themes/mytheme/variables/general";
+@use "themes/mytheme/variables/overlay";
+@use "themes/mytheme/variables/panel";
+
+@use 'sass:math';
+
+// core
+.p-overlaypanel {
+    margin-top: 10px;
+}
+
+.p-overlaypanel-flipped {
+    margin-top: -10px;
+    margin-bottom: 10px;
+}
+
+.p-overlaypanel-close {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Animation */
+.p-overlaypanel-enter-from {
+    opacity: 0;
+    transform: scaleY(0.8);
+}
+
+.p-overlaypanel-leave-to {
+    opacity: 0;
+}
+
+.p-overlaypanel-enter-active {
+    transition: transform 0.12s cubic-bezier(0, 0, 0.2, 1), opacity 0.12s cubic-bezier(0, 0, 0.2, 1);
+}
+
+.p-overlaypanel-leave-active {
+    transition: opacity 0.1s linear;
+}
+
+.p-overlaypanel:after,
+.p-overlaypanel:before {
+    bottom: 100%;
+    left: calc(var(--overlayArrowLeft, 0) + 1.25rem);
+    content: ' ';
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+}
+
+.p-overlaypanel:after {
+    border-width: 8px;
+    margin-left: -8px;
+}
+
+.p-overlaypanel:before {
+    border-width: 10px;
+    margin-left: -10px;
+}
+
+.p-overlaypanel-flipped:after,
+.p-overlaypanel-flipped:before {
+    bottom: auto;
+    top: 100%;
+}
+
+.p-overlaypanel.p-overlaypanel-flipped:after {
+    border-bottom-color: transparent;
+}
+
+.p-overlaypanel.p-overlaypanel-flipped:before {
+    border-bottom-color: transparent;
+}
+
+// theme
+.p-overlaypanel {
+    background: overlay.$overlayContentBg;
+    color: panel.$panelContentTextColor;
+    border: overlay.$overlayContentBorder;
+    border-radius: general.$borderRadius;
+    box-shadow: overlay.$overlayContainerShadow;
+
+    .p-overlaypanel-content {
+        padding: panel.$panelContentPadding;
+    }
+
+    .p-overlaypanel-close {
+        background: button.$buttonBg;
+        color: button.$buttonTextColor;
+        width: general.$actionIconWidth;
+        height: general.$actionIconHeight;
+        transition: general.$actionIconTransition;
+        border-radius: general.$actionIconBorderRadius;
+        position: absolute;
+        top: math.div(-1 * general.$actionIconWidth, 2);
+        right: math.div(-1 * general.$actionIconWidth, 2);
+
+        &:enabled:hover {
+            background: button.$buttonHoverBg;
+            color: button.$buttonTextHoverColor;
+        }
+    }
+
+    &:after {
+        border-style: solid;
+        border-color: transparent;
+        border-bottom-color: overlay.$overlayContentBg;
+    }
+
+    &:before {
+        border-style: solid;
+
+        @if (list.nth(overlay.$overlayContentBorder, 2) == 'none') {
+            border-color: transparent;
+            border-bottom-color: mixins.shade-mix(overlay.$overlayContentBg);
+        }
+        @else {
+            border-color: transparent;
+            border-bottom-color: mixins.shade-mix(list.nth(overlay.$overlayContentBorder, 3));
+        }
+    }
+
+    &.p-overlaypanel-flipped {
+        &:after {
+            border-top-color: overlay.$overlayContentBg;
+        }
+
+        &:before {
+            @if (list.nth(overlay.$overlayContentBorder, 2) == 'none') {
+                border-top-color: overlay.$overlayContentBg;
+            }
+            @else {
+                border-top-color: list.nth(overlay.$overlayContentBorder, 3);
+            }
+        }
+    }
+}

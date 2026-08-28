@@ -1,0 +1,11 @@
+{
+  "id": "codex-assisted-development",
+  "date": "2026-08-02",
+  "source": "codex",
+  "title": "Protect active work with an isolated launch branch",
+  "promptExcerpt": "Implement the August portfolio launch without disturbing current local changes.",
+  "decision": "Create a dedicated worktree, extend existing Nuxt and theme APIs, and commit only launch-owned files.",
+  "result": "Portfolio work can be reviewed and shipped independently while the original modified checkout remains intact.",
+  "learning": "AI-assisted delivery is safer when repository boundaries, verification, and evidence are part of the interface to the coding agent.",
+  "privacyStatus": "sanitized"
+}

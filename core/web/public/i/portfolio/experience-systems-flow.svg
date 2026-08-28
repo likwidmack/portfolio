@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="810" viewBox="0 0 1440 810" role="img" aria-labelledby="title desc">
+  <title id="title">Experience systems layers</title>
+  <desc id="desc">Tokens and components support both simple marketing flows and complex operational workflows with accessibility and recovery as first-class layers.</desc>
+  <rect width="1440" height="810" fill="#171513"/>
+  <g fill="#f7f1e7" font-family="Arial, sans-serif">
+    <text x="90" y="90" font-size="36" font-weight="700">Basic clarity scales into complex control</text>
+    <text x="90" y="135" font-size="22" fill="#cbbbaa">Design systems, a11y baselines, and domain workflows share one readable interface grammar.</text>
+  </g>
+  <g font-family="Arial, sans-serif" text-anchor="middle">
+    <g>
+      <rect x="90" y="520" width="1260" height="120" rx="24" fill="#27231f" stroke="#6e6259" stroke-width="3"/>
+      <text x="720" y="575" fill="#ff766a" font-size="24" font-weight="700">Tokens &#183; components &#183; a11y &#183; motion preferences</text>
+      <text x="720" y="610" fill="#f7f1e7" font-size="18">Foundation / PrimeVue bridges, skip links, reduced motion, focus</text>
+    </g>
+    <g>
+      <rect x="90" y="280" width="380" height="200" rx="24" fill="#fffaf1"/>
+      <text x="280" y="355" fill="#171513" font-size="24" font-weight="700">Basic UX</text>
+      <text x="280" y="400" fill="#5d5149" font-size="18">marketing &#183; forms</text>
+      <text x="280" y="433" fill="#5d5149" font-size="18">navigation &#183; cards</text>
+    </g>
+    <g>
+      <rect x="530" y="280" width="380" height="200" rx="24" fill="#fffaf1"/>
+      <text x="720" y="355" fill="#171513" font-size="24" font-weight="700">Complex UX</text>
+      <text x="720" y="400" fill="#5d5149" font-size="18">hierarchy &#183; deps</text>
+      <text x="720" y="433" fill="#5d5149" font-size="18">offline &#183; approval</text>
+    </g>
+    <g>
+      <rect x="970" y="280" width="380" height="200" rx="24" fill="#ff766a"/>
+      <text x="1160" y="355" fill="#171513" font-size="24" font-weight="700">Proof surfaces</text>
+      <text x="1160" y="400" fill="#171513" font-size="18">kitchen sink</text>
+      <text x="1160" y="433" fill="#171513" font-size="18">Storybook &#183; e2e a11y</text>
+    </g>
+  </g>
+</svg>
