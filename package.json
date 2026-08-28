@@ -158,7 +158,7 @@
     "yauzl": "^3.2.1"
   },
   "author": "Tamara G Mack",
-  "description": "Tamara Mack’s Nx + Nuxt 4 portfolio.",
+  "description": "Nx + Nuxt 4 SSR portfolio with SQLite, Docker/Postgres, and AWS SAM (Lambda, DynamoDB, CloudFront).",
   "homepage": "https://likwidmack.com",
   "keywords": [
     "nuxt",
