@@ -13,7 +13,7 @@ function promptFor(tag, destBranch) {
     "You are a reviewer, not a copier.",
     `Dest is ${DEST_REPO} on branch ${destBranch}. Source is ${SOURCE_REPO} at ${tag} for comparison only.`,
     "Do not copy, rsync, or recreate files from the source repo.",
-    "Do not add sanitizer secrets, GH_TOKEN, SSH keys, or @cursor/sdk to the app package.json.",
+    "Do not add sanitizer secrets, TM_GH_TOKEN, LK_GH_TOKEN, SSH keys, or @cursor/sdk to the app package.json.",
     "Keep-set that must remain: core/web, packages/utilities, packages/media-player, packages/likwidlibs, packages/web-layer-admin, theme, dest-owned sync/ and .github/.",
     "Must be absent: root scripts/, docker/, infra/, source .github/, .husky, .agents, .codex, .opencode, AGENTS.md, .env* templates, nxCloudId, AWS account IDs, CloudFront test hostnames, GitHub PATs.",
     "If a keep-set path is missing, fail the run and comment; do not copy from source to fix it.",

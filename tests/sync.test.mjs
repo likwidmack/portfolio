@@ -70,6 +70,10 @@ test("app packages survive and private internals do not", () => {
   const meta = JSON.parse(fs.readFileSync(path.join(dest, ".sync-meta.json"), "utf8"));
   assert.equal(meta.sourceRepo, "tamaramack/portfolio");
   assert.equal(meta.sourceTag, "v1.3.19");
+
+  const readme = fs.readFileSync(path.join(dest, "README.md"), "utf8");
+  assert.match(readme, /TM_GH_TOKEN/);
+  assert.match(readme, /LK_GH_TOKEN/);
 });
 
 test("branch tags keep the source package version", () => {
