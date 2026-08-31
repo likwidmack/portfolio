@@ -25,6 +25,8 @@ describe('work card media rendering contract', () => {
 
   it('ensures live /work SSR emits NuxtImg src for raster thumbs when the server is up', async () => {
     const base = process.env.PORTFOLIO_DEV_ORIGIN ?? 'https://127.0.0.1:4210';
+    const previousTls = process.env.NODE_TLS_REJECT_UNAUTHORIZED;
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
     let html: string;
     try {
       const res = await fetch(`${base}/work`);
@@ -33,6 +35,9 @@ describe('work card media rendering contract', () => {
     } catch {
       // Dev server optional for unit CI; skip when unreachable.
       return;
+    } finally {
+      if (previousTls === undefined) delete process.env.NODE_TLS_REJECT_UNAUTHORIZED;
+      else process.env.NODE_TLS_REJECT_UNAUTHORIZED = previousTls;
     }
 
     const names = await readdir(join(contentRoot, 'case-studies'));
