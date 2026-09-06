@@ -99,4 +99,11 @@ Portfolio signal teal is `--portfolio-teal` (and `--success`); do not overwrite 
 
 Personalization accents (`ember` / `crimson`) live in `core/web/shared/personalization.ts` and rebind brand CSS vars per resolved light/dark mode.
 
-Home / nav chrome breakpoints in `portfolio-launch.scss` use Sass `$breakpoint-*` (stack Home hero and wrap the five-link primary nav below `$breakpoint-standard` = 1080px). Work Related links reuse `.page-nav` (sticky aside from tablet up; compact horizontal rail on small viewports) via `AppWorkSubNav`.
+Home / nav chrome breakpoints in `portfolio-launch.scss` use Sass `$breakpoint-*` (stack Home hero and wrap the five-link primary nav below `$breakpoint-standard` = 1080px). Work Related links reuse `.page-nav` via `AppWorkSubNav`: a sticky aside from tablet up on `/work/:slug` (still `.page-with-nav` two-column split), and a single-column dark panel below the case-study list on the spatial `/work` index (see `docs/web/reference/site-wireframes.md`).
+
+Home, Work index, and Gallery ship the "spatial" redesign (dark depth-field
+background, IBM Plex Mono, orbit hero on Home) documented in
+`docs/web/reference/site-wireframes.md` — its tokens/mixins live in
+`core/web/assets/css/_spatial-tokens.scss` / `_spatial-shared.scss`
+(page-local `@use`, not part of the `@tgmc/theme` package above), and the
+shared nav/footer blend via `core/web/assets/css/portfolio-spatial-chrome.scss`.
