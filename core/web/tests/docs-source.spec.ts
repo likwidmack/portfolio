@@ -12,7 +12,7 @@ const dockerfileApp = join(import.meta.dirname, '../../../docker/Dockerfile.app'
 
 describe('docs markdown packaging', () => {
   it('points the Content collection at the repo docs tree in place', async () => {
-    expect(existsSync(join(REPO_DOCS_DIR, 'contributing.md'))).toBe(true);
+    expect(existsSync(join(REPO_DOCS_DIR, 'cicd.md'))).toBe(true);
     expect(existsSync(join(REPO_DOCS_DIR, 'web/reference/architecture.md'))).toBe(true);
     expect(DOCS_COLLECTION_INCLUDE).toBe('**/*.md');
 
@@ -29,9 +29,6 @@ describe('docs markdown packaging', () => {
   });
 
   it('ships docs via host Nitro output instead of copying markdown into Dockerfile.app', async () => {
-    if (!existsSync(dockerfileApp)) {
-      return;
-    }
     const dockerfile = await readFile(dockerfileApp, 'utf8');
     expect(dockerfile).toContain('COPY --chown=node:node .output/${SYS_ENV} ./.output');
     expect(dockerfile).not.toContain('COPY docs ./docs');
