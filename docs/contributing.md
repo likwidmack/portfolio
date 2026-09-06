@@ -29,4 +29,4 @@ Treat every docs edit (new page, rewrite, or behavior change reflected in markdo
 
 ## Security
 
-Report vulnerabilities privately. See [SECURITY.md](../SECURITY.md).
+Report vulnerabilities privately. See SECURITY.md.
