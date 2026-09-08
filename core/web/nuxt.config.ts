@@ -205,6 +205,7 @@ export default defineNuxtConfig({
   css: [
     resolvePath('./assets/css/styles.scss'),
     resolvePath('./assets/css/portfolio-launch.scss'),
+    resolvePath('./assets/css/portfolio-spatial-chrome.scss'),
     'primeicons/primeicons.css',
   ],
   vue: {

@@ -1,0 +1,372 @@
+// Spatial portfolio — shared styles
+// Blocks that appear identically on the Home / Work / Gallery spatial screens: the
+// root surface (incl. tag and ::selection defaults), the depth field, camera layer,
+// buttons, section type scale, footer, and depth keyframes.
+//
+// Usage:
+//   @use '../../assets/css/spatial-tokens' as t;
+//   @use '../../assets/css/spatial-shared' as s;
+//
+//   .portfolio-work-spatial { @include s.root-surface; }
+//   @include s.depth-field;
+//   @include s.buttons;
+//   @include s.depth-keyframes;
+//
+// Every mixin takes $theme: dark (default) or light.
+
+@use 'spatial-tokens' as t;
+
+// ─── Root surface ──────────────────────────────────────────────────────────
+// Include INSIDE the component's root class — it carries the page ground,
+// default ink, box-sizing reset, selection colour, and link colours.
+@mixin root-surface($theme: dark) {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  background: if($theme == light, t.$light-paper, t.$bg);
+  color: if($theme == light, t.$light-ink, t.$ink);
+  font-family: t.$sans;
+  overflow: hidden;
+  box-sizing: border-box;
+
+  * {
+    box-sizing: border-box;
+  }
+
+  @if $theme == light {
+    ::selection {
+      background: t.$light-crimson;
+      color: #fff;
+    }
+    a {
+      color: t.$light-crimson;
+      text-decoration: none;
+    }
+    a:hover {
+      color: t.$light-crimson-hover;
+    }
+  } @else {
+    ::selection {
+      background: t.$crimson;
+      color: t.$bg;
+    }
+    a {
+      color: t.$rose;
+      text-decoration: none;
+    }
+    a:hover {
+      color: t.$rose-bright;
+    }
+  }
+}
+
+// ─── Camera / AR layer ─────────────────────────────────────────────────────
+@mixin camera-layer($theme: dark) {
+  .camera-feed {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    opacity: 0.6;
+  }
+  .camera-note {
+    position: fixed;
+    left: 50%;
+    top: 96px;
+    transform: translateX(-50%);
+    z-index: 45;
+    display: none;
+    font-family: t.$mono;
+    font-size: 10px;
+    letter-spacing: t.$track-link;
+    text-transform: uppercase;
+    padding: 9px 15px;
+    border-radius: t.$radius;
+    @if $theme == light {
+      background: rgba(255, 255, 255, 0.82);
+      border: 1px solid rgba(36, 20, 22, 0.16);
+      color: t.$light-ink;
+    } @else {
+      background: t.$scrim;
+      border: 1px solid t.$border-input;
+      color: t.$ink;
+    }
+  }
+}
+
+// ─── Depth field ───────────────────────────────────────────────────────────
+// Haze planes + approaching particles + the vignette that closes the space.
+@mixin depth-field($theme: dark) {
+  .depth-field-viewport {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+    perspective: t.$perspective-field;
+    perspective-origin: 52% 42%;
+  }
+  .depth-field-stage {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    will-change: transform;
+  }
+  .haze-plane {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .particle-node {
+    position: absolute;
+    transform-style: preserve-3d;
+  }
+  .particle-dot {
+    display: block;
+    border-radius: 50%;
+  }
+  .depth-field-vignette {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: if($theme == light, t.$vignette-light, t.$vignette);
+  }
+}
+
+// ─── Grid backdrop ─────────────────────────────────────────────────────────
+@mixin grid-backdrop($theme: dark) {
+  .grid-glow {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 1500px;
+    height: 760px;
+    margin: -380px 0 0 -750px;
+    border-radius: 50%;
+    filter: blur(46px);
+    transform: translateZ(-950px);
+    animation: hazePulse t.$haze-pulse-dur ease-in-out infinite;
+    @if $theme == light {
+      background: radial-gradient(closest-side, #f0d3cf 0%, rgba(247, 243, 241, 0) 70%);
+      opacity: 0.85;
+    } @else {
+      background: radial-gradient(closest-side, t.$grid-glow-color 0%, rgba(20, 9, 12, 0) 70%);
+      opacity: 0.8;
+    }
+  }
+  .grid-plane {
+    position: absolute;
+    left: 50%;
+    width: 3600px;
+    height: 1900px;
+    margin-left: -1800px;
+    background-size: t.$grid-cell t.$grid-cell;
+    animation: gridScroll t.$grid-scroll-dur linear infinite;
+    $line: if($theme == light, rgba(168, 27, 50, 0.26), t.$grid-line);
+    background-image:
+      linear-gradient($line 1px, transparent 1px),
+      linear-gradient(90deg, $line 1px, transparent 1px);
+  }
+  .grid-floor {
+    bottom: -8%;
+    transform-origin: 50% 100%;
+    transform: rotateX(82deg);
+    opacity: if($theme == light, 0.5, 0.6);
+    mask-image: linear-gradient(to top, #000 0%, rgba(0, 0, 0, 0) 74%);
+    -webkit-mask-image: linear-gradient(to top, #000 0%, rgba(0, 0, 0, 0) 74%);
+  }
+  .grid-ceil {
+    top: -8%;
+    transform-origin: 50% 0%;
+    transform: rotateX(-82deg);
+    opacity: if($theme == light, 0.28, 0.34);
+    mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0) 74%);
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0) 74%);
+  }
+}
+
+// ─── Buttons ───────────────────────────────────────────────────────────────
+@mixin buttons($theme: dark) {
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    padding: 15px 26px;
+    font-family: t.$mono;
+    font-size: t.$fs-button;
+    font-weight: 600;
+    letter-spacing: t.$track-button;
+    text-transform: uppercase;
+    border-radius: t.$radius;
+    transition: all t.$dur-fast t.$ease;
+    @if $theme == light {
+      background: t.$light-crimson;
+      color: #fff;
+      box-shadow: 0 18px 40px rgba(168, 27, 50, 0.28);
+      &:hover {
+        background: t.$light-crimson-hover;
+        color: #fff;
+      }
+      &.large {
+        padding: 16px 28px;
+        box-shadow: 0 18px 40px rgba(168, 27, 50, 0.3);
+      }
+    } @else {
+      background: t.$crimson;
+      color: t.$bg;
+      box-shadow: t.$shadow-action;
+      &:hover {
+        background: t.$crimson-hover;
+        color: t.$bg;
+      }
+      &.large {
+        padding: 16px 28px;
+        box-shadow: 0 18px 40px rgba(220, 66, 86, 0.3);
+      }
+    }
+  }
+  .btn-outline {
+    display: inline-flex;
+    align-items: center;
+    padding: 15px 26px;
+    font-family: t.$mono;
+    font-size: t.$fs-button;
+    font-weight: 500;
+    letter-spacing: t.$track-button;
+    text-transform: uppercase;
+    border-radius: t.$radius;
+    transition: all t.$dur-fast t.$ease;
+    @if $theme == light {
+      border: 1px solid rgba(36, 20, 22, 0.2);
+      color: t.$light-ink;
+      &:hover {
+        border-color: rgba(36, 20, 22, 0.5);
+        color: t.$light-ink-strong;
+      }
+      &.large {
+        padding: 16px 28px;
+        border-color: rgba(36, 20, 22, 0.22);
+      }
+    } @else {
+      border: 1px solid rgba(243, 231, 228, 0.2);
+      color: t.$ink;
+      &:hover {
+        border-color: t.$border-hover;
+        color: t.$ink-strong;
+      }
+      &.large {
+        padding: 16px 28px;
+        border-color: rgba(243, 231, 228, 0.22);
+      }
+    }
+  }
+}
+
+// ─── Section type scale ────────────────────────────────────────────────────
+@mixin section-type($theme: dark) {
+  .section-eyebrow {
+    margin: 0 0 20px;
+    font-family: t.$mono;
+    font-size: t.$fs-eyebrow;
+    letter-spacing: t.$track-section;
+    text-transform: uppercase;
+    color: if($theme == light, t.$light-crimson, t.$rose);
+  }
+  .section-title {
+    margin: 0;
+    font-family: t.$mono;
+    font-weight: 500;
+    font-size: t.$fs-h2;
+    line-height: t.$lh-title;
+    letter-spacing: t.$track-title;
+    color: if($theme == light, t.$light-ink-strong, t.$ink-strong);
+    text-wrap: pretty;
+  }
+  .section-summary {
+    margin: 24px 0 0;
+    max-width: 640px;
+    font-size: t.$fs-lede;
+    line-height: t.$lh-body;
+    color: if($theme == light, t.$light-ink-muted, t.$ink-dim);
+    text-wrap: pretty;
+  }
+}
+
+// ─── Tag / link faces (declarations only — keep your own selector) ─────────
+@mixin tag-face($theme: dark) {
+  font-family: t.$mono;
+  font-size: t.$fs-eyebrow;
+  border-radius: t.$radius;
+  @if $theme == light {
+    color: t.$light-ink-muted;
+    border: 1px solid t.$light-border-input;
+  } @else {
+    color: t.$ink-dim;
+    border: 1px solid t.$border-input;
+  }
+}
+@mixin story-link-face() {
+  font-family: t.$mono;
+  font-size: t.$fs-meta;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+// ─── Keyframes ─────────────────────────────────────────────────────────────
+@mixin depth-keyframes() {
+  @keyframes zApproach {
+    0% {
+      transform: translateZ(-1900px);
+      opacity: 0;
+    }
+    12% {
+      opacity: 0.85;
+    }
+    78% {
+      opacity: 0.55;
+    }
+    100% {
+      transform: translateZ(260px);
+      opacity: 0;
+    }
+  }
+  // Aerial-perspective variant for the light (paper) ground — motes stay lower
+  // contrast throughout since they're read against #F7F3F1, not a dark void.
+  @keyframes zApproachLight {
+    0% {
+      transform: translateZ(-1900px);
+      opacity: 0;
+    }
+    12% {
+      opacity: 0.5;
+    }
+    78% {
+      opacity: 0.32;
+    }
+    100% {
+      transform: translateZ(260px);
+      opacity: 0;
+    }
+  }
+  @keyframes hazePulse {
+    0%,
+    100% {
+      opacity: 0.55;
+    }
+    50% {
+      opacity: 0.8;
+    }
+  }
+}
+@mixin grid-keyframes() {
+  @keyframes gridScroll {
+    from {
+      background-position: 0 0;
+    }
+    to {
+      background-position: 0 t.$grid-cell;
+    }
+  }
+}

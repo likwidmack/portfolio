@@ -1,0 +1,186 @@
+// Spatial portfolio — styling tokens (Home / Work / Gallery "spatial" redesign).
+// Ported from the Claude Design handoff (`docs/packages/Portfolio design review/`).
+//
+// Usage in a page:
+//   <style lang="scss" scoped>
+//   @use '../../assets/css/spatial-tokens' as t;
+//   .card { background: t.$panel; color: t.$ink; font-family: t.$mono; }
+//   </style>
+//
+// Every value is `!default`, so a consumer can override before @use ... with (...).
+
+// ─── Type ──────────────────────────────────────────────────────────────────
+$sans: 'IBM Plex Sans', system-ui, sans-serif !default;
+$mono: 'IBM Plex Mono', monospace !default;
+
+$fs-micro: 8.5px !default; // in-card placeholder labels
+$fs-label: 9.5px !default; // spec labels, stage caption
+$fs-eyebrow: 10px !default; // section eyebrows, tags, disciplines
+$fs-meta: 11px !default; // nav, links, principle numbers
+$fs-button: 11.5px !default;
+$fs-caption: 13px !default; // card specs
+$fs-body-s: 14px !default; // status text
+$fs-body: 14.5px !default; // card abstract, principle body
+$fs-lede: 16px !default; // section summaries
+$fs-tagline: 18px !default;
+$fs-h3: 23px !default; // principle heading
+$fs-h2-card: 27px !default; // proof card heading
+$fs-h2: 44px !default; // section titles
+$fs-h1-cta: 46px !default;
+$fs-h1: 62px !default; // hero title
+
+$track-tight: -0.045em !default; // hero / cta display
+$track-title: -0.04em !default; // section titles
+$track-heading: -0.035em !default; // card headings
+$track-tag: 0.06em !default;
+$track-button: 0.16em !default;
+$track-link: 0.2em !default;
+$track-eyebrow: 0.24em !default;
+$track-section: 0.28em !default;
+$track-brand: 0.34em !default;
+$track-signature: 0.4em !default;
+
+$lh-display: 1 !default; // hero
+$lh-title: 1.1 !default;
+$lh-heading: 1.2 !default;
+$lh-body: 1.6 !default;
+$lh-prose: 1.65 !default;
+$lh-label: 1.7 !default;
+
+// ─── Dark theme (default surface) ──────────────────────────────────────────
+$bg: #14090c !default;
+$panel: #1d0e12 !default;
+$panel-dark: #1a0d11 !default;
+$panel-deep: #170b0e !default;
+$card-surface: rgba(30, 16, 19, 0.86) !default;
+$card-gradient: linear-gradient(150deg, rgba(45, 24, 29, 0.72) 0%, rgba(26, 14, 17, 0.72) 100%) !default;
+$card-gradient-solid: linear-gradient(150deg, rgba(45, 24, 29, 0.8) 0%, rgba(26, 14, 17, 0.8) 100%) !default;
+
+$ink: #f3e7e4 !default; // default body ink
+$ink-strong: #fbf3f1 !default; // titles
+$ink-mid: #eedfdc !default;
+$ink-muted: #c4afac !default; // hero tagline
+$ink-lead: #b4a09d !default; // card abstract
+$ink-dim: #a08d8a !default; // secondary prose
+$ink-subtle: #9c8683 !default; // labels, footer
+
+$crimson: #dc4256 !default; // primary action
+$crimson-hover: #f05b6e !default;
+$rose: #e8697c !default; // accents, links, eyebrows
+$rose-bright: #f5a6b0 !default; // link hover
+$teal: #4fb3ac !default; // engagement signals (Gallery stats only)
+
+$border: rgba(243, 231, 228, 0.1) !default;
+$border-soft: rgba(243, 231, 228, 0.08) !default;
+$border-card: rgba(243, 231, 228, 0.13) !default;
+$border-input: rgba(243, 231, 228, 0.14) !default;
+$border-hover: rgba(243, 231, 228, 0.5) !default;
+$border-accent: rgba(220, 66, 86, 0.24) !default;
+$border-accent-hover: rgba(220, 66, 86, 0.42) !default;
+
+$wash-ink: rgba(243, 231, 228, 0.04) !default; // glass button fill
+$wash-accent: rgba(220, 66, 86, 0.14) !default; // accent hover fill
+$scrim: rgba(20, 9, 12, 0.7) !default; // notes over camera feed
+
+// ─── Light theme ───────────────────────────────────────────────────────────
+$light-paper: #f7f3f1 !default;
+$light-card-top: #ffffff !default;
+$light-card-bot: #fcf8f6 !default;
+$light-placeholder-top: #f1e4e0 !default;
+$light-placeholder-bot: #e8dad6 !default;
+
+$light-ink: #241416 !default;
+$light-ink-strong: #1a0e10 !default;
+$light-ink-mid: #3a2226 !default;
+$light-ink-body: #4e3639 !default;
+$light-ink-lede: #4a3236 !default; // hero tagline
+$light-ink-muted: #5a4145 !default;
+$light-ink-subtle: #6b5054 !default;
+
+$light-crimson: #a81b32 !default;
+$light-crimson-hover: #c9243d !default;
+
+$light-border: rgba(36, 20, 22, 0.1) !default;
+$light-border-soft: rgba(36, 20, 22, 0.08) !default;
+$light-border-input: rgba(36, 20, 22, 0.14) !default;
+
+// ─── Layout ────────────────────────────────────────────────────────────────
+$pad-x: clamp(24px, 5vw, 72px) !default; // page gutter, all screens
+$radius: 2px !default; // buttons, tags, inputs
+$radius-card: 3px !default;
+
+$gap-tag: 8px !default;
+$gap-action: 14px !default;
+$gap-card: 26px !default;
+$gap-grid: 28px !default;
+$gap-column: 56px !default;
+
+$section-pad: 180px !default; // vertical rhythm between sections
+$section-pad-tight: 170px !default;
+$hero-pad-top: 168px !default;
+
+$bp-lg: 1080px !default; // 3 → 2 column
+$bp-md: 768px !default;
+$bp-sm: 700px !default; // stacked section headers
+$bp-xs: 560px !default; // 2 → 1 column
+
+// ─── Depth & elevation ─────────────────────────────────────────────────────
+$perspective-field: 820px !default; // background depth field
+$perspective-stage: 1500px !default; // orbit ring
+$perspective-hero: 1400px !default;
+$perspective-grid: 2200px !default;
+$perspective-principles: 1800px !default;
+
+$orbit-radius: 268px !default;
+$orbit-radius-focus-lift: 40px !default;
+$orbit-card-w: 240px !default;
+$orbit-card-h: 336px !default;
+
+$shadow-card: 0 40px 80px -28px rgba(0, 0, 0, 0.85) !default;
+$shadow-card-soft: 0 36px 70px -30px rgba(0, 0, 0, 0.8) !default;
+$shadow-panel: 0 60px 120px -40px rgba(0, 0, 0, 0.9) !default;
+$shadow-orbit-focus: 0 40px 90px -30px rgba(0, 0, 0, 0.85), 0 0 46px -6px rgba(232, 105, 124, 0.45) !default;
+$shadow-orbit-focus-light: 0 40px 90px -34px rgba(74, 50, 54, 0.4), 0 0 44px -8px rgba(168, 27, 50, 0.3) !default;
+$shadow-action: 0 18px 40px rgba(220, 66, 86, 0.28) !default;
+$shadow-text: 0 26px 56px rgba(0, 0, 0, 0.6) !default;
+$shadow-text-accent: 0 18px 44px rgba(140, 20, 36, 0.5) !default;
+$glow-pulse: 0 0 14px rgba(220, 66, 86, 0.9) !default;
+
+$vignette: radial-gradient(
+  1300px 900px at 52% 42%,
+  rgba(20, 9, 12, 0) 0%,
+  rgba(20, 9, 12, 0.28) 62%,
+  rgba(20, 9, 12, 0.82) 100%
+) !default;
+
+$vignette-light: radial-gradient(
+  1300px 900px at 52% 42%,
+  rgba(247, 243, 241, 0) 0%,
+  rgba(247, 243, 241, 0.4) 60%,
+  rgba(247, 243, 241, 0.88) 100%
+) !default;
+
+// ─── Motion ────────────────────────────────────────────────────────────────
+$ease: ease !default;
+$dur-fast: 0.2s !default; // buttons, borders
+$dur: 0.25s !default; // card hover lift
+$dur-slow: 0.35s !default; // orbit opacity / blur crossfade
+$idle-rotation-step: 0.055deg !default; // per frame, idle orbit
+$drag-yaw: 0.32 !default; // px → deg, horizontal drag
+$drag-pitch: 0.16 !default; // px → deg, vertical drag
+$pitch-min: -34deg !default;
+$pitch-max: 16deg !default;
+
+// ─── Backdrop ──────────────────────────────────────────────────────────────
+$grid-line: rgba(232, 105, 124, 0.5) !default;
+$grid-cell: 92px !default;
+$grid-scroll-dur: 4.5s !default;
+$grid-glow-color: #8a1f30 !default;
+$haze-pulse-dur: 12s !default;
+$particle-near: #f0879a !default;
+$particle-mid: #e8697c !default;
+$particle-far: #f3e7e4 !default;
+
+$light-particle-near: #a81b32 !default;
+$light-particle-mid: #8e6a6c !default;
+$light-particle-far: #cbb4b1 !default;

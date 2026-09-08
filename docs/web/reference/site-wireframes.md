@@ -64,46 +64,50 @@ Work sub-nav (`AppWorkSubNav` on `/work` and `/work/[slug]`): Docs, AI Lab, Proc
 └──────────────────────────────────────────────────────────────┘
 ```
 
-## Home `/`
+## Home `/`, Work index `/work`, and Gallery `/gallery` — spatial redesign
+
+Home, Work index, and Gallery ship the "spatial" direction from the Claude
+Design handoff (`docs/packages/Portfolio design review/` chat transcripts): a
+dark volumetric depth field (haze planes + particles traveling toward the
+camera, mouse parallax) behind full-bleed IBM Plex Mono content, with the
+shared nav/footer blended into the ground via `useSpatialPageChrome()` +
+`assets/css/portfolio-spatial-chrome.scss` (keyed off `html[data-spatial-page]`).
+
+- **Home** is the only one of the three that follows the site's light/dark
+  toggle — its ink, accent, and depth-field colors invert for the light
+  theme. Its hero is a drag-to-orbit ring of the featured case studies
+  (cover-flow: the frontmost card focuses and reveals its caption, the rest
+  recede in scale/blur/opacity), not a static image.
+- **Work index** and **Gallery** only ship a dark treatment (no light variant
+  in the handoff), so visiting either forces the real theme-mode system to
+  `dark` for the duration (`useSpatialPageChrome(page, { forceDark: true })`)
+  — this also keeps themed child components (PrimeVue dialogs, gallery
+  code/viz exhibits) legible instead of just the hand-styled spatial classes.
+- **Work sub-nav**: `AppWorkSubNav` (Related: Docs · AI Lab · Process) moved
+  from the top-of-page aside to a small panel below the case-study list —
+  the two-column `.page-with-nav` split reads oddly against a full-bleed
+  dark hero, so it's now a single-column block restyled to sit on the ground
+  (still the same component/links, `page-with-nav` class kept for the
+  layout contract).
+- `/work/:slug` (case study detail) is unchanged — still `data-fit="prose"`,
+  still uses `.page-with-nav` as a sticky aside.
 
 ```text
 ┌──────────────────────────────────────────────────────────────┐
-│ NAV                                                          │
+│ NAV (blended into the dark/light ground)                     │
 ├──────────────────────────────────────────────────────────────┤
-│  HERO (full-bleed)                                           │
-│  Brand / name                                                │
-│  One headline · one supporting line · CTA group              │
+│  Depth field (haze + particles, fixed, parallax on mouse)     │
+│  HERO — Home: orbit ring · Work: title + jump bar             │
+│         Gallery: title + view/filter toolbar                 │
 ├──────────────────────────────────────────────────────────────┤
-│  Optional below-fold sections (not first viewport clutter)   │
+│  Home: proof grid → principles → CTA                          │
+│  Work: case-study cards (media rail + role/evidence) → related│
+│  Gallery: tile grid or full-viewport snap feed → CTA          │
 └──────────────────────────────────────────────────────────────┘
 ```
 
-Content: Nuxt Content collection `home` via `/api/content/home`.
-
-## Work index `/work` and detail `/work/:slug`
-
-```text
-┌─ /work ─────────────────────────┐  ┌─ /work/:slug ──────────────────┐
-│ NAV                             │  │ NAV                            │
-│ Related: Docs · AI Lab · Process│  │ Related: Docs · AI Lab · Process│
-├─────────────────────────────────┤  ├────────────────────────────────┤
-│ Title · short intro             │  │ Case study title               │
-│ ┌────┐ ┌────┐ ┌────┐            │  │ Media / narrative blocks       │
-│ │card│ │card│ │card│ → slug     │  │ Architecture / outcomes        │
-│ └────┘ └────┘ └────┘            │  │ Back to /work                  │
-└─────────────────────────────────┘  └────────────────────────────────┘
-```
-
-## Gallery `/gallery`
-
-```text
-┌──────────────────────────────────────────────────────────────┐
-│ NAV                                                          │
-├──────────────────────────────────────────────────────────────┤
-│ Browse toolbar (filter / mode)                               │
-│ Feed or grid of media samples                                │
-└──────────────────────────────────────────────────────────────┘
-```
+Home content: Nuxt Content collection `home` via `/api/content/home`. Work
+and Gallery: `caseStudies` and `gallery` collections, unchanged.
 
 ## Docs `/docs` and `/docs/*`
 

@@ -1,0 +1,122 @@
+/**
+ * Chrome overrides for the "spatial" Home / Work / Gallery redesign.
+ *
+ * The spatial pages set `html[data-spatial-page]` (see `usePortfolioSpatialChrome`
+ * in each page) so the shared `AppPrimaryNav` / footer — rendered by the site
+ * layout, outside the page's own component tree — can blend into the dark (or,
+ * on Home, theme-aware) ground instead of the default light chrome.
+ *
+ * Home follows the site's light/dark toggle; Work and Gallery only ship a dark
+ * spatial design (see the Claude Design handoff), so they force the dark
+ * treatment regardless of `data-theme`.
+ */
+@use '../../../../theme/core/scss/tokens/variables' as *;
+@use 'spatial-tokens' as t;
+
+html[data-spatial-page] {
+  // `!important`: these compete with `:root { --main-top-padding: 5rem; ... }` in
+  // `layouts/default.vue`'s own (non-scoped) style block at equal specificity —
+  // without it, load order alone decides the tie and the light body wallpaper can
+  // show through the gap above the footer.
+  --main-top-padding: 0px !important;
+  --main-bottom-padding: 0px !important;
+}
+
+html[data-spatial-page] #site_header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  background: transparent;
+  border: none;
+}
+
+html[data-spatial-page] #site_header > div {
+  padding: 0;
+}
+
+html[data-spatial-page] .primary-nav {
+  width: 100%;
+  min-height: 0;
+  margin-inline: 0;
+  padding: 30px clamp(24px, 5vw, 72px);
+}
+
+html[data-spatial-page] .primary-nav__brand,
+html[data-spatial-page] .primary-nav__links a,
+html[data-spatial-page] .primary-nav__actions a,
+html[data-spatial-page] .primary-nav__actions button,
+html[data-spatial-page] .app-env-chip {
+  color: #f3e7e4;
+}
+
+html[data-spatial-page] .primary-nav__brand strong {
+  color: #e8697c;
+}
+
+html[data-spatial-page] .primary-nav__links a.router-link-active {
+  text-decoration-color: #e8697c;
+}
+
+html[data-spatial-page] .primary-nav__contact {
+  border-color: rgba(243, 231, 228, 0.3);
+}
+
+html[data-spatial-page] .primary-nav__contact:hover {
+  border-color: #e8697c;
+}
+
+// Home mirrors the site theme toggle — light spatial ground gets dark ink nav text.
+html[data-spatial-page='home'][data-theme='light'] .primary-nav__brand,
+html[data-spatial-page='home'][data-theme='light'] .primary-nav__links a,
+html[data-spatial-page='home'][data-theme='light'] .primary-nav__actions a,
+html[data-spatial-page='home'][data-theme='light'] .primary-nav__actions button,
+html[data-spatial-page='home'][data-theme='light'] .app-env-chip {
+  color: #241416;
+}
+
+html[data-spatial-page='home'][data-theme='light'] .primary-nav__brand strong {
+  color: #a81b32;
+}
+
+html[data-spatial-page='home'][data-theme='light'] .primary-nav__links a.router-link-active {
+  text-decoration-color: #a81b32;
+}
+
+html[data-spatial-page='home'][data-theme='light'] .primary-nav__contact {
+  border-color: rgba(36, 20, 22, 0.25);
+}
+
+html[data-spatial-page='home'][data-theme='light'] .primary-nav__contact:hover {
+  border-color: #a81b32;
+}
+
+// Body wallpaper: fill with the spatial ground so no light-theme seam shows
+// through any gap between the page content and the footer.
+html[data-spatial-page] body {
+  background-color: t.$bg;
+  background-image: none;
+}
+html[data-spatial-page='home'][data-theme='light'] body {
+  background-color: t.$light-paper;
+}
+
+// Shared footer: sit quietly on the ground instead of the default panel styling.
+html[data-spatial-page] #site_footer {
+  border-top: none;
+  background: t.$bg;
+  color: #9c8683;
+}
+
+html[data-spatial-page='home'][data-theme='light'] #site_footer {
+  background: t.$light-paper;
+  color: #6b5054;
+}
+
+@media (max-width: $breakpoint-tablet) {
+  html[data-spatial-page] .primary-nav {
+    padding-top: 22px;
+    padding-bottom: 22px;
+  }
+}
