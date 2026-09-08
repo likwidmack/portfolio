@@ -69,4 +69,4 @@ These are excluded from the GitHub Pages build (`docs/_config.yml`).
 | [`core/web/`](../core/web/)                   | Nuxt app source; config `nuxt.config.ts` |
 | [`packages/`](../packages/)                   | `utilities`, `media-player`, `likwidlibs`, `web-layer-admin` |
 | [`theme/core/`](../theme/core/)               | Packaged theme (`@tgmc/theme`)           |
-| [`.github/workflows/`](../.github/workflows/) | Tests, sync, and GitHub profile YAML     |
+| `.github/workflows/` | Tests, sync, and GitHub profile YAML     |

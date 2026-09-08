@@ -63,4 +63,4 @@ These directories are **not** built into Pages. Open them on GitHub:
 | [`core/web/`](https://github.com/likwidmack/portfolio/tree/main/core/web)                   | Nuxt app; `nuxt.config.ts`                    |
 | [`packages/`](https://github.com/likwidmack/portfolio/tree/main/packages)                   | `utilities`, `media-player`, `likwidlibs`     |
 | [`theme/core/`](https://github.com/likwidmack/portfolio/tree/main/theme/core)               | `@tgmc/theme`                                 |
-| [`.github/workflows/`](https://github.com/likwidmack/portfolio/tree/main/.github/workflows) | Tests, sync, and GitHub profile YAML          |
+| `.github/workflows/` | Tests, sync, and GitHub profile YAML          |
