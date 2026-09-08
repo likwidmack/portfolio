@@ -24,7 +24,7 @@ describe('gallery hub', () => {
     expect(page).toContain("fetchContentCollection<GalleryContent>('gallery'");
     expect(page).toContain('AppBrowseToolbar');
     expect(page).toContain('GalleryFeedCard');
-    expect(page).toContain('gallery-grid__stats');
+    expect(page).toContain('tile-meta--stat');
     expect(page).toContain('--portfolio-teal');
     expect(page).toContain("ref<GalleryViewMode>('grid')");
     expect(page).not.toContain('queryCollection(');
