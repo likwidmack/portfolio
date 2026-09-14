@@ -1,11 +1,11 @@
 {
   "seo": {
-    "title": "Tamara Mack — Principal UI/UX Software Engineer & Creative Technologist",
-    "description": "Tamara Mack is a Principal UI/UX Software Engineer & Creative Technologist, Founder of HyperActivity — designing human-centered interfaces for systems that think, act, and create."
+    "title": "Tamara Gisele Mack — Principal UI/UX Software Engineer & Creative Technologist",
+    "description": "Tamara is a Principal UI/UX Software Engineer & Creative Technologist, Founder of HyperActivity — designing human-centered interfaces for systems that think, act, and create."
   },
   "hero": {
     "eyebrow": "Principal UI/UX Software Engineer & Creative Technologist, Founder of HyperActivity",
-    "brand": "Tamara Mack",
+    "brand": "Tamara",
     "signature": "LIKWIDMACK",
     "title": "Interfaces built the way they",
     "titleAccent": "get shipped.",
@@ -70,7 +70,6 @@
     "eyebrow": "Let’s make the next interface legible",
     "heading": "Creative technology, principal engineering, and software architecture",
     "lede": "I’m open to conversations with hiring teams seeking principal or distinguished software engineers and architects, plus a small number of focused creative-technology partners.",
-    "primaryHref": "mailto:likwidmack@gmail.com",
     "primaryLabel": "Start a conversation",
     "secondaryHref": "/about",
     "secondaryLabel": "About Tamara"

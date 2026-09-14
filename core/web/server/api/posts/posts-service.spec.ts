@@ -18,6 +18,14 @@ const sample: BlogPost = {
 };
 
 describe('blogPostStoreOptionsFromRuntimeConfig', () => {
+  it('prefers the e2e store environment over the public test identity', () => {
+    vi.stubEnv('E2E_STORE_SYS_ENV', 'local');
+    try {
+      expect(blogPostStoreOptionsFromRuntimeConfig({ public: { sysEnv: 'test' } }, 'test').sysEnv).toBe('local');
+    } finally {
+      vi.unstubAllEnvs();
+    }
+  });
   it('maps runtime config fields', () => {
     expect(
       blogPostStoreOptionsFromRuntimeConfig(

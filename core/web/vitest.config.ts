@@ -45,6 +45,8 @@ export default defineConfig(() => ({
         'server/api/messages/**/*.ts',
         'server/api/posts/**/*.ts',
         'shared/personalization.ts',
+        'shared/site-person.ts',
+        'shared/site-profile.ts',
         'shared/blog-types.ts',
       ],
       exclude: ['**/*.{spec,test}.ts', '**/routes.spec.ts'],

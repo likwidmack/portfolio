@@ -21,7 +21,8 @@ export const blogPostStoreOptionsFromRuntimeConfig = (
   config: PostsRuntimeConfig,
   fallbackSysEnv: string | undefined = process.env.SYS_ENV
 ): CreateBlogPostStoreOptions => ({
-  sysEnv: nonEmpty(config.public?.sysEnv) ?? fallbackSysEnv,
+  // Full regression keeps the public app identity at `test` while selecting local SQLite stores.
+  sysEnv: nonEmpty(process.env.E2E_STORE_SYS_ENV) ?? nonEmpty(config.public?.sysEnv) ?? fallbackSysEnv,
   databaseUrl: nonEmpty(config.databaseUrl),
   dynamoPostsTable: nonEmpty(config.dynamoPostsTable),
   awsRegion: nonEmpty(config.awsRegion),

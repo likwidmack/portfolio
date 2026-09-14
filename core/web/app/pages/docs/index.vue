@@ -58,6 +58,7 @@ import {
   type DocsIndexEntry,
   type DocsViewMode,
 } from '#shared/docs-catalog';
+import { SITE_PERSON } from '#shared/site-person';
 
 definePageMeta({ breadcrumb: 'Docs' });
 
@@ -101,7 +102,7 @@ function docCardGroup(path: string): ReturnType<typeof groupFromDocPath> {
 }
 
 usePortfolioSeo({
-  title: 'Technical documentation — Tamara Mack',
+  title: `Technical documentation — ${SITE_PERSON.formal}`,
   description: 'Software specs, runbooks, and examples sourced from the repository docs tree.',
   path: '/docs',
 });

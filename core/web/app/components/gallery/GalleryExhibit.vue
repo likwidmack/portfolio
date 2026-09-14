@@ -132,7 +132,9 @@ watch(
   &__fallback {
     margin: 0;
     padding: 0.65rem 0.85rem;
+    font-family: var(--font-family-mono);
     font-size: 0.85rem;
+    letter-spacing: 0.02em;
   }
 
   &__caption {

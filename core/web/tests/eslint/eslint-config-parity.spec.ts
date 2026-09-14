@@ -46,7 +46,7 @@ describe('eslint.config.mjs vs legacy .eslintrc intent', () => {
       cwd: coreWebRoot,
       overrideConfigFile: join(coreWebRoot, 'eslint.config.mjs'),
     });
-    const target = join(coreWebRoot, 'app/components/AppPrimaryNav.vue');
+    const target = join(coreWebRoot, 'app/components/AppPrimaryNav/index.vue');
     const calculated = await eslint.calculateConfigForFile(target);
 
     expect(calculated.plugins).toHaveProperty('vue-pug');

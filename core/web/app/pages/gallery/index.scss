@@ -1,0 +1,243 @@
+@use 'theme/scss/tokens' as *;
+
+.gallery-page__count {
+  font-family: var(--font-family-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.gallery-page {
+  display: grid;
+  gap: var(--section-gap, 2rem);
+  width: 100%;
+
+  // Design's filter bar reads as one row (view toggle | group chips | kind chips),
+  // not the shared toolbar's default stacked rows.
+  :deep(.browse-toolbar) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  :deep(.browse-toolbar__groups),
+  :deep(.browse-toolbar__kinds) {
+    padding-left: 0.75rem;
+    border-left: 1px solid var(--portfolio-rule);
+  }
+}
+
+// Full-screen takeover — matches the design's "scan it like Shorts and Reels" feed,
+// not an inline list. Its own scroll container so grid/nav/depth-field stay put behind it.
+.gallery-feed {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: grid;
+  grid-auto-rows: max-content;
+  gap: 2rem;
+  align-content: start;
+  width: 100%;
+  max-width: none;
+  height: 100dvh;
+  padding: 0 1.25rem 3rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-snap-type: y mandatory;
+  background: var(--main-background);
+  // Defensive: any ancestor/self backdrop-filter (or transform/filter/perspective)
+  // turns this scroll container into a containing block for fixed descendants,
+  // which would trap a `position: fixed` topbar at the wrong offset. Sticky (below)
+  // sidesteps that entirely, but keep this off regardless.
+  backdrop-filter: none;
+
+  &__topbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    margin-inline: -1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 1rem 1.5rem;
+    background: color-mix(in srgb, var(--surface-color) 86%, transparent);
+    border-bottom: 1px solid var(--portfolio-rule);
+    backdrop-filter: blur(18px);
+  }
+
+  &__status {
+    color: var(--text-secondary-color, var(--text-color));
+    font-family: var(--font-family-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+  }
+
+  &__back {
+    margin-left: auto;
+    padding: 0.55rem 1rem;
+    border: 1px solid var(--portfolio-rule);
+    border-radius: 2px;
+    background: color-mix(in srgb, var(--text-color) 4%, transparent);
+    color: var(--text-color);
+    font-family: var(--font-family-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    cursor: pointer;
+
+    &:hover,
+    &:focus-visible {
+      border-color: var(--portfolio-rose);
+      color: var(--portfolio-rose, var(--primary-color));
+    }
+  }
+
+  // `.gallery-feed` now has a definite height (100dvh) with overflow-y: auto — under a
+  // definite-height grid container, a grid item's `min-height: 0` (fine when the
+  // container grew to content) instead lets its row collapse below the card's actual
+  // content height rather than scrolling. Restore the item's automatic minimum size.
+  :deep(.gallery-feed-card) {
+    min-height: auto;
+    // "Open in feed" scrolls a card flush with the container's top edge, which is
+    // exactly where the sticky topbar sits — without this, the card's title/kicker
+    // lands hidden behind the bar instead of below it.
+    scroll-margin-top: 6rem;
+  }
+}
+
+.gallery-grid {
+  display: grid;
+  grid-auto-flow: dense;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
+  gap: 0.75rem;
+  width: 100%;
+
+  &__tile {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    padding: 0;
+    border: 1px solid var(--border-color, var(--portfolio-rule));
+    border-radius: var(--border-radius-md, 0.75rem);
+    background: var(--surface-color, var(--main-background-secondary));
+    color: inherit;
+    cursor: pointer;
+    text-align: left;
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+
+    &[data-aspect='tall'] {
+      aspect-ratio: 9 / 16;
+    }
+
+    &[data-aspect='wide'] {
+      aspect-ratio: 16 / 10;
+    }
+
+    &[data-aspect='square'] {
+      aspect-ratio: 1 / 1;
+    }
+
+    &:hover .gallery-grid__platform,
+    &:focus-visible .gallery-grid__platform {
+      border-color: var(--primary-color);
+      color: var(--primary-color);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--focus-ring, var(--primary-color));
+      outline-offset: 2px;
+    }
+  }
+
+  &__media {
+    position: relative;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  &__media :deep(img),
+  &__media :deep(video),
+  &__media :deep(.gallery-exhibit) {
+    min-height: 0;
+    max-width: 100%;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &__badge {
+    position: absolute;
+    z-index: 1;
+    top: 0.5rem;
+    left: 0.5rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: var(--border-radius-sm);
+    background: color-mix(in srgb, var(--main-background) 70%, transparent);
+    color: var(--text-color);
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  &__platform {
+    position: absolute;
+    left: 0.55rem;
+    bottom: 0.55rem;
+    z-index: 1;
+    display: inline-flex;
+    padding: 0.2rem 0.5rem;
+    border: 1px solid color-mix(in srgb, var(--text-color) 35%, transparent);
+    border-radius: var(--border-radius-pill, 999px);
+    background: color-mix(in srgb, var(--main-background) 78%, transparent);
+    color: var(--text-color);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  &__meta {
+    display: grid;
+    gap: 0.2rem;
+    padding: 0.55rem 0.65rem 0.7rem;
+    min-width: 0;
+  }
+
+  &__label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  &__category {
+    color: var(--text-secondary-color, var(--text-color));
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  &__stats {
+    color: var(--portfolio-teal);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+  }
+
+  @media (min-width: $breakpoint-tablet) {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+  }
+
+  @media (orientation: landscape) and (min-width: $breakpoint-standard) {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+  }
+}
+
+.gallery-page__count {
+  margin: 0 0 1rem;
+  color: var(--text-color-secondary, inherit);
+  font-size: 0.85rem;
+}

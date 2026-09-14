@@ -5,15 +5,15 @@
     h1 AI is part of the work. Judgment stays visible.
     p.lead These sanitized decision cards show how ideas moved through AI-assisted exploration, art direction, implementation, and evidence review.
 
-  section.process-principles(aria-labelledby="process-principles-heading")
+  section.process-principles.layout(data-algo="stack", aria-labelledby="process-principles-heading")
     h2#process-principles-heading Working agreement
     ul
       li Prompts are inputs, not authorship or authority.
       li Decisions name the human judgment that changed the work.
       li Public cards omit task identifiers, full transcripts, secrets, file paths, and private business content.
 
-  section.decision-list(aria-label="Sanitized AI decision journal")
-    article.decision-card(v-for="card in cards", :key="card.id")
+  section.decision-list.layout(data-algo="stack", aria-label="Sanitized AI decision journal")
+    article.decision-card.layout(v-for="card in cards", :key="card.id", data-algo="split")
       header
         p
           span {{ card.source }}
@@ -38,6 +38,7 @@
 <script setup lang="ts">
 import type { DecisionCard } from '#shared/portfolio-types';
 import { isPublicDecisionCard } from '#shared/portfolio-types';
+import { SITE_PERSON } from '#shared/site-person';
 
 definePageMeta({ breadcrumb: 'Process' });
 const { data } = await useContentAsyncData('public-decision-cards', () =>
@@ -50,8 +51,10 @@ const formatDate = (date: string) =>
   new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(date));
 
 usePortfolioSeo({
-  title: 'Process — Tamara Mack, Creative Technologist',
+  title: `Process — ${SITE_PERSON.formal}, Creative Technologist`,
   description: 'A sanitized AI decision journal showing how human judgment shapes AI-assisted design and engineering.',
   path: '/process',
 });
 </script>
+
+<style lang="scss" src="./process.scss"></style>

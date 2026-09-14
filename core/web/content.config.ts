@@ -41,7 +41,7 @@ const resumeContentSchema = z.object({
     lede: z.string(),
     primaryActionLabel: z.string(),
     secondaryActionLabel: z.string(),
-    secondaryActionHref: z.string(),
+    secondaryActionHref: z.string().optional(),
   }),
   intro: z.object({
     heading: z.string(),
@@ -153,7 +153,7 @@ const homeContentSchema = z.object({
     eyebrow: z.string(),
     heading: z.string(),
     lede: z.string(),
-    primaryHref: z.string(),
+    primaryHref: z.string().optional(),
     primaryLabel: z.string(),
     secondaryLabel: z.string(),
     secondaryHref: z.string(),
@@ -363,7 +363,7 @@ const galleryContentSchema = z.object({
   cta: z.object({
     heading: z.string(),
     lede: z.string(),
-    primaryHref: z.string(),
+    primaryHref: z.string().optional(),
     primaryLabel: z.string(),
   }),
 });
@@ -470,6 +470,46 @@ const writingContentSchema = z.object({
   ),
 });
 
+const profileContentSchema = z.object({
+  names: z.object({
+    formal: z.string().min(1),
+    casual: z.string().min(1),
+    short: z.string().min(1),
+    signature: z.string().min(1),
+  }),
+  contact: z.object({
+    email: z.string().email(),
+    github: z.object({
+      handle: z.string().min(1),
+      url: z.string().url(),
+    }),
+  }),
+  role: z.object({
+    title: z.string().min(1),
+    organization: z.string().min(1),
+    footerCredential: z.string().min(1),
+    creativeTechnologist: z.string().min(1),
+    jsonLdDescription: z.string().min(1),
+  }),
+  portrait: z.object({
+    src: z.string().min(1),
+    width: z.number().int().positive(),
+    height: z.number().int().positive(),
+  }),
+  downloads: z.object({
+    portfolioDeck: z.string().min(1),
+    generalResume: z.string().min(1),
+  }),
+  copyright: z.object({
+    startYear: z.number().int(),
+    displayYear: z.number().int(),
+  }),
+  app: z.object({
+    titleSuffix: z.string().min(1),
+    siteDescription: z.string().min(1),
+  }),
+});
+
 /**
  * Content configuration for `@nuxt/content`.
  *
@@ -521,6 +561,11 @@ export default defineContentConfig({
       type: 'data',
       source: 'home.json',
       schema: homeContentSchema,
+    }),
+    profile: defineCollection({
+      type: 'data',
+      source: 'profile.json',
+      schema: profileContentSchema,
     }),
     product: defineCollection({
       type: 'data',

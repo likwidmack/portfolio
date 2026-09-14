@@ -1,0 +1,39 @@
+{
+  "names": {
+    "formal": "Tamara Gisele Mack",
+    "casual": "Tamara",
+    "short": "TMack",
+    "signature": "LIKWIDMACK"
+  },
+  "contact": {
+    "email": "likwidmack@gmail.com",
+    "github": {
+      "handle": "tamaramack",
+      "url": "https://github.com/tamaramack"
+    }
+  },
+  "role": {
+    "title": "Creative Technologist",
+    "organization": "Founder of HyperActivity",
+    "footerCredential": "Software Engineer & Technologist",
+    "creativeTechnologist": "Creative Technologist",
+    "jsonLdDescription": "Creative Technologist & Founder of HyperActivity — designing human-centered interfaces for systems that think, act, and create."
+  },
+  "portrait": {
+    "src": "/i/profile_pic_1.jpg",
+    "width": 480,
+    "height": 480
+  },
+  "downloads": {
+    "portfolioDeck": "/d/Tamara-Mack-UI-AI-Portfolio-2026.pdf",
+    "generalResume": "/d/Resume2026.pdf"
+  },
+  "copyright": {
+    "startYear": 2021,
+    "displayYear": 2026
+  },
+  "app": {
+    "titleSuffix": "Portfolio App",
+    "siteDescription": "web portfolio application"
+  }
+}

@@ -17,7 +17,8 @@ describe('portfolio content contracts', () => {
   it('defines slug-routed case-study and privacy-reviewed decision-card collections', async () => {
     const config = await readFile(join(import.meta.dirname, '../content.config.ts'), 'utf8');
     expect(config).toContain("source: 'case-studies/*.json'");
-    expect(config).toContain("source: 'decision-cards/*.json'");
+    expect(config).toContain("source: 'profile.json'");
+    expect(config).toContain('profileContentSchema');
     expect(config).toContain("confidentiality: z.enum(['public', 'sanitized'])");
     expect(config).toContain("privacyStatus: z.enum(['approved', 'sanitized', 'private'])");
   });
