@@ -17,6 +17,10 @@ const PRIVATE_REL_PATHS = [
   "docs/web/features/cdn-guide.md",
   "docs/dev/git-hooks.md",
   "core/web/tests/scripts",
+  // Asserts docs/cicd.md (private, dropped above) and docker/Dockerfile.app
+  // (never synced — `docker` isn't in sync/allowlist.txt), so it can never
+  // pass on the public mirror. Drop it rather than let it red the sync PR.
+  "core/web/tests/docs-source.spec.ts",
 ];
 
 function parseArgs(argv) {

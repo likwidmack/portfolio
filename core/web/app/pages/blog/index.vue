@@ -5,7 +5,7 @@
     h1.display {{ content.hero.title }}
     p.lead {{ content.hero.lede }}
 
-  .page-with-nav
+  div
     div(data-region="body")
       section#posts.blog-editorial__shelf(aria-labelledby="blog-posts-heading")
         h2#blog-posts-heading.sr-only Writing shelf
@@ -114,7 +114,7 @@ usePortfolioSeo({
     width: 100%;
     min-width: 0;
 
-    @media (min-width: $breakpoint-tablet) {
+    @media (min-width: #{$breakpoint-tablet}) {
       grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
       align-items: stretch;
     }
@@ -132,7 +132,7 @@ usePortfolioSeo({
     width: 100%;
     min-width: 0;
 
-    @media (min-width: $breakpoint-tablet) {
+    @media (min-width: #{$breakpoint-tablet}) {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
@@ -154,7 +154,7 @@ usePortfolioSeo({
       background: var(--main-background-secondary, var(--surface-color));
       overflow: hidden;
 
-      @media (max-width: $breakpoint-tablet) {
+      @media (max-width: #{$breakpoint-tablet}) {
         grid-template-columns: minmax(0, 1fr);
       }
 
@@ -227,6 +227,10 @@ usePortfolioSeo({
       line-height: 1.45;
       overflow-wrap: anywhere;
     }
+  }
+
+  div[data-region='body'] {
+    max-width: 100%;
   }
 }
 

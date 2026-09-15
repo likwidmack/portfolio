@@ -1,13 +1,12 @@
 {
   "hero": {
     "eyebrow": "Digital CV",
-    "name": "Tamara Mack",
+    "name": "Tamara Gisele Mack",
     "role": "Principal UI/UX Software Engineer & Creative Technologist, Founder of HyperActivity",
     "title": "I turn fuzzy ideas into working software people can try.",
     "lede": "I am a creative technologist — Founder & Principal Architect, and a principal and distinguished software engineer and software architect — who blends front-end craft, full-stack architecture, and creative technology to move ideas from sketch to shipped experience.",
     "primaryActionLabel": "Download résumé",
-    "secondaryActionLabel": "Start a conversation",
-    "secondaryActionHref": "mailto:likwidmack@gmail.com"
+    "secondaryActionLabel": "Start a conversation"
   },
   "intro": {
     "heading": "Building at the edge of possible and practical",

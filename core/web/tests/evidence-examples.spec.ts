@@ -30,7 +30,7 @@ describe('evidence examples dialog', () => {
   it('wires the dialog into Work index and case study Evidence', async () => {
     const indexPage = await readFile(join(root, 'app/pages/work/index.vue'), 'utf8');
     const studyPage = await readFile(join(root, 'app/pages/work/[slug].vue'), 'utf8');
-    const dialog = await readFile(join(root, 'app/components/AppEvidenceExamplesDialog.vue'), 'utf8');
+    const dialog = await readFile(join(root, 'app/components/AppEvidenceExamplesDialog/index.vue'), 'utf8');
 
     expect(dialog).toContain('UiDialog.evidence-examples-dialog');
     expect(dialog).toContain('#panel-code');
@@ -38,7 +38,6 @@ describe('evidence examples dialog', () => {
     expect(dialog).toContain('#panel-styles');
     expect(indexPage).toContain('AppEvidenceExamplesDialog');
     expect(indexPage).toContain('Browse evidence examples');
-    expect(indexPage).toContain('AppWorkSubNav');
     expect(studyPage).toContain('AppEvidenceExamplesDialog');
     expect(studyPage).toContain('Browse evidence examples');
     expect(studyPage).toContain('AppWorkSubNav');

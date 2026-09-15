@@ -3,9 +3,20 @@ import { pickContrastingInk } from '@tgmc/theme';
 export type MotionPreference = 'system' | 'playful' | 'reduced';
 export type AccentId = 'ember' | 'crimson';
 export type ThemeResolvedMode = 'light' | 'dark';
+/** Depth-field backdrop: ambient particles, a scrolling 3D grid, or a live camera passthrough. */
+export type BackgroundMode = 'particles' | 'grid' | 'camera';
 
 export const ACCENT_KEY = 'tgmc-accent';
 export const MOTION_KEY = 'tgmc-motion';
+export const BACKGROUND_KEY = 'tgmc-background';
+
+export const BACKGROUND_MODES: Array<{ value: BackgroundMode; label: string }> = [
+  { value: 'particles', label: 'Particles' },
+  { value: 'grid', label: 'Grid' },
+  { value: 'camera', label: 'Camera' },
+];
+
+export const DEFAULT_BACKGROUND_MODE: BackgroundMode = 'particles';
 
 export type AccentPreset = {
   id: AccentId;
@@ -28,13 +39,13 @@ export const ACCENT_PRESETS: AccentPreset[] = [
   {
     id: 'crimson',
     label: 'Crimson',
-    color: '#8B1E2E',
-    primary: { light: '#6E1622', dark: '#8B1E2E' },
+    color: '#dc4256',
+    primary: { light: '#a81b32', dark: '#dc4256' },
     secondary: { light: '#D9531D', dark: '#FF6B35' },
   },
 ];
 
-export const DEFAULT_ACCENT_ID: AccentId = 'ember';
+export const DEFAULT_ACCENT_ID: AccentId = 'crimson';
 export const DEFAULT_ACCENT_COLOR =
   ACCENT_PRESETS.find((preset) => preset.id === DEFAULT_ACCENT_ID)?.color ?? '#FF6B35';
 
@@ -58,6 +69,14 @@ export function isAccent(value: string | null): value is AccentId {
 
 export function isMotion(value: string | null): value is MotionPreference {
   return value === 'system' || value === 'playful' || value === 'reduced';
+}
+
+export function isBackgroundMode(value: string | null): value is BackgroundMode {
+  return value === 'particles' || value === 'grid' || value === 'camera';
+}
+
+export function resolveBackgroundMode(value: string | null): BackgroundMode {
+  return isBackgroundMode(value) ? value : DEFAULT_BACKGROUND_MODE;
 }
 
 /**
@@ -86,16 +105,20 @@ export function resolveAccentId(value: string | null): AccentId {
 export function loadPersonalization(storage: Pick<Storage, 'getItem'>): {
   accent: AccentId;
   motion: MotionPreference;
+  background: BackgroundMode;
 } {
   const accent = storage.getItem(ACCENT_KEY);
   const motion = storage.getItem(MOTION_KEY);
+  const background = storage.getItem(BACKGROUND_KEY);
   return {
     accent: resolveAccentId(accent),
     motion: isMotion(motion) ? motion : 'system',
+    background: resolveBackgroundMode(background),
   };
 }
 
 export function resetPersonalization(storage: Pick<Storage, 'removeItem'>): void {
   storage.removeItem(ACCENT_KEY);
   storage.removeItem(MOTION_KEY);
+  storage.removeItem(BACKGROUND_KEY);
 }

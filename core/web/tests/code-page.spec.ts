@@ -7,7 +7,7 @@ import { codeLanguageLabel, joinCodeSampleSource, type CodeContent } from '../sh
 
 const codePagePath = join(import.meta.dirname, '../app/pages/code/index.vue');
 const codeContentPath = join(import.meta.dirname, '../content/code.json');
-const navPath = join(import.meta.dirname, '../app/components/AppPrimaryNav.vue');
+const navPath = join(import.meta.dirname, '../app/components/AppPrimaryNav/index.vue');
 const contentConfigPath = join(import.meta.dirname, '../content.config.ts');
 
 function loadCodeContent(): CodeContent {

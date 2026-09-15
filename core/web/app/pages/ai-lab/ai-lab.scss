@@ -1,0 +1,100 @@
+@use 'theme/scss/tokens' as *;
+
+.ai-lab {
+  &__workspace {
+    display: grid;
+    gap: 1.5rem;
+    max-width: 62rem;
+    padding-block: var(--portfolio-space);
+
+    form {
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    textarea {
+      width: 100%;
+      border: 1px solid var(--portfolio-rule);
+      border-radius: 0.75rem;
+      background: var(--surface-color);
+      color: var(--text-color);
+      padding: 1rem;
+      font: inherit;
+      font-size: 1.1rem;
+    }
+  }
+
+  &__form-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  &__plan,
+  &__result,
+  &__rejected {
+    display: grid;
+    gap: 1rem;
+    border: 1px solid var(--portfolio-rule);
+    border-top: 0.65rem solid var(--primary-color);
+    background: var(--surface-color);
+    padding: clamp(1.25rem, 4vw, 3rem);
+
+    h2 {
+      margin-block: 0;
+    }
+  }
+
+  &__plan {
+    ol {
+      display: grid;
+      gap: 0.75rem;
+    }
+  }
+
+  &__result {
+    ul {
+      display: grid;
+      gap: 0.75rem;
+    }
+  }
+
+  &__pending {
+    border-left: 0.35rem solid var(--primary-color);
+    padding-left: 1rem;
+  }
+
+  &__result-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem;
+  }
+
+  &__fallback,
+  &__mode {
+    color: var(--text-secondary-color);
+  }
+}
+
+@media (max-width: $breakpoint-standard) {
+  .ai-lab__result-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: $breakpoint-mobile) {
+  .ai-lab__form-meta {
+    align-items: stretch;
+    flex-direction: column;
+
+    > span {
+      align-self: flex-end;
+    }
+
+    :where(button, .p-button) {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}

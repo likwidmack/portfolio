@@ -54,13 +54,13 @@
 
     &:hover,
     &:focus-visible {
-      background: color-mix(in srgb, var(--primary-color) 12%, transparent);
+      // background: color-mix(in srgb, var(--primary-color) 12%, transparent);
       outline: none;
     }
 
     &[data-state='active'],
     &.is-active {
-      background: color-mix(in srgb, var(--primary-color) 18%, transparent);
+      // background: color-mix(in srgb, var(--primary-color) 18%, transparent);
       color: var(--primary-color);
       font-weight: 700;
     }

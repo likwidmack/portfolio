@@ -91,6 +91,14 @@ describe('message create rate limit', () => {
 });
 
 describe('messageStoreOptionsFromRuntimeConfig', () => {
+  it('prefers the e2e store environment over the public test identity', () => {
+    vi.stubEnv('E2E_STORE_SYS_ENV', 'local');
+    try {
+      expect(messageStoreOptionsFromRuntimeConfig({ public: { sysEnv: 'test' } }, 'test').sysEnv).toBe('local');
+    } finally {
+      vi.unstubAllEnvs();
+    }
+  });
   it('maps runtime config fields and falls back for sysEnv', () => {
     expect(
       messageStoreOptionsFromRuntimeConfig(

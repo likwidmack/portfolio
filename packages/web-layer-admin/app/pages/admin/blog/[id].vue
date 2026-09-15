@@ -54,6 +54,7 @@
 <script setup lang="ts">
 import { normalizeSlug, type BlogPost, type BlogPostStatus } from '@tgmc/web-layer-admin/shared/blog-types';
 import { useAdminDatabase } from '../../../composables/useAdminDatabase';
+import type { AdminDatabase } from '../../../utils/admin-database';
 import { adminRequestHeaders, fetchErrorMessage, fetchErrorStatus, readAdminToken } from '../../../utils/admin-token';
 
 definePageMeta({
@@ -95,6 +96,11 @@ watch(
   }
 );
 
+// Tracks which backend the post was last fetched for, so the composable's post-mount
+// sessionStorage hydration (which mutates `adminDatabase` once, separately from the initial
+// onMounted load) doesn't trigger a second, redundant fetch for the same database.
+let loadedDatabase: AdminDatabase | null = null;
+
 const loadPost = async () => {
   if (!writesEnabled.value) {
     return;
@@ -109,6 +115,10 @@ const loadPost = async () => {
     return;
   }
 
+  if (loadedDatabase === adminDatabase.value) {
+    return;
+  }
+
   loadError.value = '';
   try {
     const post = await $fetch<BlogPost>(`/api/admin/posts/${idParam.value}`, {
@@ -119,6 +129,9 @@ const loadPost = async () => {
     form.excerpt = post.excerpt;
     form.body = post.body;
     form.status = post.status;
+    // Only mark this backend "loaded" once the fetch actually succeeds, so a failed
+    // request (network error, 404, etc.) doesn't block a later retry for the same database.
+    loadedDatabase = adminDatabase.value;
   } catch (error: unknown) {
     const status = fetchErrorStatus(error);
     if (status === 401) {

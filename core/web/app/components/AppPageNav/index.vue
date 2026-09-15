@@ -1,5 +1,5 @@
 <template lang="pug">
-aside.page-nav(:aria-label="ariaLabel")
+aside.page-nav.layout(data-algo="cluster", :aria-label="ariaLabel")
   p(v-if="label", data-label) {{ label }}
   nav
     a(
@@ -96,3 +96,5 @@ onBeforeUnmount(() => {
   _sectionObserver = null;
 });
 </script>
+
+<style lang="scss" src="./AppPageNav.scss"></style>

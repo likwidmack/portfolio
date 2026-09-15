@@ -10,6 +10,7 @@ import { createError, getQuery, getRouterParam } from 'h3';
 
 const ALLOWED = new Set<keyof Collections>([
   'home',
+  'profile',
   'resume',
   'product',
   'gallery',

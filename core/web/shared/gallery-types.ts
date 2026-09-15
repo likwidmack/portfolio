@@ -94,7 +94,7 @@ export type GalleryContent = {
   cta: {
     heading: string;
     lede: string;
-    primaryHref: string;
+    primaryHref?: string;
     primaryLabel: string;
   };
   hero: {

@@ -6,7 +6,7 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 const root = join(import.meta.dirname, '..');
-const navPath = join(root, 'app/components/AppPrimaryNav.vue');
+const navPath = join(root, 'app/components/AppPrimaryNav/index.vue');
 const subNavPath = join(root, 'app/components/AppWorkSubNav.vue');
 const workIndexPath = join(root, 'app/pages/work/index.vue');
 const workSlugPath = join(root, 'app/pages/work/[slug].vue');
@@ -35,12 +35,16 @@ describe('work hub navigation', () => {
     expect(items).toContain("label: 'Process'");
   });
 
-  it('mounts Work sub-nav on the work index and case study pages', () => {
-    const indexPage = readFileSync(workIndexPath, 'utf8');
+  it('mounts Work sub-nav on the case study pages only', () => {
     const studyPage = readFileSync(workSlugPath, 'utf8');
-    expect(indexPage).toContain('page-with-nav');
-    expect(indexPage).toContain('AppWorkSubNav');
     expect(studyPage).toContain('page-with-nav');
     expect(studyPage).toContain('AppWorkSubNav');
+  });
+
+  it('gives the work index a jump-to bar over the case study grid, matching the design', () => {
+    const indexPage = readFileSync(workIndexPath, 'utf8');
+    expect(indexPage).not.toContain('AppWorkSubNav');
+    expect(indexPage).toContain('jump-bar');
+    expect(indexPage).toContain('jump-link');
   });
 });
