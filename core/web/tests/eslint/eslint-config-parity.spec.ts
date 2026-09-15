@@ -18,35 +18,31 @@ const coreWebRoot = join(dirname(fileURLToPath(import.meta.url)), '../..');
  * does not execute in CI.
  */
 describe('eslint.config.mjs vs legacy .eslintrc intent', () => {
-  it(
-    'exposes Nx, Prettier, and root base rules on a representative TS file',
-    async () => {
-      const eslint = new ESLint({
-        cwd: coreWebRoot,
-        overrideConfigFile: join(coreWebRoot, 'eslint.config.mjs'),
-      });
-      const target = join(coreWebRoot, 'services/storage/storage-queue.ts');
-      const calculated = await eslint.calculateConfigForFile(target);
+  it('exposes Nx, Prettier, and root base rules on a representative TS file', async () => {
+    const eslint = new ESLint({
+      cwd: coreWebRoot,
+      overrideConfigFile: join(coreWebRoot, 'eslint.config.mjs'),
+    });
+    const target = join(coreWebRoot, 'services/storage/storage-queue.ts');
+    const calculated = await eslint.calculateConfigForFile(target);
 
-      expect(calculated.plugins).toHaveProperty('@nx');
-      expect(calculated.plugins).toHaveProperty('prettier');
+    expect(calculated.plugins).toHaveProperty('@nx');
+    expect(calculated.plugins).toHaveProperty('prettier');
 
-      const onGithubActions = process.env.GITHUB_ACTIONS === 'true';
-      expect(calculated.rules?.['prettier/prettier']?.[0]).toBe(onGithubActions ? 0 : 2);
+    const onGithubActions = process.env.GITHUB_ACTIONS === 'true';
+    expect(calculated.rules?.['prettier/prettier']?.[0]).toBe(onGithubActions ? 0 : 2);
 
-      const boundaries = calculated.rules?.['@nx/enforce-module-boundaries'];
-      expect(boundaries?.[0]).toBe(2);
+    const boundaries = calculated.rules?.['@nx/enforce-module-boundaries'];
+    expect(boundaries?.[0]).toBe(2);
 
-      expect(calculated.rules?.['no-prototype-builtins']?.[0]).toBe(0);
-      expect(calculated.rules?.['no-unused-vars']?.[0]).toBe(1);
-      expect(calculated.rules?.['no-unused-expressions']?.[0]).toBe(1);
-      expect(calculated.rules?.['no-unused-labels']?.[0]).toBe(1);
-    },
+    expect(calculated.rules?.['no-prototype-builtins']?.[0]).toBe(0);
+    expect(calculated.rules?.['no-unused-vars']?.[0]).toBe(1);
+    expect(calculated.rules?.['no-unused-expressions']?.[0]).toBe(1);
+    expect(calculated.rules?.['no-unused-labels']?.[0]).toBe(1);
     // ESLint's first calculateConfigForFile() in a process is a cold flat-config +
-    // plugin resolution and can exceed the default 5s timeout, especially under
-    // CI's `nx run-many --parallel=3` CPU contention.
-    20_000
-  );
+    // plugin resolution and can exceed vitest's default 5s timeout, especially
+    // under CI's `nx run-many --parallel=3` CPU contention.
+  }, 20_000);
 
   it('enables vue-pug tokenizer and rules on Vue SFCs', async () => {
     const eslint = new ESLint({
