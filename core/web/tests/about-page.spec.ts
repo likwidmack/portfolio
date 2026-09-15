@@ -30,11 +30,13 @@ describe('about page content', () => {
     expect(resumeData).toContain('Bittrex.com');
   });
 
-  it('links only resume PDFs from the public other data folder', async () => {
+  it('links resume PDFs from the site profile downloads map', async () => {
     const aboutPage = await readFile(aboutPagePath, 'utf8');
     const resumeData = await readFile(resumeDataPath, 'utf8');
 
-    expect(aboutPage).toContain('/d/Resume2026.pdf');
+    expect(aboutPage).toContain('downloads.generalResume');
+    expect(aboutPage).toContain('profile.downloads.portfolioDeck');
+    expect(aboutPage).toContain('useSiteProfile');
     expect(aboutPage).not.toContain('/d/assets/');
     expect(aboutPage).not.toContain('/d/Tamara G Mack_Frontend Developer_Remote_20260226.pdf');
     expect(resumeData).toContain('"key": "general"');

@@ -15,26 +15,24 @@ describe('home page content', () => {
 
     expect(homePage).toContain("fetchContentCollection<HomeContent>('home'");
     expect(contentConfig).toContain("source: 'home.json'");
-    expect(homeData).toContain('Tamara Mack');
+    expect(homeData).toContain('Tamara Gisele Mack');
+    expect(homeData).toContain('"brand": "Tamara"');
     expect(homeData).toContain('Founder of HyperActivity');
     expect(homeData).toContain('get shipped.');
     expect(homeData).toContain('Interfaces built the way they');
-    // Spatial redesign (Claude Design handoff, docs/packages/Portfolio design review):
-    // the hero visual is the drag-to-orbit case-study ring, not the old tesseract
-    // image + ambient-video figure, so those hooks no longer apply here.
-    expect(homePage).toContain('title-accent');
+    expect(homePage).toContain('home-hero__title-accent');
     expect(homeData).toContain('human-controlled-ai-lab');
     expect(homeData).toContain('spatial-experiences');
     expect(homeData).toContain('data-visualization');
     expect(homeData).toContain('experience-systems');
     expect(homeData).toContain('Design systems');
-    expect(homePage).toContain('view-all-link');
+    expect(homePage).toContain('home-hero__tags');
+    expect(homePage).toContain('section-intro__view-all');
     expect(homePage).toContain("fetchContentCollection<CaseStudy[]>('caseStudies'");
-    // The orbit ring and Selected Proof grid replace AppWorkCard on Home, but both
-    // still resolve real case-study media through the shared helper.
-    expect(homePage).toContain('getCaseStudyCardMedia');
-    expect(homePage).toContain('orbit-card');
-    expect(homePage).toContain('proof-card');
+    expect(homePage).toContain('AppWorkCard');
+    expect(await readFile(join(import.meta.dirname, '../app/components/AppWorkCard/index.vue'), 'utf8')).toContain(
+      'work-card__media'
+    );
     expect(homePage).not.toContain('Stand-in');
     expect(homePage).not.toContain('queryCollection(');
   });

@@ -1,0 +1,43 @@
+@use 'theme/scss/tokens' as *;
+
+.personalize {
+  display: grid;
+  gap: 1.25rem;
+
+  fieldset {
+    border: 0;
+    padding: 0;
+  }
+
+  legend {
+    grid-column: 1 / -1;
+    margin-bottom: 0.5rem;
+    font-weight: 800;
+  }
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  &__accent {
+    span::before {
+      display: inline-block;
+      width: 0.8rem;
+      height: 0.8rem;
+      margin-right: 0.35rem;
+      border-radius: 50%;
+      background: var(--swatch);
+      content: '';
+    }
+  }
+}
+
+@media (max-width: $breakpoint-mobile) {
+  .personalize {
+    label {
+      min-height: 2.75rem;
+    }
+  }
+}

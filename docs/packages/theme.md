@@ -10,12 +10,12 @@ In-app `/docs` reads this file from the repo `docs/` tree (no copy into `core/we
 | ------------------------------- | --------------------------------------------------------------------------------------- |
 | `tokens/_variables.scss`        | Sass SoT for space, radius, blur, transition, shadow, card mins, breakpoints            |
 | `globals/_root.scss`            | CSS custom properties only (colors + bridges from Sass tokens, page-fit + ratio tokens) |
-| `globals/_layout.scss`          | Document shell structure (`html`/`body`/`#site_page`)                                   |
 | `globals/_layouts.scss`         | CUBE composition algorithms (rail / split / auto / stack / cluster) + `data-fit`        |
 | `globals/_container.scss`       | Section/article/panel surfaces; media frames (`--media-ratio`); grid track containment  |
 | `globals/_class-selectors.scss` | Stylized formats + utilities (wallpaper, chrome, rules, nav pills)                      |
 | `globals/_mixins.scss`          | Shared recipes (`theme-wallpaper`, `site-chrome`, `backdrop-blur`, `sr-only`)           |
 
+The web app now owns document shell structure (`html`/`body`/`#site_page`) in `core/web/assets/css/_layout.scss`.
 App-specific portfolio chrome (work cards, case studies, gallery) lives in `core/web/assets/css/portfolio-launch.scss` and consumes the theme tokens above.
 
 ## `:root` hygiene
@@ -99,11 +99,4 @@ Portfolio signal teal is `--portfolio-teal` (and `--success`); do not overwrite 
 
 Personalization accents (`ember` / `crimson`) live in `core/web/shared/personalization.ts` and rebind brand CSS vars per resolved light/dark mode.
 
-Home / nav chrome breakpoints in `portfolio-launch.scss` use Sass `$breakpoint-*` (stack Home hero and wrap the five-link primary nav below `$breakpoint-standard` = 1080px). Work Related links reuse `.page-nav` via `AppWorkSubNav`: a sticky aside from tablet up on `/work/:slug` (still `.page-with-nav` two-column split), and a single-column dark panel below the case-study list on the spatial `/work` index (see `docs/web/reference/site-wireframes.md`).
-
-Home, Work index, and Gallery ship the "spatial" redesign (dark depth-field
-background, IBM Plex Mono, orbit hero on Home) documented in
-`docs/web/reference/site-wireframes.md` — its tokens/mixins live in
-`core/web/assets/css/_spatial-tokens.scss` / `_spatial-shared.scss`
-(page-local `@use`, not part of the `@tgmc/theme` package above), and the
-shared nav/footer blend via `core/web/assets/css/portfolio-spatial-chrome.scss`.
+Home / nav chrome breakpoints in `portfolio-launch.scss` use Sass `$breakpoint-*` (stack Home hero and wrap the five-link primary nav below `$breakpoint-standard` = 1080px). Work Related links reuse `.page-nav` (sticky aside from tablet up; compact horizontal rail on small viewports) via `AppWorkSubNav`.

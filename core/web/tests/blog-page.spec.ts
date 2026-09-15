@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 
 const blogIndexPath = join(import.meta.dirname, '../app/pages/blog/index.vue');
 const blogSlugPath = join(import.meta.dirname, '../app/pages/blog/[slug].vue');
-const navPath = join(import.meta.dirname, '../app/components/AppPrimaryNav.vue');
+const navPath = join(import.meta.dirname, '../app/components/AppPrimaryNav/index.vue');
 const writingContentPath = join(import.meta.dirname, '../content/writing.json');
 
 describe('blog pages', () => {

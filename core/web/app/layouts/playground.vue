@@ -7,9 +7,4 @@ NuxtLayout(name="site", layout-class="layout-playground", layout-key="site")
     slot(name="footer")
 </template>
 
-<style lang="scss">
-:root {
-  --main-top-padding: 5rem;
-  --main-bottom-padding: 5rem;
-}
-</style>
+<style lang="scss" src="./playground.scss"></style>

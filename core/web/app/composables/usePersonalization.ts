@@ -1,12 +1,16 @@
 import {
   ACCENT_KEY,
   ACCENT_PRESETS,
+  BACKGROUND_KEY,
+  BACKGROUND_MODES,
   buildAccentTokens,
   DEFAULT_ACCENT_ID,
+  DEFAULT_BACKGROUND_MODE,
   loadPersonalization,
   MOTION_KEY,
   resetPersonalization,
   type AccentId,
+  type BackgroundMode,
   type MotionPreference,
 } from '#shared/personalization';
 import type { ThemeModePreference } from '@tgmc/theme/tokens';
@@ -19,6 +23,7 @@ export function usePersonalization() {
   const mode = useState<ThemeModePreference>('portfolio-theme-mode', () => 'system');
   const accent = useState<AccentId>('portfolio-accent', () => DEFAULT_ACCENT_ID);
   const motion = useState<MotionPreference>('portfolio-motion', () => 'system');
+  const background = useState<BackgroundMode>('portfolio-background', () => DEFAULT_BACKGROUND_MODE);
   const initialized = useState<boolean>('portfolio-personalization-ready', () => false);
   const { track } = usePortfolioAnalytics();
 
@@ -59,6 +64,16 @@ export function usePersonalization() {
     track('theme_changed', { mode: mode.value, accent: accent.value, motion: next });
   };
 
+  const applyBackground = (next: BackgroundMode, persist = true) => {
+    background.value = next;
+    if (import.meta.client && persist) localStorage.setItem(BACKGROUND_KEY, next);
+  };
+
+  const setBackground = (next: BackgroundMode) => {
+    applyBackground(next);
+    track('theme_changed', { mode: mode.value, accent: accent.value, motion: motion.value, background: next });
+  };
+
   const reset = () => {
     if (import.meta.client) {
       resetPersonalization(localStorage);
@@ -68,6 +83,7 @@ export function usePersonalization() {
     theme.setThemeMode('system');
     applyAccent(DEFAULT_ACCENT_ID, false);
     applyMotion('system', false);
+    applyBackground(DEFAULT_BACKGROUND_MODE, false);
     track('theme_changed', { mode: 'system', accent: DEFAULT_ACCENT_ID, motion: 'system' });
   };
 
@@ -79,8 +95,21 @@ export function usePersonalization() {
     const stored = loadPersonalization(localStorage);
     applyAccent(stored.accent, false);
     applyMotion(stored.motion, false);
+    applyBackground(stored.background, false);
     theme.subscribeThemeMode(() => applyAccent(accent.value, false));
   });
 
-  return { mode, accent, motion, accents: ACCENT_PRESETS, setMode, setAccent, setMotion, reset };
+  return {
+    mode,
+    accent,
+    motion,
+    background,
+    accents: ACCENT_PRESETS,
+    backgrounds: BACKGROUND_MODES,
+    setMode,
+    setAccent,
+    setMotion,
+    setBackground,
+    reset,
+  };
 }

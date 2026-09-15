@@ -9,7 +9,7 @@
       |
       | · no prompt text is sent to analytics
 
-  section.ai-lab__workspace(aria-labelledby="lab-workspace-heading")
+  section.ai-lab__workspace.layout(data-algo="stack", aria-labelledby="lab-workspace-heading")
     h2#lab-workspace-heading Shape a product idea
     form(v-if="state === 'idle'", @submit.prevent="requestPlan")
       label(for="ai-lab-idea") Describe a fuzzy product idea
@@ -20,7 +20,7 @@
         required,
         placeholder="A workspace that helps a creative team turn rough concepts into testable interface directions…"
       )
-      .ai-lab__form-meta
+      .ai-lab__form-meta.layout(data-algo="cluster")
         span {{ idea.length }}/240
         UiButton(type="submit", label="Interpret the idea", :disabled="loading || !idea.trim()")
 
@@ -35,7 +35,7 @@
         p
           strong Pending action
         p {{ plan.pendingAction }}
-      .button-row(aria-label="Approval controls")
+      .button-row.layout(data-algo="cluster", aria-label="Approval controls")
         UiButton(label="Approve action", @click="approve")
         UiButton(label="Reject action", variant="outlined", severity="secondary", @click="reject")
 
@@ -49,7 +49,7 @@
       p.eyebrow-container Prototype brief
       h2#prototype-brief-heading {{ brief.title }}
       p.lead {{ brief.summary }}
-      .ai-lab__result-grid
+      .ai-lab__result-grid.layout(data-algo="auto")
         section
           h3 Interface
           ul
@@ -70,6 +70,7 @@
 <script setup lang="ts">
 import { replayBrief, replayPlan } from '#shared/ai-lab-replay';
 import type { AiLabBrief, AiLabCompleteResponse, AiLabPlan, AiLabPlanResponse } from '#shared/ai-lab-types';
+import { SITE_PERSON } from '#shared/site-person';
 
 definePageMeta({ breadcrumb: 'AI Lab' });
 const config = useRuntimeConfig();
@@ -158,9 +159,11 @@ const restart = () => {
 };
 
 usePortfolioSeo({
-  title: 'Human-Controlled AI Lab — Tamara Mack',
+  title: `Human-Controlled AI Lab — ${SITE_PERSON.formal}`,
   description:
     'An interactive agent workflow demonstrating interpretation, approval, rejection, recovery, and replay fallback.',
   path: '/ai-lab',
 });
 </script>
+
+<style lang="scss" src="./ai-lab.scss"></style>

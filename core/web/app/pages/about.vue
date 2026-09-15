@@ -3,7 +3,13 @@
   .page-with-nav.about-cv__layout
     aside.about-cv__sidebar
       figure.about-cv__portrait
-        img(src="/i/profile_pic_1.jpg", alt="Portrait of Tamara Mack", width="480", height="480", loading="lazy")
+        img(
+          :src="profile.portrait.src",
+          :alt="`Portrait of ${profile.names.formal}`",
+          :width="profile.portrait.width",
+          :height="profile.portrait.height",
+          loading="lazy"
+        )
       p.eyebrow-container {{ aboutContent.hero.eyebrow }}
       p.about-cv__name {{ aboutContent.hero.name }}
       p.about-cv__role {{ aboutContent.hero.role }}
@@ -11,17 +17,17 @@
         div
           dt Mail
           dd
-            a(href="mailto:likwidmack@gmail.com") likwidmack@gmail.com
+            a(:href="contactMailto") {{ profile.contact.email }}
         div
           dt GitHub
           dd
-            a(href="https://github.com/tamaramack", rel="noopener noreferrer", target="_blank") tamaramack
+            a(:href="profile.contact.github.url", rel="noopener noreferrer", target="_blank") {{ profile.contact.github.handle }}
       AppPageNav(:items="_navItems", label="On this page")
       .about-cv__actions(aria-label="Primary actions")
         a.about-cv__resume(:href="primaryResume.href", download, @click="trackResumeDownload(primaryResume.key)")
           span.pi.pi-download(aria-hidden="true")
           span {{ aboutContent.hero.primaryActionLabel }}
-        a.about-cv__contact(:href="aboutContent.hero.secondaryActionHref", @click="trackContact") {{ aboutContent.hero.secondaryActionLabel }}
+        a.about-cv__contact(:href="contactMailto", @click="trackContact") {{ aboutContent.hero.secondaryActionLabel }}
 
     div(data-region="body")
       header#summary.about-cv__intro(aria-labelledby="about-summary-heading")
@@ -101,7 +107,7 @@
         .button-row.about-cv__deck
           UiButton(
             as="a",
-            href="/d/Tamara-Mack-UI-AI-Portfolio-2026.pdf",
+            :href="profile.downloads.portfolioDeck",
             download,
             icon="pi pi-file-pdf",
             variant="outlined",
@@ -112,6 +118,8 @@
 </template>
 
 <script setup lang="ts">
+import { mailtoHref } from '#shared/site-person';
+
 type ResumeKey =
   | 'general'
   | 'seniorFullStack'
@@ -123,10 +131,6 @@ type ResumeKey =
   | 'remoteSoftwareDeveloper'
   | 'associateTechnicalArchitect'
   | 'seniorFullStackContract';
-
-const resumeFiles: Partial<Record<ResumeKey, string>> = {
-  general: '/d/Resume2026.pdf',
-} as const;
 
 type ResumeData = {
   key: ResumeKey;
@@ -165,7 +169,7 @@ type AboutContent = {
     name: string;
     primaryActionLabel: string;
     role: string;
-    secondaryActionHref: string;
+    secondaryActionHref?: string;
     secondaryActionLabel: string;
     title: string;
   };
@@ -198,9 +202,11 @@ definePageMeta({
   breadcrumb: 'About',
 });
 
-const pageTitle = 'About Tamara Mack — Creative Technologist';
-const pageDescription =
-  'About Tamara Mack, a creative technologist and principal / distinguished software engineer and software architect building human-centered interfaces, systems, and creative technology.';
+const { profile } = useSiteProfile();
+const contactMailto = computed(() => mailtoHref(profile.value.contact.email));
+
+const pageTitle = `About ${profile.value.names.casual} — ${profile.value.role.creativeTechnologist}`;
+const pageDescription = `About ${profile.value.names.casual}, a creative technologist and principal / distinguished software engineer and software architect building human-centered interfaces, systems, and creative technology.`;
 const { track } = usePortfolioAnalytics();
 const trackDeckDownload = () => track('deck_download', { placement: 'about' });
 const trackResumeDownload = (resumeKey: ResumeKey) => track('resume_download', { resume: resumeKey });
@@ -219,25 +225,29 @@ if (!resumeContent.value) {
 
 const aboutContent = computed(() => resumeContent.value as AboutContent);
 
+const resumeFiles = computed<Partial<Record<ResumeKey, string>>>(() => ({
+  general: profile.value.downloads.generalResume,
+}));
+
 const resumes = computed<ResumeLink[]>(() =>
   aboutContent.value.resumes.flatMap((resume) => {
-    const href = resumeFiles[resume.key];
+    const href = resumeFiles.value[resume.key];
     return href ? [{ ...resume, href }] : [];
   })
 );
 
-const fallbackResume: ResumeLink = {
+const fallbackResume = computed<ResumeLink>(() => ({
   key: 'general',
   title: 'General Resume',
   meta: '2026 PDF',
-  href: resumeFiles.general ?? '/d/Resume2026.pdf',
-};
+  href: resumeFiles.value.general ?? profile.value.downloads.generalResume,
+}));
 
 const primaryResume = computed(
   () =>
     resumes.value.find((resume) => resume.key === aboutContent.value.primaryResumeKey) ??
     resumes.value[0] ??
-    fallbackResume
+    fallbackResume.value
 );
 
 const _navItems = computed(() => [
@@ -300,7 +310,7 @@ usePortfolioSeo({ title: pageTitle, description: pageDescription, path: '/about'
     border-radius: var(--border-radius-md);
     background: var(--surface-color);
 
-    img {
+    :deep(img) {
       display: block;
       width: 100%;
       height: 100%;
@@ -359,18 +369,21 @@ usePortfolioSeo({ title: pageTitle, description: pageDescription, path: '/about'
     margin-top: 0.35rem;
   }
 
+  // `min-height`/`font-size` use `max()` floors, not just rem/clamp: the theme halves
+  // --font-size-default at tablet/mobile widths (site-wide fluid type), which otherwise
+  // shrinks these down to an ~8.5px / ~27px-tall link — the same issue fixed in UiButton.
   &__resume {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.45rem;
-    min-height: 2.75rem;
+    min-height: max(2.75rem, 44px);
     padding: 0.55rem 0.9rem;
     border: 1px solid var(--portfolio-teal);
     border-radius: var(--border-radius-md, 0.5rem);
     background: var(--portfolio-teal);
     color: var(--button-fg, #f2ece8);
-    font-size: var(--font-size-sm);
+    font-size: max(var(--font-size-sm), 12px);
     font-weight: 700;
     letter-spacing: 0.08em;
     text-decoration: none;
@@ -389,9 +402,9 @@ usePortfolioSeo({ title: pageTitle, description: pageDescription, path: '/about'
 
     &--inline {
       justify-self: start;
-      min-height: 2.25rem;
+      min-height: max(2.25rem, 36px);
       padding-block: 0.4rem;
-      font-size: var(--font-size-xs);
+      font-size: max(var(--font-size-xs), 11px);
     }
   }
 

@@ -15,7 +15,7 @@
         AppCaseStudyMedia(:item="study.media[0]", width="1440", height="810", eager)
         figcaption(v-if="study.media[0].caption") {{ study.media[0].caption }}
 
-      .case-study__body
+      .case-study__body.layout(data-algo="stack")
         section(aria-labelledby="problem-heading")
           p.eyebrow-container Context
           h2#problem-heading The problem
@@ -33,7 +33,7 @@
 
         section(aria-labelledby="evidence-heading")
           h2#evidence-heading Evidence
-          dl.evidence-grid
+          dl.evidence-grid.layout(data-algo="auto")
             div(v-for="item in study.evidence", :key="item.label")
               dt {{ item.label }}
               dd {{ item.value }}
@@ -49,17 +49,17 @@
 
         section(v-if="study.media.length > 1", aria-labelledby="artifacts-heading")
           h2#artifacts-heading Artifacts
-          .artifact-grid
+          .artifact-grid.layout(data-algo="auto")
             figure(v-for="item in study.media.slice(1)", :key="item.src")
               AppCaseStudyMedia(:item="item")
               figcaption(v-if="item.caption") {{ item.caption }}
 
         section(aria-labelledby="technology-heading")
           h2#technology-heading Technology
-          ul.tag-list
+          ul.tag-list.layout(data-algo="cluster")
             li(v-for="technology in study.technologies", :key="technology") {{ technology }}
 
-        nav.case-study__links(aria-label="Case study links")
+        nav.case-study__links.layout(data-algo="cluster", aria-label="Case study links")
           template(v-for="link in study.links", :key="link.href")
             a(v-if="isStaticOrExternalHref(link.href)", :href="link.href") {{ link.label }} →
             NuxtLink(v-else, :to="link.href") {{ link.label }} →
@@ -69,6 +69,7 @@
 
 <script setup lang="ts">
 import type { CaseStudy } from '#shared/portfolio-types';
+import { SITE_PERSON } from '#shared/site-person';
 
 /** Public static assets and absolute URLs must use `<a>`, not client-routed NuxtLink. */
 function isStaticOrExternalHref(href: string): boolean {
@@ -99,9 +100,11 @@ onMounted(() => {
 });
 
 usePortfolioSeo({
-  title: `${study.value.title} — Tamara Mack`,
+  title: `${study.value.title} — ${SITE_PERSON.formal}`,
   description: study.value.summary,
   path: `/work/${study.value.slug}`,
   image: study.value.media[0]?.src,
 });
 </script>
+
+<style lang="scss" src="./styles/case-study.scss"></style>

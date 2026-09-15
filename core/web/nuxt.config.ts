@@ -12,9 +12,10 @@ import { isAbsolute, join } from 'path';
 import * as configProps from './config-properties';
 import { firstNonEmptyEnv } from './resolve-process-env';
 import { normalizeSysEnv, type SysEnv } from './server/db/sys-env';
+import { DEFAULT_APP_TITLE, SITE_PERSON, SITE_PROFILE } from './shared/site-profile';
 
 const {
-  APP_TITLE: siteTitle = 'TMack Portfolio App',
+  APP_TITLE: siteTitle = DEFAULT_APP_TITLE,
   DEPLOYMENT: deploy = 'client',
   SYS_ENV: rawSysEnv = 'local',
   NODE_ENV: node = 'development',
@@ -125,7 +126,7 @@ const resolveCertPath = (strUrl: string) => (isAbsolute(strUrl) ? strUrl : resol
 
 const workspaceDir = resolvePath('../../');
 
-const siteDescription = 'Tamara Mack [LikwidMack] web portfolio application';
+const siteDescription = `${SITE_PERSON.formal} [${SITE_PERSON.signature}] ${SITE_PROFILE.app.siteDescription}`;
 
 const modules: any[] = [
   '@nuxt/a11y',
@@ -205,7 +206,6 @@ export default defineNuxtConfig({
   css: [
     resolvePath('./assets/css/styles.scss'),
     resolvePath('./assets/css/portfolio-launch.scss'),
-    resolvePath('./assets/css/portfolio-spatial-chrome.scss'),
     'primeicons/primeicons.css',
   ],
   vue: {

@@ -1,0 +1,23 @@
+@use 'theme/scss/tokens' as *;
+
+@media (max-width: $breakpoint-tablet) {
+  .page-nav {
+    position: static;
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+
+    nav {
+      display: flex;
+      width: max-content;
+      min-width: 100%;
+      gap: 0.25rem;
+    }
+
+    a {
+      min-height: 2.75rem;
+      align-content: center;
+      white-space: nowrap;
+    }
+  }
+}

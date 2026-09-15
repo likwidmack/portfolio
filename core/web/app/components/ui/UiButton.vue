@@ -70,7 +70,17 @@ const _nativeClass = computed(() => {
 <style lang="scss" scoped>
 // Thin polish only — fill/severity colors come from Nora preset + `_primevue-union`.
 .p-button {
-  border-radius: var(--button-radius, var(--border-radius-md, 0.5rem));
+  border-radius: var(--button-radius, 2px);
+  font-family: var(--font-family-mono);
+  // `max()` floors, not just rem: the theme halves --font-size-default at tablet/mobile
+  // widths (site-wide fluid type), which otherwise shrinks this rem-based label and
+  // padding down to an ~8.6px / ~24px-tall button — readable on desktop, illegible
+  // and barely tappable everywhere else.
+  font-size: max(0.72rem, 11px);
+  min-height: 40px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
   box-shadow: var(--button-shadow);
   transition:
     transform 180ms ease,
@@ -104,6 +114,12 @@ const _nativeClass = computed(() => {
 
   &.p-button-outlined {
     text-shadow: 1px -1px 1px color-mix(in srgb, var(--text-color) 76%, transparent);
+
+    &:hover,
+    &:focus-visible {
+      border-color: var(--portfolio-rose, var(--primary-color));
+      color: var(--portfolio-rose, var(--primary-color));
+    }
   }
 
   &.p-button-text {

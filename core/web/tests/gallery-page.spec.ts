@@ -3,8 +3,9 @@ import { join } from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
-const navPath = join(import.meta.dirname, '../app/components/AppPrimaryNav.vue');
+const navPath = join(import.meta.dirname, '../app/components/AppPrimaryNav/index.vue');
 const galleryPagePath = join(import.meta.dirname, '../app/pages/gallery/index.vue');
+const galleryStylePath = join(import.meta.dirname, '../app/pages/gallery/index.scss');
 const galleryDataPath = join(import.meta.dirname, '../content/gallery.json');
 
 describe('gallery hub', () => {
@@ -20,12 +21,13 @@ describe('gallery hub', () => {
 
   it('loads a filterable feed from the gallery collection', async () => {
     const page = await readFile(galleryPagePath, 'utf8');
+    const style = await readFile(galleryStylePath, 'utf8');
     const data = await readFile(galleryDataPath, 'utf8');
     expect(page).toContain("fetchContentCollection<GalleryContent>('gallery'");
     expect(page).toContain('AppBrowseToolbar');
     expect(page).toContain('GalleryFeedCard');
-    expect(page).toContain('tile-meta--stat');
-    expect(page).toContain('--portfolio-teal');
+    expect(page).toContain('gallery-grid__stats');
+    expect(style).toContain('--portfolio-teal');
     expect(page).toContain("ref<GalleryViewMode>('grid')");
     expect(page).not.toContain('queryCollection(');
     expect(data).toContain('"id": "reels"');

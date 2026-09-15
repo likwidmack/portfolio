@@ -148,7 +148,7 @@ The portfolio already has a stub `@tgmc/media-player` package and a historical N
 - **KTD5. Live HLS v1 limits.** Sliding live edge: refresh media playlist on `EXT-X-MEDIA-SEQUENCE` advance; target ~30s buffer; seek clamped to `video.seekable` range; on `#EXT-X-DISCONTINUITY`, flush and re-append from next init segment; document that full DVR and long pause/live-lag recovery are best-effort.
 - **KTD6. ABR v1.** Manual level selection API plus simple throughput-based auto switch on VOD/live (no LL-HLS parts). Default auto. Normative requirement: R13.
 - **KTD7. Events.** Typed `EventTarget` or small emitter mirroring ndp event names (`load`, `play`, `pause`, `timeupdate`, `ended`, `error`, `buffered`, `levelchange`, `adcueenter`, `adcueexit`, `playbackmodechange`, `assetchange`).
-- **KTD8. Demo placement.** Route `core/web/app/pages/media-player.vue`; add optional nav link in `core/web/app/components/AppPrimaryNav.vue`. Add `@tgmc/media-player` to `core/web/package.json` with `tgmc-portfolio` export condition like other workspace packages.
+- **KTD8. Demo placement.** Route `core/web/app/pages/media-player.vue`; add optional nav link in `../../core/web/app/components/AppPrimaryNav/index.vue`. Add `@tgmc/media-player` to `core/web/package.json` with `tgmc-portfolio` export condition like other workspace packages.
 - **KTD9. Testing strategy.** Vitest in `packages/media-player` with mocked `MediaSource`/`SourceBuffer` for engine and loader logic; fixture m3u8/mp4 under `packages/media-player/src/fixtures/`; `environment: 'jsdom'` only where DOM `HTMLMediaElement` stubs are required. Manual Safari verification listed in Definition of Done.
 
 ### High-Level Design
@@ -341,7 +341,7 @@ Before U4 implementation, run a short spike (≤1 day): prove one public fMP4 HL
   - `core/web/package.json` (add `@tgmc/media-player` dependency)
   - `core/web/nuxt.config.ts` (transpile/workspace alias if required)
   - `core/web/app/pages/media-player.vue`
-  - `core/web/app/components/AppPrimaryNav.vue` (nav link)
+  - `../../core/web/app/components/AppPrimaryNav/index.vue` (nav link)
 - **Approach:** Client-only page (`<ClientOnly>` or dynamic import): one `<video playsinline>`, instantiate `TgmcPlayer`, buttons for play/pause, sample progressive + HLS VOD URLs, two-item playlist for continuous play. Surface `playbackmodechange` in UI or console for AE6. No business logic beyond wiring. Ensure `npm run build:libs` runs before dev when consuming workspace source.
 - **Test scenarios:**
   - Manual: Chromium plays progressive + HLS VOD.

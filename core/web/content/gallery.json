@@ -1,7 +1,7 @@
 {
   "seo": {
-    "title": "Gallery — Tamara Mack",
-    "description": "A social-style feed of scripts, reels, spatial studies, and creative technology samples from Tamara Mack."
+    "title": "Gallery — Tamara Gisele Mack",
+    "description": "A social-style feed of scripts, reels, spatial studies, and creative technology samples from Tamara."
   },
   "hero": {
     "eyebrow": "social feed",
@@ -347,7 +347,6 @@
   "cta": {
     "heading": "Want a sample tuned to your problem space?",
     "lede": "I can turn a rough prompt, a strategic hunch, or a half-shaped workflow into something your team can actually try.",
-    "primaryHref": "mailto:likwidmack@gmail.com",
     "primaryLabel": "Ask for a walkthrough"
   }
 }

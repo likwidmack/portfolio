@@ -73,4 +73,4 @@ declare module '#app' {
 
 - **Shared Types**: `shared/theme/theme-tokens-api.d.ts` (utility-level definitions)
 - **Type Alias**: `#types` → `./types` (configured in `nuxt.config.ts`)
-- **Main Guide**: See `../DOCUMENTATION.md` for overview
+- **Main Guide**: See [`docs/web/README.md`](../../../docs/web/README.md) for overview

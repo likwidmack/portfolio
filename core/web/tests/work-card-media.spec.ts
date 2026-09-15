@@ -12,7 +12,7 @@ const contentRoot = join(root, 'content');
 
 describe('work card media rendering contract', () => {
   it('keeps NuxtImg for rasters and UiSvgImg for SVG diagrams', async () => {
-    const card = await readFile(join(root, 'app/components/AppWorkCard.vue'), 'utf8');
+    const card = await readFile(join(root, 'app/components/AppWorkCard/index.vue'), 'utf8');
     expect(card).toContain('NuxtImg(');
     expect(card).toContain('UiSvgImg(');
     expect(card).toContain('v-if="isDiagramThumb"');
@@ -63,17 +63,22 @@ describe('work card media rendering contract', () => {
   });
 
   it('keeps work-card media filling its cell without clipping copy', async () => {
-    const card = await readFile(join(root, 'app/components/AppWorkCard.vue'), 'utf8');
-    const styles = await readFile(join(root, 'assets/css/portfolio-launch.scss'), 'utf8');
+    const card = await readFile(join(root, 'app/components/AppWorkCard/index.vue'), 'utf8');
+    const componentStyles = await readFile(join(root, 'app/components/AppWorkCard/AppWorkCard.scss'), 'utf8');
+    const workIndexStyles = await readFile(join(root, 'app/pages/work/styles/index.scss'), 'utf8');
 
+    // Card has intrinsic dimensions
     expect(card).toContain('width="640"');
     expect(card).toContain('height="400"');
-    expect(styles).toContain('--work-card-media-ratio: var(--media-ratio');
-    expect(styles).toContain('position: absolute');
-    expect(styles).toContain('inset: 0');
-    expect(styles).toContain('(orientation: landscape)');
-    expect(styles).toContain('grid-template-columns: minmax(12rem, 38%) minmax(0, 1fr)');
-    expect(styles).toContain('aspect-ratio: unset');
+
+    // Component uses aspect-ratio and positioned overlay for media
+    expect(componentStyles).toContain('--work-card-media-ratio: var(--media-ratio');
+    expect(componentStyles).toContain('position: absolute');
+    expect(componentStyles).toContain('inset: 0');
+
+    // Work index layout uses grid with media and body columns
+    expect(workIndexStyles).toContain('grid-template-columns: minmax(12rem, var(--work-card-media-width))');
+    expect(workIndexStyles).toContain('aspect-ratio: unset');
   });
 
   it('resolves an existing public asset for every published story card', async () => {

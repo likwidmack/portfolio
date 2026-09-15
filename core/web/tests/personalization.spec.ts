@@ -3,20 +3,23 @@ import { describe, expect, it } from 'vitest';
 import {
   ACCENT_KEY,
   ACCENT_PRESETS,
+  BACKGROUND_MODES,
   buildAccentTokens,
   buildPersonalizationFoucScript,
   DEFAULT_ACCENT_COLOR,
   DEFAULT_ACCENT_ID,
+  DEFAULT_BACKGROUND_MODE,
   loadPersonalization,
   MOTION_KEY,
   resetPersonalization,
   resolveAccentId,
+  resolveBackgroundMode,
 } from '../shared/personalization';
 
 describe('portfolio personalization', () => {
   it('builds readable accent and focus tokens for ember and crimson in both modes', () => {
     expect(ACCENT_PRESETS).toHaveLength(2);
-    expect(DEFAULT_ACCENT_ID).toBe('ember');
+    expect(DEFAULT_ACCENT_ID).toBe('crimson');
     for (const preset of ACCENT_PRESETS) {
       const dark = buildAccentTokens(preset.id, 'dark');
       const light = buildAccentTokens(preset.id, 'light');
@@ -29,10 +32,16 @@ describe('portfolio personalization', () => {
     }
   });
 
-  it('falls back unknown stored accent ids to ember', () => {
-    expect(resolveAccentId('coral')).toBe('ember');
-    expect(resolveAccentId('violet')).toBe('ember');
-    expect(resolveAccentId(null)).toBe('ember');
+  it('uses the updated vivid-crimson hexes for the crimson preset', () => {
+    const crimson = ACCENT_PRESETS.find((preset) => preset.id === 'crimson');
+    expect(crimson?.primary).toEqual({ light: '#a81b32', dark: '#dc4256' });
+    expect(crimson?.color).toBe('#dc4256');
+  });
+
+  it('falls back unknown stored accent ids to crimson', () => {
+    expect(resolveAccentId('coral')).toBe('crimson');
+    expect(resolveAccentId('violet')).toBe('crimson');
+    expect(resolveAccentId(null)).toBe('crimson');
     expect(resolveAccentId('crimson')).toBe('crimson');
   });
 
@@ -54,15 +63,23 @@ describe('portfolio personalization', () => {
       getItem: (key: string) => values.get(key) ?? null,
       removeItem: (key: string) => values.delete(key),
     };
-    expect(loadPersonalization(storage)).toEqual({ accent: 'crimson', motion: 'reduced' });
+    expect(loadPersonalization(storage)).toEqual({ accent: 'crimson', motion: 'reduced', background: 'particles' });
     resetPersonalization(storage);
     expect(values.size).toBe(0);
   });
 
-  it('falls back legacy coral storage to ember on load', () => {
+  it('falls back legacy coral storage to crimson on load', () => {
     const storage = {
       getItem: (key: string) => (key === ACCENT_KEY ? 'coral' : null),
     };
-    expect(loadPersonalization(storage)).toEqual({ accent: 'ember', motion: 'system' });
+    expect(loadPersonalization(storage)).toEqual({ accent: 'crimson', motion: 'system', background: 'particles' });
+  });
+
+  it('exposes Particles, Grid, and Camera background modes with a particles default', () => {
+    expect(BACKGROUND_MODES.map((option) => option.value)).toEqual(['particles', 'grid', 'camera']);
+    expect(DEFAULT_BACKGROUND_MODE).toBe('particles');
+    expect(resolveBackgroundMode('grid')).toBe('grid');
+    expect(resolveBackgroundMode('bogus')).toBe('particles');
+    expect(resolveBackgroundMode(null)).toBe('particles');
   });
 });

@@ -1,0 +1,191 @@
+@use 'theme/scss/tokens' as *;
+
+.primary-nav {
+  position: relative;
+  width: min(100%, var(--page-shell-max, 90rem));
+  min-width: 0;
+  min-height: 4.5rem;
+  margin-inline: auto;
+  padding: 0.75rem var(--page-pad, 1rem);
+  border-bottom: 1px solid var(--portfolio-rule);
+  background: color-mix(in srgb, var(--surface-color) 55%, transparent);
+  backdrop-filter: blur(14px);
+
+  &__brand {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: baseline;
+    gap: 0.55rem;
+    color: var(--text-color);
+    font-family: var(--font-family-mono);
+    text-decoration: none;
+
+    strong {
+      color: var(--primary-color);
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    span {
+      font-size: 0.7rem;
+      letter-spacing: 0.32em;
+      color: var(--text-secondary-color, var(--text-color));
+    }
+  }
+
+  &__actions {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 0.75rem;
+    margin-inline-start: auto;
+  }
+
+  &__menu-trigger {
+    display: inline-flex;
+    min-height: 2.75rem;
+    align-items: center;
+    gap: 0.875rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--portfolio-rule);
+    border-radius: 2px;
+    background: color-mix(in srgb, var(--text-color) 4%, transparent);
+    color: var(--text-color);
+    font: inherit;
+    font-family: var(--font-family-mono);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease;
+
+    &:hover,
+    &:focus-visible,
+    &[aria-expanded='true'] {
+      background: color-mix(in srgb, var(--portfolio-rose) 14%, transparent);
+      border-color: color-mix(in srgb, var(--portfolio-rose) 50%, transparent);
+    }
+  }
+
+  &__menu-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+
+    span {
+      display: block;
+      width: 1.125rem;
+      height: 1px;
+      background: currentColor;
+    }
+  }
+
+  &__panel {
+    position: absolute;
+    top: 100%;
+    right: var(--page-pad, 1rem);
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    min-width: 14rem;
+    margin-top: 0.5rem;
+    padding: 0.75rem;
+    border: 1px solid var(--portfolio-rule);
+    border-radius: 3px;
+    background: color-mix(in srgb, var(--surface-color) 88%, transparent);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 26px 60px -30px rgba(0, 0, 0, 0.5);
+  }
+
+  &__panel-links {
+    display: flex;
+    flex-direction: column;
+
+    a {
+      padding: 0.6rem 0.5rem;
+      border-radius: 2px;
+      color: var(--text-color);
+      font-family: var(--font-family-mono);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-decoration: none;
+      text-transform: uppercase;
+
+      &:hover,
+      &:focus-visible {
+        background: color-mix(in srgb, var(--portfolio-rose) 12%, transparent);
+        color: var(--portfolio-rose, var(--primary-color));
+      }
+
+      &.router-link-active {
+        text-decoration: underline;
+        text-decoration-color: var(--primary-color);
+        text-decoration-thickness: 0.15rem;
+        text-underline-offset: 0.3rem;
+      }
+    }
+  }
+
+  // Anchored to the bottom of the dropdown, set off from the page links above it.
+  &__panel-personalize {
+    margin-top: 0.5rem;
+    padding: 0.6rem 0.5rem 0;
+    border: 0;
+    border-top: 1px solid var(--portfolio-rule);
+    border-radius: 0;
+    background: transparent;
+    color: var(--text-secondary-color, var(--text-color));
+    font: inherit;
+    font-family: var(--font-family-mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-align: left;
+    text-transform: uppercase;
+    cursor: pointer;
+
+    &:hover,
+    &:focus-visible {
+      color: var(--portfolio-rose, var(--primary-color));
+    }
+  }
+}
+
+.primary-nav-panel-enter-active,
+.primary-nav-panel-leave-active {
+  transition:
+    opacity 0.16s ease,
+    transform 0.16s ease;
+}
+
+.primary-nav-panel-enter-from,
+.primary-nav-panel-leave-to {
+  opacity: 0;
+  transform: translateY(-0.35rem);
+}
+
+@media (max-width: $breakpoint-mobile) {
+  .primary-nav {
+    padding: 0.5rem 0.75rem;
+
+    &__brand span {
+      display: none;
+    }
+
+    &__menu-trigger {
+      padding: 0.5rem 0.75rem;
+      letter-spacing: 0.16em;
+    }
+
+    &__panel {
+      right: 0.75rem;
+      left: 0.75rem;
+      min-width: 0;
+    }
+  }
+}

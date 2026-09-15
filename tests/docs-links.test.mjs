@@ -50,7 +50,7 @@ test("first-party docs relative markdown links resolve", () => {
 
 test("app docs hub matches primary navigation", () => {
   const hub = fs.readFileSync(path.join(root, "docs/web/README.md"), "utf8");
-  const nav = fs.readFileSync(path.join(root, "core/web/app/components/AppPrimaryNav.vue"), "utf8");
+  const nav = fs.readFileSync(path.join(root, "core/web/app/components/AppPrimaryNav/index.vue"), "utf8");
   const catalog = fs.readFileSync(path.join(root, "docs/README.md"), "utf8");
   assert.match(nav, /to="\/work"/);
   assert.match(nav, /to="\/about"/);

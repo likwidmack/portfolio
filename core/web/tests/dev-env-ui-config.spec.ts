@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 const nuxtConfigPath = join(import.meta.dirname, '../nuxt.config.ts');
-const navPath = join(import.meta.dirname, '../app/components/AppPrimaryNav.vue');
+const navPath = join(import.meta.dirname, '../app/components/AppPrimaryNav/index.vue');
 const envDocsPath = join(import.meta.dirname, '../../../docs/web/setup/environment.md');
 
 describe('dev env UI Nuxt config contract', () => {

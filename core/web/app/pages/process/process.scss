@@ -1,0 +1,62 @@
+@use 'theme/scss/tokens' as *;
+
+.process-principles,
+.decision-list {
+  display: grid;
+  gap: 1rem;
+  padding-block: var(--portfolio-space);
+}
+
+.decision-card {
+  display: grid;
+  grid-template-columns: minmax(14rem, 0.75fr) minmax(0, 1.75fr);
+  gap: 2rem;
+  padding-block: 2rem;
+  border-top: 1px solid var(--portfolio-rule);
+
+  header {
+    p {
+      display: flex;
+      justify-content: space-between;
+      color: var(--primary-color);
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+  }
+
+  dl {
+    display: grid;
+    gap: 1rem;
+    margin: 0;
+  }
+
+  dt {
+    color: var(--primary-color);
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  dd {
+    margin: 0;
+  }
+}
+
+@media (max-width: $breakpoint-standard) {
+  .decision-card {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: $breakpoint-tablet) {
+  .decision-card {
+    header {
+      p {
+        flex-wrap: wrap;
+        gap: 0.5rem 1rem;
+      }
+    }
+  }
+}

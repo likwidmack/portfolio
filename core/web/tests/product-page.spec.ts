@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 const productPagePath = join(import.meta.dirname, '../app/pages/product/index.vue');
 const productDataPath = join(import.meta.dirname, '../content/product.json');
 const contentConfigPath = join(import.meta.dirname, '../content.config.ts');
-const navPath = join(import.meta.dirname, '../app/components/AppPrimaryNav.vue');
+const navPath = join(import.meta.dirname, '../app/components/AppPrimaryNav/index.vue');
 
 describe('product presentation page', () => {
   it('loads Nuxt Content and exposes codebase, diagram, and description views', async () => {

@@ -1,5 +1,5 @@
 <template lang="pug">
-article.work-card
+article.work-card.layout(data-algo="split")
   NuxtLink.work-card__media(
     v-if="cardMedia",
     :class="{ 'work-card__media--diagram': isDiagramThumb }",
@@ -27,7 +27,9 @@ article.work-card
       sizes="xs:100vw md:360px"
     )
   .work-card__body
-    p.work-card__category {{ study.category }}
+    .work-card__topline
+      p.work-card__category {{ study.category }}
+      span.work-card__index(v-if="index && total") {{ String(index).padStart(2, '0') }} / {{ String(total).padStart(2, '0') }}
     h3
       NuxtLink(:to="`/work/${study.slug}`", @click="trackWorkView") {{ study.title }}
     p {{ study.summary }}
@@ -38,7 +40,7 @@ article.work-card
       div
         dt Evidence
         dd {{ study.evidence[0]?.value }}
-    ul.work-card__tech(aria-label="Technologies")
+    ul.work-card__tech.layout(data-algo="cluster", aria-label="Technologies")
       li(v-for="technology in study.technologies.slice(0, 4)", :key="technology") {{ technology }}
     NuxtLink.work-card__link(:to="`/work/${study.slug}`", @click="trackWorkView")
       | Read the story
@@ -49,7 +51,7 @@ article.work-card
 import { isSvgSrc } from '#shared/is-svg-src';
 import { getCaseStudyCardMedia, type CaseStudy } from '#shared/portfolio-types';
 
-const props = defineProps<{ study: CaseStudy }>();
+const props = defineProps<{ study: CaseStudy; index?: number; total?: number }>();
 const { track } = usePortfolioAnalytics();
 
 const cardMedia = computed(() => getCaseStudyCardMedia(props.study));
@@ -57,3 +59,5 @@ const isDiagramThumb = computed(() => isSvgSrc(cardMedia.value?.src ?? ''));
 
 const trackWorkView = () => track('work_view', { slug: props.study.slug });
 </script>
+
+<style lang="scss" src="./AppWorkCard.scss"></style>

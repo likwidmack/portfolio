@@ -83,9 +83,11 @@ const config = createConfigForNuxt(
       '@nx/enforce-module-boundaries': 'off',
     },
   },
-  // Nuxt route files use single-segment names (`index.vue`, `[id].vue`).
+  // Nuxt route files and co-located component directories use single-segment names
+  // (`index.vue`, `[id].vue`). Components in directories with matching parent names
+  // (e.g., `components/AppFoo/index.vue`) are auto-imported with the directory name.
   {
-    files: ['**/pages/**/*.vue', '**/layouts/**/*.vue'],
+    files: ['**/pages/**/*.vue', '**/layouts/**/*.vue', '**/components/**/index.vue'],
     rules: {
       'vue/multi-word-component-names': 'off',
     },

@@ -12,7 +12,7 @@ const screenPages = [
   'app/pages/work/index.vue',
   'app/pages/gallery/index.vue',
   'app/pages/code/index.vue',
-  'app/pages/ai-lab.vue',
+  'app/pages/ai-lab/index.vue',
   'app/pages/product/index.vue',
   'app/pages/styles/index.vue',
   'app/pages/media-player.vue',
@@ -24,7 +24,7 @@ const prosePages = [
   'app/pages/blog/[slug].vue',
   'app/pages/docs/index.vue',
   'app/pages/docs/[...slug].vue',
-  'app/pages/process.vue',
+  'app/pages/process/index.vue',
   'app/pages/work/[slug].vue',
 ] as const;
 

@@ -19,7 +19,7 @@ UiDialog.evidence-examples-dialog(
 
   UiTabs.evidence-examples-dialog__tabs(v-model:value="activeTab", :tabs="tabs")
     template(#panel-code)
-      .evidence-example-list(aria-label="Code evidence examples")
+      .evidence-example-list.layout(data-algo="stack", aria-label="Code evidence examples")
         article.evidence-example-card(v-for="example in codeExamples", :key="example.id")
           header
             p.eyebrow-container {{ example.sourceLabel }}
@@ -37,7 +37,7 @@ UiDialog.evidence-examples-dialog(
             span(aria-hidden="true") ↗
 
     template(#panel-data)
-      .evidence-example-list(aria-label="Data evidence examples")
+      .evidence-example-list.layout(data-algo="stack", aria-label="Data evidence examples")
         article.evidence-example-card(v-for="example in dataExamples", :key="example.id")
           header
             p.eyebrow-container {{ example.sourceLabel }}
@@ -55,7 +55,7 @@ UiDialog.evidence-examples-dialog(
             span(aria-hidden="true") ↗
 
     template(#panel-styles)
-      .evidence-example-list(aria-label="Styles evidence examples")
+      .evidence-example-list.layout(data-algo="stack", aria-label="Styles evidence examples")
         .evidence-example-card__preview(aria-label="Live style preview")
           .button-row
             UiButton(label="Primary", type="button")
@@ -101,3 +101,5 @@ watch(visible, (open) => {
   }
 });
 </script>
+
+<style lang="scss" src="./AppEvidenceExamplesDialog.scss"></style>

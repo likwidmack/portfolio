@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "description": "Shared TypeScript utilities for TGMC apps (env helpers, events, storage, deep assign/set, logging).",
-  "author": "Tamara G Mack",
+  "author": "Tamara Gisele Mack",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -72,7 +72,12 @@
       "test": {
         "dependsOn": [
           "build"
-        ]
+        ],
+        "options": {
+          "env": {
+            "NODE_OPTIONS": "--no-experimental-webstorage"
+          }
+        }
       }
     }
   },

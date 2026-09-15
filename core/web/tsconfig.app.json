@@ -77,5 +77,16 @@
     "src/**/*.spec.js",
     "src/**/*.test.jsx",
     "src/**/*.spec.jsx"
+  ],
+  "references": [
+    {
+      "path": "../../packages/utilities/tsconfig.lib.json"
+    },
+    {
+      "path": "../../packages/media-player/tsconfig.lib.json"
+    },
+    {
+      "path": "../../theme/core/tsconfig.lib.json"
+    }
   ]
 }

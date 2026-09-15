@@ -68,4 +68,4 @@ NUXT_APP_CDN_URL=https://cdn.example.com npm run dev
 
 ## Further Reading
 
-See `CDN_GUIDE.md` in the root of the app for comprehensive CDN documentation.
+See [`docs/web/features/cdn-guide.md`](../../../docs/web/features/cdn-guide.md) for comprehensive CDN documentation.

@@ -1,7 +1,7 @@
 <template lang="pug">
 UiDialog(v-model:visible="open", header="Personalize", aria-label="Personalize this portfolio")
   .personalize
-    fieldset
+    fieldset.layout(data-algo="cluster")
       legend Color mode
       label(v-for="option in modes", :key="option.value")
         input(
@@ -13,7 +13,7 @@ UiDialog(v-model:visible="open", header="Personalize", aria-label="Personalize t
         )
         span {{ option.label }}
 
-    fieldset
+    fieldset.layout(data-algo="cluster")
       legend Accent
       label.personalize__accent(v-for="option in accents", :key="option.id")
         input(
@@ -25,7 +25,7 @@ UiDialog(v-model:visible="open", header="Personalize", aria-label="Personalize t
         )
         span(:style="{ '--swatch': option.color }") {{ option.label }}
 
-    fieldset
+    fieldset.layout(data-algo="cluster")
       legend Motion
       label(v-for="option in motions", :key="option.value")
         input(
@@ -37,6 +37,18 @@ UiDialog(v-model:visible="open", header="Personalize", aria-label="Personalize t
         )
         span {{ option.label }}
 
+    fieldset.layout(data-algo="cluster")
+      legend Background
+      label(v-for="option in backgrounds", :key="option.value")
+        input(
+          type="radio",
+          name="theme-background",
+          :value="option.value",
+          :checked="background === option.value",
+          @change="setBackground(option.value)"
+        )
+        span {{ option.label }}
+
   template(#footer)
     UiButton(label="Reset preferences", variant="outlined", severity="secondary", @click="reset")
     UiButton(label="Done", @click="open = false")
@@ -44,10 +56,11 @@ UiDialog(v-model:visible="open", header="Personalize", aria-label="Personalize t
 
 <script setup lang="ts">
 import type { MotionPreference } from '#shared/personalization';
-import type { ThemeModePreference } from '@tgmc/theme/tokens';
+import type { ThemeModePreference } from '@tgmc/theme';
 
 const open = defineModel<boolean>('open', { default: false });
-const { mode, accent, motion, accents, setMode, setAccent, setMotion, reset } = usePersonalization();
+const { mode, accent, motion, background, accents, backgrounds, setMode, setAccent, setMotion, setBackground, reset } =
+  usePersonalization();
 const modes: Array<{ label: string; value: ThemeModePreference }> = [
   { label: 'System', value: 'system' },
   { label: 'Light', value: 'light' },
@@ -59,3 +72,5 @@ const motions: Array<{ label: string; value: MotionPreference }> = [
   { label: 'Reduced', value: 'reduced' },
 ];
 </script>
+
+<style lang="scss" src="./AppPersonalize.scss"></style>

@@ -62,6 +62,7 @@ const engagement = computed(() => galleryEngagementLabel(props.post));
   &__role {
     margin: 0;
     color: var(--text-color-secondary, inherit);
+    font-family: var(--font-family-mono);
     font-size: 0.8rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
@@ -81,6 +82,7 @@ const engagement = computed(() => galleryEngagementLabel(props.post));
     border: 1px solid var(--border-color, currentColor);
     border-radius: var(--border-radius-pill, 999px);
     color: var(--text-color);
+    font-family: var(--font-family-mono);
     letter-spacing: 0.08em;
   }
 
@@ -142,7 +144,18 @@ const engagement = computed(() => galleryEngagementLabel(props.post));
 
     .gallery-feed-card__meta {
       grid-area: meta;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
       min-width: 0;
+    }
+
+    // The title's default size comes from the page's generic `h2` rule, a
+    // `vw`-based clamp sized for a full-width heading. In this landscape split the
+    // title only has the ~0.85fr meta column to work with, so that clamp way
+    // overshoots and forces mid-word breaks (e.g. "Tesseract" -> "Tesser"/"act").
+    .gallery-feed-card__title {
+      font-size: clamp(1.15rem, 2.6vw, 1.75rem);
     }
 
     .gallery-feed-card__frame {
