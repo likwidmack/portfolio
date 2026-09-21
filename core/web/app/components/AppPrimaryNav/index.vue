@@ -5,6 +5,7 @@
     span {{ profile.names.signature }}
   .primary-nav__actions
     span.app-env-chip(v-if="envChip.show", :aria-label="envChip.ariaLabel") {{ envChip.label }}
+    NuxtLink.primary-nav__on-view(v-if="showOnView", :to="onViewPath", :aria-label="onViewName") On view
     button.primary-nav__menu-trigger(
       type="button",
       :aria-expanded="menuOpen",
@@ -25,16 +26,19 @@
         NuxtLink(to="/gallery", @click="menuOpen = false") Gallery
         NuxtLink(to="/blog", @click="menuOpen = false") Writing
         NuxtLink(to="/code", @click="menuOpen = false") Code
-        a(:href="contactMailto", @click="onContactClick") Get in touch
+        NuxtLink(v-if="showDoors", :to="splashPath", @click="menuOpen = false") Doors
+        a(v-if="showContact", :href="contactMailto", @click="onContactClick") Get in touch
       button.primary-nav__panel-personalize(type="button", @click="openPersonalize") Personalize
 </template>
 
 <script setup lang="ts">
+import { ON_VIEW_ACCESSIBLE_NAME, ON_VIEW_PATH, SPLASH_PATH, isSplashPath } from '#shared/journey-preference';
 import { mailtoHref } from '#shared/site-person';
 import { resolveEnvIndicator } from '../../utils/env-indicator';
 
 const config = useRuntimeConfig();
 const { profile } = useSiteProfile();
+const { skip } = useJourneyPreference();
 const { track } = usePortfolioAnalytics();
 const trackContact = () => track('contact_click', { placement: 'navigation' });
 const contactMailto = computed(() => mailtoHref(profile.value.contact.email));
@@ -49,6 +53,17 @@ const menuOpen = ref(false);
 const navRoot = ref<HTMLElement | null>(null);
 const personalizeOpen = usePersonalizeDialog();
 const route = useRoute();
+const isSplash = computed(() => isSplashPath(route.path));
+const showDoors = computed(() => skip.value);
+const showOnView = computed(() => skip.value);
+const showContact = computed(() => !isSplash.value);
+const splashPath = SPLASH_PATH;
+const onViewPath = ON_VIEW_PATH;
+const onViewName = ON_VIEW_ACCESSIBLE_NAME;
+
+useHead({
+  titleTemplate: computed(() => (isSplash.value ? '%s' : undefined)),
+});
 
 function onContactClick(): void {
   trackContact();
@@ -88,15 +103,6 @@ watch(
     menuOpen.value = false;
   }
 );
-
-const links = [
-  { label: 'About', to: '/about', cssClass: '' },
-  { label: 'Work', to: '/work', cssClass: '' },
-  { label: 'Gallery', to: '/gallery', cssClass: '' },
-  { label: 'Writing', to: '/blog', cssClass: '' },
-  { label: 'Code', to: '/code', cssClass: '' },
-  { label: 'Contact', to: contactMailto.value, cssClass: 'app-primary-nav__contact-link' },
-];
 </script>
 
 <style lang="scss" src="./AppPrimaryNav.scss"></style>

@@ -66,3 +66,9 @@ export type {
 
 export { darkCssVariables, defaultCssVariables, getCssVariablesForMode, lightCssVariables } from './tokens.js';
 export type { ThemeCssVariableMap } from './tokens.js';
+
+export { Theme } from './theme.js';
+export type { ThemeBreakpoints, ThemeDefinition, ThemeRatios, ThemeTextSettings, ThemeWriteOptions } from './theme.js';
+
+export { Color } from './color.js';
+export type { BaseColorKey, ColorLookup, PaletteName, SemanticColorKey, ThemeModeName, ThemeRoleKey } from './color.js';

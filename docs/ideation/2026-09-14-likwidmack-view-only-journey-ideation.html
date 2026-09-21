@@ -1,0 +1,488 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ideation: LIKWIDMACK view-only journey</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Serif:ital,wght@0,500;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ink: #1c1915;
+        --paper: #f4efe6;
+        --rule: #c9bfb0;
+        --accent: #8c2f1a;
+        --mute: #5c564c;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: 'IBM Plex Sans', 'Segoe UI', sans-serif;
+        font-size: 16px;
+        line-height: 1.5;
+      }
+      main {
+        max-width: 44rem;
+        margin: 0 auto;
+        padding: 2.5rem 1.25rem 4rem;
+      }
+      h1,
+      h2,
+      h3 {
+        font-family: 'IBM Plex Serif', Georgia, serif;
+        font-weight: 500;
+        line-height: 1.25;
+      }
+      h1 {
+        font-size: 1.85rem;
+        margin: 0 0 0.75rem;
+      }
+      h2 {
+        font-size: 1.25rem;
+        margin: 2.5rem 0 0.75rem;
+        padding-top: 0.5rem;
+        border-top: 1px solid var(--rule);
+      }
+      h3 {
+        font-size: 1.1rem;
+        margin: 0 0 0.5rem;
+      }
+      .meta,
+      .mute,
+      footer {
+        color: var(--mute);
+        font-size: 0.9rem;
+      }
+      .meta p {
+        margin: 0.2rem 0;
+      }
+      nav.jump a {
+        color: var(--accent);
+        margin-right: 0.75rem;
+      }
+      article.idea {
+        margin: 1.75rem 0 2.25rem;
+      }
+      dt {
+        font-weight: 600;
+        margin-top: 0.6rem;
+      }
+      dd {
+        margin: 0.2rem 0 0;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.92rem;
+      }
+      th,
+      td {
+        text-align: left;
+        vertical-align: top;
+        padding: 0.45rem 0.4rem;
+        border-bottom: 1px solid var(--rule);
+      }
+      svg.sketch {
+        display: block;
+        width: 100%;
+        max-width: 36rem;
+        margin: 0.75rem 0 1rem;
+        background: #efe8db;
+        border: 1px solid var(--rule);
+      }
+      .figure-caption {
+        font-size: 0.85rem;
+        color: var(--mute);
+        margin: 0 0 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <p class="mute">Ideation · repo-grounded · 2026-09-14</p>
+        <h1>Ideation: LIKWIDMACK view-only journey</h1>
+        <div class="meta">
+          <p><strong>Date:</strong> <time datetime="2026-09-14">2026-09-14</time></p>
+          <p><strong>Topic:</strong> likwidmack-view-only-journey</p>
+          <p>
+            <strong>Focus:</strong> Reposition the public site from website-as-product to a view-only journey. Chosen
+            home spine: a splash with three doors in this order — Discovery, Process, Exhibition. Proof of work is
+            sorted into those doors, not a fourth. Work is named by medium, question, and artifact — not by employment
+            history.
+          </p>
+          <p><strong>Mode:</strong> repo-grounded</p>
+        </div>
+      </header>
+
+      <section id="grounding-context">
+        <h2>Grounding Context</h2>
+        <p>
+          Public copy lives in Nuxt Content JSON. Primary nav is Work, About, Gallery, Writing, Code, plus Get in touch
+          and Personalize. Work sub-nav adds Docs, AI Lab, and Process. Home still leads with availability, Download CV,
+          and Start a conversation. About is a Digital CV. Gallery is implemented as typed exhibits wrapped in
+          social-feed copy (Shorts/Reels, views, likes). Code is framed as “repos not bio.” The document title suffix is
+          still “Portfolio App.”
+        </p>
+        <p>
+          STRATEGY.md is product authority: peers view to discover, learn, and be entertained; there is no exchange
+          other than viewing; gallery is an exhibition; do not lead with the website-as-product; work is identified by
+          craft, with employers only as provenance.
+        </p>
+        <p>
+          Six case studies, an evidence dialog, four sanitized decision cards, and seven code samples already exist as
+          proof. Adjacent prior art: Nicky Case (play/read/watch), Red Blob Games (learn by operating), Lucas Martinic
+          (prototype series), Laurel Schwulst (authored world). Counterexamples: spectacle 3D portfolios and
+          sales-funnel creative sites.
+        </p>
+      </section>
+
+      <section id="topic-axes">
+        <h2>Topic Axes</h2>
+        <ul>
+          <li>Discovery journey</li>
+          <li>Exhibition</li>
+          <li>Proof of work</li>
+          <li>Thought process</li>
+          <li>Site chrome</li>
+        </ul>
+      </section>
+
+      <section id="ranked-ideas">
+        <h2>Ranked Ideas</h2>
+        <nav class="jump" aria-label="Idea jump list">
+          <a href="#idea-1">1. Trailhead home</a>
+          <a href="#idea-2">2. Herbarium hanging</a>
+          <a href="#idea-3">3. Quiet frame</a>
+          <a href="#idea-4">4. Medium continuum</a>
+          <a href="#idea-5">5. Operate the proof</a>
+          <a href="#idea-6">6. Kifu on the work</a>
+          <a href="#idea-7">7. Catalog essay</a>
+        </nav>
+
+        <article class="idea" id="idea-1">
+          <h3>1. Trailhead home</h3>
+          <svg class="sketch" viewBox="0 0 640 160" role="img" aria-labelledby="fig-trailhead">
+            <title id="fig-trailhead">Plaza of credentials versus a trail that reveals the next work</title>
+            <rect x="12" y="24" width="280" height="112" fill="none" stroke="#8c2f1a" stroke-width="2" />
+            <text x="24" y="48" font-size="14">Now: plaza</text>
+            <text x="24" y="72" font-size="13">CV · roles · six cards</text>
+            <text x="24" y="96" font-size="13">Then: pick a destination</text>
+            <line x1="310" y1="80" x2="352" y2="80" stroke="#1c1915" stroke-width="2" />
+            <polygon points="352,74 368,80 352,86" fill="#1c1915" />
+            <rect x="372" y="24" width="256" height="112" fill="none" stroke="#1c1915" stroke-width="2" />
+            <text x="384" y="48" font-size="14">Instead: trailhead</text>
+            <text x="384" y="72" font-size="13">one fragment → a turn</text>
+            <text x="384" y="96" font-size="13">→ the next fragment</text>
+          </svg>
+          <p class="figure-caption">The first screen either inventories you or starts the walk.</p>
+          <dl>
+            <dt>Description</dt>
+            <dd>
+              Rebuild <code>/</code> as a splash with three doors, in order: <strong>Discovery</strong>,
+              <strong>Process</strong>, <strong>Exhibition</strong>. That is the only fork; each door is then a walk,
+              not another sitemap. When a previous interior page exists, the splash also offers to continue from it. The
+              visitor can skip the splash on the next visit; the splash stays reachable as a view.
+            </dd>
+            <dt>Axis</dt>
+            <dd>Discovery journey</dd>
+            <dt>Basis</dt>
+            <dd>
+              direct: STRATEGY.md — “A journey people want to stay on, not a menu of the app.” direct: home.json still
+              leads with availability for principal roles, Download CV, and Start a conversation.
+            </dd>
+            <dt>Rationale</dt>
+            <dd>
+              If home remains a plaza of credentials, every inner page inherits “pick a destination.” Sequence is how
+              peers feel progression of craft without a résumé map.
+            </dd>
+            <dt>Downsides</dt>
+            <dd>
+              Returning visitors lose a sitemap-first habit. The first six beats must be chosen and defended. Some peers
+              will hunt for a CV and not find it on beat one.
+            </dd>
+            <dt>Confidence</dt>
+            <dd>90%</dd>
+            <dt>Complexity</dt>
+            <dd>Medium</dd>
+          </dl>
+        </article>
+
+        <article class="idea" id="idea-2">
+          <h3>2. Herbarium hanging</h3>
+          <svg class="sketch" viewBox="0 0 640 150" role="img" aria-labelledby="fig-hang">
+            <title id="fig-hang">Infinite scored feed versus one mounted specimen with wall text</title>
+            <text x="24" y="36" font-size="14">Feed: likes · views · Reels</text>
+            <rect x="24" y="52" width="90" height="70" fill="none" stroke="#8c2f1a" />
+            <rect x="124" y="52" width="90" height="70" fill="none" stroke="#8c2f1a" />
+            <rect x="224" y="52" width="90" height="70" fill="none" stroke="#8c2f1a" />
+            <text x="360" y="36" font-size="14">Hanging: one sheet</text>
+            <rect x="360" y="52" width="160" height="70" fill="none" stroke="#1c1915" />
+            <text x="372" y="92" font-size="12">medium · series · note</text>
+          </svg>
+          <p class="figure-caption">The typed exhibit already exists; the social costume does not have to.</p>
+          <dl>
+            <dt>Description</dt>
+            <dd>
+              Keep <code>code | media | viz</code> exhibits. Retire Shorts/Reels language, views, likes, and
+              infinite-feed behavior. Mount each piece as a specimen or alcove: medium, series, what it is a sample of,
+              optional provenance footnote. Finite rooms, a closing piece.
+            </dd>
+            <dt>Axis</dt>
+            <dd>Exhibition</dd>
+            <dt>Basis</dt>
+            <dd>
+              direct: STRATEGY.md — “Gallery as an exhibition of work.” direct: gallery.json eyebrow “social feed” and
+              lede “Scan it like Shorts and Reels.”
+            </dd>
+            <dt>Rationale</dt>
+            <dd>
+              Exhibition is a named track with almost no other use of the word in the repo. Until the metaphor dies,
+              Gallery cannot do the job strategy named.
+            </dd>
+            <dt>Downsides</dt>
+            <dd>Feed/grid tests and copy churn. Some playful energy of the current gallery is lost on purpose.</dd>
+            <dt>Confidence</dt>
+            <dd>88%</dd>
+            <dt>Complexity</dt>
+            <dd>Medium</dd>
+          </dl>
+        </article>
+
+        <article class="idea" id="idea-3">
+          <h3>3. Quiet frame</h3>
+          <dl>
+            <dt>Description</dt>
+            <dd>
+              Chrome names the room and the position in the walk — not “TMack Portfolio App.” Remove Get in touch from
+              primary nav, demote Docs / AI Lab / Process as peers of the work, and stop billing Personalize like a SaaS
+              panel. Previous / next / index stay. If mail or a PDF exists, it is back-of-house, not a door handle.
+            </dd>
+            <dt>Axis</dt>
+            <dd>Site chrome</dd>
+            <dt>Basis</dt>
+            <dd>
+              direct: profile.json titleSuffix “Portfolio App” and siteDescription “web portfolio application.” direct:
+              AppPrimaryNav includes Get in touch and Personalize. direct: STRATEGY.md forbids selling, collaboration,
+              and leading with website-as-product.
+            </dd>
+            <dt>Rationale</dt>
+            <dd>
+              The tab title is the first sentence peers read. Calling it an App tells them the subject is the software.
+            </dd>
+            <dt>Downsides</dt>
+            <dd>
+              Analytics currently track contact and résumé events. Quiet chrome makes those metrics rarer by design.
+            </dd>
+            <dt>Confidence</dt>
+            <dd>86%</dd>
+            <dt>Complexity</dt>
+            <dd>Medium</dd>
+          </dl>
+        </article>
+
+        <article class="idea" id="idea-4">
+          <h3>4. Medium continuum</h3>
+          <dl>
+            <dt>Description</dt>
+            <dd>
+              Replace six equally ranked capability plaques with one walk that changes medium as you move — playback,
+              encoding, spatial gates, product grammar, directed generation, human-gated agents. Not an employer
+              timeline. Provenance may appear in wall text.
+            </dd>
+            <dt>Axis</dt>
+            <dd>Proof of work</dd>
+            <dt>Basis</dt>
+            <dd>
+              direct: STRATEGY.md proof-of-work track names media, not companies. direct: Work already has a jump bar of
+              slugs trapped on /work. Ice-core career stratigraphy was considered and rejected: it identifies work by
+              history.
+            </dd>
+            <dt>Rationale</dt>
+            <dd>
+              Parallel stories make range a claim. A continuum makes range a feeling of having moved through it —
+              without turning the site into a CV.
+            </dd>
+            <dt>Downsides</dt>
+            <dd>
+              Editorial order will be argued. Some case-study titles currently mint seniority the résumé does not use;
+              those titles still need a pass.
+            </dd>
+            <dt>Confidence</dt>
+            <dd>82%</dd>
+            <dt>Complexity</dt>
+            <dd>Medium</dd>
+          </dl>
+        </article>
+
+        <article class="idea" id="idea-5">
+          <h3>5. Operate the proof</h3>
+          <dl>
+            <dt>Description</dt>
+            <dd>
+              Proof is what a peer can run or recover: the player, the helix, the approval gate, a stalled feed as an
+              interface state. Hang the seven code samples on the stories they already declare <code>usedIn</code>. Keep
+              a compact replay of named failure states. Do not lead with fields labeled “proof.”
+            </dd>
+            <dt>Axis</dt>
+            <dd>Proof of work</dd>
+            <dt>Basis</dt>
+            <dd>
+              direct: evidence dialog already links sanitized snippets to live surfaces. direct: code.json samples
+              include usedIn. direct: AI Lab and data-visualization case studies already name timeout, reject, and
+              stalled-feed as states.
+            </dd>
+            <dt>Rationale</dt>
+            <dd>
+              STRATEGY’s problem is that a résumé cannot show how the work feels. Labeled proof fields are a résumé with
+              better CSS.
+            </dd>
+            <dt>Downsides</dt>
+            <dd>Interactive proof is more to maintain than a caption. Must stay view-only and sanitized.</dd>
+            <dt>Confidence</dt>
+            <dd>80%</dd>
+            <dt>Complexity</dt>
+            <dd>Medium</dd>
+          </dl>
+        </article>
+
+        <article class="idea" id="idea-6">
+          <h3>6. Kifu on the work</h3>
+          <dl>
+            <dt>Description</dt>
+            <dd>
+              Put Starting point → Decision → Result → Learning beside the artifact those decisions changed. Demote
+              /process as a product sibling of Docs and Lab. Hide launch-meta cards (worktrees, withheld GitHub) in a
+              drawer; keep judgments that shaped the media, spatial, and agent work. The Lab can be encountered as how a
+              decision looks from the inside — not billed as a stack tour.
+            </dd>
+            <dt>Axis</dt>
+            <dd>Thought process</dd>
+            <dt>Basis</dt>
+            <dd>
+              direct: STRATEGY.md — inspectable while viewing. direct: process/index.vue already uses that four-field
+              schema. direct: work-sub-nav.ts lists Docs / AI Lab / Process as Work peers. The Manhattan card is
+              creative judgment; Codex/GitHub cards are container HVAC.
+            </dd>
+            <dt>Rationale</dt>
+            <dd>
+              If the only inspectable thinking is how the portfolio was shipped, peers learn a person who builds
+              portfolio apps.
+            </dd>
+            <dt>Downsides</dt>
+            <dd>
+              Some public cards are genuinely about this site. They need a quieter home, not deletion without review.
+            </dd>
+            <dt>Confidence</dt>
+            <dd>84%</dd>
+            <dt>Complexity</dt>
+            <dd>Medium</dd>
+          </dl>
+        </article>
+
+        <article class="idea" id="idea-7">
+          <h3>7. About as catalog essay</h3>
+          <dl>
+            <dt>Description</dt>
+            <dd>
+              About becomes how to walk the hanging and what is on view — not a Digital CV with Download résumé and
+              Start a conversation. “Currently” is which rooms are mounted, not availability for roles. A PDF can remain
+              unadvertised.
+            </dd>
+            <dt>Axis</dt>
+            <dd>Site chrome</dd>
+            <dt>Basis</dt>
+            <dd>
+              direct: resume.json eyebrow “Digital CV” and Download résumé. direct: STRATEGY.md — a résumé does not show
+              how the work feels.
+            </dd>
+            <dt>Rationale</dt>
+            <dd>Meetup peers asking what you are up to should be able to answer from what is on the walls.</dd>
+            <dt>Downsides</dt>
+            <dd>
+              Some peers still want a single-page bio. The catalog has to carry authorship without becoming a stealth
+              CV.
+            </dd>
+            <dt>Confidence</dt>
+            <dd>78%</dd>
+            <dt>Complexity</dt>
+            <dd>Low</dd>
+          </dl>
+        </article>
+      </section>
+
+      <section id="rejection-summary">
+        <h2>Rejection Summary</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Idea</th>
+              <th>Reason rejected</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>19</td>
+              <td>Ice-core career stratigraphy</td>
+              <td>Identifies work by employment time — violates craft-not-history.</td>
+            </tr>
+            <tr>
+              <td>13</td>
+              <td>Gallery is the site</td>
+              <td>Exhibition is one track among four, not the container for every route.</td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>Evidence compiler</td>
+              <td>Overextends existing evidence rows into a mechanical claim linter.</td>
+            </tr>
+            <tr>
+              <td>9</td>
+              <td>Writing as sheets</td>
+              <td>Decoupling from /docs is fair; “sheets” is an ungrounded presentation analogy.</td>
+            </tr>
+            <tr>
+              <td>10</td>
+              <td>Recurring questions as primary IA</td>
+              <td>Recovery/legibility recur; they are not proven as the spine.</td>
+            </tr>
+            <tr>
+              <td>14</td>
+              <td>Personalize as house lights</td>
+              <td>Viewing-condition controls are real; the metaphor is not a requirement. Folded into Quiet frame.</td>
+            </tr>
+            <tr>
+              <td>15</td>
+              <td>Missing-medium résumé rooms</td>
+              <td>Craft naming is right; dashboards already live in Experience Systems. Not a new chapter.</td>
+            </tr>
+            <tr>
+              <td>7*</td>
+              <td>Demote all process cards</td>
+              <td>Launch-meta cards should recede; Manhattan is work judgment. Folded into Kifu.</td>
+            </tr>
+            <tr>
+              <td>—</td>
+              <td>CTA-only deletions as standalone ideas</td>
+              <td>Duplicates of Trailhead and Quiet frame.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <footer class="composition-signal">
+        Composed 2026-09-15T06:00Z by ce-ideate from STRATEGY.md and public site grounding. 44 raw candidates, 19 after
+        merge, 7 survivors.
+      </footer>
+    </main>
+  </body>
+</html>

@@ -1,5 +1,6 @@
 /**
  * Re-export color utilities from `@tgmc/theme`.
+ * Prefer {@link Color} for create / manipulate / convert / lookup.
  */
 export {
   Color,

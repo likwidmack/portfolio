@@ -1,5 +1,6 @@
 import type { ThemeTokensApi } from '#shared/theme/theme-tokens-api';
 import {
+  Theme,
   applyAllTokenSources,
   applyTokenSource,
   defineTokenPack,
@@ -16,9 +17,47 @@ import {
   subscribeTokens,
   updateToken,
   updateTokens,
+  type ThemeBreakpoints,
   type ThemeBridgeOptions,
+  type ThemeDefinition,
   type ThemeModePreference,
+  type ThemeRatios,
+  type ThemeResolvedMode,
+  type ThemeTextSettings,
+  type ThemeTokenMap,
+  type ThemeWriteOptions,
 } from '@tgmc/theme/tokens';
+
+type ThemeApi = typeof Theme;
+
+/**
+ * Bind Nuxt runtime bridges onto Theme writes so callers of `$themeTokens.theme`
+ * do not need to pass `{ primevue, foundation }` on every call.
+ */
+function bindThemeBridges(bridges: ThemeBridgeOptions): ThemeApi {
+  const withBridges = (options: ThemeWriteOptions = {}): ThemeWriteOptions => ({
+    ...bridges,
+    ...options,
+  });
+
+  return {
+    ...Theme,
+    select: (name: string, options?: ThemeWriteOptions) => Theme.select(name, withBridges(options)),
+    create: (name: string, definition: ThemeDefinition) => Theme.create(name, definition),
+    update: (patch: ThemeTokenMap, options?: ThemeWriteOptions) => Theme.update(patch, withBridges(options)),
+    set: (tokens: ThemeTokenMap, options?: ThemeWriteOptions) => Theme.set(tokens, withBridges(options)),
+    setText: (text: ThemeTextSettings, options?: ThemeWriteOptions) => Theme.setText(text, withBridges(options)),
+    setRatios: (ratios: ThemeRatios, options?: ThemeWriteOptions) => Theme.setRatios(ratios, withBridges(options)),
+    setBreakpoints: (breakpoints: ThemeBreakpoints, options?: ThemeWriteOptions) =>
+      Theme.setBreakpoints(breakpoints, withBridges(options)),
+    applyModeVariables: (mode: ThemeResolvedMode, options?: ThemeWriteOptions) =>
+      Theme.applyModeVariables(mode, withBridges(options)),
+    reset: (options?: ThemeBridgeOptions) => Theme.reset(withBridges(options)),
+    initMode: (options) => Theme.initMode({ ...bridges, ...options }),
+    setMode: (preference: ThemeModePreference, options?: ThemeWriteOptions & { persist?: boolean }) =>
+      Theme.setMode(preference, withBridges(options)),
+  };
+}
 
 /**
  * Client plugin: initializes unified light/dark/system color mode, exposes the token
@@ -46,14 +85,12 @@ export default defineNuxtPlugin({
     /**
      * Public ThemeTokens API exposed to the app via `nuxtApp.provide('themeTokens', api)`.
      *
-     * Consumers can inject this with `const tokens = useNuxtApp().$themeTokens` or
-     * via the composition API with `const tokens = inject('themeTokens')`.
-     *
-     * The API surface intentionally mirrors the token package so callers can
-     * read current tokens, subscribe for updates, register additional token
-     * sources (for design-system bridges), and apply or reset token sets.
+     * Prefer `api.theme` for ready-made packs and grouped updates; low-level
+     * `updateTokens` remains for partial CSS var patches (e.g. personalization accents).
+     * `api.theme` is bridge-bound so PrimeVue/foundation writes apply by default.
      */
     const api: ThemeTokensApi = {
+      theme: bindThemeBridges(bridges),
       getToken,
       getTokens,
       updateToken,
@@ -74,15 +111,11 @@ export default defineNuxtPlugin({
 
     nuxtApp.provide('themeTokens', api);
 
-    // Notify other plugins / app code when the theme mode changes. Consumers
-    // can listen to the `theme:mode:change` hook to react to system/light/dark
-    // transitions (for example to update visualizations or re-render CSS-only
-    // components).
     subscribeThemeMode((change) => {
       void nuxtApp.callHook('theme:mode:change', change);
     });
 
-    if (import.meta.client && runtimeTheme?.applyDefaultsOnInit !== false) {
+    if (runtimeTheme?.applyDefaultsOnInit !== false) {
       const change = initThemeMode({
         ...bridges,
         preference: runtimeTheme?.mode ?? 'system',

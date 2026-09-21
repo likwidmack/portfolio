@@ -12,6 +12,7 @@ import type {
   setTokens,
   subscribeThemeMode,
   subscribeTokens,
+  Theme,
   ThemeBridgeOptions,
   ThemeModeChange,
   ThemeModePreference,
@@ -24,6 +25,8 @@ import type {
 
 /** Public API injected by `plugins/theme-tokens.client.ts`. */
 export type ThemeTokensApi = {
+  /** Ready-made packs + grouped variable updates (preferred high-level surface). */
+  theme: typeof Theme;
   getToken: typeof getToken;
   getTokens: typeof getTokens;
   updateToken: typeof updateToken;

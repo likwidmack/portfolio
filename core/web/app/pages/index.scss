@@ -1,18 +1,17 @@
 @use 'theme/scss/tokens' as *;
 
-.home-section,
-.home-cta {
+.splash-page {
+  display: grid;
+  align-content: start;
+  gap: clamp(1.5rem, 4vw, 2.5rem);
   padding-block: var(--portfolio-space);
 }
 
-.home-cta {
-  margin-block: var(--portfolio-space);
-  border-top: 0.7rem solid var(--primary-color);
-}
-
-.home-hero {
-  min-height: max(22rem, calc(var(--page-fill-min, 100dvh) * 0.85));
-  padding-block: var(--portfolio-space);
+.splash-hero {
+  display: grid;
+  justify-items: start;
+  gap: 1rem;
+  max-width: 42rem;
 
   h1 {
     max-width: 18ch;
@@ -24,36 +23,6 @@
     letter-spacing: -0.02em;
   }
 
-  figcaption {
-    max-width: 34ch;
-    padding-inline: 1rem;
-    font-size: 0.85rem;
-  }
-
-  &__copy {
-    display: grid;
-    justify-items: start;
-    gap: 1rem;
-
-    // `justify-items: start` shrink-wraps every grid item to its own content width —
-    // including `.button-row` itself, before the mobile rule's `width: 100%` on its
-    // buttons has a container to stretch into. Stretch just this one item so that
-    // rule actually has something to work with.
-    .button-row {
-      justify-self: stretch;
-    }
-  }
-
-  &__title-accent {
-    color: var(--primary-color);
-  }
-
-  &__name {
-    margin: 0;
-    font-size: clamp(1.5rem, 3vw, 2.4rem);
-    font-weight: 700;
-  }
-
   &__lede {
     max-width: 42ch;
     margin: 0;
@@ -61,185 +30,131 @@
     font-size: clamp(1.05rem, 2vw, 1.35rem);
     line-height: 1.45;
   }
+}
 
-  &__stats {
-    margin: 0.5rem 0 0;
-    padding: 0;
-    list-style: none;
+.splash-fork {
+  display: grid;
+  gap: 1.25rem;
+  max-width: 40rem;
+}
 
-    li {
-      display: grid;
-      gap: 0.15rem;
-    }
+.splash-doors {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
 
-    strong {
-      color: var(--primary-color);
-      font-size: clamp(1.35rem, 2.5vw, 1.75rem);
-      font-weight: 800;
-      line-height: 1;
-    }
+.splash-door {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 1rem;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--portfolio-rule);
+  background: color-mix(in srgb, var(--surface-color) 88%, transparent);
+  color: var(--text-color);
+  text-decoration: none;
 
-    span {
-      max-width: 16ch;
-      color: var(--text-secondary-color);
-      font-size: 0.8rem;
-      line-height: 1.3;
-    }
+  &:hover {
+    border-color: var(--primary-color);
   }
 
-  &__disciplines {
-    margin: 0.25rem 0 0;
-    padding: 0;
-    list-style: none;
-
-    li {
-      color: var(--text-secondary-color);
-      font-size: 0.7rem;
-      font-weight: 700;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-    }
+  &:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 4px;
   }
 
-  &__tags {
-    margin: 0;
-    padding: 1rem 0 1.5rem;
-    border-top: 1px solid var(--portfolio-rule);
-    list-style: none;
-    color: var(--text-secondary-color, var(--text-color));
+  &__index {
+    color: var(--primary-color);
+    font-family: var(--font-family-mono);
     font-size: 0.8rem;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-
-    li:not(:last-child)::after {
-      margin-left: clamp(1rem, 3vw, 2rem);
-      color: var(--portfolio-rule);
-      content: '/';
-    }
+    font-weight: 800;
+    letter-spacing: 0.12em;
   }
 
-  &__brand {
-    margin: 0.5rem 0 0;
-    padding-inline: 1rem;
-    color: var(--text-secondary-color, var(--text-color));
-    font-size: 0.75rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-  }
-
-  &__visual {
+  &__copy {
     display: grid;
-    gap: 0.75rem;
-    justify-items: center;
+    gap: 0.25rem;
   }
 
-  &__currently {
-    margin: 0;
-    padding: 0.85rem 1rem;
-    border-top: 1px solid var(--portfolio-rule);
+  &__label {
+    font-size: clamp(1.15rem, 2vw, 1.5rem);
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  &__lede {
     color: var(--text-secondary-color);
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     line-height: 1.4;
+  }
+}
 
-    strong {
-      display: block;
-      margin-bottom: 0.25rem;
+.splash-continue {
+  margin: 0;
+
+  &__link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    color: var(--text-secondary-color);
+    font-size: 0.95rem;
+    text-decoration: none;
+
+    &:hover,
+    &:focus-visible {
       color: var(--text-color);
-      font-size: 0.7rem;
-      font-weight: 800;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
+      text-decoration: underline;
     }
+
+    &:focus-visible {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 4px;
+    }
+  }
+
+  &__title {
+    color: var(--text-color);
+    font-weight: 700;
   }
 }
 
-// Selected Proof: 2-up grid of media-left/content-right cards, matching the design
-// (distinct from the Work index's single-column list and Gallery's tile grid).
-.home {
-  .work-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+.splash-skip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 2.75rem;
+  max-width: max-content;
+  color: var(--text-secondary-color);
+  font-size: 0.95rem;
+  cursor: pointer;
+
+  &:focus-within {
+    color: var(--text-color);
   }
 
-  .work-card {
-    display: grid;
-    grid-template-columns: minmax(10rem, 14rem) minmax(0, 1fr);
-    align-items: stretch;
-    min-height: 0;
+  &__input {
+    width: 1.25rem;
+    height: 1.25rem;
+    accent-color: var(--primary-color);
 
-    h3 {
-      font-size: clamp(1.4rem, 2.4vw, 2rem);
-    }
-  }
-
-  .work-card__media {
-    flex: unset;
-    width: auto;
-    max-width: none;
-    aspect-ratio: unset;
-    height: 100%;
-    min-height: 100%;
-    align-self: stretch;
-    border-bottom: 0;
-    border-right: 1px solid var(--portfolio-rule);
-  }
-}
-
-@media (max-width: $breakpoint-standard) {
-  .home {
-    .work-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .work-card {
-      grid-template-columns: minmax(9rem, 12rem) minmax(0, 1fr);
+    &:focus-visible {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 3px;
     }
   }
 }
 
 @media (max-width: $breakpoint-tablet) {
-  .home .work-card {
-    display: flex;
-    flex-direction: column;
-
-    &__media {
-      flex: 0 0 auto;
-      width: 100%;
-      max-width: none;
-      aspect-ratio: var(--work-card-media-ratio);
-      height: auto;
-      min-height: 0;
-      align-self: stretch;
-      border-right: 0;
-      border-bottom: 1px solid var(--portfolio-rule);
-    }
+  .splash-doors {
+    grid-template-columns: 1fr;
   }
-}
 
-.section-intro {
-  max-width: 55rem;
-  margin-bottom: 2.5rem;
-
-  &__view-all {
-    color: var(--primary-color);
-    font-weight: 700;
-    text-decoration: none;
-    white-space: nowrap;
-
-    &:hover,
-    &:focus-visible {
-      text-decoration: underline;
-    }
-  }
-}
-
-.principle-grid article > span {
-  color: var(--primary-color);
-  font-size: 0.8rem;
-  font-weight: 800;
-}
-
-@media (max-width: $breakpoint-mobile) {
-  .home-hero {
-    min-height: auto;
+  .splash-door {
+    grid-template-columns: 1fr;
+    align-items: start;
   }
 }

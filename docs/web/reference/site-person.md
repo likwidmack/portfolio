@@ -27,7 +27,7 @@ import { SITE_PROFILE } from '#shared/site-profile';
 const { profile } = useSiteProfile();
 ```
 
-`usePortfolioSeo` titles can use `SITE_PERSON.formal` or `profile.names.formal`.
+`usePortfolioSeo` titles can use `SITE_PERSON.formal` or `profile.names.formal`. On `/` and `/splash`, `documentTitleForPath` strips `app.titleSuffix` (“Portfolio App”) so splash chrome stays view-only.
 
 ## Related
 
