@@ -6,7 +6,8 @@ Low-fidelity page frames for the public portfolio chrome. Most routes use layout
 
 ```mermaid
 flowchart TB
-  Home["/ Home"]
+  Home["/ Home splash"]
+  Splash["/splash"]
   Work["/work"]
   WorkSlug["/work/:slug"]
   WorkSub["AppWorkSubNav"]
@@ -25,9 +26,14 @@ flowchart TB
   Admin["/admin"]
   AdminBlog["/admin/blog"]
 
-  Home --> Work
-  Home --> About
+  Home --> Splash
+  Home --> WorkSlug
+  Home --> Process
   Home --> Gallery
+  Splash --> WorkSlug
+  Splash --> Process
+  Splash --> Gallery
+  Home --> About
   Home --> Blog
   Home --> Code
   Work --> WorkSlug
@@ -44,7 +50,7 @@ flowchart TB
   Media -.-> Home
 ```
 
-Primary nav (`AppPrimaryNav`): Work, About, Gallery, Writing (`/blog`), Code, plus mailto contact.
+Primary nav (`AppPrimaryNav`): Work, About, Gallery, Writing (`/blog`), Code. Get in touch is omitted on `/` and `/splash`; it stays in the menu on other routes this increment. When skip is on: **Doors** → `/splash` in the menu; **On view** (header actions, accessible name “On view: Media Systems”) → `/work/media-systems`. Brand Home stays `to="/"`.
 
 Work sub-nav (`AppWorkSubNav` on `/work` and `/work/[slug]`): Docs, AI Lab, Process.
 
@@ -53,7 +59,8 @@ Work sub-nav (`AppWorkSubNav` on `/work` and `/work/[slug]`): Docs, AI Lab, Proc
 ```text
 ┌──────────────────────────────────────────────────────────────┐
 │ skip link                                                    │
-│ [Brand / Home]   Work  About  Gallery  Writing  Code  Contact│
+│ [Brand / Home]              [On view*]  Menu                 │
+│ Menu: Work  About  Gallery  Writing  Code  [Doors*]  [mail*] │
 ├──────────────────────────────────────────────────────────────┤
 │                                                              │
 │                     PAGE BODY (one job)                      │
@@ -62,23 +69,26 @@ Work sub-nav (`AppWorkSubNav` on `/work` and `/work/[slug]`): Docs, AI Lab, Proc
 ├──────────────────────────────────────────────────────────────┤
 │ footer · personalize                                         │
 └──────────────────────────────────────────────────────────────┘
+* On view + Doors only when skip is on. Mailto omitted on splash.
 ```
 
-## Home `/`
+## Home `/` and splash `/splash`
 
 ```text
 ┌──────────────────────────────────────────────────────────────┐
-│ NAV                                                          │
+│ [Brand / Home]                         [On view*]  Menu      │
+│ (no Get in touch; no “Portfolio App” in the document title)  │
 ├──────────────────────────────────────────────────────────────┤
-│  HERO (full-bleed)                                           │
-│  Brand / name                                                │
-│  One headline · one supporting line · CTA group              │
-├──────────────────────────────────────────────────────────────┤
-│  Optional below-fold sections (not first viewport clutter)   │
+│  Heading / lede                                              │
+│  1 Discovery  → /work/media-systems                          │
+│  2 Process    → /process#agentic-ui-exploration              │
+│  3 Exhibition → /gallery?specimen=tesseract-framework-reel   │
+│  Continue from {medium/artifact}  (if a previous interior)   │
+│  ☐ Skip this view next time                                  │
 └──────────────────────────────────────────────────────────────┘
 ```
 
-Content: Nuxt Content collection `home` via `/api/content/home`.
+Content: Nuxt Content collection `home` via `/api/content/home`. `/` and `/splash` share `AppSplash`. Brand Home stays `to="/"`. Skip on: Doors in Menu → `/splash`; On view in header actions → `/work/media-systems`. Skip off: omit Doors and On view.
 
 ## Work index `/work` and detail `/work/:slug`
 

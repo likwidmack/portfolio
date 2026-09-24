@@ -13,7 +13,13 @@
       li Public cards omit task identifiers, full transcripts, secrets, file paths, and private business content.
 
   section.decision-list.layout(data-algo="stack", aria-label="Sanitized AI decision journal")
-    article.decision-card.layout(v-for="card in cards", :key="card.id", data-algo="split")
+    article.decision-card.layout(
+      v-for="card in cards",
+      :id="card.id",
+      :key="card.id",
+      data-algo="split",
+      tabindex="-1"
+    )
       header
         p
           span {{ card.source }}
@@ -40,15 +46,29 @@ import type { DecisionCard } from '#shared/portfolio-types';
 import { isPublicDecisionCard } from '#shared/portfolio-types';
 import { SITE_PERSON } from '#shared/site-person';
 
+import { focusElementById } from '../../composables/focusElementById';
+
 definePageMeta({ breadcrumb: 'Process' });
+const route = useRoute();
 const { data } = await useContentAsyncData('public-decision-cards', () =>
   fetchContentCollection<DecisionCard[]>('decisionCards', { mode: 'all' })
 );
 const cards = computed(() =>
-  ((data.value ?? []) as DecisionCard[]).filter(isPublicDecisionCard).sort((a, b) => b.date.localeCompare(a.date))
+  ((data.value ?? []) as DecisionCard[]).filter(isPublicDecisionCard).sort((a, b) => {
+    const byDate = b.date.localeCompare(a.date);
+    return byDate !== 0 ? byDate : a.id.localeCompare(b.id);
+  })
 );
 const formatDate = (date: string) =>
   new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(date));
+
+onMounted(() => {
+  const id = route.hash.replace(/^#/, '');
+  if (!id) return;
+  nextTick(() => {
+    focusElementById(id);
+  });
+});
 
 usePortfolioSeo({
   title: `Process — ${SITE_PERSON.formal}, Creative Technologist`,

@@ -65,6 +65,7 @@ export const palettes = {
   },
 } as const;
 
+/** Mirrors Sass `$success-dark` / `$warning-dark` / `$alert-dark` / `$error-dark` / `$info-light`. */
 export const semanticColors = {
   success: '#1b7a7a',
   warning: '#ff8c61',
@@ -73,6 +74,7 @@ export const semanticColors = {
   info: '#0a0aef',
 } as const;
 
+/** Mirrors Sass brand + surface roles in `scss/tokens/_colors.scss`. */
 export const themeColors = {
   light: {
     text: '#1c1412',
@@ -85,8 +87,8 @@ export const themeColors = {
     text: '#f2ece8',
     background: '#0f0908',
     backgroundSecondary: '#16100e',
-    primary: '#ff6b35',
-    secondary: '#8b1e2e',
+    primary: '#ac1922',
+    secondary: '#8a6a56',
   },
 } as const satisfies Record<'light' | 'dark', ThemeColorSet>;
 
@@ -125,8 +127,9 @@ export type ThemeCssVariableMap = {
 /** Dark mode CSS custom properties (document default / `:root`). */
 export const darkCssVariables = {
   '--primary-color': themeColors.dark.primary,
-  '--primary-default': '#ff6b35',
-  '--primary-hover': '#ff8c61',
+  '--primary-default': themeColors.dark.primary,
+  // Sass `$css-primary-hover-dark`: color.adjust(#dcd7c9, $lightness: 10%)
+  '--primary-hover': '#f1efe9',
   '--secondary-color': themeColors.dark.secondary,
   '--tertiary-color': '#9e2a3a',
   '--text-color': themeColors.dark.text,
@@ -136,18 +139,18 @@ export const darkCssVariables = {
   '--surface-color': '#16100e',
   '--surface-variant': '#1c1412',
   '--border-color': 'rgba(255, 255, 255, 0.08)',
-  '--focus-ring': '#ff6b35',
-  '--accent-color': '#ff6b35',
+  '--focus-ring': themeColors.dark.primary,
+  '--accent-color': themeColors.dark.primary,
   '--success': semanticColors.success,
   '--warning': semanticColors.warning,
   '--error': semanticColors.error,
-  '--info': '#75b8ff',
+  '--info': '#0288d1',
   '--border-radius-md': '0.5rem',
   '--form-background': 'rgba(0, 0, 0, 0.5)',
   '--form-background-disabled': 'rgba(128, 128, 128, 0.18)',
   '--form-border-color': 'rgba(205, 205, 205, 0.4)',
   '--form-placeholder': 'rgba(186, 168, 160, 0.9)',
-  '--form-focus-ring': '#ff6b35',
+  '--form-focus-ring': themeColors.dark.primary,
   '--form-invalid-color': '#c1440e',
   '--button-fg': resolveButtonForeground('dark', themeColors.dark.primary, themeColors.dark.secondary),
 } as const satisfies ThemeCssVariableMap;
@@ -155,8 +158,9 @@ export const darkCssVariables = {
 /** Light mode CSS custom properties (`:root[data-theme='light']`). */
 export const lightCssVariables = {
   '--primary-color': themeColors.light.primary,
-  '--primary-default': '#d9531d',
-  '--primary-hover': '#b73c34',
+  '--primary-default': themeColors.light.primary,
+  // Sass `$css-primary-hover-light`: color.adjust(#1a1a1d, $lightness: -10%)
+  '--primary-hover': '#020203',
   '--secondary-color': themeColors.light.secondary,
   '--tertiary-color': '#360a14',
   '--text-color': themeColors.light.text,
@@ -166,18 +170,18 @@ export const lightCssVariables = {
   '--surface-color': '#f0e9e4',
   '--surface-variant': '#e6dcd5',
   '--border-color': 'rgba(0, 0, 0, 0.08)',
-  '--focus-ring': '#d9531d',
-  '--accent-color': '#d9531d',
+  '--focus-ring': themeColors.light.primary,
+  '--accent-color': themeColors.light.primary,
   '--success': '#146060',
   '--warning': '#c26a1f',
   '--error': '#b33a0f',
-  '--info': '#245ea8',
+  '--info': semanticColors.info,
   '--border-radius-md': '0.5rem',
   '--form-background': 'color-mix(in srgb, rgb(128, 128, 128) 8%, transparent)',
   '--form-background-disabled': 'color-mix(in srgb, rgb(128, 128, 128) 18%, transparent)',
   '--form-border-color': 'rgba(205, 205, 205, 0.4)',
   '--form-placeholder': 'color-mix(in srgb, rgb(90, 74, 66) 85%, transparent)',
-  '--form-focus-ring': '#d9531d',
+  '--form-focus-ring': themeColors.light.primary,
   '--form-invalid-color': '#b33a0f',
   '--button-fg': resolveButtonForeground('light', themeColors.light.primary, themeColors.light.secondary),
 } as const satisfies ThemeCssVariableMap;
@@ -189,46 +193,6 @@ export const defaultCssVariables = darkCssVariables;
 export function getCssVariablesForMode(mode: 'light' | 'dark'): ThemeCssVariableMap {
   return mode === 'light' ? { ...lightCssVariables } : { ...darkCssVariables };
 }
-
-export class Color {
-  constructor(public readonly theme: 'light' | 'dark' = 'light') {}
-
-  get primaryColors() {
-    return {
-      default: getThemeColor('primary', this.theme === 'light'),
-      secondary: getThemeColor('secondary', this.theme === 'light'),
-    };
-  }
-
-  static getThemeColor(key: ThemeKey, isDark = false): string {
-    return getThemeColor(key, isDark) || '#000000';
-  }
-
-  static lighten(hex: string, weight: number): string {
-    return lighten(hex, weight);
-  }
-
-  static darken(hex: string, weight: number): string {
-    return darken(hex, weight);
-  }
-
-  static addAlpha(hex: string, opacity: number): string {
-    return addAlpha(hex, opacity);
-  }
-
-  static isLight(hex: string): boolean {
-    const rgb = hexToRgb(hex);
-    if (!rgb) return false;
-    const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
-    return hsl.l > 50;
-  }
-
-  static getContrastColor(bgColor: string): string {
-    return this.isLight(bgColor) ? baseColors.black : baseColors.white;
-  }
-}
-
-export default Color;
 
 export function getThemeColor(key: ThemeKey, isDark = false): string | null {
   const theme = isDark ? themeColors.dark : themeColors.light;
@@ -275,7 +239,7 @@ export function hexToRgb(hex: string): Rgb | null {
   return parseHexPair(hex) ?? parseHexShorthand(hex);
 }
 
-export function rgbToHex(r: number, g: number, b: number) {
+export function rgbToHex(r: number, g: number, b: number): string {
   return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
 }
 
@@ -332,8 +296,8 @@ export function darken(hex: string, weight: number): string {
 }
 
 export function addAlpha(hex: string, opacity: number): string {
-  const _opacity = Math.round(Math.min(Math.max(opacity || 0, 0), 1) * 255);
-  return hex + _opacity.toString(16).toUpperCase().padStart(2, '0');
+  const alphaByte = Math.round(Math.min(Math.max(opacity || 0, 0), 1) * 255);
+  return hex + alphaByte.toString(16).toUpperCase().padStart(2, '0');
 }
 
 export function updateRgbAlpha(rgbStr: string, opacity: number): string {

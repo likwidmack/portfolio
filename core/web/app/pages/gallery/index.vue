@@ -34,8 +34,11 @@
   section.gallery-grid(v-else, aria-label="Social feed grid")
     button.gallery-grid__tile(
       v-for="tile in gridTiles",
+      :id="tile.post.id",
       :key="tile.post.id",
       type="button",
+      :class="{ 'gallery-grid__tile--on-view': specimenId === tile.post.id }",
+      :tabindex="specimenId === tile.post.id ? 0 : undefined",
       :data-aspect="tile.aspect",
       :aria-label="`Open ${tile.post.title} in feed`",
       @click="openInFeed(tile.post.id)"
@@ -94,11 +97,20 @@ if (!galleryContent.value) {
 
 const content = computed(() => galleryContent.value as GalleryContent);
 const posts = computed(() => flattenGalleryPosts(content.value));
+const route = useRoute();
+const reducedMotion = usePrefersReducedMotion();
+const scrollBehavior = computed(() => (reducedMotion.value ? 'auto' : 'smooth'));
 const viewMode = ref<GalleryViewMode>('grid');
 const groupId = ref('all');
 const kindId = ref<GalleryFilterKind>('all');
 const activePostId = ref<string>('');
 const feedEl = ref<HTMLElement | null>(null);
+const specimenId = computed(() => {
+  const raw = route.query.specimen;
+  const id = Array.isArray(raw) ? raw[0] : raw;
+  if (!id) return '';
+  return posts.value.some((post) => post.id === id) ? id : '';
+});
 
 const viewOptions = [
   { id: 'grid', label: 'Grid' },
@@ -141,7 +153,7 @@ usePortfolioSeo({
 function openInFeed(id: string): void {
   viewMode.value = 'feed';
   nextTick(() => {
-    document.getElementById(`post-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.getElementById(`post-${id}`)?.scrollIntoView({ behavior: scrollBehavior.value, block: 'start' });
     activePostId.value = id;
   });
 }
@@ -177,6 +189,19 @@ function observeFeed(): void {
 }
 
 onMounted(observeFeed);
+watch(
+  specimenId,
+  (id) => {
+    if (!import.meta.client || !id) return;
+    viewMode.value = 'grid';
+    nextTick(() => {
+      const tile = document.getElementById(id);
+      tile?.focus();
+      tile?.scrollIntoView({ behavior: scrollBehavior.value, block: 'center' });
+    });
+  },
+  { immediate: true }
+);
 watch([viewMode, visiblePosts], () => {
   if (import.meta.client) {
     nextTick(observeFeed);

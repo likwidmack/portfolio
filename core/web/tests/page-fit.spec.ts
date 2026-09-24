@@ -8,7 +8,7 @@ import { describe, expect, it } from 'vitest';
 const root = join(import.meta.dirname, '..');
 
 const screenPages = [
-  'app/pages/index.vue',
+  'app/components/AppSplash/index.vue',
   'app/pages/work/index.vue',
   'app/pages/gallery/index.vue',
   'app/pages/code/index.vue',

@@ -48,6 +48,13 @@ describe('gallery hub', () => {
     }
     expect(page).toContain("from '#shared/gallery-types'");
     expect(page).toContain('gridTiles');
+    expect(page).toContain(':id="tile.post.id"');
+    expect(page).toContain('route.query.specimen');
+    expect(page).toContain('gallery-grid__tile--on-view');
+    expect(page).toContain('usePrefersReducedMotion');
+    expect(page).toContain("reducedMotion.value ? 'auto' : 'smooth'");
+    expect(page).not.toContain("behavior: 'smooth'");
+    expect(page).not.toContain('openInFeed(specimen');
     expect(page).toContain('resolveGalleryAspect(post)');
     expect(page).toContain('resolveGalleryPlatform(post)');
     expect(page).toContain('galleryEngagementLabel(post)');
@@ -56,5 +63,14 @@ describe('gallery hub', () => {
     expect(page).not.toMatch(/:data-aspect="resolveGalleryAspect\(/);
     expect(page).not.toMatch(/GALLERY_PLATFORM_LABEL\[resolveGalleryPlatform\(/);
     expect(page).not.toMatch(/galleryEngagementLabel\(post\)\}\}/);
+  });
+
+  it('keeps the gallery hire CTA this increment', async () => {
+    const page = await readFile(galleryPagePath, 'utf8');
+    const data = await readFile(galleryDataPath, 'utf8');
+
+    expect(page).toContain('content.cta.primaryLabel');
+    expect(page).toContain('contactMailto');
+    expect(data).toContain('Ask for a walkthrough');
   });
 });

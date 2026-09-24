@@ -107,18 +107,18 @@ player.on('state', (state) => {
   {
     id: 'data-home-featured',
     kind: 'data',
-    title: 'Featured work slugs',
-    summary: 'Home pulls stories by slug instead of embedding project copies.',
+    title: 'Splash door copy',
+    summary: 'Home splash names Discovery, Process, and Exhibition from content, not a featured-work plaza.',
     language: 'json',
     sourceLabel: 'content/home.json',
     href: '/',
     code: `{
-  "featuredWork": {
-    "heading": "Systems, prototypes, and AI interactions",
-    "slugs": [
-      "media-systems",
-      "innovation-prototyping",
-      "human-controlled-ai-lab"
+  "splash": {
+    "heading": "Choose a way in",
+    "doors": [
+      { "id": "discovery", "label": "Discovery" },
+      { "id": "process", "label": "Process" },
+      { "id": "exhibition", "label": "Exhibition" }
     ]
   }
 }`,

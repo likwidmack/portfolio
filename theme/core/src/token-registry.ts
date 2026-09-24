@@ -1,4 +1,10 @@
-import { applyFoundationBridge, applyPrimeVueBridge, applyThemeVariables } from './set-theme-variable.js';
+import {
+  applyFoundationBridge,
+  applyPrimeVueBridge,
+  applyThemeVariables,
+  clearPrimeVueBridge,
+  removeThemeVariables,
+} from './set-theme-variable.js';
 import { defaultCssVariables } from './tokens.js';
 
 /** CSS custom-property map (keys with or without `--` prefix). */
@@ -101,10 +107,21 @@ export function setTokens(
   options: ThemeBridgeOptions & { source?: string } = {}
 ): Readonly<ThemeTokenMap> {
   const normalized = normalizeTokenMap(tokens);
+  const removed = Object.keys(state).filter((key) => !(key in normalized));
   for (const key of Object.keys(state)) {
     delete state[key];
   }
   Object.assign(state, normalized);
+  if (!options.dryRun) {
+    if (removed.length > 0) {
+      removeThemeVariables(removed);
+    }
+    // Rebuild PrimeVue bridge from a cleared baseline so absent source keys
+    // cannot leave stale `--p-*` inline overrides in the DOM.
+    if (options.primevue) {
+      clearPrimeVueBridge();
+    }
+  }
   writeTokens(normalized, options);
   notify(normalized, options.source ?? 'api');
   return getTokens();

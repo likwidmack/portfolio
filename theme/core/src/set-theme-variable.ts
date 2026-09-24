@@ -9,6 +9,14 @@ export function setThemeVariable(property: string, value: string): void {
   document.documentElement.style.setProperty(name, value);
 }
 
+/** Removes custom properties from `:root` (inline styles only). */
+export function removeThemeVariables(properties: readonly string[]): void {
+  for (const property of properties) {
+    const name = property.startsWith('--') ? property : `--${property}`;
+    document.documentElement.style.removeProperty(name);
+  }
+}
+
 /** Writes many custom properties on `:root`. */
 export function applyThemeVariables(variables: Record<string, string>): void {
   for (const [property, value] of Object.entries(variables)) {
@@ -183,6 +191,97 @@ export function applyPrimeVueBridge(variables: Record<string, string>): void {
   assignIfPresent(bridge, variables, '--info', ['--p-sky-500', '--p-sky-600', '--p-blue-500', '--p-blue-600']);
 
   applyThemeVariables(bridge);
+}
+
+/** All `--p-*` keys written by {@link applyPrimeVueBridge} (for full-replace cleanup). */
+const PRIMEVUE_BRIDGE_KEYS = [
+  '--p-primary-color',
+  '--p-primary-500',
+  '--p-primary-600',
+  '--p-highlight-color',
+  '--p-highlight-focus-color',
+  '--p-primary-hover-color',
+  '--p-primary-700',
+  '--p-primary-active-color',
+  '--p-primary-contrast-color',
+  '--p-text-color',
+  '--p-text-hover-color',
+  '--p-content-color',
+  '--p-content-hover-color',
+  '--p-form-field-color',
+  '--p-form-field-icon-color',
+  '--p-overlay-select-color',
+  '--p-overlay-popover-color',
+  '--p-overlay-modal-color',
+  '--p-list-option-color',
+  '--p-list-option-focus-color',
+  '--p-navigation-item-color',
+  '--p-navigation-item-active-color',
+  '--p-surface-800',
+  '--p-surface-900',
+  '--p-surface-950',
+  '--p-text-muted-color',
+  '--p-text-hover-muted-color',
+  '--p-form-field-disabled-color',
+  '--p-form-field-float-label-color',
+  '--p-form-field-float-label-active-color',
+  '--p-list-option-icon-color',
+  '--p-list-option-group-color',
+  '--p-navigation-item-icon-color',
+  '--p-navigation-submenu-label-color',
+  '--p-navigation-submenu-icon-color',
+  '--p-mask-color',
+  '--p-surface-ground',
+  '--p-mask-background',
+  '--p-content-background',
+  '--p-surface-card',
+  '--p-surface-0',
+  '--p-surface-50',
+  '--p-overlay-select-background',
+  '--p-overlay-popover-background',
+  '--p-overlay-modal-background',
+  '--p-content-hover-background',
+  '--p-surface-overlay',
+  '--p-surface-100',
+  '--p-surface-200',
+  '--p-navigation-item-active-background',
+  '--p-content-border-color',
+  '--p-surface-300',
+  '--p-surface-400',
+  '--p-overlay-select-border-color',
+  '--p-overlay-popover-border-color',
+  '--p-overlay-modal-border-color',
+  '--p-focus-ring-color',
+  '--p-highlight-background',
+  '--p-highlight-focus-background',
+  '--p-list-option-focus-background',
+  '--p-list-option-selected-background',
+  '--p-navigation-item-focus-background',
+  '--p-form-field-background',
+  '--p-form-field-filled-background',
+  '--p-form-field-disabled-background',
+  '--p-form-field-border-color',
+  '--p-form-field-placeholder-color',
+  '--p-form-field-focus-border-color',
+  '--p-form-field-invalid-border-color',
+  '--p-form-field-invalid-placeholder-color',
+  '--p-green-500',
+  '--p-green-600',
+  '--p-orange-500',
+  '--p-orange-600',
+  '--p-yellow-500',
+  '--p-yellow-600',
+  '--p-red-500',
+  '--p-red-600',
+  '--p-sky-500',
+  '--p-sky-600',
+  '--p-blue-500',
+  '--p-blue-600',
+] as const;
+
+/** Clears inline PrimeVue bridge variables so a full registry replace can rebuild from baseline. */
+export function clearPrimeVueBridge(): void {
+  removeThemeVariables(PRIMEVUE_BRIDGE_KEYS);
 }
 
 /**

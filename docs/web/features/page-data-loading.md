@@ -1,6 +1,6 @@
 # Portfolio page data loading
 
-Portfolio, content, and Writing pages use `useContentAsyncData` (`app/composables/useContentAsyncData.ts`) instead of bare `useAsyncData`.
+Portfolio, content, and Writing pages use `useContentAsyncData` (`app/composables/useContentAsyncData.ts`) instead of bare `useAsyncData`. Home `/` and `/splash` load the `home` collection inside `AppSplash`. Skip on `/` is decided in `app/middleware/home-landing.ts` from cookies; eligible interiors persist previous-view with the `storage` singleton cookie driver (`app/plugins/remember-journey.client.ts`).
 
 Nuxt Content collections are loaded through **`fetchContentCollection`** → `GET /api/content/:collection` (Nitro + Content DB). Do **not** call client `queryCollection()` in page setup: the WASM adapter can race and return empty rows, which triggers `createError` and leaves Suspense stuck on the previous page until a hard refresh.
 

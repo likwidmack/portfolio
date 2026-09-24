@@ -21,7 +21,7 @@ describe('SPA page data loading', () => {
   it('uses hydration-only cache for portfolio content fetches', async () => {
     const helper = await readFile(join(root, 'app/composables/useContentAsyncData.ts'), 'utf8');
     const fetchHelper = await readFile(join(root, 'app/composables/fetchContentCollection.ts'), 'utf8');
-    const home = await readFile(join(root, 'app/pages/index.vue'), 'utf8');
+    const home = await readFile(join(root, 'app/components/AppSplash/index.vue'), 'utf8');
     const caseStudy = await readFile(join(root, 'app/pages/work/[slug].vue'), 'utf8');
     const api = await readFile(join(root, 'server/api/content/[collection].get.ts'), 'utf8');
 

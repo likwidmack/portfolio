@@ -6,7 +6,7 @@
     div(data-region="body")
       header.portfolio-hero
         p.eyebrow-container {{ study.category }}
-        h1 {{ study.title }}
+        h1#case-study-heading(tabindex="-1") {{ study.title }}
         p.lead {{ study.summary }}
         p.case-study__meta {{ study.role }} · {{ study.timeframe }}
         span.case-study__privacy(v-if="study.confidentiality === 'sanitized'") Sanitized case study
@@ -71,6 +71,8 @@
 import type { CaseStudy } from '#shared/portfolio-types';
 import { SITE_PERSON } from '#shared/site-person';
 
+import { focusElementById } from '../../composables/focusElementById';
+
 /** Public static assets and absolute URLs must use `<a>`, not client-routed NuxtLink. */
 function isStaticOrExternalHref(href: string): boolean {
   if (!href || href === '#') return true;
@@ -97,6 +99,9 @@ if (!study.value) {
 const { track } = usePortfolioAnalytics();
 onMounted(() => {
   if (study.value) track('work_view', { slug: study.value.slug });
+  nextTick(() => {
+    focusElementById('case-study-heading');
+  });
 });
 
 usePortfolioSeo({

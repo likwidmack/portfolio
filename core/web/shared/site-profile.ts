@@ -1,4 +1,5 @@
 import profileJson from '../content/profile.json';
+import { isSplashPath } from './journey-preference';
 
 export type SiteProfileNames = {
   formal: string;
@@ -54,6 +55,19 @@ export const SITE_PERSON: SiteProfileNames = SITE_PROFILE.names;
 
 /** Default portfolio app title: `{short} {titleSuffix}`. */
 export const DEFAULT_APP_TITLE = `${SITE_PROFILE.names.short} ${SITE_PROFILE.app.titleSuffix}`;
+
+/** Splash document titles stay the page title with no “Portfolio App” billing. */
+export function stripTitleSuffix(pageTitle: string, suffix: string): string {
+  const escaped = suffix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  // Require whitespace and/or a · | - – separator so a glued suffix is not stripped.
+  return pageTitle.replace(new RegExp(`(?:\\s*[·|\\-–]\\s*|\\s+)${escaped}\\s*$`, 'i'), '').trim();
+}
+
+export function documentTitleForPath(pageTitle: string, path: string): string {
+  if (!isSplashPath(path)) return pageTitle;
+  const stripped = stripTitleSuffix(pageTitle, SITE_PROFILE.app.titleSuffix);
+  return stripped.length > 0 ? stripped : pageTitle;
+}
 
 export function mailtoHref(email: string): string {
   return `mailto:${email}`;

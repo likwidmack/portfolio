@@ -47,4 +47,18 @@ describe('work hub navigation', () => {
     expect(indexPage).toContain('jump-bar');
     expect(indexPage).toContain('jump-link');
   });
+
+  it('shows Get in touch off splash and gates Doors and On view on skip', () => {
+    const nav = readFileSync(navPath, 'utf8');
+    expect(nav).toContain('Get in touch');
+    expect(nav).toContain('v-if="showContact"');
+    expect(nav).toContain('v-if="showDoors"');
+    expect(nav).toContain(':to="splashPath"');
+    expect(nav).toContain('v-if="showOnView"');
+    expect(nav).toContain(':to="onViewPath"');
+    expect(nav).toContain('ON_VIEW_ACCESSIBLE_NAME');
+    expect(nav).toContain(':aria-label="onViewName"');
+    expect(nav).toContain('to="/"');
+    expect(nav).not.toContain('to="/process"');
+  });
 });

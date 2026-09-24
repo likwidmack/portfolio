@@ -104,59 +104,29 @@ const resumeContentSchema = z.object({
   ),
 });
 
+const splashDoorSchema = z.object({
+  id: z.enum(['discovery', 'process', 'exhibition']),
+  label: z.string(),
+  lede: z.string(),
+});
+
 const homeContentSchema = z.object({
   seo: z.object({
     title: z.string(),
     description: z.string(),
   }),
-  hero: z.object({
-    brand: z.string(),
-    signature: z.string(),
-    eyebrow: z.string(),
-    lede: z.string(),
-    availability: z.string(),
-    currentlyLabel: z.string(),
-    primaryActionLabel: z.string(),
-    primaryActionHref: z.string(),
-    secondaryActionLabel: z.string(),
-    secondaryActionHref: z.string(),
-    title: z.string(),
-    titleAccent: z.string(),
-    visualCaption: z.string(),
-    stats: z.array(
-      z.object({
-        value: z.string(),
-        label: z.string(),
-      })
-    ),
-    disciplines: z.array(z.string()),
-    tags: z.array(z.string()),
-  }),
-  featuredWork: z.object({
+  splash: z.object({
     eyebrow: z.string(),
     heading: z.string(),
     lede: z.string(),
-    slugs: z.array(z.string()),
-  }),
-  principles: z.object({
-    eyebrow: z.string(),
-    heading: z.string(),
-    lede: z.string(),
-    items: z.array(
-      z.object({
-        title: z.string(),
-        body: z.string(),
-      })
-    ),
-  }),
-  cta: z.object({
-    eyebrow: z.string(),
-    heading: z.string(),
-    lede: z.string(),
-    primaryHref: z.string().optional(),
-    primaryLabel: z.string(),
-    secondaryLabel: z.string(),
-    secondaryHref: z.string(),
+    doorsLabel: z.string(),
+    doors: z.tuple([
+      splashDoorSchema.extend({ id: z.literal('discovery') }),
+      splashDoorSchema.extend({ id: z.literal('process') }),
+      splashDoorSchema.extend({ id: z.literal('exhibition') }),
+    ]),
+    previousViewPrefix: z.string(),
+    skipLabel: z.string(),
   }),
 });
 

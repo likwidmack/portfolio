@@ -149,6 +149,10 @@
       outline: 2px solid var(--focus-ring, var(--primary-color));
       outline-offset: 2px;
     }
+
+    &--on-view {
+      box-shadow: 0 0 0 3px var(--focus-ring, var(--primary-color));
+    }
   }
 
   &__media {

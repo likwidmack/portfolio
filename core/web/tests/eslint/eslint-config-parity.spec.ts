@@ -39,10 +39,7 @@ describe('eslint.config.mjs vs legacy .eslintrc intent', () => {
     expect(calculated.rules?.['no-unused-vars']?.[0]).toBe(1);
     expect(calculated.rules?.['no-unused-expressions']?.[0]).toBe(1);
     expect(calculated.rules?.['no-unused-labels']?.[0]).toBe(1);
-    // ESLint's first calculateConfigForFile() in a process is a cold flat-config +
-    // plugin resolution and can exceed vitest's default 5s timeout, especially
-    // under CI's `nx run-many --parallel=3` CPU contention.
-  }, 20_000);
+  });
 
   it('enables vue-pug tokenizer and rules on Vue SFCs', async () => {
     const eslint = new ESLint({
