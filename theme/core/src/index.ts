@@ -21,13 +21,11 @@ export {
 } from './set-theme-variable.js';
 
 export {
-  Color,
   addAlpha,
   adjustLightness,
   baseColors,
   darkCssVariables,
   darken,
-  default,
   defaultCssVariables,
   getCssVariablesForMode,
   getThemeColor,
@@ -43,6 +41,9 @@ export {
   updateRgbAlpha,
 } from './tokens.js';
 export type { Hsl, Rgb, ThemeCssVariableMap } from './tokens.js';
+
+export { Color, default } from './color.js';
+export type { BaseColorKey, ColorLookup, PaletteName, SemanticColorKey, ThemeModeName, ThemeRoleKey } from './color.js';
 
 export {
   applyAllTokenSources,
@@ -82,6 +83,36 @@ export type {
   ThemeModePreference,
   ThemeResolvedMode,
 } from './color-mode.js';
+
+export { Theme } from './theme.js';
+export type { ThemeBreakpoints, ThemeDefinition, ThemeRatios, ThemeTextSettings, ThemeWriteOptions } from './theme.js';
+
+export {
+  MAX_ANALOGOUS_COUNT,
+  createAnalogousColors,
+  createColorPalette,
+  formatColor,
+  getComplementaryColor,
+  getSplitComplementaryColors,
+  getTetradicColors,
+  getTriadicColors,
+  hslToRgb,
+  isValidColorFormat,
+  normalizeHue,
+  parseColor,
+} from './color-palette.js';
+export type {
+  AnalogousOptions,
+  ColorFormat,
+  ColorInput,
+  HarmonyPalette,
+  HslTriple,
+  ParsedColor,
+  RgbTriple,
+} from './color-palette.js';
+
+export { analyzeColorQuality, analyzePaletteQuality, calculateContrastRatio, enhanceColor } from './color-quality.js';
+export type { ColorPaletteQuality, ColorQuality, ColorQualityMetrics, ColorTemperature } from './color-quality.js';
 
 export {
   createPrimeVueNuxtConfig,

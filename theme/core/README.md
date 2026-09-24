@@ -2,7 +2,9 @@
 
 Design tokens and SCSS for the portfolio monorepo.
 
-**Canonical docs:** [`docs/packages/theme.md`](../../docs/packages/theme.md) (page-fit, ratios, container fit, layer map).
+**Canonical docs:** [`docs/packages/theme.md`](../../docs/packages/theme.md) (Color/Theme APIs, page-fit, ratios, container fit, layer map).
+
+Runtime helpers: `Color` (parse/manipulate/lookup) and `Theme` (ready-made packs + CSS variable updates) from `@tgmc/theme` / `@tgmc/theme/tokens`.
 
 ```bash
 # From repo root — rebuild dist after SCSS/token changes

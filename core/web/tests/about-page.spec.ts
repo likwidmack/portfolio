@@ -71,4 +71,15 @@ describe('about page content', () => {
     expect(uiTag).toContain('PrimeTag');
     expect(uiTimeline).toContain('PrimeTimeline');
   });
+
+  it('keeps About hire CTAs this increment', async () => {
+    const aboutPage = await readFile(aboutPagePath, 'utf8');
+    const resumeData = await readFile(resumeDataPath, 'utf8');
+
+    expect(aboutPage).toContain('about-cv__contact');
+    expect(aboutPage).toContain('contactMailto');
+    expect(aboutPage).toContain('aboutContent.hero.secondaryActionLabel');
+    expect(resumeData).toContain('Start a conversation');
+    expect(resumeData).toContain('Download résumé');
+  });
 });

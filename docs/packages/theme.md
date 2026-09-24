@@ -99,4 +99,45 @@ Portfolio signal teal is `--portfolio-teal` (and `--success`); do not overwrite 
 
 Personalization accents (`ember` / `crimson`) live in `core/web/shared/personalization.ts` and rebind brand CSS vars per resolved light/dark mode.
 
+## Sass ↔ JS sync rule
+
+- **Sass is compile-time source of truth** for token values (`scss/tokens/_colors.scss`, `_variables.scss` → `globals/_root.scss`).
+- **JS mirrors** live in `theme/core/src/tokens.ts` (`themeColors`, `palettes`, `lightCssVariables` / `darkCssVariables`) for runtime personalization and Theme packs.
+- When you change a brand/surface hex or a `:root` key used at runtime, update Sass first, then the JS mirror, then pin coverage in `theme/core/tests/tokens-mirror.spec.ts`.
+- Do not generate JS from Sass in this package yet — manual sync + tests.
+
+## Color and Theme singletons
+
+Preferred imports from `@tgmc/theme` (also on `@tgmc/theme/tokens` for Theme):
+
+| API     | Role                                                                                                                                           |
+| ------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Color` | Create/parse, manipulate (lighten/darken/alpha/harmony), convert (hex/rgb/hsl), look up base/semantic/role/palette colors                      |
+| `Theme` | Ready-made pack `list` / `get` / `select` / `create`; `update` / `set`; grouped `setText` / `setRatios` / `setBreakpoints`; thin mode wrappers |
+
+```ts
+import { Color, Theme } from '@tgmc/theme';
+
+Color.create('#ac1922'); // throws if invalid; Color.parse returns null
+Color.get('primary', 'dark'); // theme role
+Color.harmony('#d9531d');
+
+Theme.select('dark', { dryRun: true });
+Theme.create('studio', {
+  colors: { primary: '#ac1922', secondary: '#8a6a56' },
+  text: { color: '#f2ece8', secondary: '#baa8a0' },
+  ratios: { media: '16 / 9', card: '16 / 10', surface: '21 / 9' },
+  breakpoints: { current: '1440px' },
+});
+Theme.setRatios({ media: '16 / 9' });
+```
+
+Runtime ratio/breakpoint keys (aligned with `_root.scss`): `--surface-ratio`, `--card-ratio`, `--media-ratio`, `--breakpoint` (plus optional `--breakpoint-mobile` … `--breakpoint-ultrawide` when set via Theme). These layout tokens live in Sass media queries and `Theme.setRatios` / `Theme.setBreakpoints` — they are **not** part of the light/dark JS mode maps (`getCssVariablesForMode`), so mode switches do not clobber viewport-owned values.
+
+`Theme.select('light'|'dark')` applies the full CSS variable map. Named palette packs (`midnightMagic`, …) are **accent packs**: `select` merges brand-role keys (including `--button-fg`) onto the current registry and does not replace surfaces/text. Use `Theme.applyModeVariables` / `Theme.set` when you need a full replace. The Nuxt plugin exposes bridge-bound `api.theme` on `$themeTokens` (PrimeVue/foundation writes default on) alongside low-level `updateTokens` (personalization accents still use the low-level path).
+
+## Palette and quality helpers
+
+Lower-level modules `color-palette.ts` and `color-quality.ts` remain exported (`createColorPalette`, `analyzeColorQuality`, `calculateContrastRatio`, `MAX_ANALOGOUS_COUNT`, …). Prefer `Color.harmony` / `Color.quality` when writing new code. Tests: `theme/core/tests/*.spec.ts`.
+
 Home / nav chrome breakpoints in `portfolio-launch.scss` use Sass `$breakpoint-*` (stack Home hero and wrap the five-link primary nav below `$breakpoint-standard` = 1080px). Work Related links reuse `.page-nav` (sticky aside from tablet up; compact horizontal rail on small viewports) via `AppWorkSubNav`.
