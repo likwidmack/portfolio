@@ -5,7 +5,7 @@ Follow-ups from the monorepo encapsulation / coverage review.
 ## Done
 
 1. **SYS_ENV** — `nuxt.config.ts` imports `normalizeSysEnv` / `SysEnv` from `core/web/server/db/sys-env.ts` (single switch).
-2. **Accents** — `shared/personalization.ts` owns `ACCENT_PRESETS` + `buildPersonalizationFoucScript()`; FOUC head script and `--portfolio-coral` / brand CSS vars consume that map (`ember` / `crimson`).
+2. **Brand roles / FOUC** — `shared/personalization.ts` owns `BRAND_PACKS`, `buildBrandTokens`, `buildPersonalizationFoucScript()`, and background mode (`particles` / `grid` / `camera` / `custom`). Storage: `tgmc-brand-roles` (+ legacy `tgmc-accent` migration), `tgmc-background` / `tgmc-background-custom`. See [personalization.md](../web/features/personalization.md).
    2b. **Site person** — `content/profile.json` + `shared/site-profile.ts` own names, contact, portrait, downloads, and copyright; `useSiteProfile()` and `#shared/site-person` re-exports wire UI and `nuxt.config` defaults.
 4. **Admin layer** — host `server/plugins/admin-blog.ts` injects `event.context.adminBlog`; layer handlers no longer import `~~/server/**`. Blog entity types live in `@tgmc/web-layer-admin/shared/blog-types`.
 5. **Tests** — `blog-postgres` / `blog-dynamodb` adapter specs; admin-handler + thin Nitro route wiring specs.

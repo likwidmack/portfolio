@@ -1,5 +1,5 @@
 <template lang="pug">
-.portfolio-depth-field
+.portfolio-depth-field(:class="{ 'portfolio-depth-field--custom': background === 'custom' }")
   video.portfolio-depth-field__camera(
     v-show="background === 'camera'",
     ref="camEl",
@@ -9,7 +9,8 @@
     aria-hidden="true"
   )
   p.portfolio-depth-field__camera-note(v-if="cameraBlocked") Camera blocked — allow access for the camera background
-  .portfolio-depth-field__stage(ref="stageEl", aria-hidden="true")
+  .portfolio-depth-field__custom(v-if="background === 'custom'", aria-hidden="true")
+  .portfolio-depth-field__stage(v-else, ref="stageEl", aria-hidden="true")
     template(v-if="background === 'grid'")
       .portfolio-depth-field__grid-glow
       .portfolio-depth-field__grid-plane.portfolio-depth-field__grid-floor
@@ -18,16 +19,20 @@
       .portfolio-depth-field__plane(
         v-for="(plane, i) in planes",
         :key="'plane-' + i",
-        :style="{ left: plane.x + '%', top: plane.y + '%', width: plane.w + 'px', height: plane.h + 'px', marginLeft: -plane.w / 2 + 'px', marginTop: -plane.h / 2 + 'px', background: `radial-gradient(closest-side, var(--portfolio-haze-${i + 1}) 0%, transparent 72%)`, filter: `blur(${plane.blur}px)`, opacity: plane.o, transform: `translateZ(${plane.z}px)`, animationDelay: `${i * -3}s` }"
+        :style="{ left: plane.x + '%', top: plane.y + '%', width: plane.w + 'px', height: plane.h + 'px', marginLeft: -plane.w / 2 + 'px', marginTop: -plane.h / 2 + 'px', background: 'radial-gradient(closest-side, var(--portfolio-primary) 0%, transparent 72%)', filter: `blur(${plane.blur}px)`, opacity: plane.o, transform: `translateZ(${plane.z}px)`, animationDelay: `${i * -3}s` }"
       )
       .portfolio-depth-field__particle(v-for="(p, i) in particles", :key="'p-' + i", :style="{ left: p.x, top: p.y }")
         span(
           :style="{ width: p.size + 'px', height: p.size + 'px', background: p.color, boxShadow: p.shadow, filter: p.blur, animationDuration: p.dur, animationDelay: p.delay }"
         )
-  .portfolio-depth-field__vignette(aria-hidden="true")
+  .portfolio-depth-field__vignette(v-if="background !== 'custom'", aria-hidden="true")
 </template>
 
 <script setup lang="ts">
+/**
+ * Site-wide depth backdrop. Mode from `usePersonalization().background`:
+ * particles (default), grid, camera stream, or custom solid (`--portfolio-depth-custom`).
+ */
 interface Props {
   seed?: number;
   particleCount?: number;
@@ -81,13 +86,8 @@ function generateParticles(count: number, seed: number): Particle[] {
       size,
       dur: `${dur}s`,
       delay: `${(-rand() * parseFloat(dur)).toFixed(1)}s`,
-      color:
-        near > 0.78
-          ? 'var(--portfolio-particle-strong)'
-          : near > 0.4
-            ? 'var(--portfolio-particle-mid)'
-            : 'var(--portfolio-particle-soft)',
-      shadow: near > 0.78 ? 'var(--portfolio-particle-shadow-strong, none)' : 'none',
+      color: 'var(--portfolio-primary)',
+      shadow: near > 0.78 ? '0 0 10px var(--portfolio-primary)' : 'none',
       blur: near < 0.3 ? 'blur(1.4px)' : 'none',
     });
   }
@@ -97,10 +97,11 @@ function generateParticles(count: number, seed: number): Particle[] {
 const allParticles = generateParticles(props.particleCount, props.seed);
 
 const { background } = usePersonalization();
-const planes = computed(() => (background.value === 'camera' ? [] : basePlanes));
-const particles = computed(() =>
-  background.value === 'camera' ? allParticles.slice(0, Math.min(40, allParticles.length)) : allParticles
-);
+const planes = computed(() => (background.value === 'camera' || background.value === 'custom' ? [] : basePlanes));
+const particles = computed(() => {
+  if (background.value === 'custom') return [];
+  return background.value === 'camera' ? allParticles.slice(0, Math.min(40, allParticles.length)) : allParticles;
+});
 
 const stageEl = ref<HTMLElement | null>(null);
 const camEl = ref<HTMLVideoElement | null>(null);
@@ -178,4 +179,4 @@ watch(reducedMotion, (isReduced) => {
 watch(background, syncCamera);
 </script>
 
-<style lang="scss" src="./AppDepthField.scss"></style>
+<style lang="scss" src="./AppDepthField.scss" scoped></style>

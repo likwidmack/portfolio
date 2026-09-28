@@ -1,11 +1,16 @@
 /// Auto-injected into every Vite / Nuxt SCSS compile via `css.preprocessorOptions.scss.additionalData`.
 /// Keep this free of CSS output (no `@font-face`, rules, or placeholder `@extend` side effects).
 ///
-/// Available to Vue SFC `<style lang="scss">` and standalone `.scss` entries:
+/// Available to Vue SFC `<style lang="scss">` (and anything that `@use`s this entry):
 /// - breakpoints / type / space: `$breakpoint-*`, `$font-size-*`, `$space-*`, …
-/// - color tokens: `$color-*`, brand `$primary-color-*` / `$secondary-color-*`, hue scale (`$navy-*` …), …
+/// - color tokens: `$color-*`, brand `$primary-color-*` / `$secondary-color-*` / `$accent-color-*`, …
+/// - color helpers: `theme-lighten`, `theme-darken`, `theme-complementary`, `theme-contrast-ratio`, …
 /// - button mixins: `button-base`, `button-theme`
+///
+/// Standalone app `.scss` sheets are not injected — `@use 'theme/scss/tokens'` (or `theme/scss/nuxt-auto`)
+/// for the same members. Foundation/PrimeVue Sass bridges load tokens via theme package paths.
 
 @forward 'tokens/variables';
 @forward 'tokens/colors';
+@forward 'tokens/color-fns';
 @forward 'tokens/button-mixins';

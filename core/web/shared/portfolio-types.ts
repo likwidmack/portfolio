@@ -18,6 +18,9 @@ export interface CaseStudy {
     alt: string;
     caption?: string;
     poster?: string;
+    lqip?: string;
+    dominantColor?: string;
+    aspectCss?: string;
   }>;
   links: Array<{ label: string; href: string }>;
 }
@@ -46,16 +49,47 @@ export function sortCaseStudies(studies: CaseStudy[]): CaseStudy[] {
   return [...studies].sort((a, b) => Number(a.order) - Number(b.order));
 }
 
+/** Previous / next case study in Discovery order (`order` ascending); `null` at either end or for an unknown slug. */
+export function adjacentStudies(
+  studies: CaseStudy[],
+  slug: string
+): { previous: CaseStudy | null; next: CaseStudy | null } {
+  const sorted = sortCaseStudies(studies);
+  const index = sorted.findIndex((study) => study.slug === slug);
+  if (index === -1) return { previous: null, next: null };
+  return { previous: sorted[index - 1] ?? null, next: sorted[index + 1] ?? null };
+}
+
 /** Prefer a still image, then a video poster, then a diagram for work-card thumbnails. */
-export function getCaseStudyCardMedia(study: CaseStudy): { src: string; alt: string } | null {
+export type CaseStudyCardMedia = {
+  src: string;
+  alt: string;
+  lqip?: string;
+  dominantColor?: string;
+  aspectCss?: string;
+};
+
+export function getCaseStudyCardMedia(study: CaseStudy): CaseStudyCardMedia | null {
   const image = study.media.find((item) => item.type === 'image');
   if (image) {
-    return { src: image.src, alt: image.alt };
+    return {
+      src: image.src,
+      alt: image.alt,
+      lqip: image.lqip,
+      dominantColor: image.dominantColor,
+      aspectCss: image.aspectCss,
+    };
   }
 
   const videoWithPoster = study.media.find((item) => item.type === 'video' && item.poster);
   if (videoWithPoster?.poster) {
-    return { src: videoWithPoster.poster, alt: videoWithPoster.alt };
+    return {
+      src: videoWithPoster.poster,
+      alt: videoWithPoster.alt,
+      lqip: videoWithPoster.lqip,
+      dominantColor: videoWithPoster.dominantColor,
+      aspectCss: videoWithPoster.aspectCss,
+    };
   }
 
   const diagram = study.media.find((item) => item.type === 'diagram');

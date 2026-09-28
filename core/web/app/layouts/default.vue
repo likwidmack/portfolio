@@ -7,4 +7,4 @@ NuxtLayout(name="site", layout-class="layout-default", layout-key="site")
     slot(name="footer")
 </template>
 
-<style lang="scss" src="./default.scss"></style>
+<!-- Modifier only: `.layout-default` on the shared `site` shell (styles in site.scss). -->

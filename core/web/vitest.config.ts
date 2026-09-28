@@ -35,7 +35,7 @@ export default defineConfig(() => ({
     pool: 'forks',
     fileParallelism: false,
     maxWorkers: 1,
-    include: ['{src,tests,server,layers}/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    include: ['tests/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     reporters: ['default'],
     coverage: {
       reportsDirectory: './test-output/vitest/coverage',

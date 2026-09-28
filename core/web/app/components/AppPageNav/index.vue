@@ -1,12 +1,30 @@
 <template lang="pug">
-aside.page-nav.layout(data-algo="cluster", :aria-label="ariaLabel")
+aside.page-nav.layout(
+  data-algo="cluster",
+  :aria-label="ariaLabel",
+  :data-embedded="embedded ? '' : undefined",
+  @keydown.esc="closeAndFocus"
+)
   p(v-if="label", data-label) {{ label }}
-  nav
+  //- Phones / small tablets: one labelled disclosure instead of a sideways-scrolling row.
+  button.page-nav__toggle(
+    type="button",
+    :aria-expanded="open ? 'true' : 'false'",
+    :aria-controls="listId",
+    @click="toggleOpen"
+  )
+    span.page-nav__toggle-text
+      span.page-nav__toggle-label {{ label }}
+      span.page-nav__toggle-current(v-if="currentLabel") {{ currentLabel }}
+    UiIcon.page-nav__toggle-icon(name="chevron-down")
+  nav(:id="listId", :data-open="open ? '' : undefined")
     a(
       v-for="item in items",
       :key="item.id",
       :href="`#${item.id}`",
-      :data-state="_activeSection === item.id ? 'active' : undefined"
+      :data-state="_activeSection === item.id ? 'active' : undefined",
+      :aria-current="_activeSection === item.id ? 'location' : undefined",
+      @click="open = false"
     ) {{ item.label }}
 </template>
 
@@ -25,6 +43,8 @@ const props = withDefaults(
   defineProps<{
     items: AppPageNavItem[];
     label?: string;
+    /** Inside another sticky panel: not sticky itself, no padding or background, muted label. */
+    embedded?: boolean;
     ariaLabel?: string;
     rootMargin?: string;
     threshold?: number | number[];
@@ -38,6 +58,10 @@ const props = withDefaults(
 );
 
 const _activeSection = ref<string>(props.items[0]?.id ?? '');
+
+// Phone disclosure (hidden from tablet up, where the list is always shown).
+const { open, listId, closeAndFocus, toggleOpen } = usePageNavDisclosure();
+const currentLabel = computed(() => props.items.find((item) => item.id === _activeSection.value)?.label);
 
 let _sectionObserver: IntersectionObserver | null = null;
 
@@ -97,4 +121,4 @@ onBeforeUnmount(() => {
 });
 </script>
 
-<style lang="scss" src="./AppPageNav.scss"></style>
+<style lang="scss" src="./AppPageNav.scss" scoped></style>

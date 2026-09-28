@@ -171,7 +171,7 @@ cite {
 abbr {
   font-weight: bolder;
   color: var(--text-color);
-  text-decoration: underline dotted light-dark(rgba($text-color-light, 0.65), rgba($text-color-dark, 0.5)) !important;
+  text-decoration: underline dotted color-mix(in srgb, var(--text-color) 60%, transparent) !important;
   text-underline-offset: 0.15em;
 }
 

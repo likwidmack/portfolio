@@ -7,9 +7,10 @@
     "emitDeclarationOnly": false,
     "declarationMap": false,
     "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
     "lib": ["es2022", "dom"]
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "src/**/*.json"],
   "references": [],
   "exclude": ["src/**/*.spec.ts", "src/**/*.test.ts"]
 }

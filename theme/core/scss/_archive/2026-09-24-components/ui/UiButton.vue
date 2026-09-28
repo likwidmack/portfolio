@@ -1,0 +1,134 @@
+<template lang="pug">
+PrimeButton(
+  v-if="isPrimeVue",
+  v-bind="$attrs",
+  :label="label",
+  :aria-label="ariaLabel",
+  :severity="severity",
+  :variant="variant",
+  :type="type",
+  :disabled="disabled"
+)
+  template(v-if="icon", #icon="iconProps")
+    UiIcon(:name="icon", :class="iconProps.class")
+  slot
+button.p-button.p-component(
+  v-else,
+  v-bind="$attrs",
+  :type="type",
+  :disabled="disabled",
+  :aria-label="ariaLabel ?? label",
+  :class="_nativeClass"
+)
+  UiIcon.p-button-icon(v-if="icon", :name="icon")
+  span.p-button-label(v-if="label") {{ label }}
+  slot
+</template>
+
+<script setup lang="ts">
+/**
+ * Button — PrimeVue `Button`, else native control with classic `p-button` classes (theme `@layer primevue`).
+ * `icon` is a Lucide name (`UiIcon`, e.g. `external-link`); icon-only buttons need `ariaLabel`.
+ */
+defineOptions({
+  inheritAttrs: false,
+});
+
+const { isPrimeVue } = useUiStack();
+
+const props = withDefaults(
+  defineProps<{
+    label?: string;
+    icon?: string;
+    ariaLabel?: string;
+    severity?: 'secondary' | 'success' | 'info' | 'warn' | 'danger' | 'contrast' | 'help';
+    variant?: 'outlined' | 'text' | 'link';
+    type?: 'button' | 'submit' | 'reset';
+    disabled?: boolean;
+  }>(),
+  {
+    type: 'button',
+    disabled: false,
+  }
+);
+
+const _nativeClass = computed(() => {
+  const classes: string[] = [];
+  if (props.variant === 'outlined') {
+    classes.push('p-button-outlined');
+  } else if (props.variant === 'text') {
+    classes.push('p-button-text');
+  } else if (props.variant === 'link') {
+    classes.push('p-button-link');
+  }
+  if (props.severity) {
+    classes.push(`p-button-${props.severity}`);
+  }
+  if (props.icon && !props.label) {
+    classes.push('p-button-icon-only');
+  }
+  return classes;
+});
+</script>
+
+<style lang="scss" scoped>
+// Thin polish only — fill/severity colors come from Nora preset + `_primevue-union`.
+.p-button {
+  border-radius: var(--button-radius, 2px);
+  font-family: var(--font-family-mono);
+  // `max()` floors, not just rem: the theme halves --font-size-default at tablet/mobile
+  // widths (site-wide fluid type), which otherwise shrinks this rem-based label and
+  // padding down to an ~8.6px / ~24px-tall button — readable on desktop, illegible
+  // and barely tappable everywhere else.
+  font-size: max(0.75rem, 12px);
+  min-height: 44px; // touch target (WCAG 2.5.5 / repo UI rule)
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  box-shadow: var(--button-shadow);
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    background-color 220ms ease,
+    border-color 180ms ease,
+    color 180ms ease,
+    filter 180ms ease;
+
+  &[href] {
+    text-decoration: none;
+    color: var(--text-secondary-color, var(--button-fg));
+
+    &:hover,
+    &:focus,
+    &:active {
+      text-decoration: none;
+    }
+  }
+
+  &:focus-visible,
+  &:focus {
+    box-shadow:
+      0 0 0 3px var(--focus-ring),
+      var(--button-shadow-hover, var(--button-shadow));
+  }
+
+  &:not([disabled]):not(.p-button-text):not(.p-button-link):not(.p-button-outlined) {
+    color: var(--button-secondary-fg, var(--button-fg));
+  }
+
+  &.p-button-outlined {
+    text-shadow: 1px -1px 1px color-mix(in srgb, var(--text-color) 76%, transparent);
+
+    &:hover,
+    &:focus-visible {
+      border-color: var(--portfolio-rose, var(--primary-color));
+      color: var(--portfolio-rose, var(--primary-color));
+    }
+  }
+
+  &.p-button-text {
+    text-shadow: 1px -1px 1px color-mix(in srgb, var(--primary-inverted) 52%, transparent);
+    box-shadow: none;
+  }
+}
+</style>

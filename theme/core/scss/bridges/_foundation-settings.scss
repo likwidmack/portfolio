@@ -9,6 +9,9 @@
 
 // ─── Palette (ZF `$foundation-palette` keys) ─────────────────────────────────
 // Canonical compile-time defaults use shared default / semantic-dark tokens.
+// Brand accent (complementary of primary) is exposed at runtime as `--foundation-accent`
+// / `--accent-color`; ZF's palette map has no accent slot — keep primary/secondary here.
+// Vue SFCs get `theme-*` helpers via `_nuxt-auto`; this bridge `@use`s `tokens/colors` only.
 $foundation-palette: (
   primary: $primary-default-color,
   secondary: $secondary-default-color,
@@ -19,6 +22,9 @@ $foundation-palette: (
 
 $primary-color: $primary-default-color !default;
 $secondary-color: $secondary-default-color !default;
+/// Concrete accent hex for custom Foundation chrome (not ZF `$foundation-palette`).
+/// Prefer CSS `var(--foundation-accent)` / `var(--accent-color)` at runtime.
+$foundation-accent-color: $accent-color-dark !default;
 $success-color: $success-dark !default;
 $warning-color: $warning-dark !default;
 $alert-color: $error-dark !default;

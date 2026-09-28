@@ -6,6 +6,8 @@
  *
  * @packageDocumentation
  */
+export { aspectRatio, default as aspectRatioDefault } from './lib/aspect-ratio.js';
+export type { AspectRatio } from './lib/aspect-ratio.js';
 export { buildCdnUrl, createCdnHelper, isCdnUrl, resolveCdnPath, resolveCdnPaths, stripCdnPrefix } from './lib/cdn.js';
 export type { CdnConfig } from './lib/cdn.js';
 export { toSnakeCase, default as toSnakeCaseDefault } from './lib/to-snake-case.js';

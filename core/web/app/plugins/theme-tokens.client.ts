@@ -86,7 +86,8 @@ export default defineNuxtPlugin({
      * Public ThemeTokens API exposed to the app via `nuxtApp.provide('themeTokens', api)`.
      *
      * Prefer `api.theme` for ready-made packs and grouped updates; low-level
-     * `updateTokens` remains for partial CSS var patches (e.g. personalization accents).
+     * `updateTokens` remains for partial CSS var patches (Personalize brand roles /
+     * FOUC via `usePersonalization` → `buildBrandTokens`).
      * `api.theme` is bridge-bound so PrimeVue/foundation writes apply by default.
      */
     const api: ThemeTokensApi = {

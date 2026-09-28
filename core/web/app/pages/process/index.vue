@@ -38,7 +38,7 @@
         div
           dt Learning
           dd {{ card.learning }}
-      NuxtLink(v-if="card.caseStudySlug", :to="`/work/${card.caseStudySlug}`") Related case study →
+      NuxtLink.touch-target(v-if="card.caseStudySlug", :to="`/work/${card.caseStudySlug}`") Related case study →
 </template>
 
 <script setup lang="ts">
@@ -77,4 +77,4 @@ usePortfolioSeo({
 });
 </script>
 
-<style lang="scss" src="./process.scss"></style>
+<style lang="scss" src="./process.scss" scoped></style>

@@ -1,0 +1,280 @@
+// Archived styling of core/web/app/pages/code/index.vue before PR #169 (dd3f55376). Not compiled.
+.code-page {
+  @include portfolio-stack(var(--section-gap, 1.5rem));
+  width: 100%;
+  min-width: 0;
+
+  &__window {
+    display: grid;
+    width: 100%;
+    min-width: 0;
+    border: 1px solid var(--border-color, var(--portfolio-rule));
+    background: var(--main-background-secondary, var(--surface-color));
+    overflow: hidden;
+  }
+
+  &__chrome {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.45rem 0.55rem;
+    padding: 0.55rem 0.75rem;
+    border-bottom: 1px solid var(--border-color, var(--portfolio-rule));
+    background: var(--surface-color, var(--main-background-secondary));
+  }
+
+  &__dot {
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 999px;
+    flex: 0 0 auto;
+
+    &[data-tone='close'] {
+      background: var(--secondary-color, #8b1e2e);
+    }
+
+    &[data-tone='minimize'] {
+      background: var(--primary-color, #ff6b35);
+    }
+
+    &[data-tone='maximize'] {
+      background: var(--portfolio-teal, #1b7a7a);
+    }
+  }
+
+  &__chrome-title {
+    margin: 0;
+    min-width: 0;
+    color: var(--text-color-secondary, inherit);
+    font-size: 0.8rem;
+    overflow-wrap: anywhere;
+  }
+
+  &__body {
+    display: grid;
+    min-width: 0;
+
+    @media (min-width: $breakpoint-tablet) {
+      grid-template-columns: minmax(9rem, 0.7fr) minmax(0, 1.8fr);
+    }
+  }
+
+  &__explorer {
+    @include portfolio-stack(0.65rem);
+    align-content: start;
+    padding: 1rem 0.9rem;
+    border-bottom: 1px solid var(--border-color, var(--portfolio-rule));
+    background: color-mix(in srgb, var(--surface-color, var(--main-background-secondary)) 82%, transparent);
+    min-width: 0;
+
+    @media (min-width: $breakpoint-tablet) {
+      border-bottom: 0;
+      border-right: 1px solid var(--border-color, var(--portfolio-rule));
+    }
+
+    .eyebrow-container {
+      color: var(--primary-color);
+    }
+  }
+
+  &__paths {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    @include portfolio-stack(0.4rem);
+
+    code {
+      color: var(--text-color-secondary, inherit);
+      font-size: 0.85rem;
+      overflow-wrap: anywhere;
+    }
+  }
+
+  &__repos {
+    @include portfolio-stack(1rem);
+    padding: 1rem 1rem 1.25rem;
+    min-width: 0;
+  }
+
+  &__intro {
+    margin: 0;
+    gap: 0.35rem;
+  }
+
+  &__repo-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    @include portfolio-stack(0.65rem);
+  }
+
+  &__repo {
+    @include portfolio-stack(0.45rem 0.85rem);
+    align-items: start;
+    padding: 0.75rem 0.85rem;
+    border: 1px solid var(--border-color, var(--portfolio-rule));
+    background: var(--main-background, var(--surface-color));
+    min-width: 0;
+
+    @media (min-width: $breakpoint-tablet) {
+      grid-template-columns: minmax(0, 1fr) auto auto;
+      align-items: center;
+    }
+  }
+
+  &__repo-copy {
+    @include portfolio-stack(0.3rem);
+    min-width: 0;
+
+    p {
+      margin: 0;
+      color: var(--text-color-secondary, inherit);
+      font-size: 0.92rem;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+    }
+  }
+
+  &__repo-name {
+    margin: 0;
+    font-size: 1.05rem;
+    line-height: 1.3;
+
+    a {
+      color: inherit;
+      text-decoration: none;
+
+      &:hover,
+      &:focus-visible {
+        text-decoration: underline;
+        text-underline-offset: 0.12em;
+      }
+    }
+  }
+
+  &__lang {
+    color: var(--portfolio-teal);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  &__updated {
+    color: var(--text-color-secondary, inherit);
+    font-size: 0.8rem;
+    white-space: nowrap;
+  }
+
+  &__stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--border-color, var(--portfolio-rule));
+
+    li {
+      @include portfolio-stack(0.25rem);
+      padding: 1rem 0.5rem;
+      border-right: 1px solid var(--border-color, var(--portfolio-rule));
+    }
+
+    [data-label] {
+      color: var(--primary-color);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+  }
+}
+
+.code-browser {
+  @include portfolio-stack(1.5rem);
+
+  @media (min-width: $breakpoint-tablet) {
+    grid-template-columns: minmax(14rem, 18rem) minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+.code-browser__empty {
+  margin: 0;
+  color: var(--text-secondary-color, var(--text-color));
+}
+
+.code-browser__repos {
+  @include portfolio-stack(0.35rem);
+  align-content: start;
+
+  [data-label] {
+    margin: 0 0 0.25rem;
+    color: var(--text-secondary-color, var(--text-color));
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+}
+
+.code-browser__repo {
+  @include portfolio-stack(0.15rem);
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--border-color, var(--portfolio-rule));
+  border-radius: var(--border-radius-sm);
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  strong {
+    font-size: 0.9rem;
+  }
+
+  span {
+    color: var(--text-secondary-color, var(--text-color));
+    font-size: 0.75rem;
+  }
+
+  &[data-active] {
+    border-color: var(--primary-color);
+    background: color-mix(in srgb, var(--primary-color) 10%, transparent);
+  }
+}
+
+.code-browser__panel {
+  min-width: 0;
+  border: 1px solid var(--border-color, var(--portfolio-rule));
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+
+  :deep(pre),
+  :deep(.ui-code-block) {
+    max-height: min(32rem, 70dvh);
+    overflow: auto;
+  }
+}
+
+.code-browser__panel-header {
+  padding: 0.5rem 0.85rem;
+  border-bottom: 1px solid var(--border-color, var(--portfolio-rule));
+  background: color-mix(in srgb, var(--surface-color) 90%, transparent);
+  font-size: 0.8rem;
+}
+
+.code-browser__notes {
+  padding: 0.85rem;
+  border-top: 1px solid var(--border-color, var(--portfolio-rule));
+
+  [data-type='panel-title'] {
+    margin: 0 0 0.35rem;
+    font-weight: 700;
+  }
+
+  p:last-child {
+    margin: 0;
+  }
+}

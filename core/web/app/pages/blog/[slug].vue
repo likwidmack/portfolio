@@ -65,6 +65,8 @@ void formatDate;
 
 <style lang="scss" scoped>
 .blog-body {
+  // :deep() is the documented exception here: the post body is rendered markdown (v-html /
+  // ContentRenderer), not a component with props.
   :deep(h2),
   :deep(h3) {
     margin-top: 1.5em;

@@ -1,0 +1,101 @@
+/// Compile-only dump of resolvable Sass color tokens → `:root { --tv-*: … }`.
+/// Consumed by `bin/build-colors-json.mjs` (not shipped as a public stylesheet).
+@use 'sass:meta';
+@use 'sass:string';
+@use '../tokens/colors' as colors;
+
+@function tv-name($name) {
+  @return '--tv-' + string.slice(#{$name}, 1);
+}
+
+:root {
+  @each $name, $value in meta.module-variables(colors) {
+    @if meta.type-of($value) == 'color' {
+      #{tv-name($name)}: #{$value};
+    }
+  }
+
+  /* Explicit structured routes (same expressions as globals/_root.scss where needed). */
+  --tv-route-theme-light-text: #{colors.$text-color-light};
+  --tv-route-theme-light-background: #{colors.$main-background-light};
+  --tv-route-theme-light-background-secondary: #{colors.$main-background-light-secondary};
+  --tv-route-theme-light-primary: #{colors.$primary-color-light};
+  --tv-route-theme-light-secondary: #{colors.$secondary-color-light};
+  --tv-route-theme-dark-text: #{colors.$text-color-dark};
+  --tv-route-theme-dark-background: #{colors.$main-background-dark};
+  --tv-route-theme-dark-background-secondary: #{colors.$main-background-dark-secondary};
+  --tv-route-theme-dark-primary: #{colors.$primary-color-dark};
+  --tv-route-theme-dark-secondary: #{colors.$secondary-color-dark};
+
+  --tv-route-semantic-success: #{colors.$success-dark};
+  --tv-route-semantic-warning: #{colors.$warning-dark};
+  --tv-route-semantic-alert: #{colors.$alert-dark};
+  --tv-route-semantic-error: #{colors.$error-dark};
+  --tv-route-semantic-info: #{colors.$info-light};
+
+  --tv-route-primary-default: #{colors.$primary-default-color};
+  --tv-route-primary-secondary: #{colors.$secondary-default-color};
+  --tv-route-primary-success: #{colors.$success-dark};
+  --tv-route-primary-warning: #{colors.$warning-dark};
+  --tv-route-primary-alert: #{colors.$alert-dark};
+  --tv-route-primary-error: #{colors.$error-dark};
+  --tv-route-primary-info: #{colors.$info-light};
+
+  --tv-route-css-dark-primary-hover: #{colors.$css-primary-hover-dark};
+  --tv-route-css-dark-tertiary-color: #{colors.$oxblood-dark};
+  --tv-route-css-dark-text-secondary-color: #{colors.$text-color-secondary-dark};
+  --tv-route-css-dark-surface-color: #{colors.$css-surface-dark};
+  --tv-route-css-dark-surface-variant: #{colors.$css-surface-variant-dark};
+  --tv-route-css-dark-border-color: #{colors.$css-border-dark};
+  --tv-route-css-dark-accent-color: #{colors.$accent-color-dark};
+  --tv-route-css-dark-info: #{colors.$info-dark};
+  --tv-route-css-dark-form-background: #{rgba(0, 0, 0, 0.5)};
+  --tv-route-css-dark-form-background-disabled: #{rgba(colors.$css-form-background-disabled, 0.18)};
+  --tv-route-css-dark-form-border-color: #{colors.$css-border-strong-dark};
+  --tv-route-css-dark-focus-ring: #{colors.$css-focus-ring-dark};
+  --tv-route-css-dark-link-color: #{colors.$css-link-dark};
+  --tv-route-css-dark-border-strong: #{colors.$css-border-strong-dark};
+  --tv-route-css-dark-primary-fill: #{colors.$css-primary-fill-dark};
+  --tv-route-css-dark-on-primary: #{colors.$css-on-primary};
+  --tv-route-css-dark-success-ink: #{colors.$css-success-ink-dark};
+  --tv-route-css-dark-danger-ink: #{colors.$css-danger-ink-dark};
+  --tv-route-css-dark-warning-ink: #{colors.$css-warning-ink-dark};
+  --tv-route-css-dark-error-ink: #{colors.$css-error-ink-dark};
+  --tv-route-css-dark-info-ink: #{colors.$css-info-ink-dark};
+  --tv-route-css-dark-paper: #{colors.$dark-paper};
+  --tv-route-css-dark-ink: #{colors.$dark-ink};
+  --tv-route-css-dark-form-placeholder: #{rgba(colors.$text-color-secondary-dark, 0.9)};
+  --tv-route-css-dark-form-invalid-color: #{colors.$error-dark};
+
+  --tv-route-css-light-primary-hover: #{colors.$css-primary-hover-light};
+  --tv-route-css-light-tertiary-color: #{colors.$oxblood-light};
+  --tv-route-css-light-text-secondary-color: #{colors.$text-color-secondary-light};
+  --tv-route-css-light-surface-color: #{colors.$css-surface-light};
+  --tv-route-css-light-surface-variant: #{colors.$css-surface-variant-light};
+  --tv-route-css-light-border-color: #{colors.$css-border-light};
+  --tv-route-css-light-accent-color: #{colors.$accent-color-light};
+  --tv-route-css-light-success: #{colors.$success-light};
+  --tv-route-css-light-warning: #{colors.$warning-light};
+  --tv-route-css-light-error: #{colors.$error-light};
+  --tv-route-css-light-form-background: #{color-mix(in srgb, colors.$css-form-background-disabled 8%, transparent)};
+  --tv-route-css-light-form-background-disabled: #{color-mix(
+      in srgb,
+      colors.$css-form-background-disabled 18%,
+      transparent
+    )};
+  --tv-route-css-light-form-border-color: #{colors.$css-border-strong-light};
+  --tv-route-css-light-focus-ring: #{colors.$css-focus-ring-light};
+  --tv-route-css-light-link-color: #{colors.$css-link-light};
+  --tv-route-css-light-border-strong: #{colors.$css-border-strong-light};
+  --tv-route-css-light-primary-fill: #{colors.$css-primary-fill-light};
+  --tv-route-css-light-on-primary: #{colors.$css-on-primary};
+  --tv-route-css-light-success-ink: #{colors.$css-success-ink-light};
+  --tv-route-css-light-danger-ink: #{colors.$css-danger-ink-light};
+  --tv-route-css-light-warning-ink: #{colors.$css-warning-ink-light};
+  --tv-route-css-light-error-ink: #{colors.$css-error-ink-light};
+  --tv-route-css-light-info-ink: #{colors.$css-info-ink-light};
+  --tv-route-css-light-paper: #{colors.$light-paper};
+  --tv-route-css-light-ink: #{colors.$light-ink};
+  --tv-route-css-light-form-placeholder: #{color-mix(in srgb, colors.$text-color-secondary-light 85%, transparent)};
+  --tv-route-css-light-form-invalid-color: #{colors.$error-light};
+}

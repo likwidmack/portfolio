@@ -60,9 +60,9 @@ const engagement = computed(() => galleryEngagementLabel(props.post));
 
   &__kicker,
   &__role {
+    @include portfolio-type-meta;
     margin: 0;
     color: var(--text-color-secondary, inherit);
-    font-family: var(--font-family-mono);
     font-size: 0.8rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
@@ -82,7 +82,7 @@ const engagement = computed(() => galleryEngagementLabel(props.post));
     border: 1px solid var(--border-color, currentColor);
     border-radius: var(--border-radius-pill, 999px);
     color: var(--text-color);
-    font-family: var(--font-family-mono);
+    @include portfolio-type-meta;
     letter-spacing: 0.08em;
   }
 
@@ -132,7 +132,7 @@ const engagement = computed(() => galleryEngagementLabel(props.post));
     justify-self: start;
   }
 
-  @media (orientation: landscape) and (min-width: $breakpoint-tablet) {
+  @media (orientation: landscape) and (width >= #{bp(tablet)}) {
     grid-template-columns: minmax(0, 1.45fr) minmax(0, 0.85fr);
     grid-template-areas:
       'frame meta'

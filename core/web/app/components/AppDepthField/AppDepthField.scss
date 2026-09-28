@@ -1,3 +1,8 @@
+/* units: scene */
+// Decorative 3D scene: perspective, translateZ and plane geometry stay in px on purpose — the
+// scene is sized to the screen, not the reader's text size (docs/packages/theme.md § Units).
+@use 'mixins' as *;
+
 .portfolio-depth-field {
   position: fixed;
   inset: 0;
@@ -6,6 +11,24 @@
   pointer-events: none;
   perspective: 820px;
   perspective-origin: 52% 42%;
+
+  &--custom {
+    // Solid fill mode — no 3D stage / vignette (see `__custom`).
+    perspective: none;
+  }
+
+  // Flat backdrop when personalization background mode is `custom`.
+  &__custom {
+    position: absolute;
+    inset: 0;
+    background-color: var(--portfolio-depth-custom, var(--portfolio-background-primary));
+    background-image: var(--portfolio-background-image);
+    background-repeat: var(--portfolio-background-repeat);
+    background-size: var(--portfolio-background-size);
+    background-position: var(--portfolio-background-position);
+    background-attachment: var(--portfolio-background-attachment);
+    background-blend-mode: var(--portfolio-background-blend-mode);
+  }
 
   &__stage {
     position: absolute;
@@ -53,10 +76,9 @@
     border-radius: 2px;
     background: color-mix(in srgb, var(--surface-color) 82%, transparent);
     color: var(--text-color);
-    font-family: var(--font-family-mono);
-    font-size: 0.65rem;
+    @include portfolio-type-eyebrow;
+    font-size: max(var(--type-min, 12px), 0.65rem);
     letter-spacing: 0.2em;
-    text-transform: uppercase;
     transform: translateX(-50%);
   }
 
@@ -68,7 +90,7 @@
     height: 760px;
     margin: -380px 0 0 -750px;
     border-radius: 50%;
-    background: radial-gradient(closest-side, var(--portfolio-grid-glow) 0%, transparent 70%);
+    background: radial-gradient(closest-side, var(--portfolio-primary) 0%, transparent 70%);
     filter: blur(46px);
     opacity: 0.8;
     transform: translateZ(-950px);
@@ -82,8 +104,8 @@
     height: 1900px;
     margin-left: -1800px;
     background-image:
-      linear-gradient(var(--portfolio-grid-line) 1px, transparent 1px),
-      linear-gradient(90deg, var(--portfolio-grid-line) 1px, transparent 1px);
+      linear-gradient(color-mix(in srgb, var(--portfolio-primary) 50%, transparent) 0.25rem, transparent 0.25rem),
+      linear-gradient(90deg, color-mix(in srgb, var(--portfolio-primary) 50%, transparent) 0.25rem, transparent 0.25rem);
     background-size: 92px 92px;
     animation: portfolio-grid-scroll 4.5s linear infinite;
   }

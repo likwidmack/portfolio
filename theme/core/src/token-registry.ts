@@ -5,7 +5,7 @@ import {
   clearPrimeVueBridge,
   removeThemeVariables,
 } from './set-theme-variable.js';
-import { defaultCssVariables } from './tokens.js';
+import { defaultCssVariables, withoutDerivedRoles } from './tokens.js';
 
 /** CSS custom-property map (keys with or without `--` prefix). */
 export type ThemeTokenMap = Record<string, string>;
@@ -129,7 +129,7 @@ export function setTokens(
 
 /** Reset registry to package defaults and re-apply to the DOM. */
 export function resetTokens(options: ThemeBridgeOptions = {}): Readonly<ThemeTokenMap> {
-  return setTokens({ ...defaultCssVariables }, { ...options, source: 'reset' });
+  return setTokens({ ...withoutDerivedRoles(defaultCssVariables) } as ThemeTokenMap, { ...options, source: 'reset' });
 }
 
 /**

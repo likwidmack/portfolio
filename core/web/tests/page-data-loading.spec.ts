@@ -2,12 +2,25 @@ import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
+import { pageKeyFor } from '../shared/browse-query';
+
 const root = join(import.meta.dirname, '..');
 
 describe('SPA page data loading', () => {
-  it('keys NuxtPage by fullPath so route changes remount pages', async () => {
+  it('keys NuxtPage by full path minus browse-toolbar keys so route changes remount pages', async () => {
     const app = await readFile(join(root, 'app/app.vue'), 'utf8');
-    expect(app).toContain(':page-key="(route) => route.fullPath"');
+    expect(app).toContain('NuxtPage(:page-key="pageKey")');
+    expect(app).toContain('pageKeyFor(route)');
+    expect(pageKeyFor({ path: '/work/a', query: {}, hash: '' })).toBe('/work/a');
+    expect(pageKeyFor({ path: '/process', query: {}, hash: '#x' })).toBe('/process#x');
+    // Toolbar keys never change the key (no remount while filtering / typing)…
+    expect(pageKeyFor({ path: '/gallery', query: { group: 'reels', q: 'ar', view: 'feed', kind: 'video' } })).toBe(
+      '/gallery'
+    );
+    // …but other params still do (e.g. the Exhibition door's specimen).
+    expect(pageKeyFor({ path: '/gallery', query: { specimen: 'reel', group: 'reels' } })).toBe(
+      '/gallery?specimen=reel'
+    );
   });
 
   it('disables page/layout Transition out-in (Suspense + async setup conflict)', async () => {

@@ -21,51 +21,8 @@
 
 // ─── Block ───────────────────────────────────────────────────────────────────
 
-.page-nav {
-  position: sticky;
-  top: calc(var(--main-top-padding, 5rem) + 0.75rem);
-  z-index: 1;
-  margin: 0;
-  padding: 0.85rem 1rem;
-
-  nav {
-    display: grid;
-    gap: 0.35rem;
-  }
-
-  [data-label] {
-    margin: 0 0 0.35rem;
-    font-size: var(--font-size-xs);
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    opacity: 0.72;
-  }
-
-  a {
-    display: block;
-    padding: 0.35rem 0.5rem;
-    border-radius: var(--border-radius-sm, 0.35rem);
-    color: var(--text-color);
-    text-decoration: none;
-    font-variant: small-caps;
-    letter-spacing: 0.02em;
-    line-height: 1.25;
-
-    &:hover,
-    &:focus-visible {
-      // background: color-mix(in srgb, var(--primary-color) 12%, transparent);
-      outline: none;
-    }
-
-    &[data-state='active'],
-    &.is-active {
-      // background: color-mix(in srgb, var(--primary-color) 18%, transparent);
-      color: var(--primary-color);
-      font-weight: 700;
-    }
-  }
-}
+// `.page-nav` (on-page section nav) lives in the app component that renders it:
+// core/web/app/components/AppPageNav/AppPageNav.scss — the theme stays universal.
 
 /// Typography demos use paragraphs (valid outline) but keep `h*` character styles.
 .heading-sample {

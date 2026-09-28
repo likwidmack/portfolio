@@ -146,7 +146,7 @@ player.on('state', (state) => {
     sourceLabel: 'assets/css/portfolio-launch.scss',
     href: '/styles',
     code: `.work-card {
-  --work-card-media-ratio: 16 / 10;
+  --work-card-media-ratio: 16 / 9;
   --work-card-media-width: 22.5rem;
   border-right: 1px solid var(--portfolio-rule);
   background: color-mix(in srgb, var(--surface-color) 88%, transparent);
@@ -163,8 +163,8 @@ player.on('state', (state) => {
     title: 'Kitchen-sink lanes',
     summary: 'Native / Foundation / PrimeVue comparison grammar from the Experience Systems story.',
     language: 'scss',
-    sourceLabel: 'pages/styles + @tgmc/theme',
-    href: '/styles',
+    sourceLabel: 'pages/styles/parity + @tgmc/theme',
+    href: '/styles/parity',
     code: `.styles-lanes {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

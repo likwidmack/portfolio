@@ -1,5 +1,5 @@
 import { setTokens, type ThemeBridgeOptions, type ThemeTokenMap } from './token-registry.js';
-import { getCssVariablesForMode } from './tokens.js';
+import { getInlineTokensForMode } from './tokens.js';
 
 export type ThemeModePreference = 'light' | 'dark' | 'system';
 export type ThemeResolvedMode = 'light' | 'dark';
@@ -94,7 +94,9 @@ function notify(change: ThemeModeChange): void {
 
 function applyResolvedMode(nextResolved: ThemeResolvedMode, source = 'color-mode'): ThemeModeChange {
   resolved = nextResolved;
-  const tokens = setTokens(getCssVariablesForMode(nextResolved), {
+  // Derived roles (surfaces, text, borders, status inks) stay with the stylesheet so a live
+  // `--paper` / `--ink` change reaches them — see `DERIVED_ROLE_TOKENS`.
+  const tokens = setTokens(getInlineTokensForMode(nextResolved), {
     ...bridges,
     source,
   });

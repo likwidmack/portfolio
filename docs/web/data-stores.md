@@ -53,5 +53,7 @@ Local and development reads process env (`SYS_ENV`, `DATABASE_URL` / `NUXT_DATAB
 
 ```bash
 npm run db:migrate:local
-cd core/web && npx vitest run server/db tests/resolve-process-env.spec.ts
+cd core/web && npx vitest run tests/server/db tests/resolve-process-env.spec.ts
+npm run docker:dev    # Postgres
+npm run docker:test   # Dynamo Local (ensureNitroOutput first)
 ```

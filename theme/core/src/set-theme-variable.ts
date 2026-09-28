@@ -27,13 +27,15 @@ export function applyThemeVariables(variables: Record<string, string>): void {
 /**
  * Maps theme token keys to Foundation-facing CSS variables when that layer is active.
  *
- * `--foundation-*` defaults are CSS aliases of theme tokens in `_root.scss`, so they
- * already follow light/dark. This clears any prior inline overrides on those keys so
- * the stylesheet aliases remain parallel after an `applyTheme` / registry patch.
+ * `--foundation-*` defaults are CSS aliases of theme tokens in `_root.scss` (including
+ * `--foundation-accent` → `--accent-color`), so they already follow light/dark. This clears
+ * any prior inline overrides on those keys so the stylesheet aliases remain parallel after
+ * an `applyTheme` / registry patch.
  */
 const FOUNDATION_ALIAS_KEYS = [
   '--foundation-primary',
   '--foundation-secondary',
+  '--foundation-accent',
   '--foundation-success',
   '--foundation-warning',
   '--foundation-alert',

@@ -90,10 +90,19 @@ consumeTemplateData({
 </script>
 
 <style scoped lang="scss">
+// The code is v-html (highlighted markup), so :deep() is how this component styles its own body.
 .ui-code-block {
+  min-width: 0;
+
   :deep(.syntax-frame),
   [data-fallback] {
     margin: 0;
+  }
+
+  :deep(.syntax-block),
+  :deep(pre) {
+    margin: 0;
+    max-width: 100%;
   }
 }
 </style>

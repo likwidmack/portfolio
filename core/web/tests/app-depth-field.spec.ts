@@ -4,6 +4,12 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 const componentPath = join(import.meta.dirname, '../app/components/AppDepthField/index.vue');
+const siteLayoutPath = join(import.meta.dirname, '../app/layouts/site.vue');
+const pageOwners = [
+  '../app/components/AppSplash/index.vue',
+  '../app/pages/work/index.vue',
+  '../app/pages/gallery/index.vue',
+] as const;
 
 describe('AppDepthField', () => {
   it('generates a deterministic particle field from a seed', async () => {
@@ -33,5 +39,15 @@ describe('AppDepthField', () => {
     const source = readFileSync(componentPath, 'utf8');
     expect(source).toContain('usePrefersReducedMotion');
     expect(source).toContain('aria-hidden="true"');
+  });
+
+  it('mounts from the site layout once (not per-page duplicates)', () => {
+    const layout = readFileSync(siteLayoutPath, 'utf8');
+    expect(layout).toContain('AppDepthField');
+
+    for (const rel of pageOwners) {
+      const src = readFileSync(join(import.meta.dirname, rel), 'utf8');
+      expect(src, rel).not.toContain('AppDepthField');
+    }
   });
 });

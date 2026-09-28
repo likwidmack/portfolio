@@ -60,15 +60,15 @@ function stashMarkdownPunctuation(source: string, stash: StashToken): string {
  * @returns The tokenized HTML content.
  */
 function tokenizeMarkdownContent(codeInnerHtml: string): string {
-  const { stash, restore } = createTokenStash(codeInnerHtml);
+  const { raw, stash, finish } = createTokenStash(codeInnerHtml);
   const source = stashMarkdownPunctuation(
     stashMarkdownLinks(
-      stashMarkdownEmphasis(stashMarkdownInlineCode(stashMarkdownBlocks(codeInnerHtml, stash), stash), stash),
+      stashMarkdownEmphasis(stashMarkdownInlineCode(stashMarkdownBlocks(raw, stash), stash), stash),
       stash
     ),
     stash
   );
-  return restore(source);
+  return finish(source);
 }
 
 /**

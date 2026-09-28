@@ -1,34 +1,27 @@
 /// <reference types='vitest' />
 /**
  * Vite options forwarded from Nuxt: dependency pre-bundle hints, JSX support, NX tsconfig paths,
- * SCSS auto-`@use` for theme tokens, and narrowed `server.fs.allow` for the `core/web` package root.
+ * Vue-only SCSS `additionalData` (theme `nuxt-auto` + app mixins), Sass `loadPaths` for standalone
+ * sheets, and narrowed `server.fs.allow` for the `core/web` package root.
  */
 import type { ViteOptions } from '@nuxt/schema';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 import vueJsx from '@vitejs/plugin-vue-jsx';
-import { fileURLToPath, URL } from 'node:url';
 
-import { shouldInjectScssAutoUse } from './scss-auto-use';
+import { scssAdditionalData, scssLoadPaths, themeRoot, themeScssRoot } from './scss-additional-data';
 import { viteFsAllowRoots } from './vite-fs-allow';
 
-const resolvePath = (strUrl: string | URL) => fileURLToPath(new URL(strUrl, import.meta.url));
-const themeRoot = resolvePath('../../../theme/core');
-const themeScssRoot = `${themeRoot}/scss`;
-const themePrimeVueRoot = resolvePath('../../../theme/primevue');
-const themeFoundationRoot = resolvePath('../../../theme/foundation');
-
-/**
- * Common Sass modules prepended to every SCSS compilation (Vue SFC styles + `.scss` files).
- * Paths are relative to `loadPaths` (`theme/core/scss`).
- *
- * Source of truth for members: `theme/core/scss/_nuxt-auto.scss`.
- */
-export const scssAutoUseEntry = 'nuxt-auto';
-
-/** Sass load paths for `@tgmc/theme` SCSS (tokens, globals, PrimeVue, Foundation). */
-export const scssLoadPaths = [themeRoot, themeScssRoot, themePrimeVueRoot, themeFoundationRoot];
-
-export { shouldInjectScssAutoUse } from './scss-auto-use';
+export {
+  appCssRoot,
+  scssAdditionalData,
+  scssAutoUseEntry,
+  scssLoadPaths,
+  themeFoundationRoot,
+  themePrimeVueRoot,
+  themeRoot,
+  themeScssRoot,
+} from './scss-additional-data';
+export { shouldInjectAppMixins, shouldInjectScssAutoUse } from './scss-auto-use';
 
 function stripBrokenPrimeVueProxySourcemap() {
   return {
@@ -100,15 +93,7 @@ export const vite: () => ViteOptions = () => ({
         // theme-owned SCSS already uses `@use` / module builtins.
         quietDeps: true,
         silenceDeprecations: ['import', 'global-builtin', 'if-function'],
-        additionalData(content: string, filename: string): string {
-          if (!shouldInjectScssAutoUse(content, filename)) {
-            return content;
-          }
-
-          // Absolute path: Vue SFC virtual modules often ignore Sass `loadPaths`.
-          const autoUsePath = `${themeScssRoot.replace(/\\/g, '/')}/nuxt-auto`;
-          return `@use "${autoUsePath}" as *;\n${content}`;
-        },
+        additionalData: scssAdditionalData,
         loadPaths: scssLoadPaths,
       },
     },

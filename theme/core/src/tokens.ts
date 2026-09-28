@@ -1,7 +1,9 @@
 /**
- * JavaScript mirror of SCSS color tokens in `@tgmc/theme/scss/tokens`.
+ * JavaScript mirrors of SCSS color tokens — values from `colors.json` only.
+ * Inventoried color hex/rgb literals must not appear in this module.
  */
 
+import colorsJson from './colors.json' with { type: 'json' };
 import { resolveButtonForeground } from './contrast.js';
 
 export type Rgb = {
@@ -24,75 +26,26 @@ type ThemeColorSet = {
   secondary: string;
 };
 
-export const baseColors = {
-  white: '#ffffff',
-  black: '#000000',
-  grayLt: 'rgb(205, 205, 205)',
-  grayMd: 'rgb(128, 128, 128)',
-  grayDk: 'rgb(50, 50, 50)',
-  blue: 'rgb(0, 0, 255)',
-  red: 'rgb(255, 0, 0)',
-  green: 'rgb(0, 255, 0)',
-  magenta: 'rgb(255, 0, 255)',
-  cyan: 'rgb(0, 255, 255)',
-  yellow: 'rgb(255, 255, 0)',
-} as const;
+/** Package color library (Sass-aligned inventoried values + named catalogs). */
+export const colorsLibrary = colorsJson;
 
-export const palettes = {
-  brightSkySunset: {
-    pastelBlue: '#c8e8fc',
-    pastelPink: '#ffecf0',
-    softWhite: '#ffdee4',
-  },
-  darkNightGoldenDay: {
-    blackPearl: '#001a26',
-    darkTarawera: '#053752',
-    thanksgivingOrange: '#ef810e',
-    wattleYellow: '#e5de44',
-  },
-  pastelDayNight: {
-    skyBlue: '#6696ba',
-    paleYellow: '#e2e38b',
-    softOrange: '#e7a553',
-    mutedMagenta: '#7e4b68',
-    deepIndigo: '#292965',
-  },
-  midnightMagic: {
-    darkAmethyst: '#3a015c',
-    deepPurple: '#4f0147',
-    midnightViolet: '#35012c',
-    midnightVioletDk: '#11001c',
-  },
-} as const;
+export const baseColors = colorsJson.base;
+
+export const palettes = colorsJson.palettes;
+
+/** Flat named-color catalog (colors_2 + extended-colors; Sass overrides on conflict). */
+export const namedColors = colorsJson.named as Record<string, string>;
+
+/** Wide flat map of Sass-resolvable color tokens from `colors-dump.scss`. */
+export const sassColors = colorsJson.sass as Record<string, string>;
 
 /** Mirrors Sass `$success-dark` / `$warning-dark` / `$alert-dark` / `$error-dark` / `$info-light`. */
-export const semanticColors = {
-  success: '#1b7a7a',
-  warning: '#ff8c61',
-  alert: '#c1440e',
-  error: '#c1440e',
-  info: '#0a0aef',
-} as const;
+export const semanticColors = colorsJson.semantic;
 
 /** Mirrors Sass brand + surface roles in `scss/tokens/_colors.scss`. */
-export const themeColors = {
-  light: {
-    text: '#1c1412',
-    background: '#faf6f3',
-    backgroundSecondary: '#f0e9e4',
-    primary: '#d9531d',
-    secondary: '#6e1622',
-  },
-  dark: {
-    text: '#f2ece8',
-    background: '#0f0908',
-    backgroundSecondary: '#16100e',
-    primary: '#ac1922',
-    secondary: '#8a6a56',
-  },
-} as const satisfies Record<'light' | 'dark', ThemeColorSet>;
+export const themeColors = colorsJson.theme as Record<'light' | 'dark', ThemeColorSet>;
 
-type ThemeKey = keyof (typeof themeColors)['light'];
+type ThemeKey = keyof ThemeColorSet;
 
 /** Shared CSS custom-property keys for both color modes (aligned with `scss/globals/_root.scss`). */
 export type ThemeCssVariableMap = {
@@ -122,76 +75,151 @@ export type ThemeCssVariableMap = {
   '--form-focus-ring': string;
   '--form-invalid-color': string;
   '--button-fg': string;
+  /** Accessible interaction roles (AA in both modes; see docs/packages/theme.md → Contrast roles). */
+  '--link-color': string;
+  '--border-strong': string;
+  '--primary-fill': string;
+  '--on-primary': string;
+  '--success-ink': string;
+  '--danger-ink': string;
+  /** Status inks (≥ 4.5:1 text) — five-input model. */
+  '--warning-ink': string;
+  '--error-ink': string;
+  '--info-ink': string;
+  /** The neutral inputs: lightest ("white") and darkest ("black"). */
+  '--paper': string;
+  '--ink': string;
 };
+
+const darkCss = colorsJson.cssVariables.dark;
+const lightCss = colorsJson.cssVariables.light;
+
+/** Non-color layout token — not part of the color inventory. */
+const BORDER_RADIUS_MD = '0.5rem';
 
 /** Dark mode CSS custom properties (document default / `:root`). */
 export const darkCssVariables = {
   '--primary-color': themeColors.dark.primary,
   '--primary-default': themeColors.dark.primary,
-  // Sass `$css-primary-hover-dark`: color.adjust(#dcd7c9, $lightness: 10%)
-  '--primary-hover': '#f1efe9',
+  '--primary-hover': darkCss['--primary-hover'],
   '--secondary-color': themeColors.dark.secondary,
-  '--tertiary-color': '#9e2a3a',
+  '--tertiary-color': darkCss['--tertiary-color'],
   '--text-color': themeColors.dark.text,
-  '--text-secondary-color': '#baa8a0',
+  '--text-secondary-color': darkCss['--text-secondary-color'],
   '--main-background': themeColors.dark.background,
   '--main-background-secondary': themeColors.dark.backgroundSecondary,
-  '--surface-color': '#16100e',
-  '--surface-variant': '#1c1412',
-  '--border-color': 'rgba(255, 255, 255, 0.08)',
-  '--focus-ring': themeColors.dark.primary,
-  '--accent-color': themeColors.dark.primary,
+  '--surface-color': darkCss['--surface-color'],
+  '--surface-variant': darkCss['--surface-variant'],
+  '--border-color': darkCss['--border-color'],
+  '--focus-ring': darkCss['--focus-ring'],
+  '--accent-color': darkCss['--accent-color'],
   '--success': semanticColors.success,
   '--warning': semanticColors.warning,
   '--error': semanticColors.error,
-  '--info': '#0288d1',
-  '--border-radius-md': '0.5rem',
-  '--form-background': 'rgba(0, 0, 0, 0.5)',
-  '--form-background-disabled': 'rgba(128, 128, 128, 0.18)',
-  '--form-border-color': 'rgba(205, 205, 205, 0.4)',
-  '--form-placeholder': 'rgba(186, 168, 160, 0.9)',
-  '--form-focus-ring': themeColors.dark.primary,
-  '--form-invalid-color': '#c1440e',
+  '--info': darkCss['--info'],
+  '--border-radius-md': BORDER_RADIUS_MD,
+  '--form-background': darkCss['--form-background'],
+  '--form-background-disabled': darkCss['--form-background-disabled'],
+  '--form-border-color': darkCss['--border-strong'],
+  '--form-placeholder': darkCss['--form-placeholder'],
+  '--form-focus-ring': darkCss['--focus-ring'],
+  '--form-invalid-color': darkCss['--form-invalid-color'],
   '--button-fg': resolveButtonForeground('dark', themeColors.dark.primary, themeColors.dark.secondary),
+  '--link-color': darkCss['--link-color'],
+  '--border-strong': darkCss['--border-strong'],
+  '--primary-fill': darkCss['--primary-fill'],
+  '--on-primary': darkCss['--on-primary'],
+  '--success-ink': darkCss['--success-ink'],
+  '--danger-ink': darkCss['--danger-ink'],
+  '--warning-ink': darkCss['--warning-ink'],
+  '--error-ink': darkCss['--error-ink'],
+  '--info-ink': darkCss['--info-ink'],
+  '--paper': darkCss['--paper'],
+  '--ink': darkCss['--ink'],
 } as const satisfies ThemeCssVariableMap;
 
 /** Light mode CSS custom properties (`:root[data-theme='light']`). */
 export const lightCssVariables = {
   '--primary-color': themeColors.light.primary,
   '--primary-default': themeColors.light.primary,
-  // Sass `$css-primary-hover-light`: color.adjust(#1a1a1d, $lightness: -10%)
-  '--primary-hover': '#020203',
+  '--primary-hover': lightCss['--primary-hover'],
   '--secondary-color': themeColors.light.secondary,
-  '--tertiary-color': '#360a14',
+  '--tertiary-color': lightCss['--tertiary-color'],
   '--text-color': themeColors.light.text,
-  '--text-secondary-color': '#5a4a42',
+  '--text-secondary-color': lightCss['--text-secondary-color'],
   '--main-background': themeColors.light.background,
   '--main-background-secondary': themeColors.light.backgroundSecondary,
-  '--surface-color': '#f0e9e4',
-  '--surface-variant': '#e6dcd5',
-  '--border-color': 'rgba(0, 0, 0, 0.08)',
-  '--focus-ring': themeColors.light.primary,
-  '--accent-color': themeColors.light.primary,
-  '--success': '#146060',
-  '--warning': '#c26a1f',
-  '--error': '#b33a0f',
+  '--surface-color': lightCss['--surface-color'],
+  '--surface-variant': lightCss['--surface-variant'],
+  '--border-color': lightCss['--border-color'],
+  '--focus-ring': lightCss['--focus-ring'],
+  '--accent-color': lightCss['--accent-color'],
+  '--success': lightCss['--success'],
+  '--warning': lightCss['--warning'],
+  '--error': lightCss['--error'],
   '--info': semanticColors.info,
-  '--border-radius-md': '0.5rem',
-  '--form-background': 'color-mix(in srgb, rgb(128, 128, 128) 8%, transparent)',
-  '--form-background-disabled': 'color-mix(in srgb, rgb(128, 128, 128) 18%, transparent)',
-  '--form-border-color': 'rgba(205, 205, 205, 0.4)',
-  '--form-placeholder': 'color-mix(in srgb, rgb(90, 74, 66) 85%, transparent)',
-  '--form-focus-ring': themeColors.light.primary,
-  '--form-invalid-color': '#b33a0f',
+  '--border-radius-md': BORDER_RADIUS_MD,
+  '--form-background': lightCss['--form-background'],
+  '--form-background-disabled': lightCss['--form-background-disabled'],
+  '--form-border-color': lightCss['--border-strong'],
+  '--form-placeholder': lightCss['--form-placeholder'],
+  '--form-focus-ring': lightCss['--focus-ring'],
+  '--form-invalid-color': lightCss['--form-invalid-color'],
   '--button-fg': resolveButtonForeground('light', themeColors.light.primary, themeColors.light.secondary),
+  '--link-color': lightCss['--link-color'],
+  '--border-strong': lightCss['--border-strong'],
+  '--primary-fill': lightCss['--primary-fill'],
+  '--on-primary': lightCss['--on-primary'],
+  '--success-ink': lightCss['--success-ink'],
+  '--danger-ink': lightCss['--danger-ink'],
+  '--warning-ink': lightCss['--warning-ink'],
+  '--error-ink': lightCss['--error-ink'],
+  '--info-ink': lightCss['--info-ink'],
+  '--paper': lightCss['--paper'],
+  '--ink': lightCss['--ink'],
 } as const satisfies ThemeCssVariableMap;
 
 /** @deprecated Prefer `darkCssVariables` — alias kept for existing call sites. */
 export const defaultCssVariables = darkCssVariables;
 
-/** Returns the CSS variable map for a resolved color mode. */
+/** Returns the CSS variable map for a resolved color mode (build-time hex values). */
 export function getCssVariablesForMode(mode: 'light' | 'dark'): ThemeCssVariableMap {
   return mode === 'light' ? { ...lightCssVariables } : { ...darkCssVariables };
+}
+
+/**
+ * Roles the stylesheet derives at runtime from the five inputs (paper / ink → neutral scale,
+ * status hue → status inks). They must never be written inline on `:root`: an inline hex would
+ * pin the build-time default and a live `--paper` / `--ink` change would stop reaching them.
+ * The stylesheet already switches them per mode (`:root` / `[data-theme='light']`).
+ */
+export const DERIVED_ROLE_TOKENS: ReadonlySet<string> = new Set([
+  '--paper',
+  '--ink',
+  '--main-background',
+  '--main-background-secondary',
+  '--surface-color',
+  '--surface-variant',
+  '--text-color',
+  '--text-secondary-color',
+  '--border-color',
+  '--border-strong',
+  '--form-border-color',
+  '--success-ink',
+  '--warning-ink',
+  '--error-ink',
+  '--info-ink',
+  '--danger-ink',
+]);
+
+/** A token map without the runtime-derived roles (safe to write inline). */
+export function withoutDerivedRoles<T extends Record<string, string>>(tokens: T): Partial<T> {
+  return Object.fromEntries(Object.entries(tokens).filter(([key]) => !DERIVED_ROLE_TOKENS.has(key))) as Partial<T>;
+}
+
+/** Tokens a colour-mode switch writes inline: the mode map minus the runtime-derived roles. */
+export function getInlineTokensForMode(mode: 'light' | 'dark'): Record<string, string> {
+  return withoutDerivedRoles(getCssVariablesForMode(mode) as Record<string, string>) as Record<string, string>;
 }
 
 export function getThemeColor(key: ThemeKey, isDark = false): string | null {

@@ -1,5 +1,6 @@
 <template lang="pug">
 .app-site-layout(:id="`${layoutKey}_page`", :class="layoutClass")
+  AppDepthField(:seed="11", :particle-count="120")
   a(data-skip-link, :href="`#${layoutKey}_main`") Skip to main content
 
   header.site-chrome(:id="`${layoutKey}_header`"): slot(name="header"): div: AppPrimaryNav
@@ -8,12 +9,14 @@
 
   footer.site-chrome(:id="`${layoutKey}_footer`"): slot(name="footer")
     .site-footer
-      p &copy; {{ profile.copyright.displayYear }} {{ profile.names.formal }} · {{ profile.role.footerCredential }} · {{ profile.names.signature }}
-      button.site-footer__personalize(type="button", @click="personalizeOpen = true") Personalize
+      p.site-footer__credit &copy; {{ profile.copyright.displayYear }} {{ profile.names.formal }} · {{ profile.role.footerCredential }} · {{ profile.names.signature }}
+      AppSocialLinks.site-footer__social
+    //- Personalize lives in the header on every width (design system: header only).
     AppPersonalize(v-model:open="personalizeOpen")
 </template>
 
 <script setup lang="ts">
+import { personContactJsonLd, profileSameAs } from '#shared/social-links';
 import { styleListener } from '#shared/utils/style-listener';
 
 const props = defineProps<{
@@ -33,7 +36,9 @@ const personJsonLd = computed(() => ({
   url: config.public.siteUrl,
   description: profile.value.role.jsonLdDescription,
   email: profile.value.contact.email,
-  sameAs: [profile.value.contact.github.url],
+  ...personContactJsonLd(profile.value),
+  // Only identity profiles with a value — `null` entries in profile.json never reach SEO.
+  sameAs: profileSameAs(profile.value),
 }));
 
 useHead({

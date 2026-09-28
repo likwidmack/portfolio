@@ -108,6 +108,8 @@ const splashDoorSchema = z.object({
   id: z.enum(['discovery', 'process', 'exhibition']),
   label: z.string(),
   lede: z.string(),
+  /** Size of the choice, shown under the lede ("6 case studies"). */
+  scope: z.string().optional(),
 });
 
 const homeContentSchema = z.object({
@@ -254,6 +256,9 @@ const galleryExhibitSchema = z.discriminatedUnion('kind', [
     alt: z.string().optional(),
     caption: z.string().optional(),
     poster: z.string().optional(),
+    lqip: z.string().optional(),
+    dominantColor: z.string().optional(),
+    aspectCss: z.string().optional(),
   }),
   z.object({
     kind: z.literal('viz'),
@@ -359,6 +364,9 @@ const caseStudySchema = z.object({
       alt: z.string(),
       caption: z.string().optional(),
       poster: z.string().optional(),
+      lqip: z.string().optional(),
+      dominantColor: z.string().optional(),
+      aspectCss: z.string().optional(),
     })
   ),
   links: z.array(z.object({ label: z.string(), href: z.string() })),
@@ -380,8 +388,12 @@ const decisionCardSchema = z.object({
 
 const codeSampleSchema = z.object({
   id: z.string().min(1),
+  /** Plain-language name shown in the snippet list ("Slug normalizer"). */
+  title: z.string().min(1),
   module: z.string().min(1),
   file: z.string().min(1),
+  /** Repo-relative path, linked on the public repo (likwidmack/portfolio). */
+  path: z.string().min(1),
   language: z.string().min(1),
   style: z.string().min(1),
   dependencies: z.string().min(1),
@@ -401,8 +413,6 @@ const codeContentSchema = z.object({
     title: z.string(),
     lede: z.string(),
   }),
-  windowTitle: z.string(),
-  explorer: z.array(z.string().min(1)),
   samples: z.array(codeSampleSchema).min(1),
   repos: z.array(
     z.object({
@@ -410,9 +420,8 @@ const codeContentSchema = z.object({
       name: z.string().min(1),
       language: z.string().min(1),
       description: z.string().min(1),
-      updated: z.string().min(1),
-      // `#` when the monorepo is private (anonymous GitHub 404); real URLs when public.
-      href: z.union([z.string().url(), z.literal('#')]).optional(),
+      /** Repo-relative folder on the public repo (likwidmack/portfolio); '' = repo root. */
+      path: z.string(),
     })
   ),
 });
@@ -447,12 +456,35 @@ const profileContentSchema = z.object({
     short: z.string().min(1),
     signature: z.string().min(1),
   }),
+  // Single source for owner info. Unknown / unused entries stay in the file as `null`:
+  // they never render in the UI and never reach SEO (JSON-LD) — see shared/social-links.ts.
   contact: z.object({
     email: z.string().email(),
+    phone: z.string().min(1).nullable().default(null),
+    website: z.string().url().nullable().default(null),
+    location: z.string().min(1).nullable().default(null),
+    /** Scheduling link (Calendly, Cal.com…). */
+    booking: z.string().url().nullable().default(null),
     github: z.object({
       handle: z.string().min(1),
       url: z.string().url(),
     }),
+    /**
+     * Every social profile / reference link (`AppSocialLinks`, JSON-LD `sameAs`). `href: null` =
+     * not used: hidden from UI and SEO. `kind: 'profile'` = an identity (goes to `sameAs`);
+     * `'reference'` = a resource (portfolio source, RSS) shown in the UI only. `icon` is a Lucide name.
+     */
+    social: z
+      .array(
+        z.object({
+          id: z.string().min(1),
+          label: z.string().min(1),
+          href: z.string().url().nullable(),
+          icon: z.string().min(1),
+          kind: z.enum(['profile', 'reference']).default('profile'),
+        })
+      )
+      .default([]),
   }),
   role: z.object({
     title: z.string().min(1),

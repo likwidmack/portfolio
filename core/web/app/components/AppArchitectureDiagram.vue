@@ -114,7 +114,7 @@ const edgePaths = computed(() =>
 
   svg {
     display: block;
-    width: min(100%, 720px);
+    width: min(100%, 45rem);
     height: auto;
     margin-inline: auto;
   }
@@ -134,7 +134,7 @@ const edgePaths = computed(() =>
 
   &__group-label {
     fill: var(--secondary-color, var(--primary-color));
-    font-size: 14px;
+    font-size: 0.875rem;
     font-weight: 700;
   }
 
@@ -146,7 +146,7 @@ const edgePaths = computed(() =>
 
   &__node-label {
     fill: var(--text-color);
-    font-size: 13px;
+    font-size: 0.8125rem;
     font-weight: 600;
   }
 

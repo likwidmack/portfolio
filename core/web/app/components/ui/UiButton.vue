@@ -3,13 +3,14 @@ PrimeButton(
   v-if="isPrimeVue",
   v-bind="$attrs",
   :label="label",
-  :icon="icon",
   :aria-label="ariaLabel",
   :severity="severity",
   :variant="variant",
   :type="type",
   :disabled="disabled"
 )
+  template(v-if="icon", #icon="iconProps")
+    UiIcon(:name="icon", :class="iconProps.class")
   slot
 button.p-button.p-component(
   v-else,
@@ -19,13 +20,16 @@ button.p-button.p-component(
   :aria-label="ariaLabel ?? label",
   :class="_nativeClass"
 )
-  i.p-button-icon(v-if="icon", :class="icon", aria-hidden="true")
+  UiIcon.p-button-icon(v-if="icon", :name="icon")
   span.p-button-label(v-if="label") {{ label }}
   slot
 </template>
 
 <script setup lang="ts">
-/** Button — PrimeVue `Button`, else native control with classic `p-button` classes (theme `@layer primevue`). */
+/**
+ * Button — PrimeVue `Button`, else native control with classic `p-button` classes (theme `@layer primevue`).
+ * `icon` is a Lucide name (`UiIcon`, e.g. `external-link`); icon-only buttons need `ariaLabel`.
+ */
 defineOptions({
   inheritAttrs: false,
 });
@@ -76,8 +80,8 @@ const _nativeClass = computed(() => {
   // widths (site-wide fluid type), which otherwise shrinks this rem-based label and
   // padding down to an ~8.6px / ~24px-tall button — readable on desktop, illegible
   // and barely tappable everywhere else.
-  font-size: max(0.72rem, 11px);
-  min-height: 40px;
+  font-size: max(0.75rem, 12px);
+  min-height: var(--touch-target, 44px); // touch target (WCAG 2.5.5 / repo UI rule)
   font-weight: 600;
   letter-spacing: 0.16em;
   text-transform: uppercase;

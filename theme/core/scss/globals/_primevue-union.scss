@@ -67,7 +67,18 @@
 .p-dialog .p-dialog-title,
 .p-drawer .p-drawer-title,
 .p-accordionpanel .p-accordionheader,
+// Small PrimeVue text never renders below the theme's type floor.
+// Match `.p-component` so this beats Nora's unlayered/token font-size when layers slip.
+.p-badge,
+.p-badge.p-component,
+.p-tag,
+.p-tag.p-component,
+.p-progressbar-label {
+  font-size: max(var(--type-min, 12px), 0.75rem);
+}
+
 .p-tabs .p-tab {
+  min-height: var(--touch-target, 44px);
   color: var(--text-color);
 }
 
