@@ -1,19 +1,15 @@
 // @vitest-environment node
 
 import { describe, expect, it } from 'vitest';
+import { JSDOM } from 'jsdom';
 
 import { applySyntaxByLanguage } from '../shared/syntax/tools/apply-syntax-by-language';
 import { escapeHtmlText } from '../shared/syntax/tools/code-block-utils';
 
 /** Render highlighted HTML the way a browser would read it back as text. */
 function visibleText(html: string): string {
-  return html
-    .replace(/<[^>]+>/g, '')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&amp;/g, '&');
+  const dom = new JSDOM(`<body>${html}</body>`);
+  return dom.window.document.body.textContent ?? '';
 }
 
 function highlight(language: string, code: string): string {
@@ -41,8 +37,8 @@ describe('syntax highlighter HTML entities', () => {
       // No entity split across tokens, and no double-escaped entity.
       expect(html).not.toMatch(/&amp;(?:amp|lt|gt|quot|#39);/);
       expect(html).not.toMatch(/&<\/span>|>gt<|>lt<|>amp</);
-      // No raw `<`/`>`/`&` outside of tags/entities.
-      expect(html.replace(/<\/?[a-z][^>]*>/gi, '')).not.toMatch(/[<>]|&(?!(?:amp|lt|gt|quot|#39);)/);
+      // No raw `<`/`>`/`&` in browser-visible text.
+      expect(visibleText(html)).not.toMatch(/[<>]|&(?!(?:amp|lt|gt|quot|#39);)/);
       expect(visibleText(html)).toBe(code);
     });
   }
