@@ -5,6 +5,8 @@ import { join } from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
+import { PRIMARY_NAV_ITEMS } from '../shared/primary-nav';
+
 const root = join(import.meta.dirname, '..');
 const navPath = join(root, 'app/components/AppPrimaryNav/index.vue');
 const subNavPath = join(root, 'app/components/AppWorkSubNav.vue');
@@ -14,7 +16,9 @@ const workSlugPath = join(root, 'app/pages/work/[slug].vue');
 describe('work hub navigation', () => {
   it('keeps Docs, AI Lab, and Process out of the primary rail', () => {
     const nav = readFileSync(navPath, 'utf8');
-    expect(nav).toMatch(/to="\/work"[\s\S]*to="\/about"[\s\S]*to="\/gallery"[\s\S]*to="\/blog"[\s\S]*to="\/code"/);
+    expect(nav).toContain('PRIMARY_NAV_ITEMS');
+    expect(PRIMARY_NAV_ITEMS.map((item) => item.to)).toEqual(['/work', '/about', '/gallery', '/blog', '/code']);
+    expect(PRIMARY_NAV_ITEMS.map((item) => item.to)).not.toContain('/process');
     expect(nav).not.toContain('to="/docs"');
     expect(nav).not.toContain('to="/ai-lab"');
     expect(nav).not.toContain('to="/process"');

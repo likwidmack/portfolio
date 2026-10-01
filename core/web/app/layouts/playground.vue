@@ -7,4 +7,4 @@ NuxtLayout(name="site", layout-class="layout-playground", layout-key="site")
     slot(name="footer")
 </template>
 
-<style lang="scss" src="./playground.scss"></style>
+<!-- Modifier only: `.layout-playground` on the shared `site` shell (styles in site.scss). -->

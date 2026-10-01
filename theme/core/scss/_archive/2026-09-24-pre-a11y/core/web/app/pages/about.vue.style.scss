@@ -1,0 +1,305 @@
+// Archived <style> block of core/web/app/pages/about.vue at origin/development (pre responsive/a11y/touch pass). Not compiled.
+.about-cv {
+  @include portfolio-stack(var(--section-gap, 2rem));
+  width: 100%;
+  margin-inline: auto;
+
+  // CV split fills the centered shell (not the narrow prose reading measure).
+  &.page-content[data-fit='prose'] .page-with-nav > [data-region='body'] {
+    max-width: none;
+    width: 100%;
+  }
+
+  [data-region='body'] > section {
+    width: 100%;
+  }
+
+  &__layout {
+    align-items: start;
+    width: 100%;
+    margin-inline: auto;
+  }
+
+  &__sidebar {
+    @include portfolio-stack(0.85rem);
+    padding: 1rem 1.1rem;
+    border: 1px solid var(--border-color, var(--portfolio-rule));
+    border-radius: var(--border-radius-md, 0.5rem);
+    background: var(--surface-color, var(--main-background-secondary));
+    min-width: 0;
+
+    @media (min-width: $breakpoint-tablet) {
+      position: sticky;
+      top: calc(var(--page-chrome, 6.5rem) + 0.75rem);
+      z-index: 1;
+    }
+
+    :deep(.page-nav) {
+      position: static;
+      margin: 0;
+      padding: 0;
+      background: transparent;
+    }
+
+    :deep(.page-nav [data-label]) {
+      color: var(--text-secondary-color, inherit);
+    }
+  }
+
+  &__portrait {
+    margin: 0;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    border-radius: var(--border-radius-md);
+    background: var(--surface-color);
+
+    :deep(img) {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  &__contact {
+    @include portfolio-stack(0.5rem);
+    margin: 0;
+    padding: 0.75rem 0;
+    border-block: 1px solid var(--border-color, var(--portfolio-rule));
+    font-size: 0.85rem;
+    div {
+      display: flex;
+      flex-flow: column nowrap;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    dt {
+      @include portfolio-type-meta;
+      color: var(--text-secondary-color, var(--text-color));
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    dd {
+      margin: 0;
+      overflow-wrap: anywhere;
+      text-align: right;
+    }
+
+    a {
+      color: inherit;
+    }
+  }
+
+  &__name {
+    margin: 0;
+    font-size: clamp(1.35rem, 2.5vw, 1.75rem);
+    font-weight: 700;
+    line-height: 1.15;
+  }
+
+  &__role {
+    margin: 0;
+    color: var(--text-secondary-color, inherit);
+    font-size: var(--font-size-sm);
+    line-height: 1.4;
+  }
+
+  &__actions {
+    @include portfolio-stack(0.55rem);
+    margin-top: 0.35rem;
+  }
+
+  // `min-height`/`font-size` use `max()` floors, not just rem/clamp: the theme halves
+  // --font-size-default at tablet/mobile widths (site-wide fluid type), which otherwise
+  // shrinks these down to an ~8.5px / ~27px-tall link — the same issue fixed in UiButton.
+  &__resume {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    min-height: max(2.75rem, 44px);
+    padding: 0.55rem 0.9rem;
+    border: 1px solid var(--portfolio-teal);
+    border-radius: var(--border-radius-md, 0.5rem);
+    background: var(--portfolio-teal);
+    color: var(--button-fg, #f2ece8);
+    font-size: max(var(--font-size-sm), 12px);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    text-transform: uppercase;
+
+    &:hover,
+    &:focus-visible {
+      filter: brightness(1.08);
+      outline: none;
+      text-decoration: none;
+    }
+
+    &:focus-visible {
+      box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--portfolio-teal) 35%, transparent);
+    }
+
+    &--inline {
+      justify-self: start;
+      min-height: max(2.25rem, 36px);
+      padding-block: 0.4rem;
+      font-size: max(var(--font-size-xs), 11px);
+    }
+  }
+
+  &__contact {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.75rem;
+    padding: 0.55rem 0.9rem;
+    border: 1px solid var(--border-color, currentColor);
+    border-radius: var(--border-radius-md, 0.5rem);
+    color: var(--text-color);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-decoration: none;
+    text-transform: uppercase;
+
+    &:hover,
+    &:focus-visible {
+      border-color: var(--primary-color);
+      color: var(--primary-color);
+      outline: none;
+    }
+  }
+
+  &__intro {
+    @include portfolio-stack(0.75rem);
+    min-width: 0;
+  }
+
+  &__deck {
+    margin-top: 0.5rem;
+  }
+
+  .display {
+    @include portfolio-type-display;
+    margin: 0;
+    font-size: clamp(1.75rem, 4vw, 2.75rem);
+    line-height: 1.15;
+  }
+
+  [data-region='body'] {
+    @include portfolio-stack(var(--section-gap, 2rem));
+    min-width: 0;
+  }
+
+  [data-region='intro'] p,
+  [data-flush],
+  [data-type='panel-title'],
+  [data-type='kicker'] {
+    margin: 0;
+  }
+
+  [data-type='panel-title'] {
+    @include portfolio-type-title;
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    line-height: 1.25;
+  }
+
+  .panel[data-variant='stat'] {
+    @include portfolio-stack(0.25rem);
+
+    strong {
+      color: var(--primary-color);
+      font-size: var(--font-size-4xl);
+      line-height: 1;
+    }
+  }
+
+  .panel[data-variant='capability'] {
+    @include portfolio-stack(0.45rem);
+
+    &::before {
+      display: block;
+      width: 2.5rem;
+      height: 0.2rem;
+      border-radius: var(--border-radius-pill);
+      background: var(--button-primary-bg, var(--primary-color));
+      content: '';
+    }
+  }
+
+  [data-type='kicker'] {
+    @include portfolio-type-eyebrow;
+    color: var(--text-secondary-color, var(--text-color));
+    font-size: var(--font-size-sm);
+    letter-spacing: 0.08em;
+  }
+
+  [data-marker] {
+    display: block;
+    width: 0.75rem;
+    height: 0.75rem;
+    border: 2px solid var(--primary-color);
+    border-radius: 50%;
+    background: var(--surface-color);
+  }
+
+  .panel[data-variant='timeline'],
+  .panel[data-variant='resume'] {
+    @include portfolio-stack(0.45rem);
+  }
+
+  .panel[data-variant='resume'] .button-row {
+    margin-bottom: 0;
+  }
+
+  [data-list='highlights'],
+  [data-list='education'],
+  [data-list='tags'] {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  [data-list='highlights'],
+  [data-list='education'] {
+    @include portfolio-stack(0.45rem);
+  }
+
+  [data-list='education'] li {
+    @include portfolio-stack(0.15rem);
+  }
+
+  [data-list='tags'] {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+
+  :deep(.panel) {
+    margin: 0;
+    padding: 1rem 1.1rem;
+    box-shadow: none;
+  }
+
+  @media (max-width: $breakpoint-tablet) {
+    :deep(.p-timeline-alternate .p-timeline-event) {
+      flex-direction: row !important;
+    }
+
+    :deep(.p-timeline-event-opposite) {
+      flex: 0 0 5.5rem;
+      min-width: 0;
+      padding-inline: 0 0.75rem;
+      text-align: left !important;
+    }
+
+    :deep(.p-timeline-event-content) {
+      min-width: 0;
+      padding-inline: 0.75rem 0;
+    }
+  }
+}

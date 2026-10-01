@@ -11,13 +11,17 @@ const root = join(import.meta.dirname, '..');
 const contentRoot = join(root, 'content');
 
 describe('work card media rendering contract', () => {
-  it('keeps NuxtImg for rasters and UiSvgImg for SVG diagrams', async () => {
+  it('keeps UiImage for rasters and UiSvgImg for SVG diagrams', async () => {
     const card = await readFile(join(root, 'app/components/AppWorkCard/index.vue'), 'utf8');
-    expect(card).toContain('NuxtImg(');
+    const uiImage = await readFile(join(root, 'app/components/ui/UiImage.vue'), 'utf8');
+    expect(card).toContain('UiImage(');
     expect(card).toContain('UiSvgImg(');
     expect(card).toContain('v-if="isDiagramThumb"');
     expect(card).toContain('v-else');
     expect(card).not.toMatch(/^\s*img\(/m);
+    expect(uiImage).toContain('NuxtImg');
+    expect(uiImage).toContain('watch(');
+    expect(uiImage).toContain('prefers-reduced-motion');
     // CSS media-query sizes strings empty Nuxt Image srcset; use screen tokens.
     expect(card).not.toMatch(/sizes="\([^"]*max-width/);
     expect(card).toMatch(/sizes="xs:100vw md:360px"/);
@@ -65,7 +69,7 @@ describe('work card media rendering contract', () => {
   it('keeps work-card media filling its cell without clipping copy', async () => {
     const card = await readFile(join(root, 'app/components/AppWorkCard/index.vue'), 'utf8');
     const componentStyles = await readFile(join(root, 'app/components/AppWorkCard/AppWorkCard.scss'), 'utf8');
-    const workIndexStyles = await readFile(join(root, 'app/pages/work/styles/index.scss'), 'utf8');
+    const workIndex = await readFile(join(root, 'app/pages/work/index.vue'), 'utf8');
 
     // Card has intrinsic dimensions
     expect(card).toContain('width="640"');
@@ -76,9 +80,13 @@ describe('work card media rendering contract', () => {
     expect(componentStyles).toContain('position: absolute');
     expect(componentStyles).toContain('inset: 0');
 
-    // Work index layout uses grid with media and body columns
-    expect(workIndexStyles).toContain('grid-template-columns: minmax(12rem, var(--work-card-media-width))');
-    expect(workIndexStyles).toContain('aspect-ratio: unset');
+    // /work asks the card for its row layout (media | body); the card owns those rules — the page
+    // no longer restyles the component's internals.
+    expect(workIndex).toMatch(/layout="row"/);
+    expect(componentStyles).toMatch(
+      /\.work-card\[data-layout='row'\]\s*\{[\s\S]*?grid-template-columns: minmax\(12rem, var\(--work-card-media-width\)\)/
+    );
+    expect(componentStyles).toContain('aspect-ratio: unset');
   });
 
   it('resolves an existing public asset for every published story card', async () => {

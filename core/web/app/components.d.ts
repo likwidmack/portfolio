@@ -13,6 +13,7 @@ declare module 'vue' {
     PrimeCard: typeof import('primevue/card')['default']
     PrimeCheckbox: typeof import('primevue/checkbox')['default']
     PrimeChip: typeof import('primevue/chip')['default']
+    PrimeColorPicker: typeof import('primevue/colorpicker')['default']
     PrimeDialog: typeof import('primevue/dialog')['default']
     PrimeDivider: typeof import('primevue/divider')['default']
     PrimeInputText: typeof import('primevue/inputtext')['default']

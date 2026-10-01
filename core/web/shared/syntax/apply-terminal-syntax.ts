@@ -11,9 +11,9 @@ const TERMINAL_SYMBOL_REGEX = createNonWordTokenRegex(TERMINAL_SYMBOLS);
  * Tokenizes shell-like content using lightweight command-line rules.
  */
 function tokenizeTerminalContent(codeInnerHtml: string): string {
-  const { stash, restore } = createTokenStash(codeInnerHtml);
+  const { raw, stash, finish } = createTokenStash(codeInnerHtml);
 
-  let source = codeInnerHtml;
+  let source = raw;
 
   // Tokenize in precedence order so strings/comments are not reprocessed.
   source = source.replace(/#[^\n]*/g, (comment) => stash(wrapToken(comment, 'comment')));
@@ -31,7 +31,7 @@ function tokenizeTerminalContent(codeInnerHtml: string): string {
     return word;
   });
 
-  return restore(source);
+  return finish(source);
 }
 
 /**

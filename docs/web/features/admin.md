@@ -50,6 +50,7 @@ flowchart LR
 | `/admin/blog`     | Blog CRUD (from `@tgmc/web-layer-admin`)      |
 | `/admin/messages` | List/delete contact messages                  |
 | `/admin/cdn`      | List/upload/delete/sync assets in local MinIO |
+| `/admin/media`    | DAM: drop-zone upload, grid, variant presets  |
 
 ## Database selection
 
@@ -104,6 +105,9 @@ Copy `.env.admin.example` to `.env.admin`. Required for writes:
 | `ADMIN_DATABASES`                                | Comma list enabled in UI                                            |
 | `S3_BUCKET`                                      | MinIO bucket (default `portfolio-assets`)                           |
 | `MINIO_ROOT_USER` / `MINIO_ROOT_PASSWORD`        | MinIO credentials                                                   |
+| `MEDIA_LOCAL_ROOT`                               | Local DAM SQLite/blobs root (default `/app/data/admin-media`)       |
+| `MEDIA_API_URL`                                  | Optional forward target for portfolio `/api/media/*`                |
+| `MEDIA_API_TOKEN`                                | Bearer for remote media API (falls back to `ADMIN_TOKEN`)           |
 
 Ports (host bindings, all `127.0.0.1`):
 
@@ -119,23 +123,43 @@ Ports (host bindings, all `127.0.0.1`):
 
 All routes require `Authorization: Bearer <ADMIN_TOKEN>` unless noted. Include `X-Admin-Database` (or `?db=`) for data-backed routes.
 
-| Method   | Path                          | Database-aware                                         |
-| -------- | ----------------------------- | ------------------------------------------------------ |
-| `GET`    | `/api/admin/posts`            | Yes                                                    |
-| `POST`   | `/api/admin/posts`            | Yes                                                    |
-| `GET`    | `/api/admin/posts/:id`        | Yes                                                    |
-| `PUT`    | `/api/admin/posts/:id`        | Yes                                                    |
-| `DELETE` | `/api/admin/posts/:id`        | Yes                                                    |
-| `GET`    | `/api/admin/messages`         | Yes                                                    |
-| `DELETE` | `/api/admin/messages/:id`     | Yes                                                    |
-| `GET`    | `/api/admin/cdn/objects`      | No (MinIO only)                                        |
-| `PUT`    | `/api/admin/cdn/objects`      | No                                                     |
-| `DELETE` | `/api/admin/cdn/objects?key=` | No                                                     |
-| `POST`   | `/api/admin/cdn/sync`         | Yes (picks `.output/<sysEnv>/public` from selected DB) |
+| Method   | Path                                      | Database-aware                                         |
+| -------- | ----------------------------------------- | ------------------------------------------------------ |
+| `GET`    | `/api/admin/posts`                        | Yes                                                    |
+| `POST`   | `/api/admin/posts`                        | Yes                                                    |
+| `GET`    | `/api/admin/posts/:id`                    | Yes                                                    |
+| `PUT`    | `/api/admin/posts/:id`                    | Yes                                                    |
+| `DELETE` | `/api/admin/posts/:id`                    | Yes                                                    |
+| `GET`    | `/api/admin/messages`                     | Yes                                                    |
+| `DELETE` | `/api/admin/messages/:id`                 | Yes                                                    |
+| `GET`    | `/api/admin/cdn/objects`                  | No (MinIO only)                                        |
+| `PUT`    | `/api/admin/cdn/objects`                  | No                                                     |
+| `DELETE` | `/api/admin/cdn/objects?key=`             | No                                                     |
+| `POST`   | `/api/admin/cdn/sync`                     | Yes (picks `.output/<sysEnv>/public` from selected DB) |
+| `GET`    | `/api/admin/media/assets`                 | No (local DAM or `MEDIA_API_URL`)                      |
+| `POST`   | `/api/admin/media/assets`                 | No                                                     |
+| `GET`    | `/api/admin/media/assets/:id`             | No                                                     |
+| `DELETE` | `/api/admin/media/assets/:id`             | No                                                     |
+| `POST`   | `/api/admin/media/assets/:id/materialize` | No                                                     |
+| `GET`    | `/api/admin/media/jobs/:id`               | No                                                     |
 
 Public site still exposes `POST /api/messages` (contact form). Listing/deleting messages is admin-only.
 
 See also [API UML](../reference/api-uml.md) and [messages API](./messages-api.md).
+
+## Local media library (DAM)
+
+`/admin/media` is separate from MinIO CDN. The page uses `@tgmc/media-client` against `/api/admin/media/*`. By default the admin server uses `@tgmc/media` with SQLite + filesystem under `MEDIA_LOCAL_ROOT` (Compose: `/app/data/admin-media` on the `./data` volume).
+
+**Layout:** drop zone (drag-and-drop or browse; images, SVG, audio, video, 3D / XR, documents; one file at a time with “Uploading N of M · name” in a `role="status"` line; each new asset is prepended as it lands — no Refresh button) → **Kind** segmented control with counts (`image` / `svg` / `audio` / `video` / `model` / `document`, client-side over the latest 100 assets — the API page size; a note appears when the list is capped) → **Tag** filter chips when any asset has `meta.tags` → thumbnail grid (filename, size, kind, tags; local preview for images/SVG uploaded this session — the admin API does not serve blobs) → **detail drawer** (side panel ≥1080 px, stacked below) with type, size, short id + Copy, **Tags** add/remove (`PATCH …/assets/:id`), variants with status words (✓ Ready / ◷ Processing / ✕ Failed), and **Make a variant** presets (`app/utils/media-presets.ts`: Card 640w webp, Hero 1600w avif, Square 800×800; image-only for now) plus **Custom recipe (JSON)…** which reveals the role + JSON editor only when chosen. Messages name the file, not the id. Editorial facets stay on `meta.tags` / facet keys — not extra kinds (see [`docs/packages/media.md`](../../packages/media.md)).
+
+**Delete UX:** Delete… in the drawer → inline “Delete NAME and its variants?” Confirm/Cancel → tile hides immediately → 8s Undo banner (other deletes disabled) → API cascade delete on timer or page leave. Undo or API failure restores the tile (and the drawer if it was open); no API call on Undo.
+
+Set `MEDIA_API_URL` to forward list/upload/materialize/jobs to the portfolio web `/api/media/*` API (Bearer `MEDIA_API_TOKEN` or `ADMIN_TOKEN`). Upload remote uses the web presign → PUT → complete flow from the admin server.
+
+**Follow-ups:** kind-appropriate tiles/presets and blob preview endpoint — see [interaction-redesign.md#todo](./interaction-redesign.md#todo).
+
+Plan: [`docs/plans/2026-09-22-003-feat-admin-media-ui-plan.md`](../../plans/2026-09-22-003-feat-admin-media-ui-plan.md).
 
 ## Local CDN (MinIO)
 
@@ -201,7 +225,7 @@ syncPublicAssetsToMinio(config, outputSysEnvForDatabase(database));
 - **Do not** add `extends: ['@tgmc/web-layer-admin']` back to `core/web/nuxt.config.ts`.
 - Admin reuses `core/web` `Ui*` components and `#web-server` store factories; keep imports on the documented entry boundaries ([utilities](../../packages/utilities.md)).
 - `core/admin` `npm run dev` is for layer work only — you must supply DB URLs and tokens locally; prefer `docker:admin` for integration testing.
-- Tests: `cd core/admin && npm test` (Vitest for `admin-database` + MinIO helpers).
+- Tests: `cd core/admin && npm test` (Vitest for `admin-database`, MinIO helpers, media-service, media presets, and the media page's drop zone / drawer / delete-undo contract).
 
 ## Troubleshooting
 

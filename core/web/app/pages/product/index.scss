@@ -1,0 +1,77 @@
+// Layer 4 — page (scoped): /product.
+@use 'theme/scss/tokens' as *;
+@use 'mixins' as *;
+
+.product {
+  @include portfolio-stack(var(--section-gap, 2rem));
+
+  .display {
+    animation: neonPulse 2s ease-in-out infinite;
+  }
+
+  [data-region='hero'] {
+    @include portfolio-stack(0.75rem);
+  }
+
+  [data-region='body'] {
+    @include portfolio-stack(var(--section-gap, 2rem));
+    min-width: 0;
+  }
+
+  [data-region='intro'] p,
+  [data-flush],
+  [data-type='panel-title'],
+  [data-list='details'] {
+    margin: 0;
+  }
+
+  [data-type='panel-title'] {
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    line-height: 1.25;
+  }
+
+  [data-list='details'] {
+    @include portfolio-stack(0.45rem);
+    margin-top: 0.85rem;
+    padding-left: 1.1rem;
+  }
+
+  .panel[data-variant='stat'] {
+    @include portfolio-stack(0.25rem);
+
+    strong {
+      color: var(--primary-color);
+      font-size: var(--font-size-lg);
+      line-height: 1.25;
+    }
+  }
+
+  .panel[data-variant='capability'] {
+    @include portfolio-stack(0.45rem);
+  }
+
+  // `.p-panel` is UiPanel's root, which carries this page's scope — no :deep() needed.
+  .panel,
+  .p-panel {
+    margin: 0;
+  }
+
+  .product-tabs {
+    margin-top: 0.75rem;
+  }
+
+  .product-snippet {
+    @include portfolio-stack(0.65rem);
+    margin-top: 1rem;
+
+    .button-row {
+      justify-content: space-between;
+      margin-bottom: 0;
+    }
+  }
+
+  .button-row {
+    margin-top: 0.75rem;
+  }
+}

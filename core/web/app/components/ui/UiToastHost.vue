@@ -44,7 +44,7 @@ void nativeToasts;
   border-radius: var(--border-radius-md, 0.5rem);
   background: color-mix(in srgb, var(--surface-color) 92%, transparent);
   border: 1px solid color-mix(in srgb, var(--border-color) 70%, transparent);
-  box-shadow: 0 0.35rem 1rem color-mix(in srgb, var(--text-color) 12%, transparent);
+  box-shadow: var(--shadow-md);
 }
 
 .p-toast-summary {

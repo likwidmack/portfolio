@@ -105,7 +105,7 @@ Build with `npm run build:libs` or `npm run build --workspace=@tgmc/<name>`:
 
 ## Testing
 
-- App Vitest: `core/web/tests/`, `server/**/*.spec.ts`
+- App Vitest: `core/web/tests/` (including `tests/server/**` for Nitro/db handlers)
 - Page-fit contract: `tests/page-fit.spec.ts`
 - Docs packaging: `tests/docs-source.spec.ts`
 

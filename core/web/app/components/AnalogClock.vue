@@ -23,8 +23,8 @@ withDefaults(
 .center,
 .hand {
   text-align: center;
-  width: 100px;
-  height: 100px;
+  width: 6.25rem;
+  height: 6.25rem;
 }
 
 .loader {
@@ -37,7 +37,7 @@ withDefaults(
 
 .center {
   position: absolute;
-  margin-top: 6px;
+  margin-top: 0.375rem;
   color: black;
 }
 

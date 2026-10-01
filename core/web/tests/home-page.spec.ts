@@ -33,23 +33,26 @@ describe('home splash content', () => {
     expect(splashPage).not.toContain('home-landing');
     expect(splash).toContain("fetchContentCollection<HomeContent>('home'");
     expect(contentConfig).toContain("source: 'home.json'");
-    expect(homeData).toContain('Choose a way in');
+    const home = JSON.parse(homeData) as {
+      splash: { heading: string; doors: { id: string }[] };
+    };
+    expect(home.splash.heading.length).toBeGreaterThan(0);
+    expect(home.splash.doors.map((door) => door.id)).toEqual(['discovery', 'process', 'exhibition']);
     expect(splash).not.toContain('Stand-in');
     expect(splash).not.toContain('queryCollection(');
   });
 
   it('lists Discovery, Process, Exhibition in that order and keeps previous-view off the door list', async () => {
     const splash = await readFile(splashComponentPath, 'utf8');
-    const homeData = await readFile(homeDataPath, 'utf8');
-    const discovery = homeData.indexOf('"id": "discovery"');
-    const process = homeData.indexOf('"id": "process"');
-    const exhibition = homeData.indexOf('"id": "exhibition"');
-
-    expect(discovery).toBeGreaterThan(-1);
-    expect(process).toBeGreaterThan(discovery);
-    expect(exhibition).toBeGreaterThan(process);
-    expect(splash).toContain('ol.splash-doors');
-    expect(splash).toMatch(/ol\.splash-doors[\s\S]*splash-continue[\s\S]*splash-skip/);
+    const home = JSON.parse(await readFile(homeDataPath, 'utf8')) as {
+      splash: { doors: { id: string }[] };
+    };
+    expect(home.splash.doors.map((door) => door.id)).toEqual(['discovery', 'process', 'exhibition']);
+    // Doors are choices, not a sequence; resume comes first for returning visitors.
+    expect(splash).toContain('ul.splash-doors');
+    expect(splash).toMatch(/splash-continue[\s\S]*ul\.splash-doors[\s\S]*splash-skip/);
+    expect(splash).not.toContain('splash-door__index');
+    expect(splash).toContain('splash-door__scope');
     expect(splash).toContain('cookiesReadable && previousPath');
     expect(splash).not.toContain('AppWorkCard');
   });
@@ -89,17 +92,17 @@ describe('home splash content', () => {
     }
   });
 
-  it('assigns canonical doors for the six slugs without listing them on splash', async () => {
-    const homeData = await readFile(homeDataPath, 'utf8');
+  it('assigns canonical doors for every case-study slug without listing those slugs on splash', async () => {
+    const home = JSON.parse(await readFile(homeDataPath, 'utf8')) as {
+      splash: { doors: { id: string }[] };
+    };
+    const homeBlob = JSON.stringify(home);
+    const doorIds = new Set(home.splash.doors.map((door) => door.id));
 
-    expect(CANONICAL_DOOR_BY_SLUG['media-systems']).toBe('discovery');
-    expect(CANONICAL_DOOR_BY_SLUG['data-visualization']).toBe('discovery');
-    expect(CANONICAL_DOOR_BY_SLUG['experience-systems']).toBe('discovery');
-    expect(CANONICAL_DOOR_BY_SLUG['human-controlled-ai-lab']).toBe('process');
-    expect(CANONICAL_DOOR_BY_SLUG['innovation-prototyping']).toBe('exhibition');
-    expect(CANONICAL_DOOR_BY_SLUG['spatial-experiences']).toBe('exhibition');
-    expect(homeData).not.toContain('human-controlled-ai-lab');
-    expect(homeData).not.toContain('innovation-prototyping');
+    for (const [slug, door] of Object.entries(CANONICAL_DOOR_BY_SLUG)) {
+      expect(doorIds.has(door)).toBe(true);
+      expect(homeBlob).not.toContain(slug);
+    }
   });
 
   it('omits skip and previous-view when cookies are unreadable', async () => {
@@ -112,15 +115,34 @@ describe('home splash content', () => {
     expect(splash).toContain('v-if="cookiesReadable"');
   });
 
+  it('names the skip result and gives each door a scope line', async () => {
+    const home = JSON.parse(await readFile(homeDataPath, 'utf8')) as {
+      splash: { skipLabel: string; lede: string; doors: { scope?: string }[] };
+    };
+    expect(home.splash.skipLabel.length).toBeGreaterThan(0);
+    expect(home.splash.lede).not.toContain('Viewing only');
+    expect(home.splash.doors.every((door) => typeof door.scope === 'string' && door.scope.length > 0)).toBe(true);
+  });
+
   it('keeps door hit targets and focus rings usable', async () => {
     const styles = await readFile(splashStylesPath, 'utf8');
 
     expect(styles).toContain('min-height: 2.75rem');
     expect(styles).toContain('&:focus-visible');
+    expect(styles).toContain('.page-content.splash-page');
+    // The splash scrolls like every page (no one-viewport lock); it only fills main's slack.
+    expect(styles).not.toContain('overflow: hidden');
+    expect(styles).not.toContain('max-height: 100%');
+    expect(styles).toContain('min-height: 100%');
   });
 
   it('omits Get in touch and Portfolio App on splash, and gates Doors and On view on skip', async () => {
     const nav = await readFile(join(import.meta.dirname, '../app/components/AppPrimaryNav/index.vue'), 'utf8');
+    const navScss = await readFile(
+      join(import.meta.dirname, '../app/components/AppPrimaryNav/AppPrimaryNav.scss'),
+      'utf8'
+    );
+    const siteScss = await readFile(join(import.meta.dirname, '../app/layouts/site.scss'), 'utf8');
     const seo = await readFile(join(import.meta.dirname, '../app/composables/usePortfolioSeo.ts'), 'utf8');
     const homeData = await readFile(homeDataPath, 'utf8');
 
@@ -139,5 +161,10 @@ describe('home splash content', () => {
     expect(nav).toContain('showDoors = computed(() => skip.value)');
     expect(nav).toContain('showOnView = computed(() => skip.value)');
     expect(nav).toContain('showContact = computed(() => !isSplash.value)');
+    expect(navScss).toContain('width: 100%');
+    expect(navScss).not.toContain('page-shell-max');
+    expect(siteScss).toContain('> header.site-chrome');
+    expect(siteScss).toContain('max-width: none');
+    expect(siteScss).not.toContain('max-width: $breakpoint-tablet');
   });
 });

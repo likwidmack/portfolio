@@ -61,8 +61,11 @@ export type GalleryExhibit =
     }
   | {
       alt?: string;
+      aspectCss?: string;
       caption?: string;
+      dominantColor?: string;
       kind: 'media';
+      lqip?: string;
       mediaType: GalleryMediaType;
       poster?: string;
       src: string;

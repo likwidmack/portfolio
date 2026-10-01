@@ -1,0 +1,80 @@
+// Archived copy of core/web/app/components/AppPersonalize/AppPersonalize.scss at origin/development (pre responsive/a11y/touch pass). Not compiled.
+@use 'theme/scss/tokens' as *;
+
+.personalize {
+  display: grid;
+  gap: 1.25rem;
+
+  &__section {
+    width: 100%;
+  }
+
+  &__legend {
+    margin: 0 0 0.5rem;
+    font-size: 0.95rem;
+    font-weight: 800;
+  }
+
+  &__hint {
+    margin: 0 0 0.75rem;
+    color: var(--text-secondary-color);
+    font-size: 0.85rem;
+  }
+
+  &__field-label {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-weight: 600;
+    font-size: 0.85rem;
+  }
+
+  &__option {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    min-height: 2.5rem;
+  }
+
+  &__role {
+    display: grid;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  &__role-head {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  &__role-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  &__swatches {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  &__swatch {
+    width: 1.75rem;
+    height: 1.75rem;
+    min-width: 1.75rem;
+    padding: 0;
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+    background: var(--swatch) !important;
+  }
+}
+
+@media (max-width: $breakpoint-mobile) {
+  .personalize {
+    &__option {
+      min-height: 2.75rem;
+    }
+  }
+}

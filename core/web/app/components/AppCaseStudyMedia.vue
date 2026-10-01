@@ -18,17 +18,23 @@ UiSvgImg.case-study-media(
   :height="height",
   :loading="eager ? 'eager' : 'lazy'"
 )
-NuxtImg.case-study-media(
+UiImage.case-study-media(
   v-else,
   :src="item.src",
   :alt="item.alt",
   :width="width",
   :height="height",
-  :loading="eager ? 'eager' : 'lazy'"
+  :loading="eager ? 'eager' : 'lazy'",
+  :lqip="item.lqip",
+  :dominant-color="item.dominantColor",
+  :aspect-ratio="item.aspectCss"
 )
 </template>
 
 <script setup lang="ts">
+/**
+ * Case-study hero / gallery media: video, SVG diagrams, or raster via UiImage (LQIP).
+ */
 import { isSvgSrc } from '#shared/is-svg-src';
 import type { CaseStudy } from '#shared/portfolio-types';
 

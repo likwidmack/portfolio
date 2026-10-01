@@ -1,6 +1,6 @@
 {
   "name": "@tgmc/theme",
-  "version": "0.0.1",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "description": "TGMC design tokens, layered SCSS (Normalize/Foundation/PrimeVue), and runtime theme helpers.",
@@ -14,6 +14,7 @@
       "import": "./dist/tokens-public.js",
       "default": "./dist/tokens-public.js"
     },
+    "./colors.json": "./dist/colors.json",
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
@@ -33,7 +34,8 @@
     "./scss/mixins": "./scss/globals/_mixins.scss"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.lib.json",
+    "build": "node ./bin/build-colors-json.mjs && tsc -p tsconfig.lib.json && node ./bin/copy-colors-json.mjs",
+    "build:colors": "node ./bin/build-colors-json.mjs",
     "test": "node ./bin/run-vitest.mjs"
   },
   "files": [
@@ -59,6 +61,11 @@
               "input": "./theme/core/scss",
               "glob": "**/*",
               "output": "./scss"
+            },
+            {
+              "input": "./theme/core/src",
+              "glob": "{colors,theme-presets}.json",
+              "output": "."
             }
           ]
         }
@@ -74,6 +81,7 @@
     "@primeuix/themes": "*",
     "@tgmc/theme-foundation": "*",
     "@tgmc/theme-primevue": "*",
+    "sass": "^1.85.0",
     "tslib": "^2.3.0"
   },
   "peerDependencies": {

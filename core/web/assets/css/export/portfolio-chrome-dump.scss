@@ -1,0 +1,34 @@
+// Test-only dump of Sass-computed `--portfolio-*` atmosphere chrome.
+// Expressions must stay in sync with `../_variables.scss` (light `:root` + dark).
+// Compile with Sass loadPaths including `theme/core` (see portfolio-chrome.spec.ts).
+// Do not @use from launch / pages — variables remain the emit SoT for the app.
+
+@use 'sass:color';
+@use 'scss/tokens/colors' as *;
+@use 'scss/tokens/color-fns' as *;
+
+:root {
+  --portfolio-rose: #{theme-lighten($oxblood-dark, 10%)};
+  --portfolio-rose-strong: #{$primary-color-dark};
+  --portfolio-haze-1: #{color.mix($main-background-light, $oxblood-dark, 72%)};
+  --portfolio-haze-2: #{color.mix($main-background-light, $oxblood-dark, 78%)};
+  --portfolio-haze-3: #{color.mix($main-background-light, $oxblood-dark, 84%)};
+  --portfolio-haze-4: #{color.mix($main-background-light, $oxblood-dark, 90%)};
+  --portfolio-particle-strong: #{$primary-color-dark};
+  --portfolio-particle-mid: #{color.mix($oxblood-dark, $text-color-secondary-dark, 55%)};
+  --portfolio-particle-soft: #{color.mix($main-background-light, $oxblood-dark, 82%)};
+  --portfolio-grid-glow: #{color.mix($main-background-light, $oxblood-dark, 88%)};
+}
+
+html[data-theme='dark'] {
+  --portfolio-rose: #{theme-lighten($oxblood-dark, 28%)};
+  --portfolio-rose-strong: #{theme-lighten($oxblood-dark, 42%)};
+  --portfolio-haze-1: #{color.mix($main-background-dark, $oxblood-dark, 42%)};
+  --portfolio-haze-2: #{color.mix($main-background-dark, $oxblood-light, 55%)};
+  --portfolio-haze-3: #{theme-darken($oxblood-light, 4%)};
+  --portfolio-haze-4: #{theme-darken($oxblood-light, 10%)};
+  --portfolio-particle-strong: #{theme-lighten($primary-color-dark, 32%)};
+  --portfolio-particle-mid: #{theme-lighten($oxblood-dark, 28%)};
+  --portfolio-particle-soft: #{$text-color-dark};
+  --portfolio-grid-glow: #{theme-darken($oxblood-dark, 8%)};
+}

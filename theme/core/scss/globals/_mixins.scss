@@ -92,6 +92,53 @@ $color-variables: map.merge($color-variables, $foundation-palette);
   border: 0 !important;
 }
 
+/// Breakpoint value in `em` by name (`mobile` · `tablet` · `standard` · `widescreen` · `ultrawide`).
+@function bp($name) {
+  @if not map.has-key(v.$breakpoints-em, $name) {
+    @error 'Unknown breakpoint `#{$name}` — use one of #{map.keys(v.$breakpoints-em)}.';
+  }
+  @return map.get(v.$breakpoints-em, $name);
+}
+
+/// Mobile-first: styles for `$name` and wider (`width >= bp`).
+@mixin bp-up($name) {
+  @media (width >= #{bp($name)}) {
+    @content;
+  }
+}
+
+/// Styles below `$name` (`width < bp`). Never overlaps `bp-up($name)` — exactly one applies.
+@mixin bp-down($name) {
+  @media (width < #{bp($name)}) {
+    @content;
+  }
+}
+
+/// Styles from `$from` up to (not including) `$to`.
+@mixin bp-between($from, $to) {
+  @media (#{bp($from)} <= width < #{bp($to)}) {
+    @content;
+  }
+}
+
+/// Touch target floor (WCAG 2.5.5 / repo UI rule): the control is at least
+/// `--touch-target` (44px) tall — and wide, for icon-only controls (`$square: true`).
+@mixin touch-target($display: inline-flex, $square: false) {
+  display: $display;
+  align-items: center;
+  min-height: var(--touch-target, 44px);
+  @if $square {
+    justify-content: center;
+    min-width: var(--touch-target, 44px);
+  }
+}
+
+/// Font size with the theme's readable floor (`--type-min`, 12px): fluid/rem sizes never
+/// render smaller than that on narrow screens.
+@mixin font-size-floor($size) {
+  font-size: max(var(--type-min, 12px), #{$size});
+}
+
 /// Soft glass blur helper — prefers `--blur-*` CSS vars.
 @mixin backdrop-blur($size: md) {
   $value: var(
@@ -137,14 +184,14 @@ $color-variables: map.merge($color-variables, $foundation-palette);
 @mixin site-chrome-header {
   @include site-chrome;
   box-shadow:
-    0 -5px 16px color-mix(in srgb, var(--default-black, #{c.$color-black}) 50%, transparent),
+    var(--shadow-md),
     inset 0 -5px 5px color-mix(in srgb, var(--gray-100, #{c.$color-gray-lt}) 10%, transparent);
 }
 
 @mixin site-chrome-footer {
   @include site-chrome;
   box-shadow:
-    0 5px 16px color-mix(in srgb, var(--default-black, #{c.$color-black}) 50%, transparent),
+    var(--shadow-md),
     inset 0 5px 5px color-mix(in srgb, var(--gray-100, #{c.$color-gray-lt}) 10%, transparent);
 }
 

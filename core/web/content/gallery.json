@@ -34,7 +34,10 @@
             "src": "/v/portfolio/generated/vimg-tesseract-framework.mp4",
             "poster": "/i/tesseract/schlegel-wireframe-8-cell.png",
             "alt": "Generated tesseract framework animation",
-            "caption": "Loop: tesseract framework"
+            "caption": "Loop: tesseract framework",
+            "lqip": "data:image/webp;base64,UklGRgIFAABXRUJQVlA4WAoAAAAQAAAAHwAAHwAAQUxQSBMDAAANoLVtmyFJntIbkWU1imPbxuHM0aztPbRt27Zt27Yxtj1TyMyq+Coj4jvI6msjYgLwv6WAAMAASzboU562/muhdcCwDEZniz4FDzi7MjyqtSVSihQ1Pc/1d05znxYckvZQ1I7fNCCfLxbypd5id2++UMqOya180AgAMpg89eMFJ99VdT3X9Ru+21JETXvfwLcRCRC+89Q5v1w19vOIhQAEALB5fPdX+3sAEKVT/rzxkh13vPaQEcwAA3DMlThn+jFVAKI98KD5CPp9z0e84lghIASEOqm++PNzhGVIM/7+tysjdxnvifv+qYIZzNIcuPjv+2BjGhA8DaMv/XXN8MtWb7x0jyZFyuzNbf/ttR/RymqGxftD7zqxt7b4tmHbzh66M1/IF+WsZpC7B1AZDQDG+ermfc9S69cglVwerbk7yoNiX4+JA5QJOGS7/Q+2XH3s73tWfoI6BC6InfnDNV0ESmuEOKHh/PXB/ifctl8sLv1Rr58J6HQHBmBNhtDqUV+4PZXtEfCMO/aRtp0lUCZAyKYJKmXZeg43Aa8cY9ZpAqU1RB/tdNBOCIOwEYl2kG6D0taCAZ0mUFozx8peAk12PMs2pToBCDIEyrZt4dQ7ZjAi2ys97heqpwXKGAsI1mkCpfWiybe/LnyJ2H63Lbzkz78AnWADAB26rvnh7ticpJT11Ccr9/x+7NVbPvC7rQEEBxnCzPiYr2ODyjvcWnR5MhVfs16ddeHNix0DADqjMO/XXNCcJYv5Qn7n0LO3ja6vqfWeiKHvSwjW2dbRvz7723a51yhSpPdc+vjqy4a/+uuloz0wAB2zly77e3HUSGYwO9V/rn3CM7umVwZBGAi24mxcVXcUOlvxylX8fb/g/lMRbQNA9ZjpT2yJGAcAA8zSPPTsHTtO+eJlSQh7+7/wGgyjbys/H3vVL3OmICwCeQAG3mebRKrl+g3fdT23evdJC86BEwBgYR5cmRuTLRXyvd3F3lK+UMznB2ys0/uwCDOedrHTdz2vSYqUIrJaR4dXJLgD4AgrAAGAwRYcaI2v16MzAFZQOCDIAQAAcAoAnQEqIAAgAD7NUp5Lp6SiobAMAPAZiWQAzDEAJonswRoH0EYB2BHXPMDhr/zPgDGS84D5j+2hBQtoflrR0/acWujoGAEsruTeI4Qr/7Yti7TvJPO3BAfb7kAA/suajm5KCxEacIVyd7KArJQaR7Y96sz/033Rmkdv40i3T6mdHIQMmKIho3LV+/Q4eyZJKhPsDBvIbAV5FO7KaxyKV/MQFxztw+FFUsvPblzoco3wbgYj9LPkcULyqdfzhG/XKuHFGWW9enyNxuALm3KjowrXQQnbl/q1cLaTZRjAYXLdKekEbH9Q6hbOz+3y8GWrY16vek3fytov/DYIX6+TTgQgZ/DcSwAEx4uF6qPx/8abDZ/z+s6Zxm/XO1BBn3Nuc4ygXcX0gBUG9dOxU3aJcQZm8NG059Nxwd7wVoE0mILqGEYkUltR5ygLTcUlwUd2s5LJ7lZypxOJrVFl6VBTf1RA0DgWYyUEUCFHNBAnFYSsED/CcAEA2fDjjj6hV4EI4cKE4Hz+MCTEZuz05VAPPN3BwtIxRORFy7m6xse36arkVYUOLakir52+c5Nr94Ld1KRriRvmitr+MrxliHXyEINZHqtGAAAA",
+            "dominantColor": "#734141",
+            "aspectCss": "1 / 1"
           }
         },
         {
@@ -56,7 +59,10 @@
             "src": "/v/portfolio/generated/vimg-crystal-binary-helix.mp4",
             "poster": "/i/portfolio/generated/vimg-crystal-volume.webp",
             "alt": "Generated crystal helix animation",
-            "caption": "Loop: crystal binary helix"
+            "caption": "Loop: crystal binary helix",
+            "lqip": "data:image/webp;base64,UklGRiIBAABXRUJQVlA4IBYBAACwBwCdASogACAAPsFSpEunpSQhsAwA8BgJagCdMuumqrNrGpYJo1Y3HLXwjcouf4RWKdzejCduGV/upOjw0eAB39S/2BNQAP79XbfSpQo5L5U7d6EO3hlMMvpd+cbirquIBV6Nc54CWhpxjh1udqGnacZTQEkDaBa20nLifZmCTK82zRldosm8S8w/Nri/LE/HZwvhlQdG9i2dD7T105vU2RBCk+LqevbQS6S5Amgh86xLjxYiG36+xA9brTdFVP5WGOvlu5Aq2klU952wa2Kl4yxV2TFtw+hCQWGE1I5kdT6ljd3TSTgLCMDlSWKtyCNGa0+vCcNDMxQl+jNIB5pjXLLeEg1UQjrtj/LhHGSYJ5w6n/wAAA==",
+            "dominantColor": "#48489c",
+            "aspectCss": "1 / 1"
           }
         },
         {
@@ -76,7 +82,10 @@
             "mediaType": "image",
             "src": "/i/portfolio/generated/vimg-algorithmic-helix.webp",
             "alt": "Generated algorithmic helix still",
-            "caption": "Still from the helix series"
+            "caption": "Still from the helix series",
+            "lqip": "data:image/webp;base64,UklGRvIAAABXRUJQVlA4IOYAAACwBgCdASogABIAPtFSoUuoJKMhsAgBABoJZAC1GyS83cAdwOwDukb+sDAOvn+Ogb4Z59Qvrh1JPbCjPqCX4AD+931Oz6dz4lV40QtTuJfIkfuzoZQDRQ5r2WgCA2sV4ZbRIdhqqf2te8A/PbmzFJk+AzYRDxShMAtwb2ak5Aix7CKOImm38mRU2XSCWX9WEGs3+zEgOARFtuJyXSo4g7NUhGbWPp11vSnM9uLdheBAXXQFsdEI8o8AkSR2tGLQBCi5Dz1q1TjDSFkP8o5mc2CqEl94q7g5cgEM73NT2g6T6H0O4D+AAA==",
+            "dominantColor": "#734141",
+            "aspectCss": "280 / 157"
           }
         },
         {
@@ -96,7 +105,10 @@
             "mediaType": "image",
             "src": "/i/portfolio/generated/vimg-cosmic-network.webp",
             "alt": "Generated cosmic network still",
-            "caption": "Node field study"
+            "caption": "Node field study",
+            "lqip": "data:image/webp;base64,UklGRvAAAABXRUJQVlA4IOQAAADQBgCdASogABIAPtFapU0oJSOiMBgIAQAaCUATpmsfhYMZRsajEyBrk00axbszYd/WHBFhrdiVOVxURLTvfgAA/vW8Yn7GtpbPtXZNsLlSZfD/QXA0k2etXiw0OeFKpJ2DSqfeh2uF8phteZpMgWdim5JlsnoS2pWLCa/WDyWf/xKDvkAqadGHepe0Ga63ijzNNLRSlrj9f4x8nT1KWKfsvYoPyUNhcFrEC0ogovo9LGn9De66dDmzVKpN0Brcc8hNBksxsUC0F1It1SqpiCx0Q+Ee3PSJtReIQAaOWekzWKROwAA=",
+            "dominantColor": "#734141",
+            "aspectCss": "280 / 157"
           }
         },
         {
@@ -118,7 +130,10 @@
             "mediaType": "image",
             "src": "/i/portfolio/manhattan-2150-keyframe.png",
             "alt": "Manhattan 2150 cinematic keyframe",
-            "caption": "Keyframe from the spatial story"
+            "caption": "Keyframe from the spatial story",
+            "lqip": "data:image/webp;base64,UklGRroAAABXRUJQVlA4IK4AAABwBgCdASogABIAPtFaqU4oJSQiKAqpABoJYwCdM0XpOSjbf4GOgcRzPMLb4ZEm3aWtj7iJpOcrkVqLnwAA4f7Ic07hNx6ai5ouhnWRp+Qe1x3KTBqpi9S2nPvuvOVwJgFTtQuduIF0mqJ6ghnExCLAvOsmpCMozeqn/1EEhKzWZkZFN1iBoRhvgFCXR0cmuJQGIkTO+NeKN/t/BGCzOD4ehxiIoiH4fEbHPR/XgAA=",
+            "dominantColor": "#1c558e",
+            "aspectCss": "1672 / 941"
           }
         }
       ]
@@ -245,7 +260,10 @@
             "mediaType": "image",
             "src": "/i/tesseract/schlegel-wireframe-8-cell.png",
             "alt": "Wireframe hypercube used as a stand-in visual for immersive prototype work",
-            "caption": "Spatial stand-in: Schlegel wireframe of an 8-cell."
+            "caption": "Spatial stand-in: Schlegel wireframe of an 8-cell.",
+            "lqip": "data:image/webp;base64,UklGRgIFAABXRUJQVlA4WAoAAAAQAAAAHwAAHwAAQUxQSBMDAAANoLVtmyFJntIbkWU1imPbxuHM0aztPbRt27Zt27Yxtj1TyMyq+Coj4jvI6msjYgLwv6WAAMAASzboU562/muhdcCwDEZniz4FDzi7MjyqtSVSihQ1Pc/1d05znxYckvZQ1I7fNCCfLxbypd5id2++UMqOya180AgAMpg89eMFJ99VdT3X9Ru+21JETXvfwLcRCRC+89Q5v1w19vOIhQAEALB5fPdX+3sAEKVT/rzxkh13vPaQEcwAA3DMlThn+jFVAKI98KD5CPp9z0e84lghIASEOqm++PNzhGVIM/7+tysjdxnvifv+qYIZzNIcuPjv+2BjGhA8DaMv/XXN8MtWb7x0jyZFyuzNbf/ttR/RymqGxftD7zqxt7b4tmHbzh66M1/IF+WsZpC7B1AZDQDG+ermfc9S69cglVwerbk7yoNiX4+JA5QJOGS7/Q+2XH3s73tWfoI6BC6InfnDNV0ESmuEOKHh/PXB/ifctl8sLv1Rr58J6HQHBmBNhtDqUV+4PZXtEfCMO/aRtp0lUCZAyKYJKmXZeg43Aa8cY9ZpAqU1RB/tdNBOCIOwEYl2kG6D0taCAZ0mUFozx8peAk12PMs2pToBCDIEyrZt4dQ7ZjAi2ys97heqpwXKGAsI1mkCpfWiybe/LnyJ2H63Lbzkz78AnWADAB26rvnh7ticpJT11Ccr9/x+7NVbPvC7rQEEBxnCzPiYr2ODyjvcWnR5MhVfs16ddeHNix0DADqjMO/XXNCcJYv5Qn7n0LO3ja6vqfWeiKHvSwjW2dbRvz7723a51yhSpPdc+vjqy4a/+uuloz0wAB2zly77e3HUSGYwO9V/rn3CM7umVwZBGAi24mxcVXcUOlvxylX8fb/g/lMRbQNA9ZjpT2yJGAcAA8zSPPTsHTtO+eJlSQh7+7/wGgyjbys/H3vVL3OmICwCeQAG3mebRKrl+g3fdT23evdJC86BEwBgYR5cmRuTLRXyvd3F3lK+UMznB2ys0/uwCDOedrHTdz2vSYqUIrJaR4dXJLgD4AgrAAGAwRYcaI2v16MzAFZQOCDIAQAAcAoAnQEqIAAgAD7NUp5Lp6SiobAMAPAZiWQAzDEAJonswRoH0EYB2BHXPMDhr/zPgDGS84D5j+2hBQtoflrR0/acWujoGAEsruTeI4Qr/7Yti7TvJPO3BAfb7kAA/suajm5KCxEacIVyd7KArJQaR7Y96sz/033Rmkdv40i3T6mdHIQMmKIho3LV+/Q4eyZJKhPsDBvIbAV5FO7KaxyKV/MQFxztw+FFUsvPblzoco3wbgYj9LPkcULyqdfzhG/XKuHFGWW9enyNxuALm3KjowrXQQnbl/q1cLaTZRjAYXLdKekEbH9Q6hbOz+3y8GWrY16vek3fytov/DYIX6+TTgQgZ/DcSwAEx4uF6qPx/8abDZ/z+s6Zxm/XO1BBn3Nuc4ygXcX0gBUG9dOxU3aJcQZm8NG059Nxwd7wVoE0mILqGEYkUltR5ygLTcUlwUd2s5LJ7lZypxOJrVFl6VBTf1RA0DgWYyUEUCFHNBAnFYSsED/CcAEA2fDjjj6hV4EI4cKE4Hz+MCTEZuz05VAPPN3BwtIxRORFy7m6xse36arkVYUOLakir52+c5Nr94Ld1KRriRvmitr+MrxliHXyEINZHqtGAAAA",
+            "dominantColor": "#734141",
+            "aspectCss": "1 / 1"
           }
         },
         {
@@ -266,7 +284,10 @@
             "mediaType": "image",
             "src": "/i/portfolio/manhattan-2150-storyboard.png",
             "alt": "Manhattan 2150 storyboard panel",
-            "caption": "Storyboard before production lighting."
+            "caption": "Storyboard before production lighting.",
+            "lqip": "data:image/webp;base64,UklGRvQAAABXRUJQVlA4IOgAAACwBgCdASogABIAPtFYpEuoJSOhsAgBABoJYwCdO7+R/j6nIkSoq8WU72/+BnBEwMhKR9f/NbahQJVnCn2lvAD44w1lzasD5RbL399fi3WdSNofRgVEAToGJwM8cyL4h+xLoi7KAgoQAV6zhKpYXLZPJ0xbllo2QqivZwnwIg143j+icd3GTYAsNfYhT85XWhsKxjv7q7nGT5zHdpywnNXqfJp6V2NxwiS1vxieWeYGpsr9qYrEZ7EbYOWbFIeU0rmXIrDxR4gCj2Dqgvqw/xeT2MNe3fIidH8Bq7Dhm9qnxgQk1L3WAAAA",
+            "dominantColor": "#6f4747",
+            "aspectCss": "1672 / 941"
           }
         }
       ]
@@ -294,10 +315,22 @@
             "kind": "viz",
             "caption": "Sample pulse: engagement across four narrative beats.",
             "series": [
-              { "label": "Hook", "value": 42 },
-              { "label": "Proof", "value": 68 },
-              { "label": "Tension", "value": 55 },
-              { "label": "Resolve", "value": 81 }
+              {
+                "label": "Hook",
+                "value": 42
+              },
+              {
+                "label": "Proof",
+                "value": 68
+              },
+              {
+                "label": "Tension",
+                "value": 55
+              },
+              {
+                "label": "Resolve",
+                "value": 81
+              }
             ]
           }
         },
@@ -322,21 +355,82 @@
             "diagram": {
               "ariaLabel": "Prototype acceleration flow",
               "groups": [
-                { "id": "intake", "label": "Intake", "x": 24, "y": 48, "width": 200, "height": 280 },
-                { "id": "build", "label": "Build", "x": 260, "y": 48, "width": 200, "height": 280 },
-                { "id": "share", "label": "Share", "x": 496, "y": 48, "width": 200, "height": 280 }
+                {
+                  "id": "intake",
+                  "label": "Intake",
+                  "x": 24,
+                  "y": 48,
+                  "width": 200,
+                  "height": 280
+                },
+                {
+                  "id": "build",
+                  "label": "Build",
+                  "x": 260,
+                  "y": 48,
+                  "width": 200,
+                  "height": 280
+                },
+                {
+                  "id": "share",
+                  "label": "Share",
+                  "x": 496,
+                  "y": 48,
+                  "width": 200,
+                  "height": 280
+                }
               ],
               "nodes": [
-                { "id": "prompt", "label": "Prompt", "x": 48, "y": 120, "width": 150, "height": 48 },
-                { "id": "demo", "label": "Clickable demo", "x": 284, "y": 120, "width": 150, "height": 48 },
-                { "id": "feedback", "label": "Team feedback", "x": 520, "y": 120, "width": 150, "height": 48 },
-                { "id": "iterate", "label": "Iterate", "x": 284, "y": 220, "width": 150, "height": 48 }
+                {
+                  "id": "prompt",
+                  "label": "Prompt",
+                  "x": 48,
+                  "y": 120,
+                  "width": 150,
+                  "height": 48
+                },
+                {
+                  "id": "demo",
+                  "label": "Clickable demo",
+                  "x": 284,
+                  "y": 120,
+                  "width": 150,
+                  "height": 48
+                },
+                {
+                  "id": "feedback",
+                  "label": "Team feedback",
+                  "x": 520,
+                  "y": 120,
+                  "width": 150,
+                  "height": 48
+                },
+                {
+                  "id": "iterate",
+                  "label": "Iterate",
+                  "x": 284,
+                  "y": 220,
+                  "width": 150,
+                  "height": 48
+                }
               ],
               "edges": [
-                { "from": "prompt", "to": "demo" },
-                { "from": "demo", "to": "feedback" },
-                { "from": "feedback", "to": "iterate" },
-                { "from": "iterate", "to": "demo" }
+                {
+                  "from": "prompt",
+                  "to": "demo"
+                },
+                {
+                  "from": "demo",
+                  "to": "feedback"
+                },
+                {
+                  "from": "feedback",
+                  "to": "iterate"
+                },
+                {
+                  "from": "iterate",
+                  "to": "demo"
+                }
               ]
             }
           }

@@ -1,4 +1,8 @@
+/* units: scene */
+// Decorative 3D scene: perspective, translateZ and plane geometry stay in px on purpose — the
+// scene is sized to the screen, not the reader's text size (docs/packages/theme.md § Units).
 @use 'theme/scss/tokens' as *;
+@use 'mixins' as *;
 
 .orbit-stage {
   position: relative;
@@ -57,8 +61,8 @@
     background: color-mix(in srgb, var(--surface-color) 80%, transparent);
 
     span {
-      font-family: var(--font-family-mono);
-      font-size: 0.6rem;
+      @include portfolio-type-meta;
+      font-size: max(var(--type-min, 12px), 0.6rem);
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--text-secondary-color);
@@ -66,23 +70,20 @@
   }
 
   &__card-meta {
-    background: color-mix(in srgb, var(--surface-color) 88%, transparent);
-    border: 1px solid var(--portfolio-rule);
+    @include portfolio-soft-surface;
     border-top: none;
     padding: 0.85rem;
 
     p:first-child {
+      @include portfolio-type-eyebrow;
       margin: 0 0 0.4rem;
-      font-family: var(--font-family-mono);
-      font-size: 0.6rem;
+      font-size: max(var(--type-min, 12px), 0.6rem);
       letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: var(--primary-color);
     }
 
     p:last-child {
+      @include portfolio-type-title;
       margin: 0;
-      font-family: var(--font-family-mono);
       font-size: 1.05rem;
       letter-spacing: -0.02em;
       color: var(--text-color);
@@ -96,11 +97,11 @@
     button {
       padding: 0.35rem 0.75rem;
       border: 1px solid var(--portfolio-rule);
-      border-radius: 999px;
+      border-radius: var(--button-radius, var(--border-radius-sm));
       background: transparent;
       color: var(--text-secondary-color);
-      font-family: var(--font-family-mono);
-      font-size: 0.65rem;
+      @include portfolio-type-meta;
+      font-size: max(var(--type-min, 12px), 0.65rem);
       letter-spacing: 0.08em;
       text-transform: uppercase;
       cursor: pointer;
@@ -114,16 +115,16 @@
   }
 
   &__caption {
+    @include portfolio-type-meta;
     margin: 0;
-    font-family: var(--font-family-mono);
-    font-size: 0.65rem;
+    font-size: max(var(--type-min, 12px), 0.65rem);
     letter-spacing: 0.16em;
     text-transform: uppercase;
     color: var(--text-secondary-color);
   }
 }
 
-@media (max-width: $breakpoint-mobile) {
+@include bp-down(mobile) {
   .orbit-stage__host {
     height: 20rem;
   }

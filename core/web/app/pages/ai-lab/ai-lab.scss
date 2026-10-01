@@ -1,15 +1,16 @@
 @use 'theme/scss/tokens' as *;
+@use 'mixins' as *;
+
+// Layer 4 — page (scoped): /ai-lab.
 
 .ai-lab {
   &__workspace {
-    display: grid;
-    gap: 1.5rem;
+    @include portfolio-stack(1.5rem);
     max-width: 62rem;
     padding-block: var(--portfolio-space);
 
     form {
-      display: grid;
-      gap: 0.75rem;
+      @include portfolio-stack(0.75rem);
     }
 
     textarea {
@@ -34,8 +35,7 @@
   &__plan,
   &__result,
   &__rejected {
-    display: grid;
-    gap: 1rem;
+    @include portfolio-stack;
     border: 1px solid var(--portfolio-rule);
     border-top: 0.65rem solid var(--primary-color);
     background: var(--surface-color);
@@ -48,15 +48,13 @@
 
   &__plan {
     ol {
-      display: grid;
-      gap: 0.75rem;
+      @include portfolio-stack(0.75rem);
     }
   }
 
   &__result {
     ul {
-      display: grid;
-      gap: 0.75rem;
+      @include portfolio-stack(0.75rem);
     }
   }
 
@@ -77,13 +75,13 @@
   }
 }
 
-@media (max-width: $breakpoint-standard) {
+@include bp-down(standard) {
   .ai-lab__result-grid {
     grid-template-columns: 1fr;
   }
 }
 
-@media (max-width: $breakpoint-mobile) {
+@include bp-down(mobile) {
   .ai-lab__form-meta {
     align-items: stretch;
     flex-direction: column;

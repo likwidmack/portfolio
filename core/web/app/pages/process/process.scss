@@ -1,9 +1,11 @@
 @use 'theme/scss/tokens' as *;
+@use 'mixins' as *;
+
+// Layer 4 — page (scoped): /process.
 
 .process-principles,
 .decision-list {
-  display: grid;
-  gap: 1rem;
+  @include portfolio-stack;
   padding-block: var(--portfolio-space);
 }
 
@@ -17,6 +19,9 @@
   header {
     p {
       display: flex;
+      // Wraps when the date and meta don't fit side by side (any width, not only phones).
+      flex-wrap: wrap;
+      gap: 0.5rem 1rem;
       justify-content: space-between;
       color: var(--primary-color);
       font-size: 0.8rem;
@@ -26,8 +31,7 @@
   }
 
   dl {
-    display: grid;
-    gap: 1rem;
+    @include portfolio-stack;
     margin: 0;
   }
 
@@ -44,19 +48,8 @@
   }
 }
 
-@media (max-width: $breakpoint-standard) {
+@include bp-down(standard) {
   .decision-card {
     grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: $breakpoint-tablet) {
-  .decision-card {
-    header {
-      p {
-        flex-wrap: wrap;
-        gap: 0.5rem 1rem;
-      }
-    }
   }
 }

@@ -8,12 +8,30 @@ export type SiteProfileNames = {
   signature: string;
 };
 
+/** One social or reference link (`contact.social` in `content/profile.json`). */
+export type SiteSocialLink = {
+  id: string;
+  label: string;
+  /** `null` = not used: never rendered, never sent to SEO. */
+  href: string | null;
+  /** Lucide icon name (add it to `icon.clientBundle.icons` in both nuxt configs). */
+  icon: string;
+  /** `profile` = an identity (JSON-LD `sameAs`); `reference` = a resource shown in the UI only. */
+  kind?: 'profile' | 'reference';
+};
+
 export type SiteProfileContact = {
   email: string;
+  /** Optional contact fields — `null` hides them from UI and SEO. */
+  phone?: string | null;
+  website?: string | null;
+  location?: string | null;
+  booking?: string | null;
   github: {
     handle: string;
     url: string;
   };
+  social?: SiteSocialLink[];
 };
 
 export type SiteProfileRole = {

@@ -28,9 +28,38 @@ describe('parseBearerToken', () => {
 describe('resolveAdminToken', () => {
   it('prefers process.env over baked runtime config', () => {
     const previous = process.env.ADMIN_TOKEN;
+    const previousNuxt = process.env.NUXT_ADMIN_TOKEN;
+    delete process.env.NUXT_ADMIN_TOKEN;
     process.env.ADMIN_TOKEN = 'from-env';
     expect(resolveAdminToken('from-config')).toBe('from-env');
-    process.env.ADMIN_TOKEN = previous;
+    if (previous == null) {
+      delete process.env.ADMIN_TOKEN;
+    } else {
+      process.env.ADMIN_TOKEN = previous;
+    }
+    if (previousNuxt == null) {
+      delete process.env.NUXT_ADMIN_TOKEN;
+    } else {
+      process.env.NUXT_ADMIN_TOKEN = previousNuxt;
+    }
+  });
+
+  it('prefers NUXT_ADMIN_TOKEN over ADMIN_TOKEN', () => {
+    const previous = process.env.ADMIN_TOKEN;
+    const previousNuxt = process.env.NUXT_ADMIN_TOKEN;
+    process.env.ADMIN_TOKEN = 'from-admin';
+    process.env.NUXT_ADMIN_TOKEN = 'from-nuxt';
+    expect(resolveAdminToken('from-config')).toBe('from-nuxt');
+    if (previous == null) {
+      delete process.env.ADMIN_TOKEN;
+    } else {
+      process.env.ADMIN_TOKEN = previous;
+    }
+    if (previousNuxt == null) {
+      delete process.env.NUXT_ADMIN_TOKEN;
+    } else {
+      process.env.NUXT_ADMIN_TOKEN = previousNuxt;
+    }
   });
 });
 

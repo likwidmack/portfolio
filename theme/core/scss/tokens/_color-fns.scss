@@ -1,0 +1,135 @@
+/// Theme-prefixed Sass color helpers for compile-time token authoring.
+/// Sass-native math (not JS `Color.*` parity). Quality / enhance stay in JS.
+/// Ink helpers use black/white fallbacks to avoid `@use` cycles with `colors`.
+@use 'sass:color';
+@use 'sass:list';
+@use 'sass:math';
+@use 'sass:meta';
+
+$theme-ink-dark: #1c1412;
+$theme-ink-light: #f2ece8;
+
+/// Normalize hue into [0deg, 360deg).
+@function theme-normalize-hue($hue) {
+  $turns: math.div($hue, 360deg);
+  @return $hue - math.floor($turns) * 360deg;
+}
+
+/// Linearize an sRGB channel (0–1) for WCAG relative luminance.
+@function theme-linearize-srgb($channel) {
+  @if $channel <= 0.04045 {
+    @return math.div($channel, 12.92);
+  }
+
+  @return math.pow(math.div($channel + 0.055, 1.055), 2.4);
+}
+
+/// WCAG 2 relative luminance for an opaque color.
+@function theme-relative-luminance($sample) {
+  @if meta.type-of($sample) != 'color' {
+    @error 'theme-relative-luminance expects a color; got #{meta.type-of($sample)}';
+  }
+
+  $r: theme-linearize-srgb(color.channel($sample, 'red', $space: srgb));
+  $g: theme-linearize-srgb(color.channel($sample, 'green', $space: srgb));
+  $b: theme-linearize-srgb(color.channel($sample, 'blue', $space: srgb));
+
+  @return 0.2126 * $r + 0.7152 * $g + 0.0722 * $b;
+}
+
+/// Adjust HSL lightness by `$amount` percentage points (Sass `color.adjust` model).
+@function theme-adjust-lightness($sample, $amount: 0%) {
+  @return color.adjust($sample, $lightness: $amount, $space: hsl);
+}
+
+/// Lighten by `$amount` percentage points (default 10%).
+@function theme-lighten($sample, $amount: 10%) {
+  @return theme-adjust-lightness($sample, $amount);
+}
+
+/// Darken by `$amount` percentage points (default 10%).
+@function theme-darken($sample, $amount: 10%) {
+  @return theme-adjust-lightness($sample, -$amount);
+}
+
+/// Set alpha on a color (`$opacity` 0–1). Returns a Sass color (not 8-digit hex).
+@function theme-add-alpha($sample, $opacity: 1) {
+  @return color.change($sample, $alpha: $opacity);
+}
+
+/// True when HSL lightness is above 50%.
+@function theme-is-light($sample) {
+  @return color.channel($sample, 'lightness', $space: hsl) > 50%;
+}
+
+/// Pick dark vs light ink for a solid sample (local fallbacks; not button-token tied).
+@function theme-contrast-ink($sample) {
+  @if theme-is-light($sample) {
+    @return $theme-ink-dark;
+  }
+
+  @return $theme-ink-light;
+}
+
+/// Complementary hue (+180deg), same saturation/lightness/alpha.
+@function theme-complementary($sample) {
+  $h: color.channel($sample, 'hue', $space: hsl);
+  @return color.change($sample, $hue: theme-normalize-hue($h + 180deg));
+}
+
+/// Analogous colors (JS-intent defaults: `$angle` 30deg, `$count` 2). Returns a list.
+@function theme-analogous($sample, $angle: 30deg, $count: 2) {
+  @if $count < 1 {
+    @error 'theme-analogous $count must be >= 1';
+  }
+
+  $h: color.channel($sample, 'hue', $space: hsl);
+  $start: $h - math.div($angle * $count, 2);
+  $step: math.div($angle * $count, $count + 1);
+  $results: ();
+
+  @for $i from 1 through $count {
+    $new-hue: theme-normalize-hue($start + $i * $step);
+    $results: list.append($results, color.change($sample, $hue: $new-hue), $separator: comma);
+  }
+
+  @return $results;
+}
+
+/// Split-complementary pair (+150deg / +210deg).
+@function theme-split-complementary($sample) {
+  $h: color.channel($sample, 'hue', $space: hsl);
+  @return (
+    color.change($sample, $hue: theme-normalize-hue($h + 150deg)),
+    color.change($sample, $hue: theme-normalize-hue($h + 210deg))
+  );
+}
+
+/// Triadic pair (+120deg / +240deg).
+@function theme-triadic($sample) {
+  $h: color.channel($sample, 'hue', $space: hsl);
+  @return (
+    color.change($sample, $hue: theme-normalize-hue($h + 120deg)),
+    color.change($sample, $hue: theme-normalize-hue($h + 240deg))
+  );
+}
+
+/// Tetradic triple (+90 / +180 / +270).
+@function theme-tetradic($sample) {
+  $h: color.channel($sample, 'hue', $space: hsl);
+  @return (
+    color.change($sample, $hue: theme-normalize-hue($h + 90deg)),
+    color.change($sample, $hue: theme-normalize-hue($h + 180deg)),
+    color.change($sample, $hue: theme-normalize-hue($h + 270deg))
+  );
+}
+
+/// WCAG 2 contrast ratio for two opaque colors (unitless number).
+@function theme-contrast-ratio($a, $b) {
+  $l1: theme-relative-luminance($a);
+  $l2: theme-relative-luminance($b);
+  $lighter: math.max($l1, $l2);
+  $darker: math.min($l1, $l2);
+
+  @return math.div($lighter + 0.05, $darker + 0.05);
+}

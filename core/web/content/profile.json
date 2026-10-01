@@ -7,10 +7,191 @@
   },
   "contact": {
     "email": "likwidmack@gmail.com",
+    "phone": null,
+    "website": null,
+    "location": null,
+    "booking": null,
     "github": {
       "handle": "tamaramack",
       "url": "https://github.com/tamaramack"
-    }
+    },
+    "social": [
+      {
+        "id": "github",
+        "label": "GitHub",
+        "href": "https://github.com/tamaramack",
+        "icon": "github",
+        "kind": "profile"
+      },
+      {
+        "id": "linkedin",
+        "label": "LinkedIn",
+        "href": null,
+        "icon": "linkedin",
+        "kind": "profile"
+      },
+      {
+        "id": "x",
+        "label": "X (Twitter)",
+        "href": null,
+        "icon": "twitter",
+        "kind": "profile"
+      },
+      {
+        "id": "bluesky",
+        "label": "Bluesky",
+        "href": null,
+        "icon": "cloud",
+        "kind": "profile"
+      },
+      {
+        "id": "mastodon",
+        "label": "Mastodon",
+        "href": null,
+        "icon": "message-circle",
+        "kind": "profile"
+      },
+      {
+        "id": "threads",
+        "label": "Threads",
+        "href": null,
+        "icon": "at-sign",
+        "kind": "profile"
+      },
+      {
+        "id": "instagram",
+        "label": "Instagram",
+        "href": null,
+        "icon": "instagram",
+        "kind": "profile"
+      },
+      {
+        "id": "facebook",
+        "label": "Facebook",
+        "href": null,
+        "icon": "facebook",
+        "kind": "profile"
+      },
+      {
+        "id": "youtube",
+        "label": "YouTube",
+        "href": null,
+        "icon": "youtube",
+        "kind": "profile"
+      },
+      {
+        "id": "tiktok",
+        "label": "TikTok",
+        "href": null,
+        "icon": "music",
+        "kind": "profile"
+      },
+      {
+        "id": "twitch",
+        "label": "Twitch",
+        "href": null,
+        "icon": "twitch",
+        "kind": "profile"
+      },
+      {
+        "id": "dribbble",
+        "label": "Dribbble",
+        "href": null,
+        "icon": "dribbble",
+        "kind": "profile"
+      },
+      {
+        "id": "behance",
+        "label": "Behance",
+        "href": null,
+        "icon": "layers",
+        "kind": "profile"
+      },
+      {
+        "id": "figma",
+        "label": "Figma",
+        "href": null,
+        "icon": "figma",
+        "kind": "profile"
+      },
+      {
+        "id": "codepen",
+        "label": "CodePen",
+        "href": null,
+        "icon": "codepen",
+        "kind": "profile"
+      },
+      {
+        "id": "gitlab",
+        "label": "GitLab",
+        "href": null,
+        "icon": "gitlab",
+        "kind": "profile"
+      },
+      {
+        "id": "stackoverflow",
+        "label": "Stack Overflow",
+        "href": null,
+        "icon": "message-square",
+        "kind": "profile"
+      },
+      {
+        "id": "npm",
+        "label": "npm",
+        "href": null,
+        "icon": "package",
+        "kind": "profile"
+      },
+      {
+        "id": "huggingface",
+        "label": "Hugging Face",
+        "href": null,
+        "icon": "bot",
+        "kind": "profile"
+      },
+      {
+        "id": "medium",
+        "label": "Medium",
+        "href": null,
+        "icon": "pen-line",
+        "kind": "profile"
+      },
+      {
+        "id": "devto",
+        "label": "DEV",
+        "href": null,
+        "icon": "square-code",
+        "kind": "profile"
+      },
+      {
+        "id": "substack",
+        "label": "Substack",
+        "href": null,
+        "icon": "newspaper",
+        "kind": "profile"
+      },
+      {
+        "id": "podcast",
+        "label": "Podcast",
+        "href": null,
+        "icon": "podcast",
+        "kind": "profile"
+      },
+      {
+        "id": "source",
+        "label": "Portfolio source",
+        "href": "https://github.com/likwidmack/portfolio",
+        "icon": "code",
+        "kind": "reference"
+      },
+      {
+        "id": "rss",
+        "label": "RSS",
+        "href": null,
+        "icon": "rss",
+        "kind": "reference"
+      }
+    ]
   },
   "role": {
     "title": "Creative Technologist",

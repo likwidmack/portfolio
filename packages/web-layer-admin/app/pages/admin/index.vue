@@ -20,7 +20,7 @@
           toggle-mask
         )
         .button-row
-          UiButton(type="submit", label="Continue", icon="pi pi-lock-open", :disabled="!token.trim()")
+          UiButton(type="submit", label="Continue", icon="lock-open", :disabled="!token.trim()")
           UiButton(
             v-if="hasStored",
             type="button",

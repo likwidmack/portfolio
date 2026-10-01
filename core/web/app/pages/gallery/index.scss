@@ -1,30 +1,12 @@
 @use 'theme/scss/tokens' as *;
+@use 'mixins' as *;
 
-.gallery-page__count {
-  font-family: var(--font-family-mono);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
+// Layer 4 — page (scoped): /gallery. Child components' root elements carry this scope, so the
+// feed card and exhibit roots are styled here without :deep(); their internals belong to them.
 
 .gallery-page {
-  display: grid;
-  gap: var(--section-gap, 2rem);
+  @include portfolio-stack(var(--section-gap, 2rem));
   width: 100%;
-
-  // Design's filter bar reads as one row (view toggle | group chips | kind chips),
-  // not the shared toolbar's default stacked rows.
-  :deep(.browse-toolbar) {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.6rem;
-  }
-
-  :deep(.browse-toolbar__groups),
-  :deep(.browse-toolbar__kinds) {
-    padding-left: 0.75rem;
-    border-left: 1px solid var(--portfolio-rule);
-  }
 }
 
 // Full-screen takeover — matches the design's "scan it like Shorts and Reels" feed,
@@ -66,11 +48,9 @@
   }
 
   &__status {
+    @include portfolio-type-eyebrow;
     color: var(--text-secondary-color, var(--text-color));
-    font-family: var(--font-family-mono);
-    font-size: 0.65rem;
-    letter-spacing: 0.24em;
-    text-transform: uppercase;
+    font-size: max(var(--type-min, 12px), 0.65rem);
   }
 
   &__back {
@@ -80,8 +60,7 @@
     border-radius: 2px;
     background: color-mix(in srgb, var(--text-color) 4%, transparent);
     color: var(--text-color);
-    font-family: var(--font-family-mono);
-    font-size: 0.7rem;
+    @include portfolio-type-meta;
     letter-spacing: 0.18em;
     text-transform: uppercase;
     cursor: pointer;
@@ -97,7 +76,7 @@
   // definite-height grid container, a grid item's `min-height: 0` (fine when the
   // container grew to content) instead lets its row collapse below the card's actual
   // content height rather than scrolling. Restore the item's automatic minimum size.
-  :deep(.gallery-feed-card) {
+  .gallery-feed-card {
     min-height: auto;
     // "Open in feed" scrolls a card flush with the container's top edge, which is
     // exactly where the sticky topbar sits — without this, the card's title/kicker
@@ -107,11 +86,13 @@
 }
 
 .gallery-grid {
+  // Gallery media tiles keep aspect-driven dense grid sizing (not theme equal flex wrap).
   display: grid;
   grid-auto-flow: dense;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
   gap: 0.75rem;
   width: 100%;
+  max-width: 100%;
 
   &__tile {
     display: grid;
@@ -132,7 +113,7 @@
     }
 
     &[data-aspect='wide'] {
-      aspect-ratio: 16 / 10;
+      aspect-ratio: 16 / 9;
     }
 
     &[data-aspect='square'] {
@@ -161,9 +142,8 @@
     overflow: hidden;
   }
 
-  &__media :deep(img),
-  &__media :deep(video),
-  &__media :deep(.gallery-exhibit) {
+  // The exhibit fills the tile's media box (its img / video fill the exhibit — GalleryExhibit).
+  &__media .gallery-exhibit {
     min-height: 0;
     max-width: 100%;
     width: 100%;
@@ -180,7 +160,7 @@
     border-radius: var(--border-radius-sm);
     background: color-mix(in srgb, var(--main-background) 70%, transparent);
     color: var(--text-color);
-    font-size: 0.65rem;
+    font-size: max(var(--type-min, 12px), 0.65rem);
     font-weight: 700;
     letter-spacing: 0.06em;
     text-transform: uppercase;
@@ -197,7 +177,7 @@
     border-radius: var(--border-radius-pill, 999px);
     background: color-mix(in srgb, var(--main-background) 78%, transparent);
     color: var(--text-color);
-    font-size: 0.7rem;
+    font-size: max(var(--type-min, 12px), 0.7rem);
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -219,7 +199,7 @@
 
   &__category {
     color: var(--text-secondary-color, var(--text-color));
-    font-size: 0.7rem;
+    font-size: max(var(--type-min, 12px), 0.7rem);
     letter-spacing: 0.04em;
     text-transform: uppercase;
   }
@@ -231,17 +211,13 @@
     letter-spacing: 0.03em;
   }
 
-  @media (min-width: $breakpoint-tablet) {
+  @include bp-up(tablet) {
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
   }
 
-  @media (orientation: landscape) and (min-width: $breakpoint-standard) {
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+  @media (orientation: landscape) {
+    @include bp-up(standard) {
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+    }
   }
-}
-
-.gallery-page__count {
-  margin: 0 0 1rem;
-  color: var(--text-color-secondary, inherit);
-  font-size: 0.85rem;
 }

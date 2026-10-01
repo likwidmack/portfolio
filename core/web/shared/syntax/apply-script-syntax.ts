@@ -122,19 +122,19 @@ function detectScriptLanguage(text: string): 'javascript' | 'typescript' {
  * @returns The tokenized HTML content.
  */
 function tokenizeScriptContent(codeInnerHtml: string): string {
-  const { stash, restore } = createTokenStash(codeInnerHtml);
+  const { raw, stash, finish } = createTokenStash(codeInnerHtml);
 
   const source = stashScriptIdentifiers(
     stashScriptPunctuation(
       stashScriptLiterals(
-        stashScriptDeclarations(stashScriptStrings(stashScriptComments(codeInnerHtml, stash), stash), stash),
+        stashScriptDeclarations(stashScriptStrings(stashScriptComments(raw, stash), stash), stash),
         stash
       ),
       stash
     ),
     stash
   );
-  return restore(source);
+  return finish(source);
 }
 
 /**

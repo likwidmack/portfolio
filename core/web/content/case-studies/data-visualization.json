@@ -50,13 +50,28 @@
       "type": "image",
       "src": "/i/portfolio/generated/vimg-cosmic-network.webp",
       "alt": "Glowing lattice of branching cosmic filaments rendered as an abstract spatial network",
-      "caption": "Visual metaphor — network topology as a readable spatial system, used when explaining dependency graphs to non-specialists."
+      "caption": "Visual metaphor — network topology as a readable spatial system, used when explaining dependency graphs to non-specialists.",
+      "lqip": "data:image/webp;base64,UklGRvAAAABXRUJQVlA4IOQAAADQBgCdASogABIAPtFapU0oJSOiMBgIAQAaCUATpmsfhYMZRsajEyBrk00axbszYd/WHBFhrdiVOVxURLTvfgAA/vW8Yn7GtpbPtXZNsLlSZfD/QXA0k2etXiw0OeFKpJ2DSqfeh2uF8phteZpMgWdim5JlsnoS2pWLCa/WDyWf/xKDvkAqadGHepe0Ga63ijzNNLRSlrj9f4x8nT1KWKfsvYoPyUNhcFrEC0ogovo9LGn9De66dDmzVKpN0Brcc8hNBksxsUC0F1It1SqpiCx0Q+Ee3PSJtReIQAaOWekzWKROwAA=",
+      "dominantColor": "#734141",
+      "aspectCss": "280 / 157"
     }
   ],
   "links": [
-    { "label": "See system diagrams on the product page", "href": "/product" },
-    { "label": "Related media systems story", "href": "/work/media-systems" },
-    { "label": "Related creative prototyping story", "href": "/work/innovation-prototyping" },
-    { "label": "Related experience systems story", "href": "/work/experience-systems" }
+    {
+      "label": "See system diagrams on the product page",
+      "href": "/product"
+    },
+    {
+      "label": "Related media systems story",
+      "href": "/work/media-systems"
+    },
+    {
+      "label": "Related creative prototyping story",
+      "href": "/work/innovation-prototyping"
+    },
+    {
+      "label": "Related experience systems story",
+      "href": "/work/experience-systems"
+    }
   ]
 }

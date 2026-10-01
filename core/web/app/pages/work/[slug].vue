@@ -64,11 +64,13 @@
             a(v-if="isStaticOrExternalHref(link.href)", :href="link.href") {{ link.label }} →
             NuxtLink(v-else, :to="link.href") {{ link.label }} →
 
+        AppStoryPager(:previous="adjacent.previous", :next="adjacent.next")
+
   AppEvidenceExamplesDialog(v-model:visible="evidenceOpen")
 </template>
 
 <script setup lang="ts">
-import type { CaseStudy } from '#shared/portfolio-types';
+import { adjacentStudies, type CaseStudy } from '#shared/portfolio-types';
 import { SITE_PERSON } from '#shared/site-person';
 
 import { focusElementById } from '../../composables/focusElementById';
@@ -90,6 +92,12 @@ const { data } = await useContentAsyncData(
 );
 
 const study = computed(() => (data.value ?? null) as CaseStudy | null);
+
+// Same key as the Work index so the list is shared from the payload cache.
+const { data: allStudies } = await useContentAsyncData('case-studies', () =>
+  fetchContentCollection<CaseStudy[]>('caseStudies', { mode: 'all' })
+);
+const adjacent = computed(() => adjacentStudies((allStudies.value ?? []) as CaseStudy[], slug.value));
 const evidenceOpen = ref(false);
 
 if (!study.value) {
@@ -112,4 +120,4 @@ usePortfolioSeo({
 });
 </script>
 
-<style lang="scss" src="./styles/case-study.scss"></style>
+<style lang="scss" src="./case-study.scss" scoped></style>

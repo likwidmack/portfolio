@@ -1,20 +1,22 @@
 @use 'theme/scss/tokens' as *;
+@use 'mixins' as *;
 
 .work-card {
   /* Height follows copy; landscape uses grid (media | body). Ratio tokens apply to media cells only. */
-  --work-card-media-ratio: var(--media-ratio, 16 / 10);
+  --work-card-media-ratio: var(--media-ratio, 16 / 9);
   --work-card-media-width: 22.5rem;
+  @include portfolio-box-contain;
   min-height: 0;
   padding: 0;
   border-right: 1px solid var(--portfolio-rule);
   border-bottom: 1px solid var(--portfolio-rule);
   background: color-mix(in srgb, var(--surface-color) 88%, transparent);
   overflow: hidden;
-  max-width: 100%;
+  position: relative;
 
   h3 {
+    @include portfolio-type-title;
     margin: 0;
-    font-family: var(--font-family-mono);
     font-size: clamp(2rem, 4vw, 3.5rem);
     line-height: 0.95;
 
@@ -22,6 +24,23 @@
       color: var(--text-color);
       text-decoration: none;
     }
+  }
+
+  // Whole card = one link (one tab stop): stretch the title link over the card.
+  &__title-link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  &__title-link:focus-visible {
+    outline: none;
+  }
+
+  &:focus-within {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
   }
 
   &__topline {
@@ -32,22 +51,20 @@
   }
 
   &__index {
-    font-family: var(--font-family-mono);
-    font-size: 10px;
-    letter-spacing: 0.2em;
+    @include portfolio-type-eyebrow;
+    font-size: max(var(--type-min, 12px), 0.625rem);
     color: var(--text-secondary-color, var(--text-color));
     white-space: nowrap;
   }
 
   dl {
-    display: grid;
-    gap: 0.75rem;
+    @include portfolio-stack(0.75rem);
     margin: 0;
   }
 
   dt {
+    @include portfolio-type-eyebrow;
     color: var(--primary-color);
-    font-family: var(--font-family-mono);
     font-size: 0.75rem;
     font-weight: 800;
     letter-spacing: 0.08em;
@@ -70,7 +87,19 @@
     border-bottom: 1px solid var(--portfolio-rule);
     background: color-mix(in srgb, var(--surface-color) 70%, var(--main-background) 30%);
 
-    img,
+    // UiImage (its root carries this scope) fills the media cell; the photo inside already covers
+    // its frame. The aspect is owned by this box.
+    > .ui-image {
+      position: absolute;
+      inset: 0;
+      display: block;
+      width: 100%;
+      height: 100%;
+      max-width: none;
+      aspect-ratio: auto;
+    }
+
+    // SVG diagrams (UiSvgImg renders the <img> itself).
     > img {
       position: absolute;
       inset: 0;
@@ -84,7 +113,6 @@
     }
 
     &--diagram {
-      img,
       > img {
         object-fit: contain;
         object-position: center;
@@ -109,6 +137,9 @@
     list-style: none;
 
     li {
+      // Meta chrome (moved from app-global `_globals.scss`), then the pill overrides.
+      @include portfolio-type-meta;
+      color: var(--text-secondary-color, var(--text-color));
       border: 1px solid var(--portfolio-rule);
       border-radius: 999px;
       padding: 0.25rem 0.55rem;
@@ -118,8 +149,102 @@
 
   &__link {
     margin-top: auto;
-    color: var(--primary-color);
+    color: var(--link-color, var(--primary-color));
     font-weight: 800;
+  }
+}
+
+// Row layout (`layout="row"`, used by /work): media | body once the list is wide enough, stacked
+// otherwise. A container query on the list (the page sets `container-type` on it) decides, so the
+// card follows its real width — a 768px tablet keeps the readable stacked card. Owned by the card
+// (was restyled from the page via `.work-index .work-card …`).
+// Below the row width: the stacked card the list used on phones and tablets.
+.work-card[data-layout='row'] {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  min-height: 0;
+
+  h3 {
+    font-size: clamp(1.65rem, 2.8vw, 2.6rem);
+    line-height: 1.05;
+  }
+
+  dl {
+    grid-template-columns: 1fr;
+    gap: 1rem 1.5rem;
+  }
+
+  .work-card__media {
+    flex: 0 0 auto;
+    width: 100%;
+    max-width: none;
+    aspect-ratio: var(--work-card-media-ratio);
+    height: auto;
+    min-height: 0;
+    align-self: stretch;
+  }
+
+  .work-card__body {
+    gap: 0.85rem;
+    justify-content: center;
+
+    > p:not(.work-card__category) {
+      line-height: 1.55;
+    }
+  }
+}
+
+@container (width >= 48rem) {
+  .work-card[data-layout='row'] {
+    display: grid;
+    grid-template-columns: minmax(12rem, var(--work-card-media-width)) minmax(0, 1fr);
+    align-items: stretch;
+    min-height: 0;
+
+    h3 {
+      font-size: clamp(1.65rem, 2.8vw, 2.6rem);
+      line-height: 1.05;
+      max-width: 22ch;
+    }
+
+    dl {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem 1.5rem;
+    }
+
+    .work-card__media {
+      flex: unset;
+      width: auto;
+      max-width: none;
+      aspect-ratio: unset;
+      height: 100%;
+      min-height: 100%;
+      align-self: stretch;
+      border-bottom: 0;
+      border-right: 1px solid var(--portfolio-rule);
+    }
+
+    .work-card__body {
+      gap: 0.85rem;
+      justify-content: center;
+
+      > p:not(.work-card__category) {
+        max-width: 62ch;
+        line-height: 1.55;
+      }
+    }
+  }
+}
+
+// Narrower rows: smaller media column, one fact per line.
+@container (48rem <= width < 62.5rem) {
+  .work-card[data-layout='row'] {
+    grid-template-columns: minmax(10rem, var(--work-card-media-width)) minmax(0, 1fr);
+
+    dl {
+      grid-template-columns: 1fr;
+    }
   }
 }
 
@@ -128,7 +253,8 @@ html[data-motion='playful'] {
     transform: translateY(-0.35rem) rotate(-0.4deg);
 
     .work-card__media {
-      img,
+      --ui-image-zoom: 1.03;
+
       > img {
         transform: scale(1.03);
       }
@@ -136,9 +262,14 @@ html[data-motion='playful'] {
   }
 }
 
-@media (max-width: $breakpoint-standard) {
+@include bp-down(standard) {
   .work-card {
     min-height: auto;
     --work-card-media-width: 18rem;
   }
+}
+
+// Category eyebrow (moved from app-global _globals.scss — only this component renders it).
+.work-card__category {
+  @include portfolio-type-eyebrow;
 }

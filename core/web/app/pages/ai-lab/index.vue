@@ -166,4 +166,4 @@ usePortfolioSeo({
 });
 </script>
 
-<style lang="scss" src="./ai-lab.scss"></style>
+<style lang="scss" src="./ai-lab.scss" scoped></style>

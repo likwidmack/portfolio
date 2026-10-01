@@ -1,0 +1,53 @@
+// Archived copy of core/web/assets/css/_mixins.scss at origin/development (pre responsive/a11y/touch pass). Not compiled.
+// App mixin recipes only — no selectors.
+// Pages/components `@use` this file so selector CSS is not duplicated per sheet.
+// Shared HTML/class selectors live in `_globals.scss` (emitted via portfolio-launch only).
+
+@mixin portfolio-box-contain {
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
+}
+
+@mixin portfolio-soft-surface($mix: var(--portfolio-surface-mix, 88%)) {
+  border: 1px solid var(--portfolio-rule);
+  background: color-mix(in srgb, var(--surface-color) #{$mix}, transparent);
+  box-shadow: var(--shadow-sm);
+}
+
+/// Primary page titles — display role (not mono).
+@mixin portfolio-type-display {
+  font-family: var(--font-family-display);
+}
+
+/// Section titles — title role (alias of header when stacks match).
+@mixin portfolio-type-title {
+  font-family: var(--font-family-title);
+}
+
+/// Eyebrow / kicker chrome — mono + wide tracking (tier 1).
+@mixin portfolio-type-eyebrow {
+  color: var(--primary-color);
+  font-family: var(--font-family-mono);
+  font-size: var(--type-eyebrow-size, 0.7rem);
+  font-weight: var(--type-eyebrow-weight, 700);
+  letter-spacing: var(--type-eyebrow-tracking, 0.24em);
+  text-transform: uppercase;
+}
+
+/// Meta / label / tag chrome — mono + tighter tracking (tier 2).
+@mixin portfolio-type-meta {
+  font-family: var(--font-family-mono);
+  font-size: var(--type-meta-size, 0.7rem);
+  letter-spacing: var(--type-meta-tracking, 0.04em);
+}
+
+/// Back-compat alias for eyebrow chrome.
+@mixin portfolio-eyebrow {
+  @include portfolio-type-eyebrow;
+}
+
+@mixin portfolio-stack($gap: var(--portfolio-stack-gap, 1rem)) {
+  display: grid;
+  gap: $gap;
+}

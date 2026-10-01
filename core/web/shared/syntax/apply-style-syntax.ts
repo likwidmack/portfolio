@@ -56,15 +56,12 @@ function stashStyleKeywords(source: string, stash: StashToken): string {
  * @returns The tokenized HTML content.
  */
 function tokenizeStyleContent(codeInnerHtml: string): string {
-  const { stash, restore } = createTokenStash(codeInnerHtml);
+  const { raw, stash, finish } = createTokenStash(codeInnerHtml);
   const source = stashStyleKeywords(
-    stashStylePunctuation(
-      stashStyleValues(stashStyleStrings(stashStyleComments(codeInnerHtml, stash), stash), stash),
-      stash
-    ),
+    stashStylePunctuation(stashStyleValues(stashStyleStrings(stashStyleComments(raw, stash), stash), stash), stash),
     stash
   );
-  return restore(source);
+  return finish(source);
 }
 
 /**

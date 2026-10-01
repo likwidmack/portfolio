@@ -6,26 +6,29 @@
   "splash": {
     "eyebrow": "LIKWIDMACK",
     "heading": "Choose a way in",
-    "lede": "Walk the work, follow a decision, or look at mounted specimens. Viewing only.",
+    "lede": "Walk the work, follow a decision, or look at mounted specimens.",
     "doorsLabel": "Ways in",
     "doors": [
       {
         "id": "discovery",
         "label": "Discovery",
-        "lede": "Get to know the work by walking it."
+        "lede": "Get to know the work by walking it.",
+        "scope": "6 case studies"
       },
       {
         "id": "process",
         "label": "Process",
-        "lede": "Get to know how Tamara thinks, decides, and learns."
+        "lede": "Get to know how Tamara thinks, decides, and learns.",
+        "scope": "Decision cards"
       },
       {
         "id": "exhibition",
         "label": "Exhibition",
-        "lede": "Get to know the work by looking at mounted specimens."
+        "lede": "Get to know the work by looking at mounted specimens.",
+        "scope": "Gallery · browse freely"
       }
     ],
     "previousViewPrefix": "Continue from",
-    "skipLabel": "Skip this view next time"
+    "skipLabel": "Go straight to where I left off next time"
   }
 }

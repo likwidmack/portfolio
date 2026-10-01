@@ -26,3 +26,10 @@ Do not put Content or app stores on Postgres for test/prod. Do not use `/tmp/*.s
 5. Dynamic routes (`work/[slug]`, `blog/[slug]`, `docs/[...slug]`) use a reactive key + `watch` on the route param.
 6. Avoid `Promise.all` of multiple content loads on one page; prefer sequential `useContentAsyncData` awaits.
 7. **Pug + `<script setup>`:** helpers imported only for template use can be elided (Vue cannot see Pug references). Call them in script — e.g. Gallery `gridTiles`, Code `repos` with `languageLabel` from `codeLanguageLabel` — and bind precomputed fields in the template.
+
+## Vitest conventions (content-driven)
+
+- **Location:** App Vitest specs live only under `core/web/tests/` (including `tests/server/**` for Nitro/db handlers). Package/theme Vitest globs are `tests/**` only — do not colocate `*.spec.ts` under `src/` or `server/`.
+- **Content JSON:** Prefer thin `loadXContent()` / production modules that already import JSON (`SITE_PROFILE`). Assert shape, uniqueness, wiring (`fetchContentCollection`, allowlists), and cross-seam sync (e.g. journey allowlists ⊆ content ids). Do **not** pin marketing copy, identity strings, or sample-id order as string literals in specs.
+- **Theme:** Assert against `colors.json` / `colorsLibrary` / `Theme` APIs. Keep raw hex only for synthetic algorithm fixtures or intentional Sass pipeline pins that are not simply re-reading a JSON field.
+- Design: `docs/superpowers/specs/2026-09-24-content-driven-tests-design.md`.

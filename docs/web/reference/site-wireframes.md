@@ -22,6 +22,7 @@ flowchart TB
   Code["/code"]
   Product["/product"]
   Styles["/styles"]
+  Parity["/styles/parity"]
   Media["/media-player"]
   Admin["/admin"]
   AdminBlog["/admin/blog"]
@@ -50,7 +51,7 @@ flowchart TB
   Media -.-> Home
 ```
 
-Primary nav (`AppPrimaryNav`): Work, About, Gallery, Writing (`/blog`), Code. Get in touch is omitted on `/` and `/splash`; it stays in the menu on other routes this increment. When skip is on: **Doors** → `/splash` in the menu; **On view** (header actions, accessible name “On view: Media Systems”) → `/work/media-systems`. Brand Home stays `to="/"`.
+Primary nav (`AppPrimaryNav`, list in `shared/primary-nav.ts`): Work, About, Gallery, Writing (`/blog`), Code — **inline from the tablet breakpoint (768 px)** with `aria-current="page"` and a link-colour underline; below 768 px they live in the Menu sheet. **Get in touch** is a visible header button (omitted on `/` and `/splash`). **Personalize** is a header icon button (“Personalize theme and background”) and no longer sits in the menu. When skip is on: **Doors** → `/splash` in the menu; **On view** (header actions, accessible name “On view: Media Systems”) → `/work/media-systems`. Brand Home stays `to="/"`.
 
 Work sub-nav (`AppWorkSubNav` on `/work` and `/work/[slug]`): Docs, AI Lab, Process.
 
@@ -59,8 +60,8 @@ Work sub-nav (`AppWorkSubNav` on `/work` and `/work/[slug]`): Docs, AI Lab, Proc
 ```text
 ┌──────────────────────────────────────────────────────────────┐
 │ skip link                                                    │
-│ [Brand / Home]              [On view*]  Menu                 │
-│ Menu: Work  About  Gallery  Writing  Code  [Doors*]  [mail*] │
+│ [Brand] Work About Gallery Writing Code  [On view*] ◐ [Get in touch] │
+│ <768px: [Brand] [On view*] ◐ Menu → sheet: links [Doors*] [mail*]    │
 ├──────────────────────────────────────────────────────────────┤
 │                                                              │
 │                     PAGE BODY (one job)                      │
@@ -80,11 +81,11 @@ Work sub-nav (`AppWorkSubNav` on `/work` and `/work/[slug]`): Docs, AI Lab, Proc
 │ (no Get in touch; no “Portfolio App” in the document title)  │
 ├──────────────────────────────────────────────────────────────┤
 │  Heading / lede                                              │
-│  1 Discovery  → /work/media-systems                          │
-│  2 Process    → /process#agentic-ui-exploration              │
-│  3 Exhibition → /gallery?specimen=tesseract-framework-reel   │
-│  Continue from {medium/artifact}  (if a previous interior)   │
-│  ☐ Skip this view next time                                  │
+│  [Continue from {title}          (Resume)]  (if previous)    │
+│  Discovery  · 6 case studies → /work/media-systems           │
+│  Process    · Decision cards → /process#agentic-ui-…         │
+│  Exhibition · Gallery · browse freely → /gallery?specimen=…  │
+│  ☐ Go straight to where I left off next time                 │
 └──────────────────────────────────────────────────────────────┘
 ```
 
@@ -100,7 +101,8 @@ Content: Nuxt Content collection `home` via `/api/content/home`. `/` and `/splas
 │ Title · short intro             │  │ Case study title               │
 │ ┌────┐ ┌────┐ ┌────┐            │  │ Media / narrative blocks       │
 │ │card│ │card│ │card│ → slug     │  │ Architecture / outcomes        │
-│ └────┘ └────┘ └────┘            │  │ Back to /work                  │
+│ └────┘ └────┘ └────┘            │  │ ← Prev story · Next story →    │
+│ (whole card = one link)         │  │ [Get in touch]  All work       │
 └─────────────────────────────────┘  └────────────────────────────────┘
 ```
 
@@ -110,7 +112,8 @@ Content: Nuxt Content collection `home` via `/api/content/home`. `/` and `/splas
 ┌──────────────────────────────────────────────────────────────┐
 │ NAV                                                          │
 ├──────────────────────────────────────────────────────────────┤
-│ Browse toolbar (filter / mode)                               │
+│ Browse toolbar: View | Group (counts) | Filter (counts)      │
+│ Showing N of M posts · Clear filters   (state in ?group&kind)│
 │ Feed or grid of media samples                                │
 └──────────────────────────────────────────────────────────────┘
 ```
@@ -153,15 +156,16 @@ Public list/detail use `GET /api/posts` and `GET /api/posts/:slug`. Primary visi
 
 ## Secondary routes
 
-| Route           | Purpose                                      |
-| --------------- | -------------------------------------------- |
-| `/process`      | AI decision journal (`decisionCards`)        |
-| `/about`        | CV / resume content                          |
-| `/code`         | Repo explorer presentation                   |
-| `/product`      | Product narrative + `AppArchitectureDiagram` |
-| `/styles`       | Style kitchen sink                           |
-| `/media-player` | `@tgmc/media-player` demo                    |
-| `/cdn-test`     | CDN config probe                             |
+| Route            | Purpose                                      |
+| ---------------- | -------------------------------------------- |
+| `/process`       | AI decision journal (`decisionCards`)        |
+| `/about`         | CV / resume content                          |
+| `/code`          | Repo explorer presentation                   |
+| `/product`       | Product narrative + `AppArchitectureDiagram` |
+| `/styles`        | Style Studio (brand roles, contrast guard)   |
+| `/styles/parity` | Native / Foundation / PrimeVue kitchen sink  |
+| `/media-player`  | `@tgmc/media-player` demo                    |
+| `/cdn-test`      | CDN config probe                             |
 
 ## Related
 

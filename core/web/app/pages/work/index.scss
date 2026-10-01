@@ -1,0 +1,65 @@
+// Layer 4 — page (scoped): /work. The card's row layout lives in AppWorkCard (`layout="row"`);
+// this sheet only lays out the page's own elements.
+@use 'theme/scss/tokens' as *;
+@use 'mixins' as *;
+
+// Case-study list: one card per row; hairline rules on the outer edges, each card draws its own
+// right / bottom rule.
+.work-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  border-top: 1px solid var(--portfolio-rule);
+  border-left: 1px solid var(--portfolio-rule);
+  // AppWorkCard (`layout="row"`) switches to media | body from this list's width, not the viewport.
+  container-type: inline-size;
+}
+
+// Jump bar: wraps (never a swipe-only row); every link is a 44px target.
+.jump-bar {
+  position: relative;
+  z-index: 30;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.625rem;
+  margin-block: 2rem 0;
+  padding: 0.875rem 1.125rem;
+  @include portfolio-soft-surface(72%);
+  border-radius: 0.1875rem;
+  backdrop-filter: blur(16px);
+}
+
+.jump-label {
+  @include portfolio-type-eyebrow;
+  padding-right: 0.5rem;
+  font-size: var(--type-min, 12px); // the eyebrow floor
+  color: var(--text-secondary-color, var(--text-color));
+}
+
+.jump-link {
+  @include touch-target;
+  padding: 0.5625rem 0.875rem;
+  border: 1px solid var(--portfolio-rule);
+  border-radius: 2px;
+  color: var(--text-secondary-color, var(--text-color));
+  @include portfolio-type-meta;
+  font-size: max(var(--type-min, 12px), 0.6875rem);
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease,
+    background-color 0.2s ease;
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--portfolio-rose);
+    color: var(--text-color);
+  }
+
+  &--active {
+    background: color-mix(in srgb, var(--portfolio-rose) 16%, transparent);
+    border-color: color-mix(in srgb, var(--portfolio-rose) 40%, transparent);
+    color: var(--portfolio-rose-strong);
+  }
+}

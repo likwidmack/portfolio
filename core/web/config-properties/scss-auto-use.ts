@@ -21,10 +21,15 @@ function isExcludedScssPath(normalized: string): boolean {
   return (
     normalized.includes('/node_modules/') ||
     normalized.includes('/theme/core/scss/') ||
-    normalized.endsWith('/assets/css/styles.scss')
+    normalized.endsWith('/assets/css/styles.scss') ||
+    normalized.endsWith('/assets/css/portfolio-launch.scss') ||
+    normalized.endsWith('/assets/css/_globals.scss') ||
+    normalized.endsWith('/assets/css/_mixins.scss') ||
+    normalized.endsWith('/assets/css/_variables.scss')
   );
 }
 
+/** Theme `nuxt-auto` inject — Vue SFC styles only. */
 export function shouldInjectScssAutoUse(content: string, filename: string): boolean {
   if (isMisroutedScssContent(content)) {
     return false;
@@ -34,4 +39,12 @@ export function shouldInjectScssAutoUse(content: string, filename: string): bool
     return false;
   }
   return normalized.endsWith('.vue');
+}
+
+/**
+ * App portfolio mixins inject — same Vue-only gate as theme auto-use.
+ * Never inject `_globals.scss` (selectors must emit once via portfolio-launch).
+ */
+export function shouldInjectAppMixins(content: string, filename: string): boolean {
+  return shouldInjectScssAutoUse(content, filename);
 }

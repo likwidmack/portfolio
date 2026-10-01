@@ -20,13 +20,16 @@
       controls
     )
   template(v-else-if="exhibit?.kind === 'media'")
-    NuxtImg.gallery-exhibit__image(
+    UiImage.gallery-exhibit__image(
       :src="exhibit.src",
       :alt="exhibit.alt || title",
       width="720",
       height="900",
       :loading="eager ? 'eager' : 'lazy'",
-      sizes="xs:100vw md:420px"
+      sizes="xs:100vw md:420px",
+      :lqip="exhibit.lqip",
+      :dominant-color="exhibit.dominantColor",
+      :aspect-ratio="exhibit.aspectCss"
     )
   template(v-else-if="exhibit?.kind === 'viz' && exhibit.diagram")
     AppArchitectureDiagram(
@@ -40,7 +43,7 @@
     li(v-for="point in exhibit.series", :key="point.label")
       span {{ point.label }}
       strong {{ point.value }}
-  NuxtImg.gallery-exhibit__image(
+  UiImage.gallery-exhibit__image(
     v-else-if="image",
     :src="image",
     :alt="imageAlt || title",
@@ -112,6 +115,20 @@ watch(
     object-fit: cover;
   }
 
+  &__image {
+    display: block;
+  }
+
+  // The video fills the exhibit (the gallery tile sizes the exhibit). UiImage's photo already
+  // covers its frame — no reaching into it.
+  video {
+    min-height: 0;
+    max-width: 100%;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
   &__series {
     display: grid;
     gap: 0.5rem;
@@ -130,9 +147,9 @@ watch(
 
   &__caption,
   &__fallback {
+    @include portfolio-type-meta;
     margin: 0;
     padding: 0.65rem 0.85rem;
-    font-family: var(--font-family-mono);
     font-size: 0.85rem;
     letter-spacing: 0.02em;
   }

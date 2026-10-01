@@ -1,61 +1,50 @@
 {
   "seo": {
     "title": "Code — Tamara Gisele Mack",
-    "description": "Workspace repositories and packages — editor aesthetic, repos not bio."
+    "description": "Selected code from the portfolio monorepo — what each piece does, why it is written that way, and where it is used."
   },
   "hero": {
     "eyebrow": "Code",
-    "title": "Repositories",
-    "lede": "Editor aesthetic for the monorepo surface — packages and paths, not a biography."
+    "title": "Selected code",
+    "lede": "Seven small pieces from the portfolio monorepo — what each does, why it’s written that way, and where it’s used."
   },
-  "windowTitle": "~/code/repos — editor aesthetic, repos not bio",
-  "explorer": [
-    "portfolio/",
-    "packages/utilities",
-    "packages/media-player",
-    "theme/core",
-    "server/utils/ai-lab-security.ts",
-    "public/d/js/helix-3.js"
-  ],
   "repos": [
     {
       "id": "portfolio",
       "name": "portfolio",
       "language": "TypeScript",
       "description": "Nx + Nuxt 4 monorepo. Theme tokens, SAM, four-env topology.",
-      "updated": "2d",
-      "href": "#"
+      "path": ""
     },
     {
       "id": "utilities",
       "name": "utilities",
       "language": "TypeScript",
       "description": "Node / browser / universal entries. No window at module load.",
-      "updated": "5d",
-      "href": "#"
+      "path": "packages/utilities"
     },
     {
       "id": "media-player",
       "name": "media-player",
       "language": "Vue",
       "description": "Framework-free leaf player used by gallery exhibits.",
-      "updated": "1w",
-      "href": "#"
+      "path": "packages/media-player"
     },
     {
       "id": "theme",
       "name": "theme",
       "language": "SCSS",
       "description": "Packaged design tokens consumed via @tgmc/theme dist.",
-      "updated": "3d",
-      "href": "#"
+      "path": "theme/core"
     }
   ],
   "samples": [
     {
       "id": "slug",
+      "title": "Slug normalizer",
       "module": "@tgmc/web-layer-admin",
       "file": "shared/blog-types.ts",
+      "path": "packages/web-layer-admin/shared/blog-types.ts",
       "language": "typescript",
       "style": "Pure function, no I/O",
       "dependencies": "None",
@@ -76,8 +65,10 @@
     },
     {
       "id": "gallery-filter",
+      "title": "Gallery filter predicate",
       "module": "@tgmc/web",
       "file": "shared/gallery-types.ts",
+      "path": "core/web/shared/gallery-types.ts",
       "language": "typescript",
       "style": "Pure predicate, exhaustively typed",
       "dependencies": "None",
@@ -118,8 +109,10 @@
     },
     {
       "id": "accent-tokens",
+      "title": "Accent token builder",
       "module": "@tgmc/web",
       "file": "shared/personalization.ts",
+      "path": "core/web/shared/personalization.ts",
       "language": "typescript",
       "style": "Small, deterministic, no side effects",
       "dependencies": "@tgmc/theme (pickContrastingInk)",
@@ -143,8 +136,10 @@
     },
     {
       "id": "mse-queue",
+      "title": "MSE append queue",
       "module": "@tgmc/media-player",
       "file": "src/lib/engine/source-buffer-queue.ts",
+      "path": "packages/media-player/src/lib/engine/source-buffer-queue.ts",
       "language": "typescript",
       "style": "Serialized async queue over a browser API with one-in-flight constraint",
       "dependencies": "Media Source Extensions (SourceBuffer)",
@@ -210,8 +205,10 @@
     },
     {
       "id": "ai-continuation",
+      "title": "Signed AI continuation",
       "module": "@tgmc/web",
       "file": "server/utils/ai-lab-security.ts",
+      "path": "core/web/server/utils/ai-lab-security.ts",
       "language": "typescript",
       "style": "HMAC-signed, one-time continuation with timing-safe compare",
       "dependencies": "node:crypto (createHmac, timingSafeEqual), h3 cookies",
@@ -259,8 +256,10 @@
     },
     {
       "id": "fill-contrast",
+      "title": "Fill contrast ink",
       "module": "@tgmc/theme",
       "file": "src/contrast.ts",
+      "path": "theme/core/src/contrast.ts",
       "language": "typescript",
       "style": "WCAG luminance over a composite fill, not a single hex",
       "dependencies": "None (sRGB math only)",
@@ -307,8 +306,10 @@
     },
     {
       "id": "dna-helix",
+      "title": "DNA helix geometry",
       "module": "@tgmc/web",
       "file": "public/d/js/helix-3.js",
+      "path": "core/web/public/d/js/helix-3.js",
       "language": "javascript",
       "style": "Parametric 3D construction with groove offset and base-pair geometry",
       "dependencies": "three, EffectComposer, UnrealBloomPass, BokehPass",

@@ -39,6 +39,12 @@ const openaiModel = firstNonEmptyEnv(process.env, 'NUXT_OPENAI_MODEL', 'OPENAI_M
 const aiLabLiveEnabledRaw =
   firstNonEmptyEnv(process.env, 'NUXT_PUBLIC_AI_LAB_LIVE_ENABLED', 'AI_LAB_LIVE_ENABLED') ?? '0';
 const aiLabSigningSecret = firstNonEmptyEnv(process.env, 'NUXT_AI_LAB_SIGNING_SECRET', 'AI_LAB_SIGNING_SECRET') ?? '';
+const adminToken = firstNonEmptyEnv(process.env, 'NUXT_ADMIN_TOKEN', 'ADMIN_TOKEN') ?? '';
+const mediaTable = firstNonEmptyEnv(process.env, 'NUXT_MEDIA_TABLE', 'MEDIA_TABLE') ?? '';
+const assetsBucket = firstNonEmptyEnv(process.env, 'NUXT_ASSETS_BUCKET', 'ASSETS_BUCKET') ?? '';
+const mediaQueueUrl = firstNonEmptyEnv(process.env, 'NUXT_MEDIA_QUEUE_URL', 'MEDIA_QUEUE_URL') ?? '';
+const assetsDistributionId =
+  firstNonEmptyEnv(process.env, 'NUXT_ASSETS_DISTRIBUTION_ID', 'ASSETS_DISTRIBUTION_ID') ?? '';
 
 /**
  * Nitro preset for a given SYS_ENV.
@@ -143,6 +149,8 @@ const modules: any[] = [
   ],
   '@primevue/nuxt-module',
   'nuxt-svgo',
+  '@nuxt/icon',
+  '@tgmc/media-nuxt',
 ];
 
 // All SYS_ENV values write `{workspaceRoot}/.output/<sysEnv>` (same contract as scripts/nitro-output-dir.mjs).
@@ -164,6 +172,70 @@ const hasLocalSslFiles = existsSync(sslKeyPath) && existsSync(sslCertPath);
 const viteProps = configProps.vite();
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
+// Icons: Lucide via @nuxt/icon, rendered as inline SVG (follows currentColor and
+// forced-colors mode). Served from this app's own server bundle — never the public
+// Iconify API — and the icons we use are pre-bundled for the client (UiIcon names
+// are dynamic, so the scanner can't see them: add every name used — including the
+// `icon` of each `contact.social` link in content/profile.json — to `icons`).
+const iconConfig = {
+  mode: 'svg',
+  provider: 'server',
+  fallbackToApi: false,
+  serverBundle: { collections: ['lucide'] },
+  clientBundle: {
+    scan: true,
+    sizeLimitKb: 256,
+    icons: [
+      'lucide:copy',
+      'lucide:download',
+      'lucide:external-link',
+      'lucide:file-text',
+      'lucide:house',
+      'lucide:refresh-cw',
+      'lucide:send',
+      'lucide:user',
+      'lucide:x',
+      'lucide:cloud-upload',
+      'lucide:upload',
+      'lucide:trash-2',
+      'lucide:plus',
+      'lucide:key-round',
+      'lucide:save',
+      'lucide:lock-open',
+      'lucide:chevron-down',
+      'lucide:chevron-left',
+      'lucide:chevron-right',
+      'lucide:at-sign',
+      'lucide:bot',
+      'lucide:cloud',
+      'lucide:codepen',
+      'lucide:dribbble',
+      'lucide:facebook',
+      'lucide:figma',
+      'lucide:gitlab',
+      'lucide:instagram',
+      'lucide:layers',
+      'lucide:linkedin',
+      'lucide:message-circle',
+      'lucide:message-square',
+      'lucide:music',
+      'lucide:newspaper',
+      'lucide:package',
+      'lucide:pen-line',
+      'lucide:podcast',
+      'lucide:rss',
+      'lucide:square-code',
+      'lucide:twitch',
+      'lucide:twitter',
+      'lucide:youtube',
+      'lucide:contrast',
+      'lucide:github',
+      'lucide:code',
+      'lucide:mail',
+    ],
+  },
+};
+
 export default defineNuxtConfig({
   // Local `./layers/*` auto-scanned (e.g. 1.base). Publishable layers use `extends`.
   // Do not also list auto-scanned `./layers/*` paths in `extends` (double-merge).
@@ -203,11 +275,7 @@ export default defineNuxtConfig({
     ...(configProps.app(siteDescription, siteTitle, CDN_URL) as any),
     ...(CDN_URL ? { cdnURL: CDN_URL } : {}),
   } as any,
-  css: [
-    resolvePath('./assets/css/styles.scss'),
-    resolvePath('./assets/css/portfolio-launch.scss'),
-    'primeicons/primeicons.css',
-  ],
+  css: [resolvePath('./assets/css/styles.scss'), resolvePath('./assets/css/portfolio-launch.scss')],
   vue: {
     propsDestructure: true,
   },
@@ -220,7 +288,14 @@ export default defineNuxtConfig({
     openaiApiKey,
     openaiModel,
     aiLabSigningSecret,
+    adminToken,
+    mediaTable,
+    assetsBucket,
+    mediaQueueUrl,
+    assetsDistributionId,
     public: {
+      // Theme runtime: Nora styled PrimeVue + Foundation layout aliases (incl. --foundation-accent).
+      // Sass: Vue SFCs get theme-* via nuxt-auto; styles.scss enables Foundation layout only.
       theme: {
         mode: 'system',
         uiStack: 'primevue',
@@ -249,6 +324,9 @@ export default defineNuxtConfig({
     // Resolve the runtime-neutral entry from this worktree even when its
     // node_modules directory is linked to an older primary checkout.
     '@tgmc/utilities/universal': resolvePath('../../packages/utilities/src/universal.ts'),
+    // Prefer source over dist so Nuxt SSR does not race Nx cache restores of
+    // packages/media-player/dist during parallel `nx affected -t test,build`.
+    '@tgmc/media-player': resolvePath('../../packages/media-player/src/index.ts'),
     // Aliased app types so runtime tooling and Vite can resolve imports like `#types/*`.
     '#types': resolvePath('./types'),
     // SCSS-only theme aliases (JS uses `@tgmc/theme` / `@tgmc/theme/tokens` package exports)
@@ -258,8 +336,8 @@ export default defineNuxtConfig({
   },
   build: { transpile: [] },
   routeRules: {
-    '/styles/kitchen-sink': { redirect: { to: '/styles', statusCode: 301 } },
-    '/styles/kitchen-sink/**': { redirect: { to: '/styles', statusCode: 301 } },
+    '/styles/kitchen-sink': { redirect: { to: '/styles/parity', statusCode: 301 } },
+    '/styles/kitchen-sink/**': { redirect: { to: '/styles/parity', statusCode: 301 } },
   },
   dev: isDev,
   devServer: {
@@ -325,8 +403,9 @@ export default defineNuxtConfig({
       },
     },
   },
-  // Vite CSS: SCSS `loadPaths` + auto `@use "nuxt-auto"` for Vue SFC styles
-  // (variables, colors, button mixins). See `config-properties/vite-prop.ts`.
+  // Vite CSS: SCSS `loadPaths` (theme + app assets/css) + Vue `additionalData`
+  // for theme `nuxt-auto` and app mixins. Globals emit only via portfolio-launch.
+  // See `config-properties/vite-prop.ts`.
   // CDN belongs on `app.cdnURL` only — never as `vite.base` / router base.
   vite: { ...viteProps },
   typescript: {
@@ -352,6 +431,7 @@ export default defineNuxtConfig({
   debug: isLocalDev,
   a11y: configProps.a11y() as any,
   i18n: configProps.i18n() as any,
+  icon: iconConfig,
   primevue: configProps.primevue() as any,
   svgo: {
     autoImportPath: resolvePath('./assets/svg/'),

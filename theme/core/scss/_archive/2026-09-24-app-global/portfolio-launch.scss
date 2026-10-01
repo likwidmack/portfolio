@@ -1,0 +1,225 @@
+@use 'theme/scss/tokens' as *;
+@use './variables';
+@use './mixins' as *;
+@use './globals';
+
+$fontsource-cdn: 'https://cdn.jsdelivr.net/fontsource/fonts';
+
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src:
+    url('#{$fontsource-cdn}/ibm-plex-sans@latest/latin-400-normal.woff2') format('woff2'),
+    url('#{$fontsource-cdn}/ibm-plex-sans@latest/latin-400-normal.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src:
+    url('#{$fontsource-cdn}/ibm-plex-sans@latest/latin-600-normal.woff2') format('woff2'),
+    url('#{$fontsource-cdn}/ibm-plex-sans@latest/latin-600-normal.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src:
+    url('#{$fontsource-cdn}/ibm-plex-mono@latest/latin-400-normal.woff2') format('woff2'),
+    url('#{$fontsource-cdn}/ibm-plex-mono@latest/latin-400-normal.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src:
+    url('#{$fontsource-cdn}/ibm-plex-mono@latest/latin-500-normal.woff2') format('woff2'),
+    url('#{$fontsource-cdn}/ibm-plex-mono@latest/latin-500-normal.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src:
+    url('#{$fontsource-cdn}/ibm-plex-mono@latest/latin-600-normal.woff2') format('woff2'),
+    url('#{$fontsource-cdn}/ibm-plex-mono@latest/latin-600-normal.woff') format('woff');
+}
+
+html {
+  scroll-padding-top: 9rem;
+}
+
+.portfolio-hero {
+  @include portfolio-stack;
+  padding-block: var(--portfolio-space);
+  border-bottom: 1px solid var(--portfolio-rule);
+}
+
+.work-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 1px solid var(--portfolio-rule);
+  border-left: 1px solid var(--portfolio-rule);
+}
+
+.principle-grid,
+.evidence-grid,
+.artifact-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--portfolio-rule);
+}
+
+.principle-grid {
+  article {
+    padding: 2rem;
+    background: var(--main-background);
+  }
+}
+
+// Glass surface consistent with the rest of the redesigned chrome (jump-bar, nav panel),
+// instead of the plain default dialog background.
+.p-dialog {
+  width: min(32rem, calc(100vw - 2rem));
+  max-height: calc(100dvh - 2rem);
+  @include portfolio-soft-surface;
+  backdrop-filter: blur(20px);
+}
+
+// The PrimeVue theme's mask token resolves to a plain opaque surface color instead of
+// its intended dark scrim (`color-mix(..., black)`), which also hides the glass effect
+// above — an app-level fix rather than touching the shared `@tgmc/theme` preset.
+.p-dialog-mask {
+  background: color-mix(in srgb, var(--main-background) 35%, black) !important;
+}
+
+@keyframes portfolio-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-1deg);
+  }
+
+  50% {
+    transform: translateY(-1rem) rotate(1deg);
+  }
+}
+
+html[data-motion='reduced'] {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .home-hero__visual video,
+  .home-hero__visual-pause {
+    display: none;
+  }
+
+  .home-hero__visual img {
+    animation: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:not([data-motion='playful']) {
+    *,
+    *::before,
+    *::after {
+      scroll-behavior: auto !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+    }
+
+    .home-hero__visual video,
+    .home-hero__visual-pause {
+      display: none;
+    }
+  }
+}
+
+@media (orientation: landscape) and (min-width: #{$breakpoint-tablet}) {
+  .home {
+    .work-grid {
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 28rem), 1fr));
+    }
+  }
+
+  .principle-grid,
+  .evidence-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+  }
+
+  .principle-grid article,
+  .evidence-grid > div {
+    display: grid;
+    align-content: start;
+    min-width: 0;
+  }
+}
+
+@media (max-width: #{$breakpoint-standard}) {
+  html {
+    scroll-padding-top: 10rem;
+  }
+
+  .principle-grid,
+  .evidence-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .work-grid,
+  .artifact-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: #{$breakpoint-tablet}) {
+  html {
+    scroll-padding-top: 9rem;
+  }
+
+  .work-grid,
+  .artifact-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: #{$breakpoint-mobile}) {
+  html {
+    scroll-padding-top: 8rem;
+  }
+
+  .portfolio-page {
+    h1 {
+      font-size: clamp(2.75rem, 15vw, 4.5rem);
+    }
+
+    h2 {
+      font-size: clamp(1.85rem, 10vw, 3rem);
+    }
+  }
+
+  .button-row {
+    align-items: stretch;
+
+    > :where(a, button, .p-button, .btn) {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}

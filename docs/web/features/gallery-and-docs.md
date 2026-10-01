@@ -10,6 +10,19 @@ The Nuxt app exposes two browse hubs that share the same pattern: a **root page*
 
 Public primary rail is **Work / About / Gallery / Writing / Code**. Docs, AI Lab (`/ai-lab`), and Process (`/process`) live under Work.
 
+## Browse toolbar (`AppBrowseToolbar`)
+
+Both hubs share one toolbar:
+
+- **One control per facet** — a segmented group (View · Group · Filter) on wide screens; at the tablet breakpoint and below, Group and Filter become labelled native `<select>`s (44px, the OS picker on touch, "Label · count" options) laid out in an even grid. CSS shows exactly one control per facet at each width, so screen readers never meet a duplicate, and the toolbar's `minmax(0, 1fr)` track keeps it from pushing the page sideways. `/code` uses the same toolbar, and its snippet tabs become a labelled picker with ‹ › buttons on narrow screens. The old mobile `<select>` swap is gone, so each facet has exactly one control at every width.
+- **`inline`** (Gallery) — on wide screens (> 768px) View | Group | Filter sit on one row with hairline dividers. The prop owns this look; pages don't restyle the toolbar. `/code` switches between its snippet tabs and the picker with a container query on the page (tabs only when the page is ≥ 48rem wide), so a 768px tablet keeps the picker.
+- **Counts** — each Group / Filter option shows how many items it would show given the other facet (`count`); options at `0` are disabled unless selected.
+- **Status line** — “Showing N of M posts/documents” in an `aria-live="polite"` region, plus **Clear filters** when a filter or the search text is set (changing only the view does not count).
+- **Search** — Docs shows a labelled Search field (was “Query”).
+- **URL state** — pages bind the toolbar through `useBrowseQuery()` (`app/composables/useBrowseQuery.ts`), which reads/writes `view`, `group`, `kind` and `q` with `router.replace` (shareable, Back-safe, no extra history). Other query keys such as Gallery's `specimen` are preserved. `app/app.vue` keys `NuxtPage` with `pageKeyFor()` (full path minus these four keys), so toolbar changes update the page in place instead of remounting it — focus stays in Search and the feed opens at the tapped post. Pure helpers: `core/web/shared/browse-query.ts` (`readBrowseQuery`, `writeBrowseQuery`, `isFiltered`).
+
+Both hubs use the **fluid** page fit (`data-fit="fluid"`): they fill the viewport width inside the page padding. `/code` uses the same toolbar (Package facet) plus `item` for the selected snippet.
+
 ## Gallery
 
 Content lives in `core/web/content/gallery.json` (Nuxt Content `gallery` collection). Posts are flattened from categories into a feed:

@@ -30,7 +30,10 @@
       "label": "Implementation proof",
       "value": "@tgmc/media-player MSE/HLS workspace package with browser-safe entry points"
     },
-    { "label": "Quality proof", "value": "Unit-tested utilities and a supporting /media-player demonstration" },
+    {
+      "label": "Quality proof",
+      "value": "Unit-tested utilities and a supporting /media-player demonstration"
+    },
     {
       "label": "Architecture proof",
       "value": "Nuxt/Nx package boundaries that mirror how product UX and transport concerns stay split"
@@ -54,8 +57,17 @@
     }
   ],
   "links": [
-    { "label": "Open the media-player demonstration", "href": "/media-player" },
-    { "label": "Related experience systems story", "href": "/work/experience-systems" },
-    { "label": "Related data visualization story", "href": "/work/data-visualization" }
+    {
+      "label": "Open the media-player demonstration",
+      "href": "/media-player"
+    },
+    {
+      "label": "Related experience systems story",
+      "href": "/work/experience-systems"
+    },
+    {
+      "label": "Related data visualization story",
+      "href": "/work/data-visualization"
+    }
   ]
 }

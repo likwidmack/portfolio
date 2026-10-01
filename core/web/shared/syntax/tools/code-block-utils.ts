@@ -10,6 +10,19 @@ export function escapeHtmlText(value: string): string {
 }
 
 /**
+ * Reverses `escapeHtmlText` (plus quote entities) so tokenizers see real source characters.
+ * `&amp;` is decoded last so `&amp;lt;` stays the literal text `&lt;`.
+ */
+export function decodeHtmlText(value: string): string {
+  return value
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;|&#x27;/g, "'")
+    .replace(/&amp;/g, '&');
+}
+
+/**
  * Returns true when a code block is raw text and should be tokenized.
  */
 export function shouldTokenizeCode(codeInnerHtml: string): boolean {

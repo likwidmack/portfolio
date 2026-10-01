@@ -8,9 +8,9 @@ Longer reference: [`docs/packages/utilities.md`](../../docs/packages/utilities.m
 
 | Import                      | Runtime                   | Contents                                                                                                                                        |
 | --------------------------- | ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| `@tgmc/utilities`           | Node / Nitro / AWS Lambda | Env helpers, `Logging`, `deepAssign` / `deepSet`, CDN helpers, `toSnakeCase`, Node `EventHandler` / `EventsHandler`                             |
+| `@tgmc/utilities`           | Node / Nitro / AWS Lambda | Env helpers, `Logging`, `deepAssign` / `deepSet`, `sha256Hex`, CDN helpers, `toSnakeCase`, Node `EventHandler` / `EventsHandler`                |
 | `@tgmc/utilities/browser`   | Browser only              | DOM events, `WebStorageService` / `StorageService`, `WebStorage`, `StorageProperty`, `StorageQueue`, `debounce`, `throttle`, `FakeLocalStorage` |
-| `@tgmc/utilities/universal` | SSR and browser           | Runtime-neutral CDN helpers and `toSnakeCase`; excludes Node events and DOM/storage APIs                                                        |
+| `@tgmc/utilities/universal` | SSR and browser           | Runtime-neutral CDN helpers, `aspectRatio`, and `toSnakeCase`; excludes Node events and DOM/storage APIs                                        |
 
 Do **not** import `@tgmc/utilities/browser` from Nitro server code or Lambda handlers.
 

@@ -4,6 +4,8 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
+import { PRIMARY_NAV_ITEMS } from '../shared/primary-nav';
+
 const blogIndexPath = join(import.meta.dirname, '../app/pages/blog/index.vue');
 const blogSlugPath = join(import.meta.dirname, '../app/pages/blog/[slug].vue');
 const navPath = join(import.meta.dirname, '../app/components/AppPrimaryNav/index.vue');
@@ -26,9 +28,9 @@ describe('blog pages', () => {
 
   it('adds Writing to primary nav at /blog', () => {
     const nav = readFileSync(navPath, 'utf8');
-    expect(nav).toContain('to="/blog"');
-    expect(nav).toContain('Writing');
-    expect(nav).toMatch(/to="\/work"[\s\S]*to="\/about"[\s\S]*to="\/gallery"[\s\S]*to="\/blog"[\s\S]*to="\/code"/);
+    expect(nav).toContain('PRIMARY_NAV_ITEMS');
+    expect(PRIMARY_NAV_ITEMS.map((item) => item.to)).toEqual(['/work', '/about', '/gallery', '/blog', '/code']);
+    expect(PRIMARY_NAV_ITEMS.find((item) => item.to === '/blog')?.label).toBe('Writing');
     expect(nav).not.toContain('to="/docs"');
     expect(nav).not.toContain('AI Lab');
     expect(nav).not.toContain('Process');

@@ -82,21 +82,23 @@ function _panelId(value: string | number): string {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
+// Scoped (was global: it restyled every `.p-tabs`). The root carries this scope; PrimeVue renders
+// the tab list inside PrimeTabs, so the wrapper reaches its own library's internals with :deep().
 .p-tabs {
   border-radius: var(--border-radius-md);
 
-  .p-tablist {
+  :deep(.p-tablist) {
     border-top-right-radius: var(--border-radius-md);
     border-top-left-radius: var(--border-radius-md);
   }
 
-  .p-tabpanels {
+  :deep(.p-tabpanels) {
     border-bottom-right-radius: var(--border-radius-md);
     border-bottom-left-radius: var(--border-radius-md);
   }
 
-  .p-tablist-tab-list {
+  :deep(.p-tablist-tab-list) {
     .p-tablist-content {
       display: flex;
       flex-flow: row nowrap;

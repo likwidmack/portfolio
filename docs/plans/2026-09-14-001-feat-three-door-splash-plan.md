@@ -493,7 +493,7 @@ Prove the splash contract with `@tgmc/web` vitest, not a full Nuxt e2e pass, unl
 - R1–R16 that this increment implements are met (R11–R13 membership is assignment + first beats, not a full interior rewrite).
 - Every unit’s test scenarios pass.
 - Abandoned experiments are not left in the diff.
-- Unrelated dirty files (for example the Sass `_colors.scss` rewrite) are not in the commit. Typed `@tgmc/theme` helpers (`color-palette.ts`, `color-quality.ts`, barrel exports, and their tests) may ship when they support splash/journey contracts.
+- Theme color files and other unrelated dirty files are not in the commit.
 - Docs: this plan stays the source of truth; no extra marketing copy.
 
 **Per unit:** U1 allowlist complete; U2 plaza gone; U3 `/` skip without client-only preference; U4 beats exist; U5 splash chrome + Doors + On view.

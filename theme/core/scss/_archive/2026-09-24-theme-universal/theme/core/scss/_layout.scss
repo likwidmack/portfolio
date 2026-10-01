@@ -1,0 +1,172 @@
+// Archived copy of theme/core/scss/_layout.scss before the theme became universal-only (plan Task 2). Not compiled.
+@use 'theme/scss/tokens' as *;
+
+/// Portfolio launch document shell (`html` / `body` / `#site_page`).
+/// Emitted via `@tgmc/theme` (`scss/index.scss` → `@import 'layout'`).
+/// Keep document structure and shell-only responsive rules in this partial.
+
+*,
+::before,
+::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: var(--font-family), serif;
+  font-size: var(--font-size-default);
+  line-height: 1.5;
+  tab-size: 4;
+  scroll-behavior: smooth;
+}
+
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+  height: auto;
+}
+
+body {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  font-family: var(--font-family), serif;
+  color: var(--text-color);
+  text-shadow: var(--text-shadow-root);
+  background-color: var(--main-background);
+
+  // Quiet grid: low-contrast rules so wallpaper stays atmospheric, not busy.
+  &.quiet-grid {
+    background-image:
+      linear-gradient(color-mix(in srgb, var(--portfolio-rule) 35%, transparent) 1px, transparent 1px),
+      linear-gradient(90deg, color-mix(in srgb, var(--portfolio-rule) 35%, transparent) 1px, transparent 1px);
+    background-size: 5rem 5rem;
+  }
+
+  #site_page {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    min-height: 100dvh;
+    height: auto;
+    max-height: none;
+    padding-inline: 0;
+    flex-direction: column;
+    overflow: visible;
+    max-width: 100vw;
+    padding: 0;
+
+    > footer,
+    > header {
+      position: relative;
+      inset: auto;
+      width: 100%;
+      min-width: 0;
+      max-height: none;
+      flex: 0 0 auto;
+      margin-inline: 0;
+      z-index: 99;
+    }
+
+    > header {
+      display: block;
+      position: sticky;
+      top: 0;
+      max-width: none;
+      padding: 0;
+      bottom: inherit;
+
+      > div {
+        width: 100%;
+        padding: 0;
+      }
+    }
+
+    // Flex child fills leftover viewport between in-flow header/footer.
+    // Do not pad main by chrome height — that double-counts and forces page scroll.
+    > main {
+      margin: 0;
+      background: transparent none center no-repeat;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      min-width: 0;
+      min-height: 0;
+      height: auto;
+      flex: 1 1 auto;
+      overflow: visible;
+      padding: 0 !important;
+
+      header,
+      footer {
+        flex: 0;
+        margin: 0;
+        width: 100%;
+        height: auto;
+        overflow: hidden;
+        z-index: 1;
+      }
+    }
+
+    // Slim footer: no block padding here — the footer's own row sets a compact rhythm
+    // around its 44px controls (was space-4 / space-3 / space-2 per breakpoint).
+    > footer {
+      top: inherit;
+      padding: 0;
+    }
+  }
+
+  // Home splash: one viewport, footer stays visible, no document scroll.
+  &:has(.splash-page) {
+    overflow: hidden;
+
+    #site_page {
+      height: 100dvh;
+      max-height: 100dvh;
+      overflow: hidden;
+
+      > main {
+        overflow: hidden;
+      }
+    }
+  }
+}
+
+@media (max-width: $breakpoint-standard) {
+  body {
+    #site_page {
+      padding: 0 var(--space-3);
+    }
+  }
+}
+
+@media (max-width: $breakpoint-tablet) {
+  body {
+    #site_page {
+      padding: 0 var(--space-2);
+
+      > footer {
+        padding: 0;
+      }
+    }
+  }
+}
+
+@media (max-width: $breakpoint-mobile) {
+  body {
+    #site_page {
+      > footer {
+        padding: 0;
+
+        p {
+          margin: 0;
+        }
+      }
+    }
+  }
+}

@@ -71,6 +71,8 @@ usePortfolioSeo({
 .docs-page__body {
   max-width: 48rem;
 
+  // :deep() is the documented exception here: rendered markdown (ContentRenderer) is not a
+  // component with props, so the page sizes its wide blocks for scroll instead of overflow.
   :deep(pre) {
     overflow-x: auto;
   }

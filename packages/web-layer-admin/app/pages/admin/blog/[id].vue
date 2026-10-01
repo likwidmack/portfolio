@@ -37,12 +37,12 @@
         )
 
         .button-row
-          UiButton(type="submit", label="Save", icon="pi pi-save", :disabled="saving")
+          UiButton(type="submit", label="Save", icon="save", :disabled="saving")
           UiButton(
             v-if="!isNew",
             type="button",
             label="Delete",
-            icon="pi pi-trash",
+            icon="trash-2",
             severity="danger",
             variant="outlined",
             :disabled="saving",

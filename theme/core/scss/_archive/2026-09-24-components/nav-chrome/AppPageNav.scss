@@ -1,0 +1,86 @@
+@use 'theme/scss/tokens' as *;
+@use 'mixins' as *;
+
+// On-page section nav (AppPageNav, AppWorkSubNav). Moved from the theme's `globals/_docs.scss`
+// (the theme stays universal). Unscoped: both components render the `.page-nav` markup.
+.page-nav {
+  position: sticky;
+  top: calc(var(--main-top-padding, 5rem) + 0.75rem);
+  z-index: 1;
+  margin: 0;
+  padding: 0.85rem 1rem;
+
+  nav {
+    display: grid;
+    gap: 0.35rem;
+  }
+
+  [data-label] {
+    margin: 0 0 0.35rem;
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.72;
+  }
+
+  a {
+    display: flex;
+    align-items: center;
+    min-height: var(--touch-target, 44px);
+    padding: 0.35rem 0.5rem;
+    border-radius: var(--border-radius-sm, 0.35rem);
+    color: var(--text-color);
+    text-decoration: none;
+    font-variant: small-caps;
+    letter-spacing: 0.02em;
+    line-height: 1.25;
+
+    // Keyboard focus stays visible (was `outline: none` — focus ring hidden).
+    &:focus-visible {
+      outline: 2px solid var(--focus-ring, var(--primary-color));
+      outline-offset: 2px;
+    }
+
+    &[data-state='active'],
+    &.is-active {
+      // background: color-mix(in srgb, var(--primary-color) 18%, transparent);
+      color: var(--primary-color);
+      font-weight: 700;
+    }
+  }
+}
+
+@include bp-down(tablet) {
+  .page-nav {
+    position: static;
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+
+    nav {
+      display: flex;
+      width: max-content;
+      min-width: 100%;
+      gap: 0.25rem;
+    }
+
+    a {
+      min-height: var(--touch-target, 44px);
+      align-content: center;
+      white-space: nowrap;
+    }
+  }
+}
+
+// `embedded`: the nav sits inside another (sticky) panel, e.g. the About sidebar.
+.page-nav[data-embedded] {
+  position: static;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+
+  [data-label] {
+    color: var(--text-secondary-color, inherit);
+  }
+}

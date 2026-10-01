@@ -1,0 +1,709 @@
+{
+  "presets": [
+    {
+      "id": "brightSkySunset",
+      "kind": "collection",
+      "label": "Bright Sky Sunset",
+      "swatches": ["#c8e8fc", "#ffecf0", "#ffdee4"],
+      "primary": {
+        "light": "#ffecf0",
+        "dark": "#c8e8fc"
+      },
+      "secondary": {
+        "light": "#7a6100",
+        "dark": "#7121f3"
+      },
+      "accent": {
+        "light": "#ecfffb",
+        "dark": "#fcdcc8"
+      },
+      "backgroundRoles": {
+        "primary": {
+          "light": "#ffecf0",
+          "dark": "#ffecf0"
+        },
+        "secondary": {
+          "light": "#ffdee4",
+          "dark": "#ffdee4"
+        },
+        "accent": {
+          "light": "#ecfffb",
+          "dark": "#ecfffb"
+        }
+      },
+      "background": {
+        "image": "radial-gradient(ellipse at 18% 28%, #ffecf0 0%, transparent 58%), radial-gradient(ellipse at 82% 18%, #ffdee4 0%, transparent 58%), linear-gradient(145deg, #ffecf0 0%, transparent 72%)",
+        "clip": "polygon(0 0, 100% 0, 100% 70%, 0 100%)"
+      }
+    },
+    {
+      "id": "darkNightGoldenDay",
+      "kind": "collection",
+      "label": "Dark Night Golden Day",
+      "swatches": ["#001a26", "#053752", "#ef810e", "#e5de44"],
+      "primary": {
+        "light": "#e5de44",
+        "dark": "#001a26"
+      },
+      "secondary": {
+        "light": "#157410",
+        "dark": "#00a334"
+      },
+      "accent": {
+        "light": "#444be5",
+        "dark": "#260c00"
+      },
+      "backgroundRoles": {
+        "primary": {
+          "light": "#053752",
+          "dark": "#053752"
+        },
+        "secondary": {
+          "light": "#ef810e",
+          "dark": "#ef810e"
+        },
+        "accent": {
+          "light": "#e5de44",
+          "dark": "#e5de44"
+        }
+      },
+      "background": {
+        "image": "radial-gradient(ellipse at 82% 18%, #053752 0%, transparent 58%), radial-gradient(ellipse at 74% 78%, #ef810e 0%, transparent 58%), radial-gradient(ellipse at 16% 76%, #e5de44 0%, transparent 58%), linear-gradient(145deg, #053752 0%, transparent 72%)",
+        "clip": "circle(68% at 88% 12%)"
+      }
+    },
+    {
+      "id": "pastelDayNight",
+      "kind": "collection",
+      "label": "Pastel Day Night",
+      "swatches": ["#6696ba", "#e2e38b", "#e7a553", "#7e4b68", "#292965"],
+      "primary": {
+        "light": "#e2e38b",
+        "dark": "#292965"
+      },
+      "secondary": {
+        "light": "#1c731d",
+        "dark": "#c46ec4"
+      },
+      "accent": {
+        "light": "#8c8be3",
+        "dark": "#656529"
+      },
+      "backgroundRoles": {
+        "primary": {
+          "light": "#e2e38b",
+          "dark": "#e2e38b"
+        },
+        "secondary": {
+          "light": "#e7a553",
+          "dark": "#e7a553"
+        },
+        "accent": {
+          "light": "#7e4b68",
+          "dark": "#7e4b68"
+        }
+      },
+      "background": {
+        "image": "radial-gradient(ellipse at 74% 78%, #e2e38b 0%, transparent 58%), radial-gradient(ellipse at 16% 76%, #e7a553 0%, transparent 58%), radial-gradient(ellipse at 18% 28%, #7e4b68 0%, transparent 58%), radial-gradient(ellipse at 82% 18%, #292965 0%, transparent 58%), linear-gradient(145deg, #e2e38b 0%, transparent 72%)",
+        "clip": "ellipse(78% 58% at 12% 88%)"
+      }
+    },
+    {
+      "id": "midnightMagic",
+      "kind": "collection",
+      "label": "Midnight Magic",
+      "swatches": ["#3a015c", "#4f0147", "#35012c", "#11001c"],
+      "primary": {
+        "light": "#3a015c",
+        "dark": "#11001c"
+      },
+      "secondary": {
+        "light": "#498cfd",
+        "dark": "#3d89ff"
+      },
+      "accent": {
+        "light": "#235c01",
+        "dark": "#0b1c00"
+      },
+      "backgroundRoles": {
+        "primary": {
+          "light": "#4f0147",
+          "dark": "#4f0147"
+        },
+        "secondary": {
+          "light": "#35012c",
+          "dark": "#35012c"
+        },
+        "accent": {
+          "light": "#11001c",
+          "dark": "#11001c"
+        }
+      },
+      "background": {
+        "image": "radial-gradient(ellipse at 16% 76%, #4f0147 0%, transparent 58%), radial-gradient(ellipse at 18% 28%, #35012c 0%, transparent 58%), radial-gradient(ellipse at 82% 18%, #11001c 0%, transparent 58%), linear-gradient(145deg, #4f0147 0%, transparent 72%)",
+        "clip": "polygon(18% 0, 100% 0, 82% 100%, 0 100%)"
+      }
+    },
+    {
+      "id": "colorRed",
+      "kind": "color",
+      "label": "Red",
+      "swatches": ["#dc2626", "#f87171"],
+      "primary": {
+        "light": "#dc2626",
+        "dark": "#f87171"
+      },
+      "secondary": {
+        "light": "#edc68d",
+        "dark": "#920776"
+      },
+      "accent": {
+        "light": "#26dcdc",
+        "dark": "#71f8f8"
+      },
+      "backgroundRoles": {
+        "primary": {
+          "light": "#dc2626",
+          "dark": "#f87171"
+        },
+        "secondary": {
+          "light": "#edc68d",
+          "dark": "#920776"
+        },
+        "accent": {
+          "light": "#26dcdc",
+          "dark": "#71f8f8"
+        }
+      },
+      "background": null
+    },
+    {
+      "id": "colorOrange",
+      "kind": "color",
+      "label": "Orange",
+      "swatches": ["#ea580c", "#fb923c"],
+      "primary": {
+        "light": "#ea580c",
+        "dark": "#fb923c"
+      },
+      "secondary": {
+        "light": "#2e4403",
+        "dark": "#b40441"
+      },
+      "accent": {
+        "light": "#0c9eea",
+        "dark": "#3ca5fb"
+      },
+      "backgroundRoles": {
+        "primary": {
+          "light": "#ea580c",
+          "dark": "#fb923c"
+        },
+        "secondary": {
+          "light": "#2e4403",
+          "dark": "#b40441"
+        },
+        "accent": {
+          "light": "#0c9eea",
+          "dark": "#3ca5fb"
+        }
+      },
+      "background": null
+    },
+    {
+      "id": "colorAmber",
+      "kind": "color",
+      "label": "Amber",
+      "swatches": ["#d97706", "#fbbf24"],
+      "primary": {
+        "light": "#d97706",
+        "dark": "#fbbf24"
+      },
+      "secondary": {
+        "light": "#8b0443",
+        "dark": "#206e02"
+      },
+      "accent": {
+        "light": "#0668d9",
+        "dark": "#2460fb"
+      },
+      "backgroundRoles": {
+        "primary": {
+          "light": "#d97706",
+          "dark": "#fbbf24"
+        },
+        "secondary": {
+          "light": "#8b0443",
+          "dark": "#206e02"
+        },
+        "accent": {
+          "light": "#0668d9",
+          "dark": "#2460fb"
+        }
+      },
+      "background": null
+    },
+    {
+      "id": "colorYellow",
+      "kind": "color",
+      "label": "Yellow",
+      "swatches": ["#ca8a04", "#facc15"],
+      "primary": {
+        "light": "#ca8a04",
+        "dark": "#facc15"
+      },
+      "secondary": {
+        "light": "#960e03",
+        "dark": "#186e02"
+      },
+      "accent": {
+        "light": "#0444ca",
+        "dark": "#1543fa"
+      },
+      "backgroundRoles": {
+        "primary": {
+          "light": "#ca8a04",
+          "dark": "#facc15"
+        },
+        "secondary": {
+          "light": "#960e03",
+          "dark": "#186e02"
+        },
+        "accent": {
+          "light": "#0444ca",
+          "dark": "#1543fa"
+        }
+      },
+      "background": null
+    },
+    {
+      "id": "colorLime",
+      "kind": "color",
+      "label": "Lime",
+      "swatches": ["#65a30d", "#a3e635"],
+      "primary": {
+        "light": "#65a30d",
+        "dark": "#a3e635"
+      },
+      "secondary": {
+        "light": "#65a30d",
+        "dark": "#0d6d32"
+      },
+      "accent": {
+        "light": "#4b0da3",
+        "dark": "#7835e6"
+      },
+      "backgroundRoles": {
+        "primary": {
+          "light": "#65a30d",
+          "dark": "#a3e635"
+        },
+        "secondary": {
+          "light": "#65a30d",
+          "dark": "#0d6d32"
+        },
+        "accent": {
+          "light": "#4b0da3",
+          "dark": "#7835e6"
+        }
+      },
+      "background": null
+    },
+    {
+      "id": "colorGreen",
+      "kind": "color",
+      "label": "Green",
+      "swatches": ["#16a34a", "#4ade80"],
+      "primary": {
+        "light": "#16a34a",
+        "dark": "#4ade80"
+      },
+      "secondary": {
+        "light": "#e8fadb",
+        "dark": "#1b6793"
+      },
+      "accent": {
+        "light": "#a3166f",
+        "dark": "#de4aa8"
+      },
+      "backgroundRoles": {
+        "primary": {
+          "light": "#16a34a",
+          "dark": "#4ade80"
+        },
+        "secondary": {
+          "light": "#e8fadb",
+          "dark": "#1b6793"
+        },
+        "accent": {
+          "light": "#a3166f",
+          "dark": "#de4aa8"
+        }
+      },
+      "background": null
+    },
+    {
+      "id": "colorTeal",
+      "kind": "color",
+      "label": "Teal",
+      "swatches": ["#0d9488", "#2dd4bf"],
+      "primary": {
+        "light": "#0d9488",
+        "dark": "#2dd4bf"
+      },
+      "secondary": {
+        "light": "#b1f8ab",
+        "dark": "#3c50d7"
+      },
+      "accent": {
+        "light": "#940d19",
+        "dark": "#d42d42"
+      },
+      "backgroundRoles": {
+        "primary": {
+          "light": "#0d9488",
+          "dark": "#2dd4bf"
+        },
+        "secondary": {
+          "light": "#b1f8ab",
+          "dark": "#3c50d7"
+        },
+        "accent": {
+          "light": "#940d19",
+          "dark": "#d42d42"
+        }
+      },
+      "background": null
+    },
+    {
+      "id": "colorBlue",
+      "kind": "color",
+      "label": "Blue",
+      "swatches": ["#2563eb", "#60a5fa"],
+      "primary": {
+        "light": "#2563eb",
+        "dark": "#60a5fa"
+      },
+      "secondary": {
+        "light": "#15e0a0",
+        "dark": "#7607d0"
+      },
+      "accent": {
+        "light": "#ebad25",
+        "dark": "#fab560"
+      },
+      "backgroundRoles": {
+        "primary": {
+          "light": "#2563eb",
+          "dark": "#60a5fa"
+        },
+        "secondary": {
+          "light": "#15e0a0",
+          "dark": "#7607d0"
+        },
+        "accent": {
+          "light": "#ebad25",
+          "dark": "#fab560"
+        }
+      },
+      "background": null
+    },
+    {
+      "id": "colorPurple",
+      "kind": "color",
+      "label": "Purple",
+      "swatches": ["#9333ea", "#c084fc"],
+      "primary": {
+        "light": "#9333ea",
+        "dark": "#c084fc"
+      },
+      "secondary": {
+        "light": "#f6accf",
+        "dark": "#950487"
+      },
+      "accent": {
+        "light": "#8aea33",
+        "dark": "#c0fc84"
+      },
+      "backgroundRoles": {
+        "primary": {
+          "light": "#9333ea",
+          "dark": "#c084fc"
+        },
+        "secondary": {
+          "light": "#f6accf",
+          "dark": "#950487"
+        },
+        "accent": {
+          "light": "#8aea33",
+          "dark": "#c0fc84"
+        }
+      },
+      "background": null
+    },
+    {
+      "id": "colorMagenta",
+      "kind": "color",
+      "label": "Magenta",
+      "swatches": ["#c026d3", "#e879f9"],
+      "primary": {
+        "light": "#c026d3",
+        "dark": "#e879f9"
+      },
+      "secondary": {
+        "light": "#f4c2c8",
+        "dark": "#1532f5"
+      },
+      "accent": {
+        "light": "#39d326",
+        "dark": "#8af979"
+      },
+      "backgroundRoles": {
+        "primary": {
+          "light": "#c026d3",
+          "dark": "#e879f9"
+        },
+        "secondary": {
+          "light": "#f4c2c8",
+          "dark": "#1532f5"
+        },
+        "accent": {
+          "light": "#39d326",
+          "dark": "#8af979"
+        }
+      },
+      "background": null
+    },
+    {
+      "id": "colorForest",
+      "kind": "color",
+      "label": "Forest",
+      "swatches": ["#285a48", "#408a71"],
+      "primary": {
+        "light": "#285a48",
+        "dark": "#408a71"
+      },
+      "secondary": {
+        "light": "#6ba9bd",
+        "dark": "#d5ddec"
+      },
+      "accent": {
+        "light": "#5a283a",
+        "dark": "#8a4059"
+      },
+      "backgroundRoles": {
+        "primary": {
+          "light": "#285a48",
+          "dark": "#408a71"
+        },
+        "secondary": {
+          "light": "#6ba9bd",
+          "dark": "#d5ddec"
+        },
+        "accent": {
+          "light": "#5a283a",
+          "dark": "#8a4059"
+        }
+      },
+      "background": null
+    },
+    {
+      "id": "colorOxblood",
+      "kind": "color",
+      "label": "Oxblood",
+      "swatches": ["#360a14", "#9e2a3a"],
+      "primary": {
+        "light": "#360a14",
+        "dark": "#9e2a3a"
+      },
+      "secondary": {
+        "light": "#c664e2",
+        "dark": "#df86d9"
+      },
+      "accent": {
+        "light": "#0a362c",
+        "dark": "#2a9e8e"
+      },
+      "backgroundRoles": {
+        "primary": {
+          "light": "#360a14",
+          "dark": "#9e2a3a"
+        },
+        "secondary": {
+          "light": "#c664e2",
+          "dark": "#df86d9"
+        },
+        "accent": {
+          "light": "#0a362c",
+          "dark": "#2a9e8e"
+        }
+      },
+      "background": null
+    },
+    {
+      "id": "colorViolet",
+      "kind": "color",
+      "label": "Violet",
+      "swatches": ["#211832", "#5c3e94"],
+      "primary": {
+        "light": "#211832",
+        "dark": "#5c3e94"
+      },
+      "secondary": {
+        "light": "#6096b3",
+        "dark": "#7ea0c9"
+      },
+      "accent": {
+        "light": "#293218",
+        "dark": "#76943e"
+      },
+      "backgroundRoles": {
+        "primary": {
+          "light": "#211832",
+          "dark": "#5c3e94"
+        },
+        "secondary": {
+          "light": "#6096b3",
+          "dark": "#7ea0c9"
+        },
+        "accent": {
+          "light": "#293218",
+          "dark": "#76943e"
+        }
+      },
+      "background": null
+    },
+    {
+      "id": "colorWine",
+      "kind": "color",
+      "label": "Wine",
+      "swatches": ["#4a0404", "#822659"],
+      "primary": {
+        "light": "#4a0404",
+        "dark": "#822659"
+      },
+      "secondary": {
+        "light": "#f32af3",
+        "dark": "#d87d79"
+      },
+      "accent": {
+        "light": "#044a4a",
+        "dark": "#26824f"
+      },
+      "backgroundRoles": {
+        "primary": {
+          "light": "#4a0404",
+          "dark": "#822659"
+        },
+        "secondary": {
+          "light": "#f32af3",
+          "dark": "#d87d79"
+        },
+        "accent": {
+          "light": "#044a4a",
+          "dark": "#26824f"
+        }
+      },
+      "background": null
+    },
+    {
+      "id": "colorSea",
+      "kind": "color",
+      "label": "Sea",
+      "swatches": ["#15292b", "#5a9690"],
+      "primary": {
+        "light": "#15292b",
+        "dark": "#5a9690"
+      },
+      "secondary": {
+        "light": "#4d9e54",
+        "dark": "#5a9690"
+      },
+      "accent": {
+        "light": "#2b1715",
+        "dark": "#965a60"
+      },
+      "backgroundRoles": {
+        "primary": {
+          "light": "#15292b",
+          "dark": "#5a9690"
+        },
+        "secondary": {
+          "light": "#4d9e54",
+          "dark": "#5a9690"
+        },
+        "accent": {
+          "light": "#2b1715",
+          "dark": "#965a60"
+        }
+      },
+      "background": null
+    },
+    {
+      "id": "colorOlive",
+      "kind": "color",
+      "label": "Olive",
+      "swatches": ["#1b211a", "#8bae66"],
+      "primary": {
+        "light": "#1b211a",
+        "dark": "#8bae66"
+      },
+      "secondary": {
+        "light": "#938f76",
+        "dark": "#315d3e"
+      },
+      "accent": {
+        "light": "#201a21",
+        "dark": "#8966ae"
+      },
+      "backgroundRoles": {
+        "primary": {
+          "light": "#1b211a",
+          "dark": "#8bae66"
+        },
+        "secondary": {
+          "light": "#938f76",
+          "dark": "#315d3e"
+        },
+        "accent": {
+          "light": "#201a21",
+          "dark": "#8966ae"
+        }
+      },
+      "background": null
+    },
+    {
+      "id": "colorTaupe",
+      "kind": "color",
+      "label": "Taupe",
+      "swatches": ["#3a2525", "#d2c1b6"],
+      "primary": {
+        "light": "#3a2525",
+        "dark": "#d2c1b6"
+      },
+      "secondary": {
+        "light": "#ac7cac",
+        "dark": "#56653e"
+      },
+      "accent": {
+        "light": "#253a3a",
+        "dark": "#b6c7d2"
+      },
+      "backgroundRoles": {
+        "primary": {
+          "light": "#3a2525",
+          "dark": "#d2c1b6"
+        },
+        "secondary": {
+          "light": "#ac7cac",
+          "dark": "#56653e"
+        },
+        "accent": {
+          "light": "#253a3a",
+          "dark": "#b6c7d2"
+        }
+      },
+      "background": null
+    }
+  ]
+}

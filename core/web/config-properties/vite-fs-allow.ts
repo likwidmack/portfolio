@@ -1,13 +1,10 @@
-import { realpathSync } from 'node:fs';
 import { fileURLToPath, URL } from 'node:url';
 
 const resolvePath = (strUrl: string | URL) => fileURLToPath(new URL(strUrl, import.meta.url));
 
 /**
- * Git worktrees commonly link node_modules from the primary checkout. Vite
- * checks the resolved target, so allow only PrimeIcons' real package root for
- * its CSS-referenced font files instead of opening the whole external checkout.
+ * Vite dev-server filesystem allow list: the web app and the workspace root only.
+ * Icons are inline SVG from @nuxt/icon (bundled at build time), so no icon-font
+ * package needs an extra allow entry — the old PrimeIcons font root was removed.
  */
-export const primeIconsRoot = realpathSync(resolvePath('../../../node_modules/primeicons'));
-
-export const viteFsAllowRoots = [resolvePath('.'), resolvePath('../../..'), primeIconsRoot];
+export const viteFsAllowRoots = [resolvePath('.'), resolvePath('../../..')];

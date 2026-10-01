@@ -49,8 +49,8 @@ const themeSemanticScheme = {
     filledBackground: 'var(--form-background)',
     filledHoverBackground: 'color-mix(in srgb, var(--form-background) 88%, var(--primary-color))',
     filledFocusBackground: 'var(--form-background)',
-    borderColor: 'var(--form-border-color)',
-    hoverBorderColor: 'color-mix(in srgb, var(--form-border-color) 70%, var(--primary-color))',
+    borderColor: 'var(--form-border-color, var(--border-strong))',
+    hoverBorderColor: 'var(--text-secondary-color)',
     focusBorderColor: 'var(--form-focus-ring, var(--focus-ring))',
     invalidBorderColor: 'var(--form-invalid-color, var(--error))',
     color: 'var(--text-color)',
@@ -207,6 +207,35 @@ export const themePrimeVuePreset = definePreset(Nora, {
       dark: {
         surface: themeSurfaceDark,
         ...themeSemanticScheme,
+      },
+    },
+  },
+  components: {
+    button: {
+      root: {
+        borderRadius: 'var(--button-radius, var(--border-radius-sm))',
+        // No pill/full-round buttons — keep rounded variant on the small radius.
+        roundedBorderRadius: 'var(--button-radius, var(--border-radius-sm))',
+      },
+    },
+    // Nora defaults badge/progress labels to 0.625rem (10px) — below --type-min.
+    // Floor here so styled-mode CSS vars never ship under-readable chrome.
+    badge: {
+      root: {
+        fontSize: 'max(var(--type-min, 12px), 0.75rem)',
+      },
+      sm: {
+        fontSize: 'max(var(--type-min, 12px), 0.75rem)',
+      },
+    },
+    progressbar: {
+      label: {
+        fontSize: 'max(var(--type-min, 12px), 0.75rem)',
+      },
+    },
+    tag: {
+      root: {
+        fontSize: 'max(var(--type-min, 12px), 0.75rem)',
       },
     },
   },

@@ -20,6 +20,7 @@ describe('AppOrbitStage', () => {
     expect(source).toContain("setBackground('particles')");
     expect(source).toContain("setBackground('grid')");
     expect(source).toContain("setBackground('camera')");
+    expect(source).toContain("setBackground('custom')");
     // The camera stream itself is owned by AppDepthField (the page-wide background), not the ring.
     expect(source).not.toContain('getUserMedia');
   });
@@ -46,11 +47,10 @@ describe('AppDepthField background modes', () => {
     expect(source).toContain('stopCameraStream');
   });
 
-  it('renders a scrolling 3D grid floor/ceiling for grid mode', () => {
+  it('renders a solid custom fill when background mode is custom', () => {
     const source = readFileSync(depthFieldPath, 'utf8');
-    expect(source).toContain("background === 'grid'");
-    expect(source).toContain('grid-glow');
-    expect(source).toContain('grid-floor');
-    expect(source).toContain('grid-ceil');
+    expect(source).toContain("background === 'custom'");
+    expect(source).toContain('portfolio-depth-field--custom');
+    expect(source).toContain('portfolio-depth-field__custom');
   });
 });
