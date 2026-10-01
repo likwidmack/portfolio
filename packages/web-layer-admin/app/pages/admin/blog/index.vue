@@ -5,8 +5,8 @@
     h1.display Blog posts
     p.lead Draft, publish, and manage posts.
     .button-row
-      UiButton(as="a", href="/admin/blog/new", label="New post", icon="pi pi-plus")
-      UiButton(as="a", href="/admin", label="Token", icon="pi pi-key", severity="secondary", variant="outlined")
+      UiButton(as="a", href="/admin/blog/new", label="New post", icon="plus")
+      UiButton(as="a", href="/admin", label="Token", icon="key-round", severity="secondary", variant="outlined")
 
   .page-with-nav
     div(data-region="body")

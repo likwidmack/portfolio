@@ -1,9 +1,10 @@
 import { setCssVariable } from './set-css-variable';
 
 /**
- * Writes `--vh` on `:root` as 1% of `window.innerHeight` and refreshes it on resize.
+ * Writes viewport/chrome CSS variables used by sticky in-page offsets.
  *
- * Enables reliable full-viewport layouts on mobile where `100vh` ignores dynamic browser chrome.
+ * `--main-*-padding` is clearance for sticky descendants (docs TOC, etc.), not
+ * padding on `<main>` — site header/footer already occupy flex rows in `#site_page`.
  */
 const o = {
   get vh() {
@@ -22,7 +23,10 @@ type LayoutSizingOptions = {
 export function styleListener(options: LayoutSizingOptions = {}) {
   const headerId = options.headerId ?? 'site_header';
   const footerId = options.footerId ?? 'site_footer';
+  const headerHeight = o.getElementHeight(headerId);
+  const footerHeight = o.getElementHeight(footerId);
   setCssVariable('--vh', `${o.vh}px`);
-  setCssVariable('--main-top-padding', `${o.getElementHeight(headerId) + 5}px`);
-  setCssVariable('--main-bottom-padding', `${o.getElementHeight(footerId) + 5}px`);
+  setCssVariable('--main-top-padding', `${headerHeight + 5}px`);
+  setCssVariable('--main-bottom-padding', `${footerHeight + 5}px`);
+  setCssVariable('--page-chrome', `${headerHeight}px`);
 }

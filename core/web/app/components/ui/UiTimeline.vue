@@ -51,3 +51,30 @@ function _fallbackLabel(item: TItem): string {
   return String(item);
 }
 </script>
+
+<style lang="scss" scoped>
+// An `alternate` timeline is its own container and goes single-sided (date | content) when it
+// is narrower than 40rem — phones and tablets — whatever page it sits in. Only alternate ones:
+// inline-size containment would shrink a left / right timeline sitting in an auto grid track.
+.p-timeline-alternate {
+  container: ui-timeline / inline-size;
+}
+
+@container ui-timeline (width < 40rem) {
+  .p-timeline-alternate :deep(.p-timeline-event) {
+    flex-direction: row !important;
+  }
+
+  .p-timeline-alternate :deep(.p-timeline-event-opposite) {
+    flex: 0 0 5.5rem;
+    min-width: 0;
+    padding-inline: 0 0.75rem;
+    text-align: left !important;
+  }
+
+  .p-timeline-alternate :deep(.p-timeline-event-content) {
+    min-width: 0;
+    padding-inline: 0.75rem 0;
+  }
+}
+</style>

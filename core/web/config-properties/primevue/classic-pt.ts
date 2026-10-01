@@ -12,6 +12,7 @@ import ButtonStyle from 'primevue/button/style';
 import CardStyle from 'primevue/card/style';
 import CheckboxStyle from 'primevue/checkbox/style';
 import ChipStyle from 'primevue/chip/style';
+import ColorPickerStyle from 'primevue/colorpicker/style';
 import DatePickerStyle from 'primevue/datepicker/style';
 import DialogStyle from 'primevue/dialog/style';
 import DividerStyle from 'primevue/divider/style';
@@ -71,6 +72,7 @@ export const classicPrimeVuePt: Record<string, PtSection> = {
   card: toPtSection(CardStyle as StyleModule),
   checkbox: toPtSection(CheckboxStyle as StyleModule),
   chip: toPtSection(ChipStyle as StyleModule),
+  colorpicker: toPtSection(ColorPickerStyle as StyleModule),
   datepicker: toPtSection(DatePickerStyle as StyleModule),
   dialog: toPtSection(DialogStyle as StyleModule),
   divider: toPtSection(DividerStyle as StyleModule),

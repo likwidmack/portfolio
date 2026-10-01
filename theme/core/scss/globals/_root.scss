@@ -4,6 +4,7 @@
 @use '../tokens/colors' as *;
 @use '../tokens/contrast' as *;
 @use '../tokens/variables' as *;
+@use 'mixins' as m;
 
 :root {
   // Runtime / cascade only — font smoothing + text-shadow live on `html` / body classes.
@@ -28,12 +29,73 @@
   --rgb-neon: #{color.channel($neon-color, 'red', $space: rgb)} #{color.channel($neon-color, 'green', $space: rgb)}
     #{color.channel($neon-color, 'blue', $space: rgb)};
 
-  --gray-med: #{$color-gray-md};
-  --gray-100: #{$grey-200};
-  --gray-200: #{$grey-400};
-  --gray-300: #{$grey-600};
-  --gray-400: #{$grey-800};
-  --gray-500: #{$grey-900};
+  // ── Five-input model ─────────────────────────────────────────────────────
+  // The app sets primary, secondary, accent, paper and ink; everything neutral derives from
+  // paper → ink here, so a live change to `--paper` / `--ink` reaches every child. Pen & paper:
+  // paper is the background and ink the foreground in every mode, one pair per mode (light mode
+  // sets its own pair in `theme-light-vars`). Sass computes the same defaults
+  // (tokens/_colors.scss `neutral($step, $mode)`); `src/color-mix.ts` mirrors the maths.
+  --paper: #{$dark-paper};
+  --ink: #{$dark-ink};
+
+  // Alpha variants: paper / ink over transparent (hairlines, scrims, washes). Mode-relative.
+  --paper-a4: color-mix(in srgb, var(--paper) 4%, transparent);
+  --paper-a8: color-mix(in srgb, var(--paper) 8%, transparent);
+  --paper-a12: color-mix(in srgb, var(--paper) 12%, transparent);
+  --paper-a16: color-mix(in srgb, var(--paper) 16%, transparent);
+  --paper-a24: color-mix(in srgb, var(--paper) 24%, transparent);
+  --paper-a32: color-mix(in srgb, var(--paper) 32%, transparent);
+  --paper-a48: color-mix(in srgb, var(--paper) 48%, transparent);
+  --paper-a64: color-mix(in srgb, var(--paper) 64%, transparent);
+  --paper-a80: color-mix(in srgb, var(--paper) 80%, transparent);
+  --paper-a90: color-mix(in srgb, var(--paper) 90%, transparent);
+  --ink-a4: color-mix(in srgb, var(--ink) 4%, transparent);
+  --ink-a8: color-mix(in srgb, var(--ink) 8%, transparent);
+  --ink-a12: color-mix(in srgb, var(--ink) 12%, transparent);
+  --ink-a16: color-mix(in srgb, var(--ink) 16%, transparent);
+  --ink-a24: color-mix(in srgb, var(--ink) 24%, transparent);
+  --ink-a32: color-mix(in srgb, var(--ink) 32%, transparent);
+  --ink-a48: color-mix(in srgb, var(--ink) 48%, transparent);
+  --ink-a64: color-mix(in srgb, var(--ink) 64%, transparent);
+  --ink-a80: color-mix(in srgb, var(--ink) 80%, transparent);
+  --ink-a90: color-mix(in srgb, var(--ink) 90%, transparent);
+
+  // Neutral scale: 0 = paper (background) … 1000 = ink (foreground); follows the active pair.
+  --neutral-0: var(--paper);
+  --neutral-25: color-mix(in oklab, var(--ink) 2.5%, var(--paper));
+  --neutral-50: color-mix(in oklab, var(--ink) 5%, var(--paper));
+  --neutral-75: color-mix(in oklab, var(--ink) 7.5%, var(--paper));
+  --neutral-100: color-mix(in oklab, var(--ink) 10%, var(--paper));
+  --neutral-150: color-mix(in oklab, var(--ink) 15%, var(--paper));
+  --neutral-200: color-mix(in oklab, var(--ink) 20%, var(--paper));
+  --neutral-300: color-mix(in oklab, var(--ink) 30%, var(--paper));
+  --neutral-400: color-mix(in oklab, var(--ink) 40%, var(--paper));
+  --neutral-450: color-mix(in oklab, var(--ink) 45%, var(--paper));
+  --neutral-500: color-mix(in oklab, var(--ink) 50%, var(--paper));
+  --neutral-550: color-mix(in oklab, var(--ink) 55%, var(--paper));
+  --neutral-600: color-mix(in oklab, var(--ink) 60%, var(--paper));
+  --neutral-700: color-mix(in oklab, var(--ink) 70%, var(--paper));
+  --neutral-800: color-mix(in oklab, var(--ink) 80%, var(--paper));
+  --neutral-850: color-mix(in oklab, var(--ink) 85%, var(--paper));
+  --neutral-900: color-mix(in oklab, var(--ink) 90%, var(--paper));
+  --neutral-925: color-mix(in oklab, var(--ink) 92.5%, var(--paper));
+  --neutral-950: color-mix(in oklab, var(--ink) 95%, var(--paper));
+  --neutral-975: color-mix(in oklab, var(--ink) 97.5%, var(--paper));
+  --neutral-1000: var(--ink);
+
+  // Legacy grays → nearest neutral step (dark mode; light mode remaps in `theme-light-vars`).
+  --gray-med: var(--neutral-500);
+  --gray-100: var(--neutral-900);
+  --gray-200: var(--neutral-600);
+  --gray-300: var(--neutral-300);
+  --gray-400: var(--neutral-150);
+  --gray-500: var(--neutral-100);
+
+  --gray-1: var(--neutral-900);
+  --gray-2: var(--neutral-600);
+  --gray-3: var(--neutral-300);
+  --gray-4: var(--neutral-150);
+  --gray-5: var(--neutral-100);
 
   --success-light-dark: #{$success};
   --error-light-dark: #{$error};
@@ -59,74 +121,119 @@
 
   // Brand roles (ember / crimson) + hue-scale compatibility aliases.
   // `--tertiary-*` … `--denary-*` alias hue Sass (`$oxblood-*` … `$ink-*` / `$parchment-*`), not brand roles.
+  --navy-default: #{$navy-default};
+  --forest-default: #{$forest-default};
+  --oxblood-default: #{$oxblood-default};
+  --violet-default: #{$violet-default};
+  --wine-default: #{$wine-default};
+  --sea-default: #{$sea-default};
+  --olive-default: #{$olive-default};
+  --plum-default: #{$plum-default};
+  --taupe-default: #{$taupe-default};
+  --ink-default: #{$ink-default};
+
+  --navy-light-dark: #{light-dark($navy-light, $azure-dark)};
+  --forest-light-dark: #{light-dark($forest-light, $forest-dark)};
+  --oxblood-light-dark: #{light-dark($oxblood-light, $oxblood-dark)};
+  --violet-light-dark: #{light-dark($violet-light, $violet-dark)};
+  --wine-light-dark: #{light-dark($wine-light, $wine-dark)};
+  --sea-light-dark: #{light-dark($sea-light, $sea-dark)};
+  --olive-light-dark: #{light-dark($olive-light, $olive-dark)};
+  --plum-light-dark: #{light-dark($plum-light, $tangerine-dark)};
+  --taupe-light-dark: #{light-dark($taupe-light, $taupe-dark)};
+  --ink-light-dark: #{light-dark($ink-light, $parchment-dark)};
+
+  --navy-color: #{$azure-dark};
+  --forest-color: #{$forest-dark};
+  --oxblood-color: #{$oxblood-dark};
+  --violet-color: #{$violet-dark};
+  --wine-color: #{$wine-dark};
+  --sea-color: #{$sea-dark};
+  --olive-color: #{$olive-dark};
+  --plum-color: #{$tangerine-dark};
+  --taupe-color: #{$taupe-dark};
+  --ink-color: #{$parchment-dark};
+
   --primary-default: #{$primary-default-color};
   --secondary-default: #{$secondary-default-color};
-  --tertiary-default: #{$oxblood-default};
-  --quaternary-default: #{$violet-default};
-  --quinary-default: #{$wine-default};
-  --senary-default: #{$sea-default};
-  --septenary-default: #{$olive-default};
-  --octonary-default: #{$plum-default};
-  --nonary-default: #{$taupe-default};
-  --denary-default: #{$ink-default};
-
   --primary-light-dark: #{$primary-color};
   --secondary-light-dark: #{$secondary-color};
-  --tertiary-light-dark: #{light-dark($oxblood-light, $oxblood-dark)};
-  --quaternary-light-dark: #{light-dark($violet-light, $violet-dark)};
-  --quinary-light-dark: #{light-dark($wine-light, $wine-dark)};
-  --senary-light-dark: #{light-dark($sea-light, $sea-dark)};
-  --septenary-light-dark: #{light-dark($olive-light, $olive-dark)};
-  --octonary-light-dark: #{light-dark($plum-light, $tangerine-dark)};
-  --nonary-light-dark: #{light-dark($taupe-light, $taupe-dark)};
-  --denary-light-dark: #{light-dark($ink-light, $parchment-dark)};
-
   --primary-color: #{$primary-color-dark};
   --secondary-color: #{$secondary-color-dark};
-  --tertiary-color: #{$oxblood-dark};
-  --quaternary-color: #{$violet-dark};
-  --quinary-color: #{$wine-dark};
-  --senary-color: #{$sea-dark};
-  --septenary-color: #{$olive-dark};
-  --octonary-color: #{$tangerine-dark};
-  --nonary-color: #{$taupe-dark};
-  --denary-color: #{$parchment-dark};
-
+  --accent-color: #{$accent-color-dark};
   --primary-inverted: #{$primary-color-light};
   --secondary-inverted: #{$secondary-color-light};
   // Alias for older `--primary-color-inverted` references.
   --primary-color-inverted: var(--primary-inverted);
 
-  --portfolio-teal: #{$portfolio-teal-dark};
+  // Compatibility hue aliases (tertiary…denary → oxblood…ink); not brand roles.
+  --tertiary-color: var(--oxblood-color);
+  --quaternary-color: var(--violet-color);
+  --quinary-color: var(--wine-color);
+  --senary-color: var(--sea-color);
+  --septenary-color: var(--olive-color);
+  --octonary-color: var(--plum-color);
+  --nonary-color: var(--taupe-color);
+  --denary-color: var(--ink-color);
+  --tertiary-light-dark: var(--oxblood-light-dark);
+  --quaternary-light-dark: var(--violet-light-dark);
+  --quinary-light-dark: var(--wine-light-dark);
+  --senary-light-dark: var(--sea-light-dark);
+  --septenary-light-dark: var(--olive-light-dark);
+  --octonary-light-dark: var(--plum-light-dark);
+  --nonary-light-dark: var(--taupe-light-dark);
+  --denary-light-dark: var(--ink-light-dark);
 
-  /* 1. Background (Main) */
-  --main-background: #{$main-background-dark};
-  --main-background-secondary: #{$main-background-dark-secondary};
+  --teal-signal: #{$teal-signal-dark};
+
+  /* 1. Background (Main) — paper is the ground */
+  --main-background: var(--neutral-0);
+  --main-background-secondary: var(--neutral-50);
   --main-background-accent: #{$main-background-dark-accent};
 
   --main-color: #{$main-color};
   --main-secondary-color: #{$main-secondary-color};
-  --accent-color: #{$accent-color};
 
   /* 2. Surface (Cards, Modules) */
-  --surface-color: #{$css-surface-dark};
+  --surface-color: var(--neutral-50);
   /* 3. Surface Variant (Input, Hover) */
-  --surface-variant: #{$css-surface-variant-dark};
+  --surface-variant: var(--neutral-75);
 
   /* 4. Text (Primary) */
-  --text-color: #{$text-color-dark};
-  /* 5. Text (Secondary/Subtle) */
-  --text-secondary-color: #{$text-color-secondary-dark};
+  --text-color: var(--neutral-975);
+  /* 5. Text (Secondary/Subtle) — ≥ 4.5:1 on page, surface and variant */
+  --text-secondary-color: var(--neutral-700);
 
   /* 6. Primary Action/Accent */
   --primary: #{$css-primary-dark};
   /* 7. Accent Hover/Light */
   --primary-hover: #{$css-primary-hover-dark};
 
-  /* 8. Border/Dividers */
-  --border-color: #{$css-border-dark};
+  /* 8. Border/Dividers — a hairline of ink over the paper ground */
+  --border-color: var(--ink-a8);
   /* 9. Focus/Outline */
   --focus-ring: #{$css-focus-ring-dark};
+  /* 10. Accessible interaction roles (AA; text + controls use these, brand vars stay for fills) */
+  --link-color: #{$css-link-dark};
+  --border-strong: var(--neutral-450);
+  --primary-fill: #{$css-primary-fill-dark};
+  --on-primary: #{$css-on-primary};
+  // Status tones: fixed hue per status, tone per use. `-ink` = hue mixed toward the text colour
+  // just enough for ≥ 4.5:1 on page / surface / variant; `-border` = the ink tone; `-surface` =
+  // a light tint of the hue over the surface (text on it uses `-ink`).
+  --success-ink: color-mix(in oklab, var(--success) 80%, var(--text-color));
+  --warning-ink: var(--warning);
+  --error-ink: color-mix(in oklab, var(--error) 80%, var(--text-color));
+  --info-ink: color-mix(in oklab, var(--info) 90%, var(--text-color));
+  --danger-ink: var(--error-ink);
+  --success-border: var(--success-ink);
+  --warning-border: var(--warning-ink);
+  --error-border: var(--error-ink);
+  --info-border: var(--info-ink);
+  --success-surface: color-mix(in oklab, var(--success) 14%, var(--surface-color));
+  --warning-surface: color-mix(in oklab, var(--warning) 14%, var(--surface-color));
+  --error-surface: color-mix(in oklab, var(--error) 14%, var(--surface-color));
+  --info-surface: color-mix(in oklab, var(--info) 14%, var(--surface-color));
 
   // Layout + spacing (Sass `$space-*` → CSS)
   --space-0: #{$space-0};
@@ -148,11 +255,13 @@
   --font-family-title: #{$header-font-family};
   --font-family-display: #{$header-font-family};
 
-  --font-size-default: #{$font-size-default};
+  // Root font size as a percentage so the reader's browser text-size setting applies
+  // (a px root overrides it). 100% = 16px by default; ultrawide steps to 125%.
+  --font-size-default: 100%;
   --font-size-alt: #{$font-size-alt};
 
   // Fluid type scale — clamps between readable mins and design-token maxes.
-  --font-size-xs: clamp(0.7rem, 0.65rem + 0.2vw, #{$font-size-xs});
+  --font-size-xs: clamp(max(var(--type-min, 12px), 0.7rem), 0.65rem + 0.2vw, #{$font-size-xs});
   --font-size-sm: clamp(0.8rem, 0.75rem + 0.25vw, #{$font-size-sm});
   --font-size-base: clamp(0.95rem, 0.9rem + 0.3vw, #{$font-size-base});
   --font-size-lg: clamp(1rem, 0.95rem + 0.4vw, #{$font-size-lg});
@@ -168,25 +277,24 @@
   --font-size-10xl: clamp(2rem, 1.1rem + 5.8vw, #{$font-size-10xl});
 
   // Page fit measures — mobile 480 / tablet 768 / standard 1080 / widescreen 1440 / ultrawide 1920.
-  // `data-fit="screen"` fills the viewport; `data-fit="prose"` keeps a readable measure inside a full shell.
+  // Content shells are fluid with a hard max of 1440px and centered (`margin-inline: auto` on `.page-content`).
   // See docs/packages/theme.md (page-fit tokens + content-must-fit-containers).
   --page-pad: clamp(#{$space-3}, 2.5vw, #{$space-8});
   --page-max: 90rem;
   --page-shell-max: 90rem;
-  --page-screen-max: 100%;
+  --page-screen-max: 90rem;
   --prose-max: 42rem;
   --page-chrome: 6.5rem;
   --page-fill-min: calc(100dvh - var(--page-chrome));
-  --portfolio-max: var(--page-screen-max);
   --card-min: #{$card-min};
   --card-min-md: #{$card-min-md};
   --card-min-compact: #{$card-min-compact};
   --stack-min: #{$stack-min};
-  // Media / tile proportions — apply to media frames and image-led tiles, not text cards.
-  // Portrait-friendly by default; landscape overrides below and via `(orientation: landscape)`.
-  --surface-ratio: 5 / 4;
-  --card-ratio: 5 / 4;
-  --media-ratio: 4 / 3;
+  // Allowed frame ratios only: 9:16 · 16:9 · 1:1 (media / image-led cards & subsections).
+  // Portrait default → 9:16; landscape overrides below.
+  --surface-ratio: 9 / 16;
+  --card-ratio: 1 / 1;
+  --media-ratio: 9 / 16;
 
   // Radius (Sass `$radius-*` → CSS)
   --border-radius-sm: #{$radius-sm};
@@ -203,9 +311,10 @@
   --transition-base: #{$transition-base};
   --transition-slow: #{$transition-slow};
   --transition-base-duration: 250ms;
-  --shadow-sm: #{$shadow-sm};
-  --shadow-md: #{$shadow-md};
-  --shadow-lg: #{$shadow-lg};
+  // Elevation scale — brand shadow ink (`--rgb-shadow`), not raw black.
+  --shadow-sm: 0 1px 2px rgb(var(--rgb-shadow) / 0.14);
+  --shadow-md: 0 4px 14px rgb(var(--rgb-shadow) / 0.18);
+  --shadow-lg: 0 14px 36px rgb(var(--rgb-shadow) / 0.26);
   --text-shadow-root:
     0 1px 0 color-mix(in srgb, var(--primary-inverted) 52%, var(--primary-default)),
     -1px 0 0 color-mix(in srgb, var(--primary-color) 36%, var(--primary-default));
@@ -215,11 +324,11 @@
   --text-shadow-xl: 0 8px 16px #{$text-shadow-dark};
 
   // Breakpoints
-  --breakpoint: #{$breakpoint-widescreen};
+  --breakpoint: #{m.bp(widescreen)};
 
   // Form
   --form-gap: var(--space-4);
-  --form-border-color: #{$css-form-border};
+  --form-border-color: var(--border-strong);
   --form-background: rgba(0, 0, 0, 0.5);
   --form-background-disabled: rgba(#{$css-form-background-disabled}, 0.18);
   --form-placeholder: #{$css-form-placeholder};
@@ -227,7 +336,12 @@
   --form-invalid-color: #{$error};
   --form-help-color: #{$css-form-placeholder};
   --form-radius: var(--border-radius-sm);
-  --form-control-height: 2.5rem;
+  // Touch + type floors (repo UI rule: responsive · accessible · touch). Every control is at
+  // least --touch-target tall/wide; no text renders below --type-min.
+  // rem grows with the reader's text size; the px half keeps the hard floor if they shrink it.
+  --touch-target: max(2.75rem, 44px);
+  --type-min: max(0.75rem, 12px);
+  --form-control-height: max(var(--touch-target), 2.5rem);
 
   // Buttons — gradient stops stay in the same luminance family as the solid
   // `background-color` so `--button-fg` contrasts both layers.
@@ -253,12 +367,13 @@
   --button-shadow-hover: 0 12px 30px color-mix(in srgb, #{$shadow-alt-color} 28%, transparent);
   --button-shadow-active: 0 4px 14px color-mix(in srgb, #{$shadow-alt-color} 20%, transparent);
   --button-focus-ring: #{$css-focus-ring-dark};
-  --button-radius: var(--border-radius-md);
-  --button-press-depth: 5px;
+  --button-radius: var(--border-radius-sm);
+  --button-press-depth: 0.3125rem;
 
   // Foundation Sites — aliases stay parallel to theme tokens (follow light/dark).
   --foundation-primary: var(--primary-color);
   --foundation-secondary: var(--secondary-color);
+  --foundation-accent: var(--accent-color);
   --foundation-success: var(--success);
   --foundation-warning: var(--warning);
   --foundation-alert: var(--error);
@@ -283,12 +398,23 @@
 }
 
 @mixin theme-light-vars {
-  --gray-med: #{$color-gray-lt};
-  --gray-100: #{$grey-100};
-  --gray-200: #{$grey-200};
-  --gray-300: #{$grey-300};
-  --gray-400: #{$grey-600};
-  --gray-500: #{$grey-800};
+  // Light mode's pen & paper pair.
+  --paper: #{$light-paper};
+  --ink: #{$light-ink};
+
+  // Legacy grays → nearest neutral step (light mode).
+  --gray-med: var(--neutral-200);
+  --gray-100: var(--neutral-25);
+  --gray-200: var(--neutral-100);
+  --gray-300: var(--neutral-200);
+  --gray-400: var(--neutral-700);
+  --gray-500: var(--neutral-850);
+
+  --gray-1: var(--neutral-900);
+  --gray-2: var(--neutral-800);
+  --gray-3: var(--neutral-500);
+  --gray-4: var(--neutral-200);
+  --gray-5: var(--neutral-100);
 
   --success: #{$success-light};
   --error: #{$error-light};
@@ -308,43 +434,67 @@
 
   --primary-color: #{$primary-color-light};
   --secondary-color: #{$secondary-color-light};
-  --tertiary-color: #{$oxblood-light};
-  --quaternary-color: #{$violet-light};
-  --quinary-color: #{$wine-light};
-  --senary-color: #{$sea-light};
-  --septenary-color: #{$olive-light};
-  --octonary-color: #{$plum-light};
-  --nonary-color: #{$taupe-light};
-  --denary-color: #{$ink-light};
+  --accent-color: #{$accent-color-light};
+
+  --navy-color: #{$navy-light};
+  --forest-color: #{$forest-light};
+  --oxblood-color: #{$oxblood-light};
+  --violet-color: #{$violet-light};
+  --wine-color: #{$wine-light};
+  --sea-color: #{$sea-light};
+  --olive-color: #{$olive-light};
+  --plum-color: #{$plum-light};
+  --taupe-color: #{$taupe-light};
+  --ink-color: #{$ink-light};
+
+  // Keep tertiary…denary aliases pointed at the light-mode hue colors above.
+  --tertiary-color: var(--oxblood-color);
+  --quaternary-color: var(--violet-color);
+  --quinary-color: var(--wine-color);
+  --senary-color: var(--sea-color);
+  --septenary-color: var(--olive-color);
+  --octonary-color: var(--plum-color);
+  --nonary-color: var(--taupe-color);
+  --denary-color: var(--ink-color);
 
   --primary-inverted: #{$primary-color-dark};
   --secondary-inverted: #{$secondary-color-dark};
   --primary-color-inverted: var(--primary-inverted);
 
-  --portfolio-teal: #{$portfolio-teal-light};
+  --teal-signal: #{$teal-signal-light};
 
-  --main-background: #{$main-background-light};
-  --main-background-secondary: #{$main-background-light-secondary};
+  // Light mode: paper is the ground.
+  --main-background: var(--neutral-0);
+  --main-background-secondary: var(--neutral-50);
   --main-background-accent: #{$main-background-light-accent};
 
-  --surface-color: #{$css-surface-light};
-  --surface-variant: #{$css-surface-variant-light};
+  --surface-color: var(--neutral-50);
+  --surface-variant: var(--neutral-100);
 
-  --text-color: #{$text-color-light};
-  --text-secondary-color: #{$text-color-secondary-light};
+  --text-color: var(--neutral-950);
+  --text-secondary-color: var(--neutral-700);
 
   --primary: #{$css-primary-light};
   --primary-hover: #{$css-primary-hover-light};
 
-  --border-color: #{$css-border-light};
+  --border-color: var(--ink-a8);
   --focus-ring: #{$css-focus-ring-light};
+  --link-color: #{$css-link-light};
+  --border-strong: var(--neutral-500);
+  --primary-fill: #{$css-primary-fill-light};
+  --on-primary: #{$css-on-primary};
+  --success-ink: var(--success);
+  --warning-ink: color-mix(in oklab, var(--warning) 70%, var(--text-color));
+  --error-ink: color-mix(in oklab, var(--error) 90%, var(--text-color));
+  --info-ink: var(--info);
+  --danger-ink: var(--error-ink);
 
   --text-shadow-sm: 0 1px 2px #{$text-shadow-light};
   --text-shadow-md: 0 2px 4px #{$text-shadow-light};
   --text-shadow-lg: 0 4px 8px #{$text-shadow-light};
   --text-shadow-xl: 0 8px 16px #{$text-shadow-light};
 
-  --form-border-color: #{$css-form-border};
+  --form-border-color: var(--border-strong);
   --form-background: color-mix(in srgb, #{$css-form-background-disabled} 8%, transparent);
   --form-background-disabled: color-mix(in srgb, #{$css-form-background-disabled} 18%, transparent);
   --form-placeholder: color-mix(in srgb, #{$css-form-placeholder} 75%, transparent);
@@ -376,6 +526,62 @@
   --button-focus-ring: #{$css-focus-ring-light};
 }
 
+:root {
+  // Theme colors
+  --theme-color: var(--primary-color);
+  --theme-color-soft: color-mix(in srgb, var(--theme-color) 80%, transparent);
+  --theme-color-dark: color-mix(in srgb, var(--theme-color) 20%, transparent);
+  --theme-color-light: color-mix(in srgb, var(--theme-color) 80%, transparent);
+  --theme-color-secondary: var(--secondary-color);
+  --theme-color-secondary-soft: color-mix(in srgb, var(--theme-color-secondary) 80%, transparent);
+  --theme-color-secondary-dark: color-mix(in srgb, var(--theme-color-secondary) 20%, transparent);
+  --theme-color-secondary-light: color-mix(in srgb, var(--theme-color-secondary) 80%, transparent);
+  --theme-color-accent: var(--accent-color);
+  --theme-color-accent-soft: color-mix(in srgb, var(--theme-color-accent) 80%, transparent);
+  --theme-color-accent-dark: color-mix(in srgb, var(--theme-color-accent) 20%, transparent);
+  --theme-color-accent-light: color-mix(in srgb, var(--theme-color-accent) 80%, transparent);
+  --theme-color-accent-dark-soft: color-mix(in srgb, var(--theme-color-accent-dark) 80%, transparent);
+  --theme-color-accent-light-soft: color-mix(in srgb, var(--theme-color-accent-light) 80%, transparent);
+
+  // Theme Background variables
+  --theme-background-color: var(--background-color);
+  --theme-background-color-soft: color-mix(in srgb, var(--theme-background-color) 80%, transparent);
+  --theme-background-color-secondary: var(--background-color-secondary);
+  --theme-background-color-secondary-soft: color-mix(in srgb, var(--theme-background-color-secondary) 80%, transparent);
+  --theme-background-color-accent: var(--background-color-accent);
+  --theme-background-color-accent-soft: color-mix(in srgb, var(--theme-background-color-accent) 80%, transparent);
+  --theme-background-image: linear-gradient(
+    to bottom,
+    var(--theme-background-color-soft),
+    var(--theme-background-color)
+  );
+  --theme-background-repeat: no-repeat;
+  --theme-background-size: cover;
+  --theme-background-position: center;
+  --theme-background-attachment: fixed;
+  --theme-background-blend-mode: multiply;
+
+  // Theme box ratios
+  --theme-box-ratio: 1 / 2; // 1:2 (default)
+  --theme-box-ratio-wide: 16 / 9; // 16:9 (landscape)
+  --theme-box-ratio-tall: 9 / 16; // 9:16 (portrait)
+  --theme-box-ratio-portrait: 2 / 3; // 2:3 (portrait)
+  --theme-box-ratio-landscape: 3 / 2; // 3:2 (landscape)
+  --theme-box-ratio-banner: 21 / 9; // 21:9 (banner)
+  --theme-box-ratio-square: 1 / 1; // 1:1 (square)
+
+  // Theme breakpoints
+  --theme-breakpoint-ultrawide: #{m.bp(ultrawide)};
+  --theme-breakpoint-widescreen: #{m.bp(widescreen)};
+  --theme-breakpoint-standard: #{m.bp(standard)};
+  --theme-breakpoint-tablet: #{m.bp(tablet)};
+  --theme-breakpoint-mobile: #{m.bp(mobile)};
+  --theme-breakpoint-wide: #{m.bp(widescreen)};
+  --theme-breakpoint: #{m.bp(standard)};
+  --theme-breakpoint-narrow: #{m.bp(tablet)};
+  --theme-breakpoint-tiny: #{m.bp(mobile)};
+}
+
 // Before JS sets data-theme: follow OS light preference.
 @media (prefers-color-scheme: light) {
   :root:not([data-theme]) {
@@ -388,40 +594,44 @@
   @include theme-light-vars;
 }
 
-@media (min-width: #{$breakpoint-ultrawide}) {
+@include m.bp-up(ultrawide) {
   :root {
-    --breakpoint: #{$breakpoint-ultrawide};
-    --font-size-default: #{$font-size-default * 1.25};
+    --breakpoint: #{m.bp(ultrawide)};
+    --font-size-default: 125%;
     --page-pad: clamp(#{$space-6}, 3vw, #{$space-12});
-    --page-shell-max: 112rem;
-    --page-screen-max: 100%;
+    --page-shell-max: 90rem;
+    --page-screen-max: 90rem;
     --prose-max: 48rem;
     --page-chrome: 7rem;
-    --surface-ratio: 16 / 10;
-    --card-ratio: 16 / 10;
-    --media-ratio: 16 / 9;
+    --surface-ratio: var(--theme-box-ratio-wide);
+    --card-ratio: var(--theme-box-ratio-wide);
+    --media-ratio: var(--theme-box-ratio-wide);
   }
 }
-@media (max-width: #{$breakpoint-widescreen}) {
+@include m.bp-down(widescreen) {
   :root {
-    --breakpoint: #{$breakpoint-standard};
-    --page-shell-max: 80rem;
+    --breakpoint: #{m.bp(standard)};
+    --page-shell-max: min(100%, 90rem);
+    --page-screen-max: min(100%, 90rem);
     --prose-max: 42rem;
   }
 }
-@media (max-width: #{$breakpoint-standard}) {
+@include m.bp-down(standard) {
   :root {
-    --breakpoint: #{$breakpoint-tablet};
+    --breakpoint: #{m.bp(tablet)};
     --page-shell-max: 100%;
+    --page-screen-max: 100%;
     --page-pad: clamp(#{$space-3}, 3vw, #{$space-6});
     --prose-max: 40rem;
     --page-chrome: 8.5rem;
   }
 }
-@media (max-width: #{$breakpoint-tablet}) {
+@include m.bp-down(tablet) {
   :root {
-    --breakpoint: #{$breakpoint-mobile};
-    --font-size-default: #{$font-size-default * 0.75};
+    --breakpoint: #{m.bp(mobile)};
+    // Body text stays at the reader's size on phones (was × 0.75 = 12px, which shrank every
+    // rem size). Archived: scss/_archive/2026-09-24-pre-a11y.
+    --font-size-default: 100%;
     --page-shell-max: 100%;
     --page-screen-max: 100%;
     --page-pad: #{$space-3};
@@ -429,34 +639,34 @@
     --page-chrome: 9rem;
   }
 }
-@media (max-width: #{$breakpoint-mobile}) {
+@include m.bp-down(mobile) {
   :root {
     --page-pad: #{$space-2};
     --page-chrome: 10rem;
   }
 }
 
-// Horizontal / landscape screens: prefer wider-than-tall media and card surfaces.
+// Horizontal / landscape screens: landscape media & cards use 16:9 (or 1:1 for square tiles).
 @media (orientation: landscape) {
   :root {
-    --surface-ratio: 16 / 10;
-    --card-ratio: 16 / 10;
-    --media-ratio: 16 / 9;
+    --surface-ratio: var(--theme-box-ratio-wide);
+    --card-ratio: var(--theme-box-ratio-wide);
+    --media-ratio: var(--theme-box-ratio-wide);
   }
 }
 
-@media (orientation: landscape) and (min-width: #{$breakpoint-standard}) {
+@media (orientation: landscape) and (width >= #{m.bp(standard)}) {
   :root {
-    --surface-ratio: 21 / 9;
-    --card-ratio: 16 / 9;
-    --media-ratio: 16 / 9;
+    --surface-ratio: var(--theme-box-ratio-wide);
+    --card-ratio: var(--theme-box-ratio-wide);
+    --media-ratio: var(--theme-box-ratio-wide);
   }
 }
 
-@media (orientation: portrait) and (max-width: #{$breakpoint-tablet}) {
+@media (orientation: portrait) and (width < #{m.bp(tablet)}) {
   :root {
-    --surface-ratio: 4 / 5;
-    --card-ratio: 4 / 5;
-    --media-ratio: 4 / 3;
+    --surface-ratio: var(--theme-box-ratio-tall);
+    --card-ratio: var(--theme-box-ratio-square);
+    --media-ratio: var(--theme-box-ratio-tall);
   }
 }

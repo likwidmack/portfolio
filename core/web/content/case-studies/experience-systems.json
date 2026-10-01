@@ -39,7 +39,10 @@
       "label": "Agent UX proof",
       "value": "Human-Controlled AI Lab approve/reject contract with deterministic replay fallback"
     },
-    { "label": "Library proof", "value": "Storybook and jsx-a11y–linted component packages for product teams" }
+    {
+      "label": "Library proof",
+      "value": "Storybook and jsx-a11y–linted component packages for product teams"
+    }
   ],
   "technologies": [
     "Vue",
@@ -67,11 +70,29 @@
     }
   ],
   "links": [
-    { "label": "Open the styles kitchen sink", "href": "/styles" },
-    { "label": "Try the Human-Controlled AI Lab", "href": "/ai-lab" },
-    { "label": "Read the AI Lab story", "href": "/work/human-controlled-ai-lab" },
-    { "label": "Related media systems story", "href": "/work/media-systems" },
-    { "label": "Related spatial experiences story", "href": "/work/spatial-experiences" },
-    { "label": "Review the decision journal", "href": "/process" }
+    {
+      "label": "Open the styles kitchen sink",
+      "href": "/styles/parity"
+    },
+    {
+      "label": "Try the Human-Controlled AI Lab",
+      "href": "/ai-lab"
+    },
+    {
+      "label": "Read the AI Lab story",
+      "href": "/work/human-controlled-ai-lab"
+    },
+    {
+      "label": "Related media systems story",
+      "href": "/work/media-systems"
+    },
+    {
+      "label": "Related spatial experiences story",
+      "href": "/work/spatial-experiences"
+    },
+    {
+      "label": "Review the decision journal",
+      "href": "/process"
+    }
   ]
 }

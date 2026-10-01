@@ -1,0 +1,60 @@
+// Archived styling of core/web/app/components/ui/UiButton.vue before PR #169 (dd3f55376). Not compiled.
+// Thin polish only — fill/severity colors come from Nora preset + `_primevue-union`.
+.p-button {
+  border-radius: var(--button-radius, 2px);
+  font-family: var(--font-family-mono);
+  // `max()` floors, not just rem: the theme halves --font-size-default at tablet/mobile
+  // widths (site-wide fluid type), which otherwise shrinks this rem-based label and
+  // padding down to an ~8.6px / ~24px-tall button — readable on desktop, illegible
+  // and barely tappable everywhere else.
+  font-size: max(0.72rem, 11px);
+  min-height: 40px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  box-shadow: var(--button-shadow);
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    background-color 220ms ease,
+    border-color 180ms ease,
+    color 180ms ease,
+    filter 180ms ease;
+
+  &[href] {
+    text-decoration: none;
+    color: var(--text-secondary-color, var(--button-fg));
+
+    &:hover,
+    &:focus,
+    &:active {
+      text-decoration: none;
+    }
+  }
+
+  &:focus-visible,
+  &:focus {
+    box-shadow:
+      0 0 0 3px var(--focus-ring),
+      var(--button-shadow-hover, var(--button-shadow));
+  }
+
+  &:not([disabled]):not(.p-button-text):not(.p-button-link):not(.p-button-outlined) {
+    color: var(--button-secondary-fg, var(--button-fg));
+  }
+
+  &.p-button-outlined {
+    text-shadow: 1px -1px 1px color-mix(in srgb, var(--text-color) 76%, transparent);
+
+    &:hover,
+    &:focus-visible {
+      border-color: var(--portfolio-rose, var(--primary-color));
+      color: var(--portfolio-rose, var(--primary-color));
+    }
+  }
+
+  &.p-button-text {
+    text-shadow: 1px -1px 1px color-mix(in srgb, var(--primary-inverted) 52%, transparent);
+    box-shadow: none;
+  }
+}

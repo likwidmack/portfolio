@@ -3,19 +3,25 @@
 /// | Intent   | Algorithm                         | Prefer when |
 /// |----------|-----------------------------------|-------------|
 /// | cluster  | Flex wrap + gap                   | Inline action/tag/link groups |
-/// | stack    | Grid column stretch               | Sequential full-width sections |
-/// | auto     | CSS Grid `auto-fit` / `minmax`    | Fluid equal-ish card clusters |
+/// | stack    | Flex column → equal row-wrap > tablet | Sequential / wrap section groups |
+/// | auto     | Flex column → equal row-wrap > tablet | Card / panel clusters |
 /// | split    | CSS Grid named tracks             | Aside + main / sticky rail |
 /// | rail     | Constrained block width           | Page content measure |
 /// | complex  | Foundation XY (`grid-x` / `cell`) | Multipass breakpoints, spans, offsets, nest/collapse |
 ///
 /// Page fit (`data-fit`) is orthogonal to algo:
-/// - `screen` — homepage / presentation / gallery / media (full viewport use)
-/// - `prose` — docs / blog / reading (full shell, readable measure for body copy)
-/// Content fit (min-width: 0, media-only aspect-ratio) is documented in `docs/packages/theme.md`.
+/// - `screen` — homepage / presentation / gallery / media (fluid within `--page-screen-max`, centered)
+/// - `prose` — docs / blog / reading (fluid within `--page-shell-max`, centered; body uses `--prose-max`)
+/// - `fluid` — code / gallery working surfaces (full viewport width inside `--page-pad`, no hero minimum)
+/// Standalone nested `section` / `article` / `.panel` use `width: fit-content` (`_container.scss`).
+/// `.page-content > section` stays `width: 100%` (page-level bands). Group algos (`auto`, `stack`)
+/// Group algos (`auto`, `stack`) are full-width: vertical stacks stretch children to
+/// `width: 100%`; above tablet they row-wrap with equal flex item sizing. Gallery media
+/// grids (`.gallery-grid`) keep their own track sizing.
 ///
 /// Breakpoints: mobile 480 · tablet 768 · standard 1080 · widescreen 1440 · ultrawide 1920.
 @use '../tokens/variables' as *;
+@use 'mixins' as m;
 
 // ─── Rail / page shell ───────────────────────────────────────────────────────
 
@@ -25,28 +31,41 @@
   width: 100%;
   max-width: var(--page-shell-max, 90rem);
   min-width: 0;
-  min-height: var(--page-fill-min, auto);
+  // Fill the flex main region (header/footer already consume chrome outside main).
+  // Avoid `100dvh - page-chrome` here — that double-counts in-flow site chrome.
+  flex: 1 1 auto;
+  min-height: 0;
   margin-inline: auto;
   padding-inline: var(--page-pad, 1rem);
   padding-block: 0 clamp(var(--space-5), 4vw, var(--space-12));
 }
 
-/// Immersive pages: fill the viewport horizontally and vertically.
+/// Immersive pages: fluid width up to the shared content max, still centered.
 .page-content[data-fit='screen'],
 .layout[data-fit='screen'] {
-  max-width: var(--page-screen-max, 100%);
+  max-width: var(--page-screen-max, 90rem);
   width: 100%;
 
-  > :where(header.home-hero, header.portfolio-hero, header[data-region='hero']):first-of-type {
+  > :where(header[data-region='hero']):first-of-type {
     min-height: max(22rem, calc(var(--page-fill-min, 100dvh) * 0.72));
   }
 }
 
-/// Reading pages: shell uses the full available width; copy stays in a readable measure.
+/// Fluid pages (code, gallery): fill the whole viewport width inside `--page-pad` — no max cap,
+/// no tall hero minimum, so the working surface starts right under the header.
+.page-content[data-fit='fluid'],
+.layout[data-fit='fluid'] {
+  max-width: none;
+  width: 100%;
+}
+
+/// Reading pages: shell uses the content max; copy stays in a readable measure.
+/// `min-height: 100%` fills the flex main column on short pages without re-adding chrome.
 .page-content[data-fit='prose'],
 .layout[data-fit='prose'] {
   max-width: var(--page-shell-max, 90rem);
   width: 100%;
+  min-height: 100%;
 
   :where(
     [data-region='body'],
@@ -80,33 +99,73 @@
   width: 100%;
   min-width: 0;
 
-  @media (min-width: $breakpoint-tablet) {
+  @include m.bp-up(tablet) {
     grid-template-columns: minmax(var(--card-min-compact), 14rem) minmax(0, 1fr);
   }
 
-  @media (min-width: $breakpoint-widescreen) {
+  @include m.bp-up(widescreen) {
     grid-template-columns: minmax(12rem, 16rem) minmax(0, 1fr);
   }
 
-  @media (min-width: $breakpoint-ultrawide) {
+  @include m.bp-up(ultrawide) {
     grid-template-columns: minmax(14rem, 18rem) minmax(0, 1fr);
   }
 }
 
-// ─── Auto (fluid cards) → CSS Grid auto-fit ──────────────────────────────────
+// ─── Auto (equal card groups) → column, then row-wrap above tablet ───────────
 
 .auto-grid,
 .layout[data-algo='auto'] {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--card-min)), 1fr));
+  --group-item-min: var(--card-min, #{$card-min});
+
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: stretch;
   gap: clamp(var(--space-3), 2vw, var(--space-6));
   margin-bottom: var(--space-5);
+  box-sizing: border-box;
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
+  // Vertical group: children fill/fit the group container (not fit-content).
+  > * {
+    box-sizing: border-box;
+    align-self: stretch;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  > :where(section, article, .panel) {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  // Wider than tablet: wrap as a row with equal flex tracks.
+  @include m.bp-up(tablet) {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: stretch;
+
+    > * {
+      flex: 1 1 var(--group-item-min);
+      width: auto;
+      min-width: min(100%, var(--group-item-min));
+      max-width: 100%;
+    }
+
+    > :where(section, article, .panel) {
+      width: auto;
+      max-width: 100%;
+    }
+  }
 
   &[data-layout='swatch'],
   &[data-layout='swatch-compact'],
   &[data-layout='surface'] {
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--card-min-md)), 1fr));
+    --group-item-min: var(--card-min-md, #{$card-min-md});
   }
 
   &[data-layout='swatch'],
@@ -118,23 +177,56 @@
   }
 
   &[data-layout='swatch-compact'] {
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--card-min-compact)), 1fr));
+    --group-item-min: var(--card-min-compact, #{$card-min-compact});
   }
 }
 
-// ─── Stack (vertical sections) → CSS Grid ────────────────────────────────────
+// ─── Stack (vertical / wrap groups) → same equal wrap above tablet ───────────
 
 .stack-grid,
 .layout[data-algo='stack'] {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--stack-min)), 1fr));
-  gap: var(--section-gap);
+  --group-item-min: var(--stack-min, #{$stack-min});
+
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
   align-items: stretch;
+  gap: var(--section-gap);
   margin-bottom: var(--section-gap);
+  box-sizing: border-box;
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
 
   > * {
+    box-sizing: border-box;
+    align-self: stretch;
+    width: 100%;
+    max-width: 100%;
     min-width: 0;
+  }
+
+  > :where(section, article, .panel) {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  @include m.bp-up(tablet) {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: stretch;
+
+    > * {
+      flex: 1 1 var(--group-item-min);
+      width: auto;
+      min-width: min(100%, var(--group-item-min));
+      max-width: 100%;
+    }
+
+    > :where(section, article, .panel) {
+      width: auto;
+      max-width: 100%;
+    }
   }
 }
 

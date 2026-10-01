@@ -1,0 +1,101 @@
+// Archived copy of core/web/app/layouts/site.scss at origin/development (pre responsive/a11y/touch pass). Not compiled.
+@use 'mixins' as *;
+
+.app-site-layout {
+  [data-skip-link] {
+    position: absolute;
+    left: 0.75rem;
+    top: -2.5rem;
+    z-index: 100;
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--border-radius-sm, 0.375rem);
+    background: var(--surface-color);
+    color: var(--text-color);
+    text-decoration: none;
+    border: 1px solid var(--border-color);
+
+    &:focus-visible {
+      top: 0.5rem;
+      outline: 2px solid var(--focus-ring, var(--primary-color));
+      outline-offset: 2px;
+    }
+  }
+
+  // Site chrome (primary nav / footer) stays full-bleed; page shells center below.
+  > header.site-chrome,
+  > footer.site-chrome {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    margin-inline: 0;
+  }
+
+  > header.site-chrome {
+    display: block;
+    padding-inline: 0;
+    // Header is blur only — no tint, no glow band. This sticky wrapper owns the single blur
+    // (a nested backdrop-filter inside it would only blur the wrapper, not the page).
+    // A tint returns where blur alone can't carry text contrast.
+    background: transparent;
+    box-shadow: none;
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+
+    @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+      background: color-mix(in srgb, var(--surface-color) 92%, transparent);
+    }
+
+    @media (prefers-reduced-transparency: reduce) {
+      background: color-mix(in srgb, var(--surface-color) 92%, transparent);
+    }
+
+    > div {
+      width: 100%;
+      max-width: none;
+      margin: 0;
+      padding: 0;
+    }
+  }
+
+  // `--main-top-padding` / `--main-bottom-padding` are sticky-offset tokens
+  // (docs TOC, etc.), not main padding — header/footer are already in-flow.
+  main {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  footer {
+    text-align: center;
+  }
+
+  .site-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem 1.25rem;
+    padding: 0.75rem 1rem;
+    @include portfolio-type-meta;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .site-footer__personalize {
+    appearance: none;
+    border: 1px solid var(--border-color, currentColor);
+    border-radius: var(--border-radius-sm, 0.25rem);
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 0.875rem;
+    padding: 0.25rem 0.6rem;
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: 2px solid var(--focus-ring, var(--primary-color));
+      outline-offset: 2px;
+    }
+  }
+}

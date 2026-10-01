@@ -24,9 +24,18 @@
     "Keep approve/reject keyboard-complete and visually distinct, matching the control clarity expected in complex product workflows."
   ],
   "evidence": [
-    { "label": "Interaction proof", "value": "Keyboard-complete approve and reject paths" },
-    { "label": "Safety proof", "value": "HMAC continuation and anonymous quota cookies" },
-    { "label": "Resilience proof", "value": "Replay fallback for credentials, quota, timeout, and model errors" },
+    {
+      "label": "Interaction proof",
+      "value": "Keyboard-complete approve and reject paths"
+    },
+    {
+      "label": "Safety proof",
+      "value": "HMAC continuation and anonymous quota cookies"
+    },
+    {
+      "label": "Resilience proof",
+      "value": "Replay fallback for credentials, quota, timeout, and model errors"
+    },
     {
       "label": "Systems proof",
       "value": "Shared experience-system patterns: visible state, recovery, and an inspectable decision journal"
@@ -50,9 +59,21 @@
     }
   ],
   "links": [
-    { "label": "Try the Human-Controlled AI Lab", "href": "/ai-lab" },
-    { "label": "Review the decision journal", "href": "/process" },
-    { "label": "Related experience systems story", "href": "/work/experience-systems" },
-    { "label": "Open the styles kitchen sink", "href": "/styles" }
+    {
+      "label": "Try the Human-Controlled AI Lab",
+      "href": "/ai-lab"
+    },
+    {
+      "label": "Review the decision journal",
+      "href": "/process"
+    },
+    {
+      "label": "Related experience systems story",
+      "href": "/work/experience-systems"
+    },
+    {
+      "label": "Open the styles kitchen sink",
+      "href": "/styles/parity"
+    }
   ]
 }

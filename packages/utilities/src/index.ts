@@ -16,4 +16,5 @@ export { default as Logging } from './lib/class-models/logging.js';
 export { default as deepAssign } from './lib/deepAssign.js';
 export { default as deepSet } from './lib/deepSet.js';
 export { EventHandler, EventsHandler, default as NodeEventsHandler } from './lib/node/events-handler.js';
+export { sha256Hex, default as sha256HexDefault } from './lib/sha256-hex.js';
 export { toSnakeCase, default as toSnakeCaseDefault } from './lib/to-snake-case.js';

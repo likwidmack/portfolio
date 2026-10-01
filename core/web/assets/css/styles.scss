@@ -1,8 +1,11 @@
 // Thin Nuxt entry — design system + default token surface from `@tgmc/theme`.
-// PrimeVue chrome: Nora styled-mode via `primevue-prop.ts` (`themePrimeVuePreset`).
-// Foundation: layout-only XY Grid (+ flex/visibility helpers) for complex multipass layouts.
+// PrimeVue chrome: Nora styled-mode via `primevue-prop.ts` (`themePrimeVuePreset`);
+//   accent / active tokens follow CSS `--accent-color` (complementary of primary).
+// Foundation: layout-only XY Grid (+ flex/visibility helpers) for complex multipass layouts;
+//   runtime aliases include `--foundation-accent` → `--accent-color` (see theme `_root.scss`).
 // Sass `@layer primevue` (mytheme) stays off here to avoid double-styling; enable
 // only when switching Nuxt PrimeVue to `unstyled: true` + classic PassThrough.
+// Vue SFCs: Vite injects `nuxt-auto` (tokens + `theme-*` color-fns + button mixins).
 @use 'theme/scss/config' as * with (
   $theme-enable-normalize: false,
   // XY Grid + flex/visibility for complex multipass layouts; theme owns type/forms.

@@ -14,12 +14,16 @@
         v-model:query="query",
         :views="viewOptions",
         :groups="groupOptions",
+        :total="entries.length",
+        :matching="visible.length",
+        :filtered="filtered",
+        :noun="entries.length === 1 ? 'document' : 'documents'",
         show-query,
         view-label="View",
         group-label="Group",
-        query-placeholder="Filter by title or path…"
+        query-placeholder="Filter by title or path…",
+        @clear="clearFilters"
       )
-      p.docs-index__count {{ visible.length }} {{ visible.length === 1 ? 'document' : 'documents' }}
 
       template(v-if="viewMode === 'grid'")
         section.docs-index__group(
@@ -67,15 +71,28 @@ const { data } = await useContentAsyncData('docs-index', () =>
 );
 
 const entries = computed(() => (data.value ?? []) as DocsIndexEntry[]);
-const viewMode = ref<DocsViewMode>('grid');
-const groupId = ref<DocsGroupId>('all');
-const query = ref('');
+const browse = useBrowseQuery({ view: 'grid', group: 'all', kind: 'all', query: '' });
+const { query, filtered, clear: clearFilters } = browse;
+const viewMode = computed<DocsViewMode>({
+  get: () => browse.view.value as DocsViewMode,
+  set: (value) => (browse.view.value = value),
+});
+const groupId = computed<DocsGroupId>({
+  get: () => browse.group.value as DocsGroupId,
+  set: (value) => (browse.group.value = value),
+});
 
 const viewOptions = [
   { id: 'grid', label: 'Grid' },
   { id: 'list', label: 'List' },
 ];
-const groupOptions = DOCS_GROUP_FILTERS;
+/** Group counts respect the current search text. */
+const groupOptions = computed(() =>
+  DOCS_GROUP_FILTERS.map((option) => ({
+    ...option,
+    count: filterDocsEntries(entries.value, option.id as DocsGroupId, query.value).length,
+  }))
+);
 const visible = computed(() => filterDocsEntries(entries.value, groupId.value, query.value));
 const grouped = computed(() => groupDocsEntries(visible.value));
 const navItems = computed(() =>
@@ -111,8 +128,7 @@ usePortfolioSeo({
 <style lang="scss" scoped>
 .docs-grid,
 .docs-list {
-  display: grid;
-  gap: 0.85rem;
+  @include portfolio-stack(0.85rem);
   margin: 0 0 2rem;
   padding: 0;
   list-style: none;
@@ -123,15 +139,14 @@ usePortfolioSeo({
 }
 
 .docs-card {
-  display: grid;
-  gap: 0.4rem;
+  @include portfolio-stack(0.4rem);
+  @include portfolio-box-contain;
   min-height: 8rem;
   padding: 1rem 1.1rem;
-  border: 1px solid var(--portfolio-rule, currentColor);
+  @include portfolio-soft-surface;
   border-radius: 0.9rem;
   text-decoration: none;
   color: inherit;
-  background: color-mix(in srgb, var(--surface-color) 88%, transparent);
 
   h3,
   p {
@@ -142,13 +157,7 @@ usePortfolioSeo({
     font-size: 0.75rem;
     letter-spacing: 0.04em;
     word-break: break-all;
-    color: var(--text-color-secondary, inherit);
+    color: var(--text-secondary-color, inherit); // was a mistyped token → inherit
   }
-}
-
-.docs-index__count {
-  margin: 0 0 1rem;
-  font-size: 0.85rem;
-  color: var(--text-color-secondary, inherit);
 }
 </style>

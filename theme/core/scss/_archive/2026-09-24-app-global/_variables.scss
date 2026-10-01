@@ -1,0 +1,210 @@
+// App-only portfolio CSS custom properties.
+// Emitted when portfolio-launch.scss `@use`s this module (Nuxt global css path).
+// Prefer theme tokens for layout/space — do not redeclare:
+//   --page-pad, --page-screen-max, --page-shell-max, --prose-max,
+//   --space-*, --border-radius-*, --section-gap, --primary-color, --surface-color, …
+// Proven color twins (teal / ivory / ink): bridge to theme CSS vars or Sass tokens — no web hex SoT.
+// `--portfolio-teal` aliases the theme's `--teal-signal` (success hue); the theme itself stays app-agnostic.
+
+@use 'sass:color';
+@use 'theme/scss/tokens' as *;
+
+:root {
+  // Accent / paper / ink SoT: theme + shared/personalization.ts (FOUC sets --accent-color).
+  // Width tokens (--page-screen-max / --page-shell-max / --prose-max / --page-pad) live in theme `_root.scss`.
+  // Coral stays an accent bridge (KTD2); Sass fallback is theme `$accent-color-dark`, not a web hex SoT.
+  --portfolio-coral: var(--accent-color, #{$accent-color-dark});
+  --portfolio-teal: var(--teal-signal);
+  --portfolio-max: var(--page-screen-max);
+  // Default (pre–data-theme / light paper roles): ivory = light paper, ink = dark paper.
+  --portfolio-ivory: #{$main-background-light};
+  --portfolio-ink: #{$main-background-dark};
+  // Atmosphere chrome: keep --portfolio-* names; values from theme brand/oxblood/surface mixes (KD3).
+  --portfolio-rose: #{theme-lighten($oxblood-dark, 10%)};
+  --portfolio-rose-strong: #{$primary-color-dark};
+  --portfolio-rule: color-mix(in srgb, var(--text-color) 22%, transparent);
+  --portfolio-haze-1: #{color.mix($main-background-light, $oxblood-dark, 72%)};
+  --portfolio-haze-2: #{color.mix($main-background-light, $oxblood-dark, 78%)};
+  --portfolio-haze-3: #{color.mix($main-background-light, $oxblood-dark, 84%)};
+  --portfolio-haze-4: #{color.mix($main-background-light, $oxblood-dark, 90%)};
+  --portfolio-particle-strong: #{$primary-color-dark};
+  --portfolio-particle-mid: #{color.mix($oxblood-dark, $text-color-secondary-dark, 55%)};
+  --portfolio-particle-soft: #{color.mix($main-background-light, $oxblood-dark, 82%)};
+  --portfolio-grid-glow: #{color.mix($main-background-light, $oxblood-dark, 88%)};
+  --portfolio-grid-line: color-mix(in srgb, var(--portfolio-rose-strong) 26%, transparent);
+  --portfolio-space: clamp(3rem, 7vw, 7rem);
+  --portfolio-stack-gap: 1rem;
+  --portfolio-stack-gap-lg: clamp(1.5rem, 4vw, 2.5rem);
+  --portfolio-surface-mix: 88%;
+  // Body + mono stacks (IBM Plex). Theme `$header-font-family` defaults empty —
+  // bind display/title/header here so type recipes never resolve to an empty family.
+  --font-family:
+    'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+    Arial, sans-serif;
+  --font-family-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  --font-family-display: var(--font-family);
+  --font-family-title: var(--font-family);
+  --font-family-header: var(--font-family-title);
+
+  // Type recipes — compose theme/app family tokens + chrome metrics (see CONCEPTS: Type recipe).
+  // Ladder: body → display (h1) → title (h2) → eyebrow/kicker → meta/label/tag.
+  --type-eyebrow-size: 0.7rem;
+  --type-eyebrow-weight: 700;
+  --type-eyebrow-tracking: 0.24em;
+  --type-meta-size: 0.7rem;
+  --type-meta-tracking: 0.04em;
+}
+
+html[data-theme='dark'] {
+  // Ivory → dark paper; ink → theme text ink (not $ink-* greys / not main-background alone).
+  --portfolio-ivory: var(--main-background);
+  --portfolio-ink: var(--text-color);
+  --portfolio-rose: #{theme-lighten($oxblood-dark, 28%)};
+  --portfolio-rose-strong: #{theme-lighten($oxblood-dark, 42%)};
+  --portfolio-haze-1: #{color.mix($main-background-dark, $oxblood-dark, 42%)};
+  --portfolio-haze-2: #{color.mix($main-background-dark, $oxblood-light, 55%)};
+  --portfolio-haze-3: #{theme-darken($oxblood-light, 4%)};
+  --portfolio-haze-4: #{theme-darken($oxblood-light, 10%)};
+  --portfolio-particle-strong: #{theme-lighten($primary-color-dark, 32%)};
+  --portfolio-particle-mid: #{theme-lighten($oxblood-dark, 28%)};
+  --portfolio-particle-soft: #{$text-color-dark};
+  --portfolio-particle-shadow-strong: 0 0 10px #{theme-add-alpha(theme-lighten($oxblood-dark, 28%), 0.7)};
+  --portfolio-grid-glow: #{theme-darken($oxblood-dark, 8%)};
+  --portfolio-grid-line: color-mix(in srgb, var(--portfolio-rose) 50%, transparent);
+}
+
+html[data-theme='light'] {
+  --portfolio-ivory: var(--main-background);
+  --portfolio-ink: #{$main-background-dark};
+}
+
+/**
+ *  Standard theme variables for light and dark mode, and shared variables.
+ */
+:root {
+  --portfolio-primary-color: var(--portfolio-teal);
+  --portfolio-secondary-color: var(--portfolio-rose);
+  --portfolio-accent-color: var(--portfolio-coral);
+
+  --portfolio-background-color: var(--portfolio-ink);
+  --portfolio-background-color-soft: color-mix(in srgb, var(--portfolio-background-color) 80%, transparent);
+  --portfolio-background-secondary-color: color-mix(in srgb, var(--portfolio-background-color) 60%, transparent);
+  --portfolio-background-accent-color: var(--portfolio-coral);
+  --portfolio-background-accent-color-soft: color-mix(
+    in srgb,
+    var(--portfolio-background-accent-color) 80%,
+    transparent
+  );
+
+  --portfolio-surface-color: var(--portfolio-ivory);
+  --portfolio-surface-color-soft: color-mix(in srgb, var(--portfolio-surface-color) 80%, transparent);
+  --portfolio-surface-accent-color: var(--portfolio-coral);
+  --portfolio-surface-accent-color-soft: color-mix(in srgb, var(--portfolio-surface-accent-color) 80%, transparent);
+
+  // Percentage used by `portfolio-soft-surface`; soft companion mixes a real color with that amount.
+  --portfolio-surface-mix: 88%;
+  --portfolio-surface-mix-soft: color-mix(
+    in srgb,
+    var(--portfolio-surface-color) var(--portfolio-surface-mix),
+    transparent
+  );
+  --portfolio-surface-mix-accent: var(--portfolio-coral);
+  --portfolio-surface-mix-accent-soft: color-mix(in srgb, var(--portfolio-surface-mix-accent) 80%, transparent);
+
+  --portfolio-border-color: var(--portfolio-haze-1);
+  --portfolio-border-color-soft: color-mix(in srgb, var(--portfolio-border-color) 80%, transparent);
+  --portfolio-border-accent-color: var(--portfolio-coral);
+  --portfolio-border-accent-color-soft: color-mix(in srgb, var(--portfolio-border-accent-color) 80%, transparent);
+
+  --portfolio-text-color: var(--portfolio-ivory);
+  --portfolio-text-color-soft: color-mix(in srgb, var(--portfolio-text-color) 80%, transparent);
+  --portfolio-text-secondary-color: var(--portfolio-haze-1);
+  --portfolio-text-secondary-color-soft: color-mix(in srgb, var(--portfolio-text-secondary-color) 80%, transparent);
+
+  --portfolio-heading-color: var(--portfolio-ivory);
+  --portfolio-heading-color-soft: color-mix(in srgb, var(--portfolio-heading-color) 80%, transparent);
+  --portfolio-heading-secondary-color: var(--portfolio-haze-1);
+  --portfolio-heading-secondary-color-soft: color-mix(
+    in srgb,
+    var(--portfolio-heading-secondary-color) 80%,
+    transparent
+  );
+
+  --portfolio-link-color: var(--portfolio-coral);
+  --portfolio-link-hover-color: var(--portfolio-rose);
+  --portfolio-link-active-color: var(--portfolio-rose);
+  --portfolio-link-visited-color: var(--portfolio-rose);
+  --portfolio-link-visited-hover-color: var(--portfolio-rose);
+  --portfolio-link-visited-active-color: var(--portfolio-rose);
+
+  --portfolio-shadow-color: var(--portfolio-haze-1);
+  --portfolio-shadow-color-soft: color-mix(in srgb, var(--portfolio-shadow-color) 80%, transparent);
+  --portfolio-shadow-accent-color: var(--portfolio-coral);
+  --portfolio-shadow-accent-color-soft: color-mix(in srgb, var(--portfolio-shadow-accent-color) 80%, transparent);
+  // Elevation aliases → theme `--shadow-*` (single scale for drop shadows).
+  --portfolio-shadow-sm: var(--shadow-sm);
+  --portfolio-shadow-md: var(--shadow-md);
+  --portfolio-shadow-lg: var(--shadow-lg);
+
+  --portfolio-text-shadow-color: var(--portfolio-haze-1);
+  --portfolio-text-shadow-color-soft: color-mix(in srgb, var(--portfolio-text-shadow-color) 80%, transparent);
+  --portfolio-text-shadow-accent-color: var(--portfolio-coral);
+  --portfolio-text-shadow-accent-color-soft: color-mix(
+    in srgb,
+    var(--portfolio-text-shadow-accent-color) 80%,
+    transparent
+  );
+  --portfolio-text-shadow-secondary-color: var(--portfolio-haze-1);
+  --portfolio-text-shadow-secondary-color-soft: color-mix(
+    in srgb,
+    var(--portfolio-text-shadow-secondary-color) 80%,
+    transparent
+  );
+
+  --portfolio-button-color: var(--portfolio-coral);
+  --portfolio-button-hover-color: var(--portfolio-rose);
+  --portfolio-button-active-color: var(--portfolio-rose);
+  --portfolio-button-visited-color: var(--portfolio-rose);
+  --portfolio-button-visited-hover-color: var(--portfolio-rose);
+  --portfolio-button-visited-active-color: var(--portfolio-rose);
+
+  --portfolio-input-color: var(--portfolio-ivory);
+  --portfolio-input-hover-color: var(--portfolio-rose);
+  --portfolio-input-active-color: var(--portfolio-rose);
+  --portfolio-input-visited-color: var(--portfolio-rose);
+  --portfolio-input-visited-hover-color: var(--portfolio-rose);
+  --portfolio-input-visited-active-color: var(--portfolio-rose);
+
+  --portfolio-overlay-color: var(--portfolio-haze-1);
+  --portfolio-overlay-color-soft: color-mix(in srgb, var(--portfolio-overlay-color) 80%, transparent);
+  --portfolio-overlay-accent-color: var(--portfolio-coral);
+  --portfolio-overlay-accent-color-soft: color-mix(in srgb, var(--portfolio-overlay-accent-color) 80%, transparent);
+
+  --portfolio-gradient-color: var(--portfolio-coral);
+  --portfolio-gradient-color-soft: color-mix(in srgb, var(--portfolio-gradient-color) 80%, transparent);
+  --portfolio-gradient-accent-color: var(--portfolio-coral);
+  --portfolio-gradient-accent-color-soft: color-mix(in srgb, var(--portfolio-gradient-accent-color) 80%, transparent);
+
+  // standard theme token non-color variables
+  --portfolio-border-radius: 0.15rem;
+  --portfolio-border-radius-soft: calc(var(--portfolio-border-radius) * 1.5);
+  --portfolio-border-radius-sharp: calc(var(--portfolio-border-radius) * 0.5);
+
+  --portfolio-section-gap-sm: 1rem;
+  --portfolio-section-gap: 2rem;
+  --portfolio-section-gap-lg: 3rem;
+  --portfolio-section-gap-xl: 4rem;
+
+  --portfolio-stack-gap-sm: 0.5rem;
+  --portfolio-stack-gap: 1rem;
+  --portfolio-stack-gap-lg: clamp(1.5rem, 4vw, 2.5rem);
+  --portfolio-stack-gap-xl: clamp(2rem, 6vw, 3rem);
+
+  --portfolio-prose-max: 60rem;
+  --portfolio-square-ratio: 1; // 1:1
+  --portfolio-landscape-wide-ratio: 1.7777778; // 16:9
+  --portfolio-portrait-tall-ratio: 0.5625; // 9:16
+  --portfolio-portrait-ratio: 0.6666667; // 2:3
+  --portfolio-landscape-ratio: 1.5; // 3:2
+  --portfolio-banner-ratio: 2.333333; // 21:9
+}

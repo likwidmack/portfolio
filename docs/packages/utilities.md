@@ -36,6 +36,17 @@ The default entry must stay free of `window` / `document` / `localStorage` at **
 
 `deepSet(rootArray, ...arrays)` flattens and dedupes with `Set`. It is **not** lodash-style path assignment.
 
+### `sha256Hex`
+
+```ts
+import { sha256Hex } from '@tgmc/utilities';
+
+sha256Hex('payload'); // 64-char lowercase hex
+sha256Hex(new Uint8Array([1, 2, 3]));
+```
+
+Node/Nitro/Lambda only (uses `node:crypto`). Use for cache keys and content-addressed filenames.
+
 ## Runtime-neutral helpers (`@tgmc/utilities/universal`)
 
 ### CDN helpers
@@ -48,6 +59,17 @@ createCdnHelper('https://cdn.example.com').resolve('/a.png');
 ```
 
 Also: `resolveCdnPaths`, `buildCdnUrl`, `isCdnUrl`, `stripCdnPrefix`, type `CdnConfig`.
+
+### `aspectRatio`
+
+```ts
+import { aspectRatio } from '@tgmc/utilities/universal';
+
+aspectRatio(1920, 1080);
+// { width: 16, height: 9, ratio: 16/9, css: '16 / 9' }
+```
+
+SSR- and browser-safe. Invalid / non-positive inputs fall back to `1 / 1`.
 
 ### `toSnakeCase`
 

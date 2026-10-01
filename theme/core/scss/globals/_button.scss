@@ -1,4 +1,5 @@
 @use '../tokens' as *;
+@use 'mixins' as m;
 
 button:not(.p-button),
 input[type='button'],
@@ -278,11 +279,11 @@ a.btn {
   transform-style: preserve-3d;
 
   &:hover {
-    transform: perspective(900px) rotateX(4deg) rotateY(-6deg) translateY(-1px);
+    transform: perspective(56.25em) rotateX(4deg) rotateY(-6deg) translateY(-1px);
   }
 
   &:active {
-    transform: perspective(900px) rotateX(1deg) rotateY(-2deg) translateY(1px);
+    transform: perspective(56.25em) rotateX(1deg) rotateY(-2deg) translateY(1px);
   }
 }
 
@@ -406,7 +407,7 @@ a.btn {
     }
   }
 
-  // Pill / rounded ends (group edges get pill radius)
+  // Group ends use the shared small button radius (no pill/full round)
   &.btn-group--pill {
     > .btn,
     > button,
@@ -414,11 +415,11 @@ a.btn {
     > input[type='submit'],
     > input[type='reset'] {
       &:first-child {
-        border-radius: var(--border-radius-pill) 0 0 var(--border-radius-pill);
+        border-radius: var(--button-radius) 0 0 var(--button-radius);
       }
 
       &:last-child {
-        border-radius: 0 var(--border-radius-pill) var(--border-radius-pill) 0;
+        border-radius: 0 var(--button-radius) var(--button-radius) 0;
       }
     }
 
@@ -429,11 +430,11 @@ a.btn {
       > input[type='submit'],
       > input[type='reset'] {
         &:first-child {
-          border-radius: var(--border-radius-pill) var(--border-radius-pill) 0 0;
+          border-radius: var(--button-radius) var(--button-radius) 0 0;
         }
 
         &:last-child {
-          border-radius: 0 0 var(--border-radius-pill) var(--border-radius-pill);
+          border-radius: 0 0 var(--button-radius) var(--button-radius);
         }
       }
     }
@@ -543,7 +544,7 @@ a.btn {
   animation: rippleScale 700ms ease-out both;
 }
 
-@media (max-width: $breakpoint-standard) {
+@include m.bp-down(standard) {
   button:not(.p-button),
   input[type='button'],
   input[type='submit'],
@@ -567,20 +568,20 @@ a.btn {
   }
 }
 
-@media (max-width: $breakpoint-tablet) {
+@include m.bp-down(tablet) {
   button:not(.p-button),
   input[type='button'],
   input[type='submit'],
   input[type='reset'],
   input[type='file']::file-selector-button,
   .btn {
-    min-height: 2.25rem;
+    min-height: var(--touch-target, 44px);
     padding: 0.52rem 0.82rem;
     gap: 0.35rem;
   }
 
   .btn--lg {
-    min-height: 2.6rem;
+    min-height: max(var(--touch-target, 44px), 2.6rem);
     padding: 0.62rem 1rem;
   }
 
@@ -612,23 +613,23 @@ a.btn {
   }
 }
 
-@media (max-width: $breakpoint-mobile) {
+@include m.bp-down(mobile) {
   button:not(.p-button),
   input[type='button'],
   input[type='submit'],
   input[type='reset'],
   input[type='file']::file-selector-button,
   .btn {
-    min-height: 2.1rem;
+    min-height: var(--touch-target, 44px);
     padding: 0.48rem 0.75rem;
-    font-size: var(--font-size-sm);
+    font-size: max(var(--type-min, 12px), var(--font-size-sm));
   }
 
   .btn--sm,
   .btn--lg {
-    min-height: 2.1rem;
+    min-height: var(--touch-target, 44px);
     padding: 0.48rem 0.75rem;
-    font-size: var(--font-size-sm);
+    font-size: max(var(--type-min, 12px), var(--font-size-sm));
   }
 
   .btn-toolbar {

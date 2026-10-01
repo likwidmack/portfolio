@@ -16,13 +16,16 @@
           p {{ study.category }}
           p {{ study.title }}
   .orbit-stage__controls(role="group", aria-label="Background mode")
+    //- Mirrors Personalize background modes (including Custom solid fill).
     button(type="button", :aria-pressed="background === 'particles'", @click="setBackground('particles')") Particles
     button(type="button", :aria-pressed="background === 'grid'", @click="setBackground('grid')") Grid
     button(type="button", :aria-pressed="background === 'camera'", @click="setBackground('camera')") Camera
+    button(type="button", :aria-pressed="background === 'custom'", @click="setBackground('custom')") Custom
   p.orbit-stage__caption Drag to orbit · {{ studies.length }} proof-led stories
 </template>
 
 <script setup lang="ts">
+/** Work orbit — background toggles delegate to shared personalization (incl. Custom). */
 import { getCaseStudyCardMedia, type CaseStudy } from '#shared/portfolio-types';
 
 const props = defineProps<{ studies: CaseStudy[] }>();
@@ -129,4 +132,4 @@ onBeforeUnmount(() => {
 });
 </script>
 
-<style lang="scss" src="./AppOrbitStage.scss"></style>
+<style lang="scss" src="./AppOrbitStage.scss" scoped></style>

@@ -1,5 +1,6 @@
 @use '../tokens/variables' as *;
 @use '../tokens/colors' as *;
+@use 'mixins' as m;
 
 // elements related to html form
 
@@ -132,7 +133,7 @@ input {
   &[type='time'],
   &[type='datetime-local'],
   &[type='number'] {
-    min-width: 200px;
+    min-width: 12.5rem;
   }
 
   &[type='color' i] {
@@ -145,7 +146,7 @@ input {
     &,
     &::-webkit-color-swatch,
     &::-moz-color-swatch {
-      padding: 3px;
+      padding: 0.1875rem;
       border: 3px solid var(--form-border-color);
       border-radius: var(--form-radius);
     }
@@ -224,7 +225,7 @@ input {
   font-weight: 600;
 }
 
-@media (max-width: $breakpoint-standard) {
+@include m.bp-down(standard) {
   form {
     gap: 0.85rem;
   }
@@ -234,7 +235,7 @@ input {
   }
 }
 
-@media (max-width: $breakpoint-tablet) {
+@include m.bp-down(tablet) {
   form {
     gap: 0.75rem;
   }
@@ -254,7 +255,7 @@ input {
   }
 }
 
-@media (max-width: $breakpoint-mobile) {
+@include m.bp-down(mobile) {
   fieldset {
     padding: 0.6rem;
   }
@@ -269,4 +270,16 @@ input {
   .form-error {
     margin-top: 0;
   }
+}
+
+// Touch (repo UI rule): a checkbox / radio / switch and its label form one ≥44px target.
+label:has(input[type='checkbox'], input[type='radio']),
+input[type='checkbox'] + label,
+input[type='radio'] + label,
+.p-checkbox + label,
+.p-radiobutton + label,
+.p-toggleswitch + label {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch-target, 44px);
 }

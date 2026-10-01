@@ -1,0 +1,17 @@
+// Archived 2026-09-24 from core/web/app/layouts/site.scss — not imported.
+// Locked the home splash to one viewport; the page could not scroll.
+
+// Home splash: one viewport, footer stays visible, no document scroll.
+body:has(.splash-page) {
+  overflow: hidden;
+
+  .app-site-layout {
+    height: 100dvh;
+    max-height: 100dvh;
+    overflow: hidden;
+
+    > main {
+      overflow: hidden;
+    }
+  }
+}

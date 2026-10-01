@@ -1,23 +1,30 @@
 @use 'theme/scss/tokens' as *;
+@use 'mixins' as *;
 
-.splash-page {
-  display: grid;
-  align-content: start;
-  gap: clamp(1.5rem, 4vw, 2.5rem);
-  padding-block: var(--portfolio-space);
+// Layer 4 — page (scoped): home splash, rendered by AppSplash (every styled element is in its template).
+
+.page-content.splash-page {
+  @include portfolio-stack(var(--portfolio-stack-gap-lg));
+  box-sizing: border-box;
+  flex: 1 1 auto;
+  align-content: center;
+  width: 100%;
+  // Fills main's slack (footer on the viewport floor when short); scrolls with the document when long.
+  min-height: 100%;
+  padding-block: clamp(0.75rem, 2.5vh, 2rem);
 }
 
 .splash-hero {
-  display: grid;
+  @include portfolio-stack;
   justify-items: start;
-  gap: 1rem;
   max-width: 42rem;
 
   h1 {
+    @include portfolio-type-display;
     max-width: 18ch;
     margin: 0;
     color: var(--text-color);
-    font-size: clamp(2.4rem, 6vw, 4.5rem);
+    font-size: clamp(2rem, 5.5vw, 4rem);
     font-weight: 800;
     line-height: 1.05;
     letter-spacing: -0.02em;
@@ -27,20 +34,19 @@
     max-width: 42ch;
     margin: 0;
     color: var(--text-secondary-color);
-    font-size: clamp(1.05rem, 2vw, 1.35rem);
+    font-size: clamp(1rem, 1.8vw, 1.25rem);
     line-height: 1.45;
   }
 }
 
 .splash-fork {
-  display: grid;
-  gap: 1.25rem;
-  max-width: 40rem;
+  @include portfolio-stack(1rem);
+  max-width: 99vw;
+  min-height: 0;
 }
 
 .splash-doors {
-  display: grid;
-  gap: 0.75rem;
+  @include portfolio-stack(0.5rem);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -48,77 +54,90 @@
 
 .splash-door {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 1rem;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--portfolio-stack-gap);
   align-items: center;
   min-height: 2.75rem;
-  padding: 1rem 1.25rem;
-  border: 1px solid var(--portfolio-rule);
-  background: color-mix(in srgb, var(--surface-color) 88%, transparent);
+  padding: 0.75rem 1.1rem;
+  @include portfolio-soft-surface;
   color: var(--text-color);
   text-decoration: none;
 
   &:hover {
-    border-color: var(--primary-color);
+    border-color: var(--link-color, var(--primary-color));
   }
 
   &:focus-visible {
-    outline: 2px solid var(--primary-color);
+    outline: 2px solid var(--focus-ring);
     outline-offset: 4px;
   }
 
-  &__index {
-    color: var(--primary-color);
-    font-family: var(--font-family-mono);
+  &__scope {
+    @include portfolio-type-meta;
+    color: var(--link-color, var(--primary-color));
     font-size: 0.8rem;
-    font-weight: 800;
-    letter-spacing: 0.12em;
+    font-weight: 700;
+    letter-spacing: 0.08em;
   }
 
   &__copy {
-    display: grid;
-    gap: 0.25rem;
+    @include portfolio-stack(0.2rem);
   }
 
   &__label {
-    font-size: clamp(1.15rem, 2vw, 1.5rem);
+    font-size: clamp(1.05rem, 1.8vw, 1.35rem);
     font-weight: 700;
     line-height: 1.2;
   }
 
   &__lede {
     color: var(--text-secondary-color);
-    font-size: 0.95rem;
-    line-height: 1.4;
+    font-size: 0.9rem;
+    line-height: 1.35;
   }
 }
 
 .splash-continue {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
   margin: 0;
+  padding: 0.6rem 0.75rem 0.6rem 1.1rem;
+  border: 1px solid var(--border-strong, var(--portfolio-rule));
+  border-radius: var(--border-radius-md);
+  background: color-mix(in srgb, var(--surface-variant) 80%, transparent);
 
-  &__link {
-    display: inline-flex;
-    align-items: center;
-    min-height: 2.75rem;
+  &__copy {
     color: var(--text-secondary-color);
     font-size: 0.95rem;
-    text-decoration: none;
-
-    &:hover,
-    &:focus-visible {
-      color: var(--text-color);
-      text-decoration: underline;
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--primary-color);
-      outline-offset: 4px;
-    }
   }
 
   &__title {
     color: var(--text-color);
     font-weight: 700;
+  }
+
+  &__link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    padding: 0 1.1rem;
+    border-radius: var(--button-radius, var(--border-radius-sm));
+    background: var(--primary-fill, var(--primary-color));
+    color: var(--on-primary, #fff);
+    font-weight: 700;
+    text-decoration: none;
+
+    &:hover {
+      filter: brightness(1.08);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--focus-ring);
+      outline-offset: 4px;
+    }
   }
 }
 
@@ -142,13 +161,18 @@
     accent-color: var(--primary-color);
 
     &:focus-visible {
-      outline: 2px solid var(--primary-color);
+      outline: 2px solid var(--focus-ring);
       outline-offset: 3px;
     }
   }
 }
 
-@media (max-width: $breakpoint-tablet) {
+@include bp-down(tablet) {
+  .page-content.splash-page {
+    align-content: start;
+    padding-block: clamp(0.5rem, 2vh, 1.25rem);
+  }
+
   .splash-doors {
     grid-template-columns: 1fr;
   }
@@ -156,5 +180,17 @@
   .splash-door {
     grid-template-columns: 1fr;
     align-items: start;
+  }
+}
+
+@media (max-height: 40rem) {
+  .page-content.splash-page {
+    gap: 0.75rem;
+    align-content: start;
+  }
+
+  .splash-door {
+    min-height: var(--touch-target, 44px);
+    padding-block: 0.55rem;
   }
 }

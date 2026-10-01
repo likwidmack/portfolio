@@ -1,6 +1,5 @@
 <template lang="pug">
 .page-content.portfolio-page.work-index(data-fit="screen")
-  AppDepthField(:seed="19", :particle-count="110")
   header.portfolio-hero
     p.eyebrow-container Selected work
     h1 Proof-led stories
@@ -32,7 +31,8 @@
       :key="study.slug",
       :study="study",
       :index="i + 1",
-      :total="studies.length"
+      :total="studies.length",
+      layout="row"
     )
 
   AppEvidenceExamplesDialog(v-model:visible="evidenceOpen")
@@ -78,4 +78,4 @@ usePortfolioSeo({
 });
 </script>
 
-<style lang="scss" src="./styles/index.scss"></style>
+<style lang="scss" src="./index.scss" scoped></style>

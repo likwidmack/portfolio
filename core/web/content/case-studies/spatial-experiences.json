@@ -60,33 +60,57 @@
       "type": "image",
       "src": "/i/tesseract/blue-8-cell-simple.png",
       "alt": "Blue wireframe eight-cell tesseract projection used as a spatial laboratory motif",
-      "caption": "Portfolio laboratory — Schlegel-style 8-cell used to practice projection, orbit, and dimensional metaphor."
+      "caption": "Portfolio laboratory — Schlegel-style 8-cell used to practice projection, orbit, and dimensional metaphor.",
+      "lqip": "data:image/webp;base64,UklGRjQBAABXRUJQVlA4ICgBAADQBwCdASogACAAPtFco02oJSMiKA1RABoJaACxHuuqvnVUoKoEcCET1l0k6a8L0STZXADGrt5psIzd3hu1wchnRXDrPgRfoAD+/KaPz/Qgfgr4CK8Zbmiu7dv3M9EH1CTNw1VRu+TyL12ht+parlsCycpd6E9cDSIfLHf3Y3q9jfrb3AESaw6pWMgqouSV+theDwmr4wvwL8cal52ZtxjVsav1ftkvrMuYNHLAtx5KofOAH2GEeiGfOMWqq61kBqIOzltndRPAq1JX0/XluA3FmIi4amB/vv8vOOxbsh/Iijq7x+DIwYqLp4CVv5gfMNFiXikvmbqvU90545whFXDyKc82KNh5U9Z7yuUUju/pYx6sicIgFdjynhmnw4fQv41aWpZ4cIAAAA==",
+      "dominantColor": "#734141",
+      "aspectCss": "1 / 1"
     },
     {
       "type": "image",
       "src": "/i/tesseract/schlegel-wireframe-8-cell.png",
       "alt": "Detailed Schlegel wireframe of an eight-cell tesseract",
-      "caption": "Wireframe study — structural clarity before materials, bloom, or generative dressing."
+      "caption": "Wireframe study — structural clarity before materials, bloom, or generative dressing.",
+      "lqip": "data:image/webp;base64,UklGRgIFAABXRUJQVlA4WAoAAAAQAAAAHwAAHwAAQUxQSBMDAAANoLVtmyFJntIbkWU1imPbxuHM0aztPbRt27Zt27Yxtj1TyMyq+Coj4jvI6msjYgLwv6WAAMAASzboU562/muhdcCwDEZniz4FDzi7MjyqtSVSihQ1Pc/1d05znxYckvZQ1I7fNCCfLxbypd5id2++UMqOya180AgAMpg89eMFJ99VdT3X9Ru+21JETXvfwLcRCRC+89Q5v1w19vOIhQAEALB5fPdX+3sAEKVT/rzxkh13vPaQEcwAA3DMlThn+jFVAKI98KD5CPp9z0e84lghIASEOqm++PNzhGVIM/7+tysjdxnvifv+qYIZzNIcuPjv+2BjGhA8DaMv/XXN8MtWb7x0jyZFyuzNbf/ttR/RymqGxftD7zqxt7b4tmHbzh66M1/IF+WsZpC7B1AZDQDG+ermfc9S69cglVwerbk7yoNiX4+JA5QJOGS7/Q+2XH3s73tWfoI6BC6InfnDNV0ESmuEOKHh/PXB/ifctl8sLv1Rr58J6HQHBmBNhtDqUV+4PZXtEfCMO/aRtp0lUCZAyKYJKmXZeg43Aa8cY9ZpAqU1RB/tdNBOCIOwEYl2kG6D0taCAZ0mUFozx8peAk12PMs2pToBCDIEyrZt4dQ7ZjAi2ys97heqpwXKGAsI1mkCpfWiybe/LnyJ2H63Lbzkz78AnWADAB26rvnh7ticpJT11Ccr9/x+7NVbPvC7rQEEBxnCzPiYr2ODyjvcWnR5MhVfs16ddeHNix0DADqjMO/XXNCcJYv5Qn7n0LO3ja6vqfWeiKHvSwjW2dbRvz7723a51yhSpPdc+vjqy4a/+uuloz0wAB2zly77e3HUSGYwO9V/rn3CM7umVwZBGAi24mxcVXcUOlvxylX8fb/g/lMRbQNA9ZjpT2yJGAcAA8zSPPTsHTtO+eJlSQh7+7/wGgyjbys/H3vVL3OmICwCeQAG3mebRKrl+g3fdT23evdJC86BEwBgYR5cmRuTLRXyvd3F3lK+UMznB2ys0/uwCDOedrHTdz2vSYqUIrJaR4dXJLgD4AgrAAGAwRYcaI2v16MzAFZQOCDIAQAAcAoAnQEqIAAgAD7NUp5Lp6SiobAMAPAZiWQAzDEAJonswRoH0EYB2BHXPMDhr/zPgDGS84D5j+2hBQtoflrR0/acWujoGAEsruTeI4Qr/7Yti7TvJPO3BAfb7kAA/suajm5KCxEacIVyd7KArJQaR7Y96sz/033Rmkdv40i3T6mdHIQMmKIho3LV+/Q4eyZJKhPsDBvIbAV5FO7KaxyKV/MQFxztw+FFUsvPblzoco3wbgYj9LPkcULyqdfzhG/XKuHFGWW9enyNxuALm3KjowrXQQnbl/q1cLaTZRjAYXLdKekEbH9Q6hbOz+3y8GWrY16vek3fytov/DYIX6+TTgQgZ/DcSwAEx4uF6qPx/8abDZ/z+s6Zxm/XO1BBn3Nuc4ygXcX0gBUG9dOxU3aJcQZm8NG059Nxwd7wVoE0mILqGEYkUltR5ygLTcUlwUd2s5LJ7lZypxOJrVFl6VBTf1RA0DgWYyUEUCFHNBAnFYSsED/CcAEA2fDjjj6hV4EI4cKE4Hz+MCTEZuz05VAPPN3BwtIxRORFy7m6xse36arkVYUOLakir52+c5Nr94Ld1KRriRvmitr+MrxliHXyEINZHqtGAAAA",
+      "dominantColor": "#734141",
+      "aspectCss": "1 / 1"
     },
     {
       "type": "video",
       "src": "/v/portfolio/generated/vimg-tesseract-framework.mp4",
       "poster": "/i/tesseract/blue-8-cell-simple.png",
       "alt": "Animated nested transparent tesseract cubes glowing inside a reflective digital chamber",
-      "caption": "Motion study — recursive space as an interface metaphor, directed for the portfolio laboratory."
+      "caption": "Motion study — recursive space as an interface metaphor, directed for the portfolio laboratory.",
+      "lqip": "data:image/webp;base64,UklGRjQBAABXRUJQVlA4ICgBAADQBwCdASogACAAPtFco02oJSMiKA1RABoJaACxHuuqvnVUoKoEcCET1l0k6a8L0STZXADGrt5psIzd3hu1wchnRXDrPgRfoAD+/KaPz/Qgfgr4CK8Zbmiu7dv3M9EH1CTNw1VRu+TyL12ht+parlsCycpd6E9cDSIfLHf3Y3q9jfrb3AESaw6pWMgqouSV+theDwmr4wvwL8cal52ZtxjVsav1ftkvrMuYNHLAtx5KofOAH2GEeiGfOMWqq61kBqIOzltndRPAq1JX0/XluA3FmIi4amB/vv8vOOxbsh/Iijq7x+DIwYqLp4CVv5gfMNFiXikvmbqvU90545whFXDyKc82KNh5U9Z7yuUUju/pYx6sicIgFdjynhmnw4fQv41aWpZ4cIAAAA==",
+      "dominantColor": "#734141",
+      "aspectCss": "1 / 1"
     },
     {
       "type": "video",
       "src": "/v/portfolio/generated/vimg-crystal-binary-helix.mp4",
       "poster": "/i/portfolio/generated/vimg-algorithmic-helix.webp",
       "alt": "Animated macro view moving along a crystalline DNA helix filled with colorful binary digits",
-      "caption": "Motion study — algorithmic form bridging data, biology, and real-time sculpture."
+      "caption": "Motion study — algorithmic form bridging data, biology, and real-time sculpture.",
+      "lqip": "data:image/webp;base64,UklGRvIAAABXRUJQVlA4IOYAAACwBgCdASogABIAPtFSoUuoJKMhsAgBABoJZAC1GyS83cAdwOwDukb+sDAOvn+Ogb4Z59Qvrh1JPbCjPqCX4AD+931Oz6dz4lV40QtTuJfIkfuzoZQDRQ5r2WgCA2sV4ZbRIdhqqf2te8A/PbmzFJk+AzYRDxShMAtwb2ak5Aix7CKOImm38mRU2XSCWX9WEGs3+zEgOARFtuJyXSo4g7NUhGbWPp11vSnM9uLdheBAXXQFsdEI8o8AkSR2tGLQBCi5Dz1q1TjDSFkP8o5mc2CqEl94q7g5cgEM73NT2g6T6H0O4D+AAA==",
+      "dominantColor": "#734141",
+      "aspectCss": "280 / 157"
     }
   ],
   "links": [
-    { "label": "Open the advanced tesseract wireframe lab", "href": "/d/htm/adv_wire_tess.html" },
-    { "label": "Open the basic tesseract wireframe lab", "href": "/d/htm/wire_tess.html" },
-    { "label": "Related creative prototyping story", "href": "/work/innovation-prototyping" },
-    { "label": "Related experience systems story", "href": "/work/experience-systems" }
+    {
+      "label": "Open the advanced tesseract wireframe lab",
+      "href": "/d/htm/adv_wire_tess.html"
+    },
+    {
+      "label": "Open the basic tesseract wireframe lab",
+      "href": "/d/htm/wire_tess.html"
+    },
+    {
+      "label": "Related creative prototyping story",
+      "href": "/work/innovation-prototyping"
+    },
+    {
+      "label": "Related experience systems story",
+      "href": "/work/experience-systems"
+    }
   ]
 }

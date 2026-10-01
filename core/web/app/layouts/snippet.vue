@@ -7,4 +7,4 @@ NuxtLayout(name="site", layout-class="layout-snippet", layout-key="site")
     slot(name="footer")
 </template>
 
-<style lang="scss" src="./snippet.scss"></style>
+<!-- Modifier only: `.layout-snippet` on the shared `site` shell (styles in site.scss). -->

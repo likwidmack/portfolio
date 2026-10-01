@@ -1,6 +1,5 @@
 <template lang="pug">
-.page-content.portfolio-page.gallery-page(data-fit="screen")
-  AppDepthField(:seed="31", :particle-count="110")
+.page-content.portfolio-page.gallery-page(data-fit="fluid")
   header.portfolio-hero
     p.eyebrow-container {{ content.hero.eyebrow }}
     h1 {{ content.hero.title }}
@@ -13,11 +12,16 @@
     :views="viewOptions",
     :groups="groupOptions",
     :kinds="kindOptions",
+    :total="posts.length",
+    :matching="visiblePosts.length",
+    :filtered="filtered",
+    :noun="posts.length === 1 ? 'post' : 'posts'",
     view-label="View",
     group-label="Group",
-    kind-label="Filter"
+    inline,
+    kind-label="Filter",
+    @clear="clearFilters"
   )
-  p.gallery-page__count {{ visiblePosts.length }} {{ visiblePosts.length === 1 ? 'post' : 'posts' }}
 
   section.gallery-feed(v-if="viewMode === 'feed'", ref="feedEl", aria-label="Gallery feed", tabindex="0")
     .gallery-feed__topbar
@@ -64,7 +68,7 @@
     h2#gallery-cta-heading {{ content.cta.heading }}
     p.lead {{ content.cta.lede }}
     .button-row
-      UiButton(as="a", :href="contactMailto", icon="pi pi-send", :label="content.cta.primaryLabel")
+      UiButton(as="a", :href="contactMailto", icon="send", :label="content.cta.primaryLabel")
 </template>
 
 <script setup lang="ts">
@@ -100,9 +104,20 @@ const posts = computed(() => flattenGalleryPosts(content.value));
 const route = useRoute();
 const reducedMotion = usePrefersReducedMotion();
 const scrollBehavior = computed(() => (reducedMotion.value ? 'auto' : 'smooth'));
-const viewMode = ref<GalleryViewMode>('grid');
-const groupId = ref('all');
-const kindId = ref<GalleryFilterKind>('all');
+const browse = useBrowseQuery({ view: 'grid', group: 'all', kind: 'all', query: '' });
+const { filtered, clear: clearFilters } = browse;
+const viewMode = computed<GalleryViewMode>({
+  get: () => browse.view.value as GalleryViewMode,
+  set: (value) => (browse.view.value = value),
+});
+const groupId = computed<string>({
+  get: () => browse.group.value,
+  set: (value) => (browse.group.value = value),
+});
+const kindId = computed<GalleryFilterKind>({
+  get: () => browse.kind.value as GalleryFilterKind,
+  set: (value) => (browse.kind.value = value),
+});
 const activePostId = ref<string>('');
 const feedEl = ref<HTMLElement | null>(null);
 const specimenId = computed(() => {
@@ -116,11 +131,19 @@ const viewOptions = [
   { id: 'grid', label: 'Grid' },
   { id: 'feed', label: 'Feed' },
 ];
-const kindOptions = GALLERY_KIND_FILTERS;
-const groupOptions = computed(() => [
-  { id: 'all', label: 'All' },
-  ...content.value.categories.map((category) => ({ id: category.id, label: category.label })),
-]);
+/** Faceted counts: each option counts posts it would show given the other facet's selection. */
+const kindOptions = computed(() =>
+  GALLERY_KIND_FILTERS.map((option) => ({
+    ...option,
+    count: filterGalleryPosts(posts.value, groupId.value, option.id as GalleryFilterKind).length,
+  }))
+);
+const groupOptions = computed(() =>
+  [
+    { id: 'all', label: 'All' },
+    ...content.value.categories.map((category) => ({ id: category.id, label: category.label })),
+  ].map((option) => ({ ...option, count: filterGalleryPosts(posts.value, option.id, kindId.value).length }))
+);
 const visiblePosts = computed(() => filterGalleryPosts(posts.value, groupId.value, kindId.value));
 const activePostIndex = computed(() => {
   if (!visiblePosts.value.length) return 0;

@@ -31,5 +31,5 @@ const { profile } = useSiteProfile();
 
 ## Related
 
-- Theme/accent personalization (unrelated to names): `core/web/shared/personalization.ts`
+- Theme / brand-role personalization (unrelated to names): [personalization.md](../features/personalization.md) · `core/web/shared/personalization.ts`
 - August launch positioning: portfolio-august-launch.md

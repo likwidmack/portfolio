@@ -51,7 +51,7 @@
                   p(data-type="panel-title") {{ snippet.label }}
                   UiButton(
                     type="button",
-                    icon="pi pi-copy",
+                    icon="copy",
                     label="Copy",
                     size="small",
                     severity="secondary",
@@ -153,88 +153,4 @@ useHead({
 });
 </script>
 
-<style lang="scss" scoped>
-.product {
-  display: grid;
-  gap: var(--section-gap, 2rem);
-
-  section {
-    width: 100%;
-  }
-
-  .display {
-    animation: neonPulse 2s ease-in-out infinite;
-  }
-
-  [data-region='hero'] {
-    display: grid;
-    gap: 0.75rem;
-  }
-
-  [data-region='body'] {
-    display: grid;
-    gap: var(--section-gap, 2rem);
-    min-width: 0;
-  }
-
-  [data-region='intro'] p,
-  [data-flush],
-  [data-type='panel-title'],
-  [data-list='details'] {
-    margin: 0;
-  }
-
-  [data-type='panel-title'] {
-    font-size: var(--font-size-xl);
-    font-weight: 600;
-    line-height: 1.25;
-  }
-
-  [data-list='details'] {
-    display: grid;
-    gap: 0.45rem;
-    margin-top: 0.85rem;
-    padding-left: 1.1rem;
-  }
-
-  .panel[data-variant='stat'] {
-    display: grid;
-    gap: 0.25rem;
-
-    strong {
-      color: var(--primary-color);
-      font-size: var(--font-size-lg);
-      line-height: 1.25;
-    }
-  }
-
-  .panel[data-variant='capability'] {
-    display: grid;
-    gap: 0.45rem;
-  }
-
-  :deep(.panel),
-  :deep(.p-panel) {
-    margin: 0;
-  }
-
-  .product-tabs {
-    margin-top: 0.75rem;
-  }
-
-  .product-snippet {
-    display: grid;
-    gap: 0.65rem;
-    margin-top: 1rem;
-
-    .button-row {
-      justify-content: space-between;
-      margin-bottom: 0;
-    }
-  }
-
-  .button-row {
-    margin-top: 0.75rem;
-  }
-}
-</style>
+<style lang="scss" src="./index.scss" scoped></style>

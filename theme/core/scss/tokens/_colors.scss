@@ -3,6 +3,8 @@
 // Pastel Day/Night: sky blue (#6696ba), pale yellow (#e2e38b), soft orange (#e7a553), muted magenta (#7e4b68), deep indigo (#292965).
 // Midnight Magic: ["#3a015c","#4f0147","#35012c","#290025","#11001c"]
 @use 'sass:color';
+@use 'sass:math';
+@use 'color-fns' as *;
 
 @use 'base-colors' as *;
 @forward 'base-colors';
@@ -116,7 +118,7 @@ $wine-default: $css-magenta-light;
 $wine-light: #4a0404;
 $wine-dark: #822659;
 
-// Named `sea` (not `teal`) — `$css-teal-*` / `--portfolio-teal` own the teal signal.
+// Named `sea` (not `teal`) — `$css-teal-*` / `--teal-signal` own the teal signal.
 $sea-default: $css-teal-light;
 $sea-light: #15292b;
 $sea-dark: #5a9690;
@@ -142,6 +144,8 @@ $parchment-dark: #dcd7c9;
 /* -------------------------------------------------------------------------- */
 
 // Ember / crimson (PrimeVue-facing `--primary-color` / `--secondary-color` / `--accent-color`).
+// Brand role harmony: secondary is an analogous partner of primary (hand-tuned hex);
+// accent is the complementary of primary (derived via `theme-complementary`).
 $primary-color-light: #d9531d; // ember, darkened for light surfaces
 // Deep red from the "Portfolio system — dark minimal, deep red + clay" design pass
 // (source mockup used oklch(0.48 0.18 25); converted to sRGB hex here since several
@@ -149,27 +153,71 @@ $primary-color-light: #d9531d; // ember, darkened for light surfaces
 $primary-color-dark: #ac1922; // deep red
 $primary-default-color: $primary-color-dark;
 
-$secondary-color-light: #6e1622; // crimson, darkened for light surfaces
-$secondary-color-dark: #8a6a56; // clay
+$secondary-color-light: #6e1622; // crimson, darkened for light surfaces (analogous family)
+$secondary-color-dark: #8a6a56; // clay (analogous family)
 $secondary-default-color: $secondary-color-dark;
 
-$accent-color-light: $primary-color-light;
-$accent-color-dark: $primary-color-dark;
+$accent-color-light: theme-complementary($primary-color-light);
+$accent-color-dark: theme-complementary($primary-color-dark);
 
 $primary-color: light-dark($primary-color-light, $primary-color-dark);
 $secondary-color: light-dark($secondary-color-light, $secondary-color-dark);
-$accent-color: $primary-color;
+$accent-color: light-dark($accent-color-light, $accent-color-dark);
+
+/* -------------------------------------------------------------------------- */
+/* Paper + ink → neutral scale (five-input model)                              */
+/* -------------------------------------------------------------------------- */
+// The app sets five colours — primary, secondary, accent, paper and ink — and everything neutral
+// derives from paper → ink. Pen & paper: paper is always the background and ink always the
+// foreground, with one pair per mode (dark mode's default pair is light mode's, inverted). CSS derives the same values at runtime
+// (`--neutral-*` in globals/_root.scss) so a live paper / ink change reaches every child; these
+// Sass values are the build-time defaults (colors.json, Foundation / PrimeVue bridges, tests).
+
+$light-paper: #faf6f3 !default;
+$light-ink: #0f0908 !default;
+$dark-paper: $light-ink !default;
+$dark-ink: $light-paper !default;
+/// @deprecated Light-mode pair; prefer `$light-paper` / `$light-ink`.
+$paper: $light-paper;
+$ink: $light-ink;
+
+/// Round a colour to 8-bit sRGB (matches the JS mirror in `src/color-mix.ts`).
+@function srgb8($c) {
+  $c: color.to-gamut(color.to-space($c, rgb), $method: clip);
+  @return rgb(
+    math.round(color.channel($c, 'red', $space: rgb)),
+    math.round(color.channel($c, 'green', $space: rgb)),
+    math.round(color.channel($c, 'blue', $space: rgb))
+  );
+}
+
+/// Neutral scale step for a mode: 0 = paper (background) … 1000 = ink (foreground), mixed in
+/// OKLab (CSS: `--neutral-<step>`, which follows the active mode's `--paper` / `--ink`).
+@function neutral($step, $mode: light) {
+  $p: $light-paper;
+  $i: $light-ink;
+  @if $mode == dark {
+    $p: $dark-paper;
+    $i: $dark-ink;
+  }
+  @return srgb8(color.mix($i, $p, math.div($step, 10) * 1%, $method: oklab));
+}
+
+/// `$percent` of `$color` mixed toward `$toward` in OKLab (status tones).
+@function tone($color, $percent, $toward) {
+  @return srgb8(color.mix($color, $toward, $percent, $method: oklab));
+}
 
 /* -------------------------------------------------------------------------- */
 /* Text                                                                       */
 /* -------------------------------------------------------------------------- */
 
-$text-color-dark: #f2ece8;
-$text-color-light: #1c1412;
+$text-color-dark: neutral(975, dark);
+$text-color-light: neutral(950);
 
-/// Muted on-surface text — same ink family as `$text-color-*` (not inverted contrast).
-$text-color-secondary-dark: #baa8a0;
-$text-color-secondary-light: #5a4a42;
+/// Muted on-surface text — a neutral step (≥ 4.5:1 on page, surface and variant).
+$text-color-secondary-dark: neutral(700, dark);
+$text-color-secondary-light: neutral(700);
 
 $text-color: light-dark($text-color-light, $text-color-dark);
 $text-secondary-color: light-dark($text-color-secondary-light, $text-color-secondary-dark);
@@ -178,14 +226,15 @@ $text-secondary-color: light-dark($text-color-secondary-light, $text-color-secon
 /* Backgrounds + $main-* aliases (required by `_root.scss`)                   */
 /* -------------------------------------------------------------------------- */
 
-$main-background-dark: #0f0908;
-$main-background-light: #faf6f3;
+$main-background-dark: $dark-paper;
+$main-background-light: $light-paper;
 
-$main-background-dark-secondary: #16100e;
-$main-background-light-secondary: #f0e9e4;
+$main-background-dark-secondary: neutral(50, dark);
+$main-background-light-secondary: neutral(50);
 
-$main-background-dark-accent: color.adjust($violet-light, $lightness: -20%, $space: hsl);
-$main-background-light-accent: color.adjust($violet-dark, $lightness: 10%, $space: hsl);
+// theme-darken / theme-lighten: $amount is HSL lightness percentage points (Sass color.adjust model).
+$main-background-dark-accent: theme-darken($violet-light, 20%);
+$main-background-light-accent: theme-lighten($violet-dark, 10%);
 
 $main-background: light-dark($main-background-light, $main-background-dark);
 $main-background-secondary: light-dark($main-background-light-secondary, $main-background-dark-secondary);
@@ -199,11 +248,11 @@ $main-secondary-color: $secondary-color;
 /* -------------------------------------------------------------------------- */
 
 /// Portfolio teal signal (also drives semantic success). Do not overwrite `$css-teal-*` / `--color-teal`.
-$portfolio-teal-light: #146060;
-$portfolio-teal-dark: #1b7a7a;
+$teal-signal-light: #146060;
+$teal-signal-dark: #1b7a7a;
 
-$success-light: $portfolio-teal-light;
-$success-dark: $portfolio-teal-dark;
+$success-light: $teal-signal-light;
+$success-dark: $teal-signal-dark;
 
 $warning-light: #c26a1f;
 $warning-dark: #ff8c61;
@@ -227,11 +276,11 @@ $info: light-dark($info-light, $info-dark);
 /* Surfaces, borders, form chrome                                             */
 /* -------------------------------------------------------------------------- */
 
-$css-surface-light: #f0e9e4;
-$css-surface-dark: #16100e;
-/// Hover / nested surfaces — same family as the mode surface (not inverted ink).
-$css-surface-variant-light: #e6dcd5;
-$css-surface-variant-dark: #1c1412;
+$css-surface-light: neutral(50);
+$css-surface-dark: neutral(50, dark);
+/// Hover / nested surfaces — one neutral step further from the page.
+$css-surface-variant-light: neutral(100);
+$css-surface-variant-dark: neutral(75, dark);
 
 $css-primary-light: $ink-light;
 $css-primary-dark: $parchment-dark;
@@ -241,8 +290,30 @@ $css-primary-hover-dark: color.adjust($css-primary-dark, $lightness: 10%);
 $css-border-light: rgba(0, 0, 0, 0.08);
 $css-border-dark: rgba(255, 255, 255, 0.08);
 
-$css-focus-ring-light: $primary-color-light;
-$css-focus-ring-dark: $primary-color-dark;
+/// Accessible interaction roles — AA in both modes (see docs/packages/theme.md → Contrast roles).
+/// Brand fills ($primary-color-*) stay unchanged; these carry text, focus and control contrast.
+$css-focus-ring-light: #b83f16; // ≥3:1 on page + surface
+$css-focus-ring-dark: #ffb38f;
+$css-link-light: #a8360e; // ≥4.5:1 on page
+$css-link-dark: #f0876a;
+$css-border-strong-light: neutral(500); // ≥3:1 on surface (controls)
+$css-border-strong-dark: neutral(450, dark);
+$css-primary-fill-light: #b83f16; // white text ≥4.5:1
+$css-primary-fill-dark: #ac1922;
+$css-on-primary: #ffffff;
+/// Status "ink" tones: each status hue mixed toward the mode's text colour just enough for
+/// ≥ 4.5:1 on page, surface and variant (CSS: `--<status>-ink`, same percentages).
+$css-success-ink-light: tone($success-light, 100%, $text-color-light);
+$css-success-ink-dark: tone($success-dark, 80%, $text-color-dark);
+$css-warning-ink-light: tone($warning-light, 70%, $text-color-light);
+$css-warning-ink-dark: tone($warning-dark, 100%, $text-color-dark);
+$css-error-ink-light: tone($error-light, 90%, $text-color-light);
+$css-error-ink-dark: tone($error-dark, 80%, $text-color-dark);
+$css-info-ink-light: tone($info-light, 100%, $text-color-light);
+$css-info-ink-dark: tone($info-dark, 90%, $text-color-dark);
+/// `danger` is the error status (kept name).
+$css-danger-ink-light: $css-error-ink-light;
+$css-danger-ink-dark: $css-error-ink-dark;
 
 /// On-fill ink for solid + gradient chrome — opposite luminance of the composite.
 $css-button-fg-dark: #0f172a;

@@ -47,8 +47,8 @@ NuxtLayout(name="default")
           UiCodeBlock(:code="combinedTrace", language="bash", render-mode="client-only", aria-label="Full error trace")
 
     .button-row(data-region="actions")
-      UiButton(label="Reload", icon="pi pi-refresh", severity="secondary", variant="outlined", @click="handleReload")
-      UiButton(label="Back Home", icon="pi pi-home", @click="handleClearError")
+      UiButton(label="Reload", icon="refresh-cw", severity="secondary", variant="outlined", @click="handleReload")
+      UiButton(label="Back Home", icon="house", @click="handleClearError")
 </template>
 
 <script setup lang="ts">

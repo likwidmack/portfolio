@@ -60,15 +60,12 @@ function stashPythonKeywords(source: string, stash: StashToken): string {
  * @returns The tokenized HTML content.
  */
 function tokenizePythonContent(codeInnerHtml: string): string {
-  const { stash, restore } = createTokenStash(codeInnerHtml);
+  const { raw, stash, finish } = createTokenStash(codeInnerHtml);
   const source = stashPythonKeywords(
-    stashPythonPunctuation(
-      stashPythonValues(stashPythonStrings(stashPythonComments(codeInnerHtml, stash), stash), stash),
-      stash
-    ),
+    stashPythonPunctuation(stashPythonValues(stashPythonStrings(stashPythonComments(raw, stash), stash), stash), stash),
     stash
   );
-  return restore(source);
+  return finish(source);
 }
 
 /**

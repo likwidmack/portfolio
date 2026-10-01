@@ -20,6 +20,8 @@ import {
   type ThemeResolvedMode,
 } from './color-mode.js';
 import { resolveButtonForeground } from './contrast.js';
+import type { StudioPreset } from './studio-presets.js';
+import presetCatalog from './theme-presets.json' with { type: 'json' };
 import {
   getToken,
   getTokens,
@@ -30,7 +32,13 @@ import {
   type ThemeBridgeOptions,
   type ThemeTokenMap,
 } from './token-registry.js';
-import { darkCssVariables, getCssVariablesForMode, lightCssVariables, palettes } from './tokens.js';
+import {
+  darkCssVariables,
+  getInlineTokensForMode,
+  lightCssVariables,
+  palettes,
+  withoutDerivedRoles,
+} from './tokens.js';
 
 export type ThemeRatios = {
   surface?: string;
@@ -56,14 +64,25 @@ export type ThemeTextSettings = {
 export type ThemeDefinition = {
   /** Full or partial CSS custom-property map. */
   tokens?: ThemeTokenMap;
-  /** Convenience color roles → CSS vars. */
+  /**
+   * The five colour inputs. Everything else derives from them in CSS: the neutral scale
+   * (`--neutral-0…1000`, paper → ink), surfaces, text, borders and status tones.
+   */
   colors?: {
     primary?: string;
     secondary?: string;
     accent?: string;
+    /** Background ("paper") for the active mode; the neutral scale runs paper → ink. */
+    paper?: string;
+    /** Foreground ("ink" / pen) for the active mode. */
+    ink?: string;
+    /** @deprecated Derived from paper / ink — set those instead. Still honoured as an override. */
     background?: string;
+    /** @deprecated Derived from paper / ink. */
     backgroundSecondary?: string;
+    /** @deprecated Derived from paper / ink. */
     surface?: string;
+    /** @deprecated Derived from paper / ink. */
     surfaceVariant?: string;
   };
   text?: ThemeTextSettings;
@@ -106,7 +125,7 @@ function paletteToTokens(swatches: Record<string, string>): ThemeTokenMap {
     '--primary-default': primary,
     '--secondary-color': secondary,
     '--accent-color': accent,
-    '--focus-ring': primary,
+    // `--focus-ring` stays the theme's contrast role (≥ 3:1) — a brand primary may not pass.
     '--button-fg': resolveButtonForeground('dark', primary, secondary),
   };
 }
@@ -123,13 +142,14 @@ function definitionToTokens(definition: ThemeDefinition): ThemeTokenMap {
     if (colors.primary) {
       patch['--primary-color'] = colors.primary;
       patch['--primary-default'] = colors.primary;
-      patch['--focus-ring'] = colors.primary;
       const secondary = colors.secondary ?? getToken('--secondary-color') ?? colors.primary;
       patch['--button-fg'] = resolveButtonForeground('dark', colors.primary, secondary);
     }
     if (colors.secondary) patch['--secondary-color'] = colors.secondary;
     if (colors.accent) patch['--accent-color'] = colors.accent;
     else if (colors.primary) patch['--accent-color'] = colors.primary;
+    if (colors.paper) patch['--paper'] = colors.paper;
+    if (colors.ink) patch['--ink'] = colors.ink;
     if (colors.background) patch['--main-background'] = colors.background;
     if (colors.backgroundSecondary) patch['--main-background-secondary'] = colors.backgroundSecondary;
     if (colors.surface) patch['--surface-color'] = colors.surface;
@@ -173,8 +193,9 @@ function breakpointsToTokens(breakpoints?: ThemeBreakpoints): ThemeTokenMap {
 }
 
 function seedBuiltins(): void {
-  packs.set(BUILTIN_LIGHT, { ...lightCssVariables });
-  packs.set(BUILTIN_DARK, { ...darkCssVariables });
+  // Built-in packs never pin the runtime-derived roles inline (five-input model).
+  packs.set(BUILTIN_LIGHT, withoutDerivedRoles(lightCssVariables) as ThemeTokenMap);
+  packs.set(BUILTIN_DARK, withoutDerivedRoles(darkCssVariables) as ThemeTokenMap);
   for (const [name, swatches] of Object.entries(palettes)) {
     packs.set(name, paletteToTokens(swatches as Record<string, string>));
   }
@@ -186,7 +207,22 @@ seedBuiltins();
  * Theme singleton — shared registry of ready-made packs + CSS variable writers.
  * DOM writes go through the token registry (honors `dryRun` / bridges).
  */
+const studioPresets = presetCatalog.presets as StudioPreset[];
+
 export const Theme = {
+  /**
+   * Theme Studio catalog: palette collections and single light/dark colors.
+   * Collections with more than three swatches include a clipped gradient field.
+   */
+  presets(): readonly StudioPreset[] {
+    return studioPresets;
+  },
+
+  /** One studio preset, or `undefined` when the id is not in the catalog. */
+  preset(id: string): StudioPreset | undefined {
+    return studioPresets.find((item) => item.id === id);
+  },
+
   /** Registered ready-made theme names (builtins + custom). */
   list(): string[] {
     return [...packs.keys()];
@@ -256,7 +292,7 @@ export const Theme = {
   /** Apply light/dark CSS maps for a resolved mode without changing mode preference storage. */
   applyModeVariables(mode: ThemeResolvedMode, options: ThemeWriteOptions = {}): Readonly<ThemeTokenMap> {
     selectedName = mode;
-    return setTokens({ ...getCssVariablesForMode(mode) }, withSource(options, `theme:mode:${mode}`));
+    return setTokens({ ...getInlineTokensForMode(mode) }, withSource(options, `theme:mode:${mode}`));
   },
 
   reset(options: ThemeBridgeOptions = {}): Readonly<ThemeTokenMap> {

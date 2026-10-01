@@ -54,18 +54,15 @@ function stashCppKeywords(source: string, stash: StashToken): string {
  * @returns The tokenized HTML content.
  */
 function tokenizeCppContent(codeInnerHtml: string): string {
-  const { stash, restore } = createTokenStash(codeInnerHtml);
+  const { raw, stash, finish } = createTokenStash(codeInnerHtml);
   const source = stashCppKeywords(
     stashCppDirectives(
-      stashCppPunctuation(
-        stashCppNumbers(stashCppStrings(stashCppComments(codeInnerHtml, stash), stash), stash),
-        stash
-      ),
+      stashCppPunctuation(stashCppNumbers(stashCppStrings(stashCppComments(raw, stash), stash), stash), stash),
       stash
     ),
     stash
   );
-  return restore(source);
+  return finish(source);
 }
 
 /**
