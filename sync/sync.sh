@@ -123,6 +123,10 @@ done < <(find "$STAGING" -type d \( \
   -o -name '.codex' -o -name '.opencode' -o -name '.git' \
 \) -print0 2>/dev/null || true)
 
+# Sensitive packages (packages/media-aws: AWS wiring) are never published: swap in the
+# dest-owned stand-ins from sync/stand-ins/, then refuse to continue unless that worked.
+node "${ROOT}/sync/stand-in.mjs" --staging "$STAGING"
+
 for leaked in scripts docker infra archive .github .env.sample .env.example AGENTS.md; do
   if [[ -e "${STAGING}/${leaked}" ]]; then
     echo "denied path leaked into staging: ${leaked}" >&2
@@ -131,6 +135,7 @@ for leaked in scripts docker infra archive .github .env.sample .env.example AGEN
 done
 
 node "${ROOT}/sync/rewrite.mjs" --staging "$STAGING" --tag "$TAG" --sha "$SHA"
+node "${ROOT}/sync/stand-in.mjs" --staging "$STAGING" --verify
 node "${ROOT}/sync/scan.mjs" --staging "$STAGING"
 
 # Replace allowlisted dest trees so dropped nested files do not linger.

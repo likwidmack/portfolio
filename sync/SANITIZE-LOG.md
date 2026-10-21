@@ -22,7 +22,7 @@ of `packages/`.
 | ----------------- | ----- | ------------------------------------------------------------------------- | ------- |
 | `image`           | 37    | None                                                                      | Safe    |
 | `media`           | 50    | Fixed test UUIDs only                                                     | Safe    |
-| `media-aws`       | 35    | Test credentials `AKIATEST` / `secret`; `localhost` emulator ports        | Safe    |
+| `media-aws`       | 35    | AWS wiring (S3 presign, DynamoDB, SQS); owner marked it sensitive         | **Never publish**: stand-in only |
 | `media-client`    | 9     | None                                                                      | Safe    |
 | `media-nuxt`      | 29    | Placeholder CDN hosts in tests (`d123` / `d9own.cloudfront.net`, `example.com`), `sqs…amazonaws.com/1/media`, MinIO bucket `portfolio-assets` | Safe    |
 | `nuxt-layer-base` | 8     | None                                                                      | Safe    |
@@ -41,11 +41,54 @@ production bucket.
 
 ### Still to check before publishing
 
-- [ ] **Owner sign-off** that `media-aws` (S3 presign, DynamoDB, SQS wiring) may be public. It
-      contains no secrets, but it does describe the AWS architecture.
 - [ ] **Packages that only exist on `development`** (`media-postgres`, `nuxt-layer-ui`) and the
       `core/admin` app are not on source `main` yet. When they land on `main`, the keep-list
       publishes them automatically. Audit them before that sync. `core/admin` stays unpublished
       until it is added to `allowlist.txt`.
-- [ ] **Rotate `TM_GH_TOKEN`.** The scheduled sync fails with "Invalid username or token", so no
-      sync runs until it is replaced.
+
+## 2026-10-21: no CD workflows on the mirror (`chore/remove-cd-workflows`)
+
+The mirror runs read-only CI only: `test.yml` and `codeql.yml` (guarded by `tests/sync.test.mjs`).
+Removed: `sync.yml` (scheduled clone, push and PR), `open-cr-pr.yml`, `github-profile.yml`,
+`github-security.yml` and `.github/scripts/` (Cursor review for `sync.yml`).
+
+Syncing is manual and runs on the owner's machine:
+
+```bash
+bash sync/sync.sh --tag main
+```
+
+Review the diff against this log, then commit on a `sync/*` branch and open the PR by hand.
+The profile and security scripts in `sync/` also run locally only.
+
+Repository secrets no longer used by any workflow: `TM_GH_TOKEN`, `LK_GH_TOKEN`, `CURSOR_API_KEY`.
+
+## 2026-10-21: `media-aws` public stand-in
+
+`sync/stand-in.mjs` swaps the staged `packages/media-aws` for `sync/stand-ins/media-aws/` (dest-owned),
+then `sync.sh` runs `--verify` after the rewrite and stops unless the staged package is exactly the
+stand-in. The stand-in keeps only the source package's name, version, entry points and
+dependencies (so `package-lock.json` stays valid). It exports what `@tgmc/media-nuxt` imports:
+
+- Kept real: `PRESIGN_REQUIRED_HEADERS`, `PRESIGN_CACHE_CONTROL` and `presignContentDisposition`
+  (standard HTTP header names and values; local presign mode signs them).
+- `mediaAwsEndpointsFromEnv` returns `{}` and reads no env vars.
+- `createAwsMediaLibrary`, `createPresignedIngest`, `S3BlobStore` and `enqueueMaterializeJob` throw
+  `MediaAwsUnavailableError`.
+
+Not exported at all: DynamoDB stores, key schema, SQS worker, CloudFront invalidation, S3 client.
+
+**Checked** against source `main` `f9d37ba`: sync, `npm ci`, `npm run build:libs` and `npm run build`
+passed. The built server has none of `DynamoCatalogStore`, `createDynamoMediaStores`,
+`mediaWorkerHandler` or `invalidateMediaPaths`. `/`, `/work`, `/about` and `/gallery` return 200.
+`/api/media/assets` returns 401 "Admin writes are disabled (ADMIN_TOKEN not configured)".
+
+**Dropped tests:** five `@tgmc/media-nuxt` specs exercise the real `media-aws` and fail against
+the stand-in, so the sync removes them (`STAND_IN_DROPPED_TESTS` in `sync/stand-in.mjs`; `--verify`
+fails if one is staged): `asset-urls-routes`, `ingest-routes-backend`, `media-library-env`,
+`media-library` and `media-public-url` (`.spec.ts`). The other four specs pass against the stand-in
+(84 tests).
+
+**Docs kept (owner decision):** `docs/packages/media-aws.md` and the
+`docs/plans/2026-09-22-*-media-*` plans stay public. They describe the package but hold no
+secrets, account IDs or real hostnames.

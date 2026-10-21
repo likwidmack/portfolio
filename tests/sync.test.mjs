@@ -276,3 +276,78 @@ test("dest-owned security policy uses private reporting", () => {
   assert.match(policy, /Do not/i);
   assert.doesNotMatch(policy, /5\.1\.x/);
 });
+
+function sourceWithMediaAws() {
+  const source = fs.mkdtempSync(path.join(os.tmpdir(), "portfolio-src-"));
+  fs.cpSync(fixture, source, { recursive: true });
+  const pkgDir = path.join(source, "packages/media-aws");
+  fs.mkdirSync(path.join(pkgDir, "src"), { recursive: true });
+  fs.writeFileSync(
+    path.join(pkgDir, "package.json"),
+    `${JSON.stringify({
+      name: "@tgmc/media-aws",
+      version: "0.0.1",
+      type: "module",
+      main: "./dist/index.js",
+      scripts: { test: "vitest run" },
+      repository: { url: "git@github.com:tamaramack/portfolio.git" },
+      dependencies: { "@aws-sdk/client-s3": "^3.0.0" },
+    })}\n`,
+  );
+  fs.writeFileSync(path.join(pkgDir, "src/dynamo-stores.ts"), "export const TABLE = 'private-table';\n");
+  const nuxtTests = path.join(source, "packages/media-nuxt/tests");
+  fs.mkdirSync(nuxtTests, { recursive: true });
+  fs.writeFileSync(path.join(nuxtTests, "media-library.spec.ts"), "// needs the real media-aws\n");
+  fs.writeFileSync(path.join(nuxtTests, "local-s3-put.spec.ts"), "// passes against the stand-in\n");
+  return source;
+}
+
+test("sync publishes the media-aws stand-in, never the real package", () => {
+  const dest = fs.mkdtempSync(path.join(os.tmpdir(), "portfolio-dest-"));
+  const result = spawnSync("bash", [syncSh, "--source", sourceWithMediaAws(), "--dest", dest, "--tag", "main"], {
+    encoding: "utf8",
+  });
+  assert.equal(result.status, 0, result.stderr);
+
+  const pkgDir = path.join(dest, "packages/media-aws");
+  assert.equal(fs.existsSync(path.join(pkgDir, "src/dynamo-stores.ts")), false);
+  const index = fs.readFileSync(path.join(pkgDir, "src/index.ts"), "utf8");
+  assert.match(index, /MediaAwsUnavailableError/);
+  assert.doesNotMatch(index, /private-table/);
+
+  const pkg = JSON.parse(fs.readFileSync(path.join(pkgDir, "package.json"), "utf8"));
+  assert.equal(pkg.tgmcStandIn, true);
+  assert.equal(pkg.version, "0.0.1");
+  assert.deepEqual(pkg.dependencies, { "@aws-sdk/client-s3": "^3.0.0" });
+  assert.equal(pkg.repository, undefined);
+  assert.equal(pkg.scripts.test, undefined);
+
+  assert.equal(fs.existsSync(path.join(dest, "packages/media-nuxt/tests/media-library.spec.ts")), false);
+  assert.ok(fs.existsSync(path.join(dest, "packages/media-nuxt/tests/local-s3-put.spec.ts")));
+});
+
+test("the stand-in check rejects anything but the stand-in", async () => {
+  const { applyStandIns, verifyStandIns } = await import("../sync/stand-in.mjs");
+  const staging = fs.mkdtempSync(path.join(os.tmpdir(), "portfolio-stage-"));
+  fs.cpSync(path.join(sourceWithMediaAws(), "packages"), path.join(staging, "packages"), { recursive: true });
+  assert.deepEqual(verifyStandIns(staging), [
+    "packages/media-aws: not the public stand-in",
+    "packages/media-nuxt/tests/media-library.spec.ts: needs the real package; drop it",
+  ]);
+
+  applyStandIns(staging);
+  assert.deepEqual(verifyStandIns(staging), []);
+
+  fs.writeFileSync(path.join(staging, "packages/media-aws/src/extra.ts"), "export {};\n");
+  assert.match(verifyStandIns(staging)[0], /files differ/);
+});
+
+test("the mirror runs read-only CI only (no CD workflows)", () => {
+  const dir = path.join(root, ".github/workflows");
+  const files = fs.readdirSync(dir).sort();
+  assert.deepEqual(files, ["codeql.yml", "test.yml"]);
+  for (const file of files) {
+    const text = fs.readFileSync(path.join(dir, file), "utf8");
+    assert.doesNotMatch(text, /contents:\s*write|pull-requests:\s*write|git push|gh pr create/, file);
+  }
+});
