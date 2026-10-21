@@ -50,13 +50,12 @@ test("first-party docs relative markdown links resolve", () => {
 
 test("app docs hub matches primary navigation", () => {
   const hub = fs.readFileSync(path.join(root, "docs/web/README.md"), "utf8");
-  const nav = fs.readFileSync(path.join(root, "core/web/app/components/AppPrimaryNav/index.vue"), "utf8");
+  // Nav destinations live in `#shared/primary-nav`; the component renders them with `:to="item.to"`.
+  const nav = fs.readFileSync(path.join(root, "core/web/shared/primary-nav.ts"), "utf8");
   const catalog = fs.readFileSync(path.join(root, "docs/README.md"), "utf8");
-  assert.match(nav, /to="\/work"/);
-  assert.match(nav, /to="\/about"/);
-  assert.match(nav, /to="\/gallery"/);
-  assert.match(nav, /to="\/blog"/);
-  assert.match(nav, /to="\/code"/);
+  for (const route of ["/work", "/about", "/gallery", "/blog", "/code"]) {
+    assert.ok(nav.includes(`to: '${route}'`), `primary nav missing ${route}`);
+  }
   assert.match(hub, /\*\*Writing\*\* → `\/blog`/);
   assert.match(hub, /\*\*Code\*\* → `\/code`/);
   assert.match(hub, /AppWorkSubNav/);

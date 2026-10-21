@@ -1,20 +1,7 @@
 version: 2
 updates:
-  - package-ecosystem: npm
-    directory: /
-    schedule:
-      interval: weekly
-      day: monday
-    open-pull-requests-limit: 5
-    groups:
-      production:
-        dependency-type: production
-      development:
-        dependency-type: development
-    ignore:
-      - dependency-name: "*"
-        update-types: ["version-update:semver-major"]
-
+  # No npm ecosystem: every sync replaces package.json and package-lock.json from
+  # tamaramack/portfolio, so npm update PRs here would be overwritten. Update npm upstream.
   - package-ecosystem: github-actions
     directory: /
     schedule:

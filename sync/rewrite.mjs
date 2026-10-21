@@ -73,8 +73,7 @@ function rewritePackageJson(staging, tag) {
   pkg.license = "MIT";
   pkg.scripts = {
     build: "nx build @tgmc/web",
-    "build:libs":
-      "npm run build --workspace=@tgmc/utilities --workspace=@tgmc/media-player --workspace=@tgmc/likwidlibs",
+    "build:libs": buildLibsScript(staging),
     dev: "nx dev @tgmc/web",
     start: "nx dev @tgmc/web",
     "start:ssl:4200": "env HTTPS=1 PORT=4200 nx dev @tgmc/web",
@@ -89,6 +88,26 @@ function rewritePackageJson(staging, tag) {
     "sync:public": "bash ./sync/sync.sh",
   };
   writeJson(file, pkg);
+}
+
+/**
+ * `build:libs` for every staged workspace package: theme, then utilities (most packages depend on
+ * it), then the rest by name. `--if-present` skips packages without a build script.
+ */
+function buildLibsScript(staging) {
+  const dir = path.join(staging, "packages");
+  const first = ["@tgmc/theme", "@tgmc/utilities"];
+  const rest = fs.existsSync(dir)
+    ? fs
+        .readdirSync(dir)
+        .map((name) => path.join(dir, name, "package.json"))
+        .filter((file) => fs.existsSync(file))
+        .map((file) => readJson(file).name)
+        .filter((name) => name && !first.includes(name))
+        .sort()
+    : [];
+  const workspaces = [...first, ...rest].map((name) => `--workspace=${name}`);
+  return ["npm run build --if-present", ...workspaces].join(" ");
 }
 
 function rewriteTsconfig(staging) {
@@ -338,7 +357,7 @@ This repository is the source hub for the [Nuxt 4](docs/web/README.md) SSR site 
 | ------------ | --------------------------------------------------------- |
 | \`core/web\`   | Nuxt 4 app (\`@tgmc/web\`), Nitro SSR                       |
 | \`theme/core\` | \`@tgmc/theme\` design tokens                               |
-| \`packages/*\` | \`utilities\`, \`media-player\`, \`likwidlibs\`, \`web-layer-admin\` |
+| \`packages/*\` | \`utilities\`, \`image\`, \`media\`, \`media-aws\`, \`media-client\`, \`media-nuxt\`, \`media-player\`, \`likwidlibs\`, \`nuxt-layer-base\`, \`web-layer-admin\` |
 
 ## Requirements
 

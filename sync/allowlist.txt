@@ -2,13 +2,8 @@
 # Directories copy recursively. Source dot-directories are not listed and are dropped.
 
 core/web
-packages/utilities
-packages/media-player
-packages/likwidlibs
-packages/web-layer-admin
-packages/tsconfig.package.json
-packages/tsconfig.package.lib.json
-packages/tsconfig.package.spec.json
+# Every workspace package: core/web needs image and media-nuxt (which needs media, media-aws).
+packages
 theme
 docs
 LICENSE
