@@ -3,13 +3,12 @@
   "plugins": [
     {
       "plugin": "@nx/eslint/plugin",
-      "exclude": [
-        "theme/foundation/**",
-        "tests/**"
-      ],
       "options": {
         "targetName": "lint"
-      }
+      },
+      "exclude": [
+        "tests/**"
+      ]
     },
     {
       "plugin": "@nx/nuxt/plugin",
@@ -117,6 +116,13 @@
     "test": {
       "dependsOn": [
         "^build"
+      ],
+      "inputs": [
+        "default",
+        "^default",
+        {
+          "env": "DYNAMODB_TEST_ENDPOINT"
+        }
       ]
     },
     "@nx/js:tsc": {

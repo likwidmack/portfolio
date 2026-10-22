@@ -11,7 +11,7 @@ aside.page-nav.layout(
     type="button",
     :aria-expanded="open ? 'true' : 'false'",
     :aria-controls="listId",
-    @click="toggleOpen"
+    @click="open = !open"
   )
     span.page-nav__toggle-text
       span.page-nav__toggle-label {{ label }}
@@ -60,7 +60,7 @@ const props = withDefaults(
 const _activeSection = ref<string>(props.items[0]?.id ?? '');
 
 // Phone disclosure (hidden from tablet up, where the list is always shown).
-const { open, listId, closeAndFocus, toggleOpen } = usePageNavDisclosure();
+const { open, listId, closeAndFocus } = usePageNavDisclosure();
 const currentLabel = computed(() => props.items.find((item) => item.id === _activeSection.value)?.label);
 
 let _sectionObserver: IntersectionObserver | null = null;

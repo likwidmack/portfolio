@@ -15,7 +15,7 @@
   &__empty {
     @include portfolio-stack(0.5rem);
     padding: clamp(2rem, 6vw, 4rem) 0;
-    border-top: 1px solid var(--border-color, var(--portfolio-rule));
+    border-top: 1px solid var(--theme-border-color, var(--portfolio-rule-color));
   }
 
   &__feature-row {
@@ -50,8 +50,8 @@
     @include portfolio-stack(0.5rem);
     min-width: 0;
     padding: 0.85rem 1rem;
-    border: 1px solid var(--border-color, var(--portfolio-rule));
-    background: var(--surface-color, var(--main-background-secondary));
+    border: 1px solid var(--theme-border-color, var(--portfolio-rule-color));
+    background: var(--theme-surface-color, var(--theme-main-background-secondary-color));
     color: inherit;
 
     &[data-variant='feature'] {
@@ -59,11 +59,11 @@
       align-items: stretch;
       padding: 0;
       min-height: 11rem;
-      background: var(--main-background-secondary, var(--surface-color));
+      background: var(--theme-main-background-secondary-color, var(--theme-surface-color));
       overflow: hidden;
 
       [data-type='kicker'] {
-        color: var(--primary-color);
+        color: var(--theme-primary-ink-color);
       }
 
       [data-type='panel-title'] {
@@ -84,16 +84,20 @@
       background:
         repeating-linear-gradient(
           45deg,
-          color-mix(in srgb, var(--primary-color) 12%, transparent) 0,
-          color-mix(in srgb, var(--primary-color) 12%, transparent) 2px,
+          color-mix(in srgb, var(--theme-primary-color) 12%, transparent) 0,
+          color-mix(in srgb, var(--theme-primary-color) 12%, transparent) 2px,
           transparent 2px,
           transparent 0.625rem
         ),
-        color-mix(in srgb, var(--primary-color) 6%, var(--surface-color));
+        color-mix(in srgb, var(--theme-primary-color) 6%, var(--theme-surface-color));
     }
 
     &[data-variant='cell'] {
-      background: color-mix(in srgb, var(--surface-color, var(--main-background-secondary)) 88%, transparent);
+      background: color-mix(
+        in srgb,
+        var(--theme-surface-color, var(--theme-main-background-secondary-color)) 88%,
+        transparent
+      );
     }
 
     [data-type='kicker'] {
@@ -102,7 +106,7 @@
       text-transform: uppercase;
       font-size: max(var(--type-min, 12px), 0.72rem);
       font-weight: 700;
-      color: var(--text-color-secondary, inherit);
+      color: inherit;
     }
 
     [data-type='panel-title'] {
@@ -125,7 +129,7 @@
 
     p:not([data-type]) {
       margin: 0;
-      color: var(--text-color-secondary, inherit);
+      color: inherit;
       font-size: 0.95rem;
       line-height: 1.45;
       overflow-wrap: anywhere;

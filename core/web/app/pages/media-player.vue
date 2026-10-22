@@ -89,7 +89,7 @@ function pause() {
   width: 100%;
   max-width: none;
   min-height: min(70dvh, 40rem);
-  background: #000;
+  background: var(--theme-paper-dark-color);
   aspect-ratio: 16 / 9;
   object-fit: contain;
 }

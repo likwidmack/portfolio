@@ -2,7 +2,7 @@
 
 As-built architecture for `@tgmc/web` (Nuxt 4 + Nitro) in the TGMC Nx monorepo. Diagrams document **what exists today** — not a target-state redesign.
 
-Live SVG on [`/product`](/product) (`AppArchitectureDiagram`) shares the content-API topology without a Mermaid runtime. Full Mermaid sources live in the pages below and render in-app under `/docs`.
+Live SVG on `/product` (`AppArchitectureDiagram`) shares the content-API topology without a Mermaid runtime. Full Mermaid sources live in the pages below and render in-app under `/docs`.
 
 ## Diagram set
 

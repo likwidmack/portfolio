@@ -1,34 +1,66 @@
-// Test-only dump of Sass-computed `--portfolio-*` atmosphere chrome.
-// Expressions must stay in sync with `../_variables.scss` (light `:root` + dark).
+// Test-only dump of the `--portfolio-*-color` atmosphere blends, computed in Sass from the theme's
+// default colours (`$theme-<c>-<mode>-color`, tokens/_variations.generated.scss).
+// Recipes must stay in sync with `../_variables.scss` and `shared/portfolio-chrome.ts`
+// (PORTFOLIO_CHROME_BLENDS): `color.mix($a, $b, $w)` = `color-mix(in srgb, a w, b)`.
 // Compile with Sass loadPaths including `theme/core` (see portfolio-chrome.spec.ts).
 // Do not @use from launch / pages — variables remain the emit SoT for the app.
 
 @use 'sass:color';
-@use 'scss/tokens/colors' as *;
-@use 'scss/tokens/color-fns' as *;
+@use 'scss/tokens/variations.generated' as *;
+@use 'scss/tokens/colors' as colors;
+
+// Light (`:root` defaults).
+$paper: $theme-paper-light-color;
+$ink: $theme-ink-light-color;
+$primary: $theme-primary-light-color;
+$accent: $theme-accent-light-color;
+$success: $theme-success-light-color;
+$link: $theme-link-light-color;
+$text: colors.neutral(950);
 
 :root {
-  --portfolio-rose: #{theme-lighten($oxblood-dark, 10%)};
-  --portfolio-rose-strong: #{$primary-color-dark};
-  --portfolio-haze-1: #{color.mix($main-background-light, $oxblood-dark, 72%)};
-  --portfolio-haze-2: #{color.mix($main-background-light, $oxblood-dark, 78%)};
-  --portfolio-haze-3: #{color.mix($main-background-light, $oxblood-dark, 84%)};
-  --portfolio-haze-4: #{color.mix($main-background-light, $oxblood-dark, 90%)};
-  --portfolio-particle-strong: #{$primary-color-dark};
-  --portfolio-particle-mid: #{color.mix($oxblood-dark, $text-color-secondary-dark, 55%)};
-  --portfolio-particle-soft: #{color.mix($main-background-light, $oxblood-dark, 82%)};
-  --portfolio-grid-glow: #{color.mix($main-background-light, $oxblood-dark, 88%)};
+  --portfolio-rose-color: #{$link};
+  --portfolio-rose-strong-color: #{color.mix($link, $text, 85%, $method: oklab)};
+  --portfolio-teal-fill-color: #{$success};
+  --portfolio-on-teal-color: #{$paper};
+  --portfolio-haze-1-color: #{color.mix($accent, color.mix($primary, $paper, 30%), 10%)};
+  --portfolio-haze-2-color: #{color.mix($accent, color.mix($primary, $paper, 23%), 8%)};
+  --portfolio-haze-3-color: #{color.mix($accent, color.mix($primary, $paper, 16%), 6%)};
+  --portfolio-haze-4-color: #{color.mix($accent, color.mix($primary, $paper, 10%), 4%)};
+  --portfolio-particle-strong-color: #{color.mix($primary, $ink, 71%)};
+  --portfolio-particle-mid-color: #{color.mix($accent, $primary, 31%)};
+  --portfolio-particle-soft-color: #{color.mix($accent, color.mix($primary, $paper, 19%), 6%)};
+  --portfolio-grid-glow-color: #{color.mix($accent, color.mix($primary, $paper, 12%), 4%)};
+  --portfolio-teal-color: #{$success};
+  --portfolio-coral-color: #{$accent};
+  --portfolio-ink-color: #{$ink};
+  --portfolio-ivory-color: #{$paper};
 }
 
+// Dark (`html[data-theme='dark']`).
+$paper: $theme-paper-dark-color;
+$ink: $theme-ink-dark-color;
+$primary: $theme-primary-dark-color;
+$accent: $theme-accent-dark-color;
+$success: $theme-success-dark-color;
+$link: $theme-link-dark-color;
+$text: colors.neutral(975, dark);
+
 html[data-theme='dark'] {
-  --portfolio-rose: #{theme-lighten($oxblood-dark, 28%)};
-  --portfolio-rose-strong: #{theme-lighten($oxblood-dark, 42%)};
-  --portfolio-haze-1: #{color.mix($main-background-dark, $oxblood-dark, 42%)};
-  --portfolio-haze-2: #{color.mix($main-background-dark, $oxblood-light, 55%)};
-  --portfolio-haze-3: #{theme-darken($oxblood-light, 4%)};
-  --portfolio-haze-4: #{theme-darken($oxblood-light, 10%)};
-  --portfolio-particle-strong: #{theme-lighten($primary-color-dark, 32%)};
-  --portfolio-particle-mid: #{theme-lighten($oxblood-dark, 28%)};
-  --portfolio-particle-soft: #{$text-color-dark};
-  --portfolio-grid-glow: #{theme-darken($oxblood-dark, 8%)};
+  --portfolio-rose-color: #{$link};
+  --portfolio-rose-strong-color: #{color.mix($link, $text, 50%, $method: oklab)};
+  --portfolio-teal-fill-color: #{$theme-success-dark-background-color};
+  --portfolio-on-teal-color: #{$ink};
+  --portfolio-haze-1-color: #{color.mix($primary, $paper, 49%)};
+  --portfolio-haze-2-color: #{color.mix($primary, $paper, 10%)};
+  --portfolio-haze-3-color: #{color.mix($primary, $paper, 12%)};
+  --portfolio-haze-4-color: #{$paper};
+  --portfolio-particle-strong-color: #{color.mix($primary, $ink, 53%)};
+  --portfolio-particle-mid-color: #{color.mix($primary, $ink, 56%)};
+  --portfolio-particle-soft-color: #{color.mix($ink, $paper, 97%)};
+  --portfolio-grid-glow-color: #{color.mix($primary, $paper, 65%)};
+  --portfolio-teal-color: #{color.mix($success, $paper, 87%)};
+  --portfolio-coral-color: #{$accent};
+  --portfolio-ink-color: #{color.mix($ink, $paper, 97%)};
+  --portfolio-ivory-color: #{$paper};
 }

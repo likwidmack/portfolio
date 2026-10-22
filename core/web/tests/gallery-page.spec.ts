@@ -42,7 +42,10 @@ describe('gallery hub', () => {
     expect(page).toContain('AppBrowseToolbar');
     expect(page).toContain('GalleryFeedCard');
     expect(page).toContain('gallery-grid__stats');
-    expect(style).toContain('--portfolio-teal');
+    expect(page).toContain('article.gallery-grid__tile');
+    expect(page).toContain('button.gallery-grid__open');
+    expect(page).not.toContain('button.gallery-grid__tile');
+    expect(style).toContain('--portfolio-teal-color');
     expect(page).toContain('useBrowseQuery(');
     expect(page).toContain('computed<GalleryViewMode>');
     expect(page).not.toContain('queryCollection(');
@@ -57,6 +60,28 @@ describe('gallery hub', () => {
         category.items.some((item) => typeof item.exhibit?.src === 'string' && item.exhibit.src.length > 0)
       )
     ).toBe(true);
+  });
+
+  it('opens the feed as a modal dialog (inert background, Esc, focus in and back)', async () => {
+    const page = await readFile(galleryPagePath, 'utf8');
+    const style = await readFile(galleryStylePath, 'utf8');
+    expect(page).toMatch(
+      /section\.gallery-feed\([^)]*role="dialog"[^)]*aria-modal="true"[^)]*aria-label="Gallery feed"/
+    );
+    expect(page).toContain('inertOutside(dialog)');
+    expect(page).toContain("event.key !== 'Escape' || event.defaultPrevented || event.isComposing");
+    // The scroll position is not live; one polite announcement on open.
+    expect(page).not.toMatch(/gallery-feed__status\(aria-live/);
+    expect(page).toContain('span.sr-only(aria-live="polite") {{ feedAnnouncement }}');
+    expect(page).toContain('@click="closeFeed"');
+    // Focus returns to the opening tile by id: the grid re-renders it, and `activePostId` follows
+    // the scroll, so it may name a neighbouring post by the time the feed closes.
+    expect(page).toContain('feedOpenerId = id;');
+    expect(page).toMatch(
+      /opener\?\.isConnected \? opener : null\) \?\?\s*\(openerId \? document\.getElementById\(openerId\) : null\)/
+    );
+    // The close meets the touch floor and draws the standard ring.
+    expect(style).toMatch(/&__back \{\s*@include touch-target;/);
   });
 
   it('imports and uses gallery aspect/platform helpers in script setup', async () => {
@@ -76,7 +101,7 @@ describe('gallery hub', () => {
     expect(page).toContain('route.query.specimen');
     expect(page).toContain('gallery-grid__tile--on-view');
     expect(page).toContain('usePrefersReducedMotion');
-    expect(page).toContain("reducedMotion.value ? 'auto' : 'smooth'");
+    expect(page).toContain("reducedMotion.value ? 'instant' : 'smooth'");
     expect(page).not.toContain("behavior: 'smooth'");
     expect(page).not.toContain('openInFeed(specimen');
     expect(page).toContain('resolveGalleryAspect(post)');

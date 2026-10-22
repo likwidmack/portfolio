@@ -7,9 +7,7 @@ import type {
   getToken,
   getTokens,
   registerTokenSource,
-  resetTokens,
   setThemeMode,
-  setTokens,
   subscribeThemeMode,
   subscribeTokens,
   Theme,
@@ -19,20 +17,16 @@ import type {
   ThemeResolvedMode,
   ThemeTokenMap,
   ThemeTokenSource,
-  updateToken,
-  updateTokens,
 } from '@tgmc/theme/tokens';
 
 /** Public API injected by `plugins/theme-tokens.client.ts`. */
 export type ThemeTokensApi = {
-  /** Ready-made packs + grouped variable updates (preferred high-level surface). */
+  /** Ready-made packs + grouped variable updates (preferred: `theme.apply` / `theme.remove`). */
   theme: typeof Theme;
   getToken: typeof getToken;
   getTokens: typeof getTokens;
-  updateToken: typeof updateToken;
-  updateTokens: typeof updateTokens;
-  setTokens: typeof setTokens;
-  resetTokens: typeof resetTokens;
+  /** Full registry reset (bridge-bound). Prefer `theme.reset` for new call sites. */
+  resetTokens: typeof Theme.reset;
   subscribeTokens: typeof subscribeTokens;
   registerTokenSource: typeof registerTokenSource;
   defineTokenPack: typeof defineTokenPack;

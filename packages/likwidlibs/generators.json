@@ -4,6 +4,11 @@
       "factory": "./dist/generators/lib-gen/lib-gen",
       "schema": "./dist/generators/lib-gen/schema.json",
       "description": "lib-gen generator"
+    },
+    "nuxt-app": {
+      "factory": "./dist/generators/nuxt-app/nuxt-app",
+      "schema": "./dist/generators/nuxt-app/schema.json",
+      "description": "Scaffold a standard TGMC Nuxt 4 app with theme, utilities, a11y, and CI/CD choices"
     }
   }
 }

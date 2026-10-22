@@ -1,0 +1,49 @@
+# CD — Static Jamstack / Cloudflare Pages deploy for @tgmc/<%= name %>
+name: CD Deploy (<%= name %> - Static)
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '<%= projectRoot %>/**'
+      - 'packages/**'
+      - 'theme/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  deployments: write
+
+concurrency:
+  group: cd-deploy-<%= name %>-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    name: Generate & Deploy Pages
+    runs-on: ubuntu-latest
+    env:
+      HUSKY: '0'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate static output
+        run: npx nx run @tgmc/<%= name %>:generate
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: <%= name %>
+          directory: <%= projectRoot %>/dist

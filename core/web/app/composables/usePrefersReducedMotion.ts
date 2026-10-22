@@ -1,4 +1,4 @@
-import type { MotionPreference } from '#shared/personalization';
+import type { MotionPreference } from '#shared/preferences';
 
 export function usePrefersReducedMotion() {
   const motionPreference = useState<MotionPreference>('portfolio-motion', () => 'system');

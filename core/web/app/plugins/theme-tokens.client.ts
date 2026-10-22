@@ -1,3 +1,4 @@
+import { Preferences } from '#shared/preferences';
 import type { ThemeTokensApi } from '#shared/theme/theme-tokens-api';
 import {
   Theme,
@@ -10,13 +11,11 @@ import {
   getTokens,
   initThemeMode,
   registerTokenSource,
-  resetTokens,
   setThemeMode,
-  setTokens,
   subscribeThemeMode,
   subscribeTokens,
-  updateToken,
-  updateTokens,
+  type ThemeApplyInput,
+  type ThemeApplyOptions,
   type ThemeBreakpoints,
   type ThemeBridgeOptions,
   type ThemeDefinition,
@@ -44,7 +43,8 @@ function bindThemeBridges(bridges: ThemeBridgeOptions): ThemeApi {
     ...Theme,
     select: (name: string, options?: ThemeWriteOptions) => Theme.select(name, withBridges(options)),
     create: (name: string, definition: ThemeDefinition) => Theme.create(name, definition),
-    update: (patch: ThemeTokenMap, options?: ThemeWriteOptions) => Theme.update(patch, withBridges(options)),
+    apply: (input: ThemeApplyInput, options?: ThemeApplyOptions) => Theme.apply(input, withBridges(options)),
+    remove: (names: readonly string[], options?: ThemeApplyOptions) => Theme.remove(names, withBridges(options)),
     set: (tokens: ThemeTokenMap, options?: ThemeWriteOptions) => Theme.set(tokens, withBridges(options)),
     setText: (text: ThemeTextSettings, options?: ThemeWriteOptions) => Theme.setText(text, withBridges(options)),
     setRatios: (ratios: ThemeRatios, options?: ThemeWriteOptions) => Theme.setRatios(ratios, withBridges(options)),
@@ -85,19 +85,16 @@ export default defineNuxtPlugin({
     /**
      * Public ThemeTokens API exposed to the app via `nuxtApp.provide('themeTokens', api)`.
      *
-     * Prefer `api.theme` for ready-made packs and grouped updates; low-level
-     * `updateTokens` remains for partial CSS var patches (Personalize brand roles /
-     * FOUC via `usePersonalization` → `buildBrandTokens`).
-     * `api.theme` is bridge-bound so PrimeVue/foundation writes apply by default.
+     * Prefer `api.theme.apply` / `api.theme.remove` (and `api.theme` packs / mode). Personalize /
+     * Style Studio paint through Preferences → Theme.apply — do not call low-level writers from
+     * product UI. `api.theme` is bridge-bound so PrimeVue/foundation writes apply by default.
      */
+    const theme = bindThemeBridges(bridges);
     const api: ThemeTokensApi = {
-      theme: bindThemeBridges(bridges),
+      theme,
       getToken,
       getTokens,
-      updateToken,
-      updateTokens,
-      setTokens,
-      resetTokens,
+      resetTokens: (options) => theme.reset(options),
       subscribeTokens,
       registerTokenSource,
       defineTokenPack,
@@ -117,9 +114,15 @@ export default defineNuxtPlugin({
     });
 
     if (runtimeTheme?.applyDefaultsOnInit !== false) {
+      let stored: ThemeModePreference = 'system';
+      try {
+        stored = Preferences.load(localStorage).mode;
+      } catch {
+        // Blocked storage (SecurityError on access) must not stop startup: use the runtime default.
+      }
       const change = initThemeMode({
         ...bridges,
-        preference: runtimeTheme?.mode ?? 'system',
+        preference: stored !== 'system' ? stored : (runtimeTheme?.mode ?? 'system'),
         listenToSystem: true,
       });
       await nuxtApp.callHook('theme:mode:change', change);

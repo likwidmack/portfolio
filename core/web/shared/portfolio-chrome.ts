@@ -1,21 +1,52 @@
 /**
- * App `--portfolio-*` atmosphere chrome — JS recipe mirrors of Sass in
- * `assets/css/_variables.scss` (and the test dump under `assets/css/export/`).
+ * App atmosphere chrome (`--portfolio-*-color`) — the blend recipes behind `assets/css/_variables.scss`
+ * and a JS mirror that resolves them (colour system, web-globals stage — R-T4b).
  *
- * Sass remains the CSS emit SoT. These recipes use the same named theme inputs
- * (`Color.named`) so agents/tests can resolve chrome without a second hex table.
- * UI should keep reading CSS custom properties; this module is the parity surface.
+ * Every atmosphere colour is a `color-mix(in srgb, …)` (or, for `roseStrong`, `in oklab`) of the
+ * theme's active colours and roles (`--theme-{paper,ink,primary,accent,success,link,text}-color`,
+ * `--theme-success-background-color`), so a Style Studio change of paper, ink or
+ * the brand colours reaches the atmosphere without a rebuild. {@link PORTFOLIO_CHROME_BLENDS} is the
+ * recipe table; `portfolio-chrome.spec.ts` checks that `_variables.scss` declares exactly
+ * {@link portfolioBlendCss} of each recipe, and that {@link getPortfolioChrome} matches the Sass
+ * dump under `assets/css/export/` for the theme's default colours.
+ * UI keeps reading the CSS custom properties; this module is the parity / tooling surface.
  *
- * CSS-only (not mirrored): coral bridge, rule/grid-line `color-mix` with vars,
- * soft/semantic alias block, particle-shadow multi-value.
+ * CSS-only (not mirrored): the translucent `--portfolio-rule-color` / `--portfolio-grid-line-color`
+ * and the `--portfolio-particle-shadow-strong` shadow.
  */
-import { Color, themeColors, type ThemeModeName } from '@tgmc/theme';
+import {
+  buildColorVariations,
+  buildLinkTokens,
+  Color,
+  DEFAULT_COLOR_SOURCES,
+  DEFAULT_PAPER_INK,
+  mixOklab,
+  NEUTRAL_ROLE_STEPS,
+  neutralStep,
+  themeColors,
+  type ThemeModeName,
+} from '@tgmc/theme';
 
 export type PortfolioChromeMode = ThemeModeName;
+
+/** The theme colours a blend may use (the mode's active variation / role of each). */
+export type PortfolioChromeInput =
+  'paper' | 'ink' | 'primary' | 'accent' | 'success' | 'success-background' | 'link' | 'text';
+
+/**
+ * One input, `[a, percentOfA, b]` = `color-mix(in srgb, a percentOfA%, b)`, or
+ * `[a, percentOfA, b, 'oklab']` = `color-mix(in oklab, …)`.
+ */
+export type PortfolioBlend =
+  | PortfolioChromeInput
+  | readonly [PortfolioBlend, number, PortfolioBlend]
+  | readonly [PortfolioBlend, number, PortfolioBlend, 'oklab'];
 
 export type PortfolioChrome = {
   rose: string;
   roseStrong: string;
+  tealFill: string;
+  onTeal: string;
   haze1: string;
   haze2: string;
   haze3: string;
@@ -24,143 +55,140 @@ export type PortfolioChrome = {
   particleMid: string;
   particleSoft: string;
   gridGlow: string;
+  teal: string;
+  coral: string;
+  ink: string;
+  ivory: string;
 };
+
+export type PortfolioChromeKey = keyof PortfolioChrome;
+
+/** Chrome key → its CSS custom property (`roseStrong` → `--portfolio-rose-strong-color`). */
+export function portfolioChromeVariable(key: PortfolioChromeKey): string {
+  return `--portfolio-${key
+    .replace(/([A-Z])/g, '-$1')
+    .replace(/(\D)(\d)/g, '$1-$2')
+    .toLowerCase()}-color`;
+}
+
+/**
+ * Blend recipes per mode, tuned so the default theme stays close to the pre-blend atmosphere
+ * (before / after and ΔE: `docs/web/features/app-scss.md`). Light mode is the `:root` default.
+ */
+export const PORTFOLIO_CHROME_BLENDS: Readonly<
+  Record<PortfolioChromeMode, Readonly<Record<PortfolioChromeKey, PortfolioBlend>>>
+> = {
+  light: {
+    // Links: the theme link ink (≥ 4.5:1 on page, surfaces and its own washes); hover mixes it
+    // toward the text colour in OKLab, so it stays ≥ 4.5:1 too.
+    rose: 'link',
+    roseStrong: ['link', 85, 'text', 'oklab'],
+    // A teal button (/about): a status fill with its paired text — the variation reads ≥ 4.5:1 with
+    // the paper (light), the `-background` variation with the ink (dark).
+    tealFill: 'success',
+    onTeal: 'paper',
+    haze1: ['accent', 10, ['primary', 30, 'paper']],
+    haze2: ['accent', 8, ['primary', 23, 'paper']],
+    haze3: ['accent', 6, ['primary', 16, 'paper']],
+    haze4: ['accent', 4, ['primary', 10, 'paper']],
+    particleStrong: ['primary', 71, 'ink'],
+    particleMid: ['accent', 31, 'primary'],
+    particleSoft: ['accent', 6, ['primary', 19, 'paper']],
+    gridGlow: ['accent', 4, ['primary', 12, 'paper']],
+    teal: 'success',
+    coral: 'accent',
+    ink: 'ink',
+    ivory: 'paper',
+  },
+  dark: {
+    rose: 'link',
+    roseStrong: ['link', 50, 'text', 'oklab'],
+    tealFill: 'success-background',
+    onTeal: 'ink',
+    haze1: ['primary', 49, 'paper'],
+    haze2: ['primary', 10, 'paper'],
+    haze3: ['primary', 12, 'paper'],
+    haze4: 'paper',
+    particleStrong: ['primary', 53, 'ink'],
+    particleMid: ['primary', 56, 'ink'],
+    particleSoft: ['ink', 97, 'paper'],
+    gridGlow: ['primary', 65, 'paper'],
+    teal: ['success', 87, 'paper'],
+    coral: 'accent',
+    ink: ['ink', 97, 'paper'],
+    ivory: 'paper',
+  },
+};
+
+/** The CSS value of a blend: `var(--theme-<input>-color)` / `color-mix(in srgb, <a> <p>%, <b>)`. */
+export function portfolioBlendCss(blend: PortfolioBlend): string {
+  if (typeof blend === 'string') return `var(--theme-${blend}-color)`;
+  const [a, percent, b, space = 'srgb'] = blend;
+  return `color-mix(in ${space}, ${portfolioBlendCss(a)} ${percent}%, ${portfolioBlendCss(b)})`;
+}
+
+type Channels = [number, number, number];
+
+function channels(hex: string): Channels {
+  const rgb = Color.hexToRgb(Color.toHex(hex));
+  if (!rgb) throw new Error(`portfolio-chrome: not a hex colour: ${hex}`);
+  return [rgb.r, rgb.g, rgb.b];
+}
+
+/** CSS `color-mix(in srgb, …)` of opaque colours, in float channels (rounded once, at the end). */
+function evaluate(blend: PortfolioBlend, inputs: Record<PortfolioChromeInput, string>): Channels {
+  if (typeof blend === 'string') return channels(inputs[blend]);
+  const [a, percent, b, space] = blend;
+  const t = percent / 100;
+  const A = evaluate(a, inputs);
+  const B = evaluate(b, inputs);
+  if (space === 'oklab') {
+    const hex = (c: Channels) => Color.rgbToHex(Math.round(c[0]), Math.round(c[1]), Math.round(c[2]));
+    return channels(mixOklab(hex(A), percent, hex(B)));
+  }
+  return [0, 1, 2].map((k) => A[k]! * t + B[k]! * (1 - t)) as Channels;
+}
+
+/** The theme's default active colours for a mode (the stylesheet defaults, before Style Studio). */
+export function defaultPortfolioChromeInputs(mode: PortfolioChromeMode): Record<PortfolioChromeInput, string> {
+  const variations = buildColorVariations(DEFAULT_COLOR_SOURCES, DEFAULT_PAPER_INK);
+  const pick = (name: string): string => {
+    const value = variations[`--theme-${name}-${mode}-color`];
+    if (!value) throw new Error(`portfolio-chrome: missing --theme-${name}-${mode}-color`);
+    return value;
+  };
+  const pair = DEFAULT_PAPER_INK[mode];
+  return {
+    paper: pick('paper'),
+    ink: pick('ink'),
+    primary: pick('primary'),
+    accent: pick('accent'),
+    success: pick('success'),
+    'success-background': variations[`--theme-success-${mode}-background-color`]!,
+    link: buildLinkTokens(DEFAULT_COLOR_SOURCES, DEFAULT_PAPER_INK)[`--theme-link-${mode}-color`]!,
+    text: neutralStep(pair, NEUTRAL_ROLE_STEPS[mode]['--theme-text-color']),
+  };
+}
+
+/**
+ * Resolved atmosphere chrome for light (`:root` defaults) or dark (`html[data-theme=dark]`), from
+ * the theme's default colours or from `inputs` (e.g. a Style Studio pick).
+ */
+export function getPortfolioChrome(
+  mode: PortfolioChromeMode,
+  inputs: Record<PortfolioChromeInput, string> = defaultPortfolioChromeInputs(mode)
+): PortfolioChrome {
+  const recipes = PORTFOLIO_CHROME_BLENDS[mode];
+  const out = {} as PortfolioChrome;
+  for (const key of Object.keys(recipes) as PortfolioChromeKey[]) {
+    const [r, g, b] = evaluate(recipes[key], inputs);
+    out[key] = Color.rgbToHex(Math.round(r), Math.round(g), Math.round(b));
+  }
+  return out;
+}
 
 /** Paper ivory — theme light background (matches `PORTFOLIO_IVORY` / personalization). */
 export const PORTFOLIO_IVORY_HEX = Color.toHex(themeColors.light.background);
 
 /** Paper ink — theme dark background (matches `PORTFOLIO_INK` / personalization). */
 export const PORTFOLIO_INK_HEX = Color.toHex(themeColors.dark.background);
-
-function requireNamed(name: string): string {
-  const value = Color.named(name);
-  if (!value) {
-    throw new Error(`portfolio-chrome: missing theme named color "${name}"`);
-  }
-  return Color.toHex(value);
-}
-
-/**
- * Float HSL lightness adjust matching Sass `theme-lighten` / `theme-darken`
- * (`color.adjust` in hsl). Integer-rounded `Color.lighten` differs by ~1 channel.
- */
-function adjustLightnessPrecise(hex: string, amount: number): string {
-  const rgb = Color.hexToRgb(Color.toHex(hex));
-  if (!rgb) return Color.toHex(hex);
-
-  const r = rgb.r / 255;
-  const g = rgb.g / 255;
-  const b = rgb.b / 255;
-  const max = Math.max(r, g, b);
-  const min = Math.min(r, g, b);
-  let h = 0;
-  let s = 0;
-  let l = (max + min) / 2;
-
-  if (max !== min) {
-    const d = max - min;
-    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-    switch (max) {
-      case r:
-        h = (g - b) / d + (g < b ? 6 : 0);
-        break;
-      case g:
-        h = (b - r) / d + 2;
-        break;
-      default:
-        h = (r - g) / d + 4;
-        break;
-    }
-    h *= 60;
-  }
-
-  l = Math.max(0, Math.min(1, l + amount / 100));
-  s = Math.max(0, Math.min(1, s));
-
-  const a = s * Math.min(l, 1 - l);
-  const f = (n: number): number => {
-    const k = (n + h / 30) % 12;
-    return l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
-  };
-
-  return Color.rgbToHex(Math.round(f(0) * 255), Math.round(f(8) * 255), Math.round(f(4) * 255));
-}
-
-/** Sass `color.mix($a, $b, $weight%)` — `$weight` percent of `$a` in sRGB channels. */
-function mixSrgb(colorA: string, colorB: string, weightPercent: number): string {
-  const a = Color.hexToRgb(Color.toHex(colorA));
-  const b = Color.hexToRgb(Color.toHex(colorB));
-  if (!a || !b) {
-    throw new Error('portfolio-chrome: mix requires resolvable hex colors');
-  }
-  const t = weightPercent / 100;
-  return Color.rgbToHex(
-    Math.round(a.r * t + b.r * (1 - t)),
-    Math.round(a.g * t + b.g * (1 - t)),
-    Math.round(a.b * t + b.b * (1 - t))
-  );
-}
-
-/**
- * Resolved atmosphere chrome for light (`:root` defaults) or dark (`html[data-theme=dark]`).
- * Expressions mirror `_variables.scss` / `export/portfolio-chrome-dump.scss`.
- */
-export function getPortfolioChrome(mode: PortfolioChromeMode): PortfolioChrome {
-  const oxbloodDark = requireNamed('oxbloodDark');
-  const oxbloodLight = requireNamed('oxbloodLight');
-  const primaryColorDark = requireNamed('primaryColorDark');
-  const mainBackgroundLight = requireNamed('mainBackgroundLight');
-  const mainBackgroundDark = requireNamed('mainBackgroundDark');
-  const textColorDark = requireNamed('textColorDark');
-  const textColorSecondaryDark = requireNamed('textColorSecondaryDark');
-
-  if (mode === 'light') {
-    return {
-      // theme-lighten($oxblood-dark, 10%)
-      rose: adjustLightnessPrecise(oxbloodDark, 10),
-      // $primary-color-dark
-      roseStrong: primaryColorDark,
-      // color.mix($main-background-light, $oxblood-dark, 72|78|84|90%)
-      haze1: mixSrgb(mainBackgroundLight, oxbloodDark, 72),
-      haze2: mixSrgb(mainBackgroundLight, oxbloodDark, 78),
-      haze3: mixSrgb(mainBackgroundLight, oxbloodDark, 84),
-      haze4: mixSrgb(mainBackgroundLight, oxbloodDark, 90),
-      // $primary-color-dark
-      particleStrong: primaryColorDark,
-      // color.mix($oxblood-dark, $text-color-secondary-dark, 55%)
-      particleMid: mixSrgb(oxbloodDark, textColorSecondaryDark, 55),
-      // color.mix($main-background-light, $oxblood-dark, 82%)
-      particleSoft: mixSrgb(mainBackgroundLight, oxbloodDark, 82),
-      // color.mix($main-background-light, $oxblood-dark, 88%)
-      gridGlow: mixSrgb(mainBackgroundLight, oxbloodDark, 88),
-    };
-  }
-
-  return {
-    // theme-lighten($oxblood-dark, 28%)
-    rose: adjustLightnessPrecise(oxbloodDark, 28),
-    // theme-lighten($oxblood-dark, 42%)
-    roseStrong: adjustLightnessPrecise(oxbloodDark, 42),
-    // color.mix($main-background-dark, $oxblood-dark, 42%)
-    haze1: mixSrgb(mainBackgroundDark, oxbloodDark, 42),
-    // color.mix($main-background-dark, $oxblood-light, 55%)
-    haze2: mixSrgb(mainBackgroundDark, oxbloodLight, 55),
-    // theme-darken($oxblood-light, 4%)
-    haze3: adjustLightnessPrecise(oxbloodLight, -4),
-    // theme-darken($oxblood-light, 10%)
-    haze4: adjustLightnessPrecise(oxbloodLight, -10),
-    // theme-lighten($primary-color-dark, 32%)
-    particleStrong: adjustLightnessPrecise(primaryColorDark, 32),
-    // theme-lighten($oxblood-dark, 28%)
-    particleMid: adjustLightnessPrecise(oxbloodDark, 28),
-    // $text-color-dark
-    particleSoft: textColorDark,
-    // theme-darken($oxblood-dark, 8%)
-    gridGlow: adjustLightnessPrecise(oxbloodDark, -8),
-  };
-}
-
-/** `--portfolio-teal` twin from theme named tokens (success / portfolio teal). */
-export function portfolioTeal(mode: PortfolioChromeMode): string {
-  return requireNamed(mode === 'dark' ? 'tealSignalDark' : 'tealSignalLight');
-}

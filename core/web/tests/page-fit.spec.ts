@@ -119,11 +119,11 @@ describe('page fit layout contract', () => {
     expect(rootScss).toContain('--shadow-sm:');
     expect(rootScss).toContain('--shadow-md:');
     expect(rootScss).toContain('--shadow-lg:');
-    expect(rootScss).toContain('rgb(var(--rgb-shadow)');
+    expect(rootScss).toContain('color-mix(in srgb, var(--theme-shadow-color) 14%, transparent)');
 
     const container = await readFile(join(root, '../../theme/core/scss/globals/_container.scss'), 'utf8');
     expect(container).toContain('width: fit-content');
-    expect(container).toContain('.page-content > section');
-    expect(container).toMatch(/\.page-content\s*>\s*section\s*\{[^}]*width:\s*100%/s);
+    // Top-level sections fill the shell: `.page-content > section`, or nested in `section` as `.page-content > &`.
+    expect(container).toMatch(/\.page-content\s*>\s*(?:section|&)\s*\{[^}]*width:\s*100%/s);
   });
 });

@@ -23,7 +23,7 @@
     @include portfolio-type-display;
     max-width: 18ch;
     margin: 0;
-    color: var(--text-color);
+    color: var(--theme-text-color);
     font-size: clamp(2rem, 5.5vw, 4rem);
     font-weight: 800;
     line-height: 1.05;
@@ -33,7 +33,7 @@
   &__lede {
     max-width: 42ch;
     margin: 0;
-    color: var(--text-secondary-color);
+    color: var(--theme-text-secondary-color);
     font-size: clamp(1rem, 1.8vw, 1.25rem);
     line-height: 1.45;
   }
@@ -57,24 +57,24 @@
   grid-template-columns: minmax(0, 1fr);
   gap: var(--portfolio-stack-gap);
   align-items: center;
-  min-height: 2.75rem;
+  min-height: var(--touch-target);
   padding: 0.75rem 1.1rem;
   @include portfolio-soft-surface;
-  color: var(--text-color);
+  color: var(--theme-text-color);
   text-decoration: none;
 
   &:hover {
-    border-color: var(--link-color, var(--primary-color));
+    border-color: var(--theme-link-color, var(--theme-primary-color));
   }
 
   &:focus-visible {
-    outline: 2px solid var(--focus-ring);
+    outline: 2px solid var(--theme-focus-ring-color);
     outline-offset: 4px;
   }
 
   &__scope {
     @include portfolio-type-meta;
-    color: var(--link-color, var(--primary-color));
+    color: var(--theme-link-color, var(--theme-primary-ink-color));
     font-size: 0.8rem;
     font-weight: 700;
     letter-spacing: 0.08em;
@@ -91,7 +91,7 @@
   }
 
   &__lede {
-    color: var(--text-secondary-color);
+    color: var(--theme-text-secondary-color);
     font-size: 0.9rem;
     line-height: 1.35;
   }
@@ -105,37 +105,39 @@
   gap: 0.75rem 1rem;
   margin: 0;
   padding: 0.6rem 0.75rem 0.6rem 1.1rem;
-  border: 1px solid var(--border-strong, var(--portfolio-rule));
+  border: 1px solid var(--theme-border-strong-color, var(--portfolio-rule-color));
   border-radius: var(--border-radius-md);
-  background: color-mix(in srgb, var(--surface-variant) 80%, transparent);
+  background: color-mix(in srgb, var(--theme-surface-variant-color) 80%, transparent);
 
   &__copy {
-    color: var(--text-secondary-color);
+    color: var(--theme-text-secondary-color);
     font-size: 0.95rem;
   }
 
   &__title {
-    color: var(--text-color);
+    color: var(--theme-text-color);
     font-weight: 700;
   }
 
   &__link {
     display: inline-flex;
     align-items: center;
-    min-height: 2.75rem;
+    min-height: var(--touch-target);
     padding: 0 1.1rem;
     border-radius: var(--button-radius, var(--border-radius-sm));
-    background: var(--primary-fill, var(--primary-color));
-    color: var(--on-primary, #fff);
+    background: var(--theme-primary-fill-color, var(--theme-primary-color));
+    color: var(--theme-on-primary-color);
     font-weight: 700;
     text-decoration: none;
 
     &:hover {
-      filter: brightness(1.08);
+      // Keep the fill (white text stays ≥ 4.5:1); a lighter hover fill would drop it under.
+      text-decoration: underline;
+      text-underline-offset: 0.2em;
     }
 
     &:focus-visible {
-      outline: 2px solid var(--focus-ring);
+      outline: 2px solid var(--theme-focus-ring-color);
       outline-offset: 4px;
     }
   }
@@ -145,23 +147,23 @@
   display: inline-flex;
   align-items: center;
   gap: 0.75rem;
-  min-height: 2.75rem;
+  min-height: var(--touch-target);
   max-width: max-content;
-  color: var(--text-secondary-color);
+  color: var(--theme-text-secondary-color);
   font-size: 0.95rem;
   cursor: pointer;
 
   &:focus-within {
-    color: var(--text-color);
+    color: var(--theme-text-color);
   }
 
   &__input {
     width: 1.25rem;
     height: 1.25rem;
-    accent-color: var(--primary-color);
+    accent-color: var(--theme-primary-color);
 
     &:focus-visible {
-      outline: 2px solid var(--focus-ring);
+      outline: 2px solid var(--theme-focus-ring-color);
       outline-offset: 3px;
     }
   }

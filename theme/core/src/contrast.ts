@@ -145,12 +145,12 @@ export function pickContrastingInk(input: FillContrastInput): string {
   return worstContrastRatio(lightFg, backgrounds) >= worstContrastRatio(darkFg, backgrounds) ? lightInk : darkInk;
 }
 
-/** Build the default mode button gradient used alongside `--primary-color`. */
+/** Build the default mode button gradient used alongside `--theme-primary-color`. */
 export function defaultButtonGradient(primary: string, secondary: string): string {
   return `linear-gradient(135deg, ${secondary} 0%, ${primary} 100%)`;
 }
 
-/** Resolve `--button-fg` for a mode from solid primary + secondary gradient stops. */
+/** Resolve `--theme-button-fg-color` for a mode from solid primary + secondary gradient stops. */
 export function resolveButtonForeground(_mode: 'light' | 'dark', primary: string, secondary: string): string {
   return pickContrastingInk({
     backgroundColor: primary,

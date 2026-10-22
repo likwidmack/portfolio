@@ -27,9 +27,9 @@
   &__sidebar {
     @include portfolio-stack(0.85rem);
     padding: 1rem 1.1rem;
-    border: 1px solid var(--border-color, var(--portfolio-rule));
+    border: 1px solid var(--theme-border-color, var(--portfolio-rule-color));
     border-radius: var(--border-radius-md, 0.5rem);
-    background: var(--surface-color, var(--main-background-secondary));
+    background: var(--theme-surface-color, var(--theme-main-background-secondary-color));
     min-width: 0;
 
     @include bp-up(tablet) {
@@ -44,7 +44,7 @@
     aspect-ratio: 1 / 1;
     overflow: hidden;
     border-radius: var(--border-radius-md);
-    background: var(--surface-color);
+    background: var(--theme-surface-color);
 
     img {
       display: block;
@@ -58,7 +58,7 @@
     @include portfolio-stack(0.5rem);
     margin: 0;
     padding: 0.75rem 0;
-    border-block: 1px solid var(--border-color, var(--portfolio-rule));
+    border-block: 1px solid var(--theme-border-color, var(--portfolio-rule-color));
     font-size: 0.85rem;
     div {
       display: flex;
@@ -69,7 +69,7 @@
 
     dt {
       @include portfolio-type-meta;
-      color: var(--text-secondary-color, var(--text-color));
+      color: var(--theme-text-secondary-color, var(--theme-text-color));
       letter-spacing: 0.06em;
       text-transform: uppercase;
     }
@@ -94,7 +94,7 @@
 
   &__role {
     margin: 0;
-    color: var(--text-secondary-color, inherit);
+    color: var(--theme-text-secondary-color, inherit);
     font-size: var(--font-size-sm);
     line-height: 1.4;
   }
@@ -112,12 +112,14 @@
     align-items: center;
     justify-content: center;
     gap: 0.45rem;
-    min-height: max(2.75rem, 44px);
+    min-height: var(--touch-target);
     padding: 0.55rem 0.9rem;
-    border: 1px solid var(--portfolio-teal);
+    border: 1px solid var(--portfolio-teal-fill-color);
     border-radius: var(--border-radius-md, 0.5rem);
-    background: var(--portfolio-teal);
-    color: var(--button-fg, #f2ece8);
+    background: var(--portfolio-teal-fill-color);
+    // The success fill with its paired text (not on-primary, which belongs to the primary fill):
+    // light paper on #146060 (6.80:1), dark ink on #1b7a7a (4.75:1); ≥ 4.5:1 for any paper / ink.
+    color: var(--portfolio-on-teal-color);
     font-size: max(var(--font-size-sm), 12px);
     font-weight: 700;
     letter-spacing: 0.08em;
@@ -126,13 +128,13 @@
 
     &:hover,
     &:focus-visible {
-      filter: brightness(1.08);
-      outline: none;
-      text-decoration: none;
+      // Keep the fill (its text stays ≥ 4.5:1); a lighter hover fill would drop it under.
+      text-decoration: underline;
+      text-underline-offset: 0.2em;
     }
 
     &:focus-visible {
-      box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--portfolio-teal) 35%, transparent);
+      @include focus-ring;
     }
 
     &--inline {
@@ -147,11 +149,11 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 2.75rem;
+    min-height: var(--touch-target);
     padding: 0.55rem 0.9rem;
-    border: 1px solid var(--border-color, currentColor);
+    border: 1px solid var(--theme-border-color, currentColor);
     border-radius: var(--border-radius-md, 0.5rem);
-    color: var(--text-color);
+    color: var(--theme-text-color);
     font-size: var(--font-size-sm);
     font-weight: 600;
     letter-spacing: 0.06em;
@@ -160,9 +162,12 @@
 
     &:hover,
     &:focus-visible {
-      border-color: var(--primary-color);
-      color: var(--primary-color);
-      outline: none;
+      border-color: var(--theme-primary-color);
+      color: var(--theme-primary-ink-color);
+    }
+
+    &:focus-visible {
+      @include focus-ring;
     }
   }
 
@@ -205,7 +210,7 @@
     @include portfolio-stack(0.25rem);
 
     strong {
-      color: var(--primary-color);
+      color: var(--theme-primary-ink-color);
       font-size: var(--font-size-4xl);
       line-height: 1;
     }
@@ -219,14 +224,14 @@
       width: 2.5rem;
       height: 0.2rem;
       border-radius: var(--border-radius-pill);
-      background: var(--button-primary-bg, var(--primary-color));
+      background: var(--button-primary-bg, var(--theme-primary-color));
       content: '';
     }
   }
 
   [data-type='kicker'] {
     @include portfolio-type-eyebrow;
-    color: var(--text-secondary-color, var(--text-color));
+    color: var(--theme-text-secondary-color, var(--theme-text-color));
     font-size: var(--font-size-sm);
     letter-spacing: 0.08em;
   }
@@ -235,9 +240,9 @@
     display: block;
     width: 0.75rem;
     height: 0.75rem;
-    border: 2px solid var(--primary-color);
+    border: 2px solid var(--theme-primary-color);
     border-radius: 50%;
-    background: var(--surface-color);
+    background: var(--theme-surface-color);
   }
 
   .panel[data-variant='timeline'],

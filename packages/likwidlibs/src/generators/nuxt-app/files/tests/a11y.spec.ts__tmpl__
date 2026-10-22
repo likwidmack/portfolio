@@ -1,0 +1,23 @@
+import { mount } from '@vue/test-utils';
+import axe from 'axe-core';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import IndexPage from '../app/pages/index.vue';
+
+const WCAG_22_AA = ['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'];
+
+describe('<IndexPage /> accessibility', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    document.body.innerHTML = '';
+  });
+
+  it('has no WCAG 2.2 AA axe violations', async () => {
+    vi.stubGlobal('useA11yAnnouncer', () => ({ announce: () => {} }));
+    const wrapper = mount(IndexPage, { attachTo: document.body });
+
+    const results = await axe.run(wrapper.element, { runOnly: { type: 'tag', values: WCAG_22_AA } });
+
+    expect(results.violations.map((violation) => violation.id)).toEqual([]);
+    wrapper.unmount();
+  });
+});

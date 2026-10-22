@@ -154,10 +154,13 @@ withDefaults(
 
   &__segments {
     display: inline-flex;
+    // A long facet list (docs packages at 1024px) wraps inside its box instead of spilling past
+    // the page edge; each button keeps its one-line label and 44px height.
+    flex-wrap: wrap;
     gap: 2px;
     max-width: 100%;
     padding: 0.1875rem;
-    border: 1px solid var(--border-strong, var(--portfolio-rule, currentColor));
+    border: 1px solid var(--theme-border-strong-color, var(--portfolio-rule-color, currentColor));
     border-radius: var(--button-radius, var(--border-radius-sm));
   }
 
@@ -170,7 +173,7 @@ withDefaults(
     border: 0;
     border-radius: 0.1875rem;
     background: transparent;
-    color: var(--text-secondary-color, inherit);
+    color: var(--theme-text-secondary-color, inherit);
     @include portfolio-type-meta;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -178,18 +181,18 @@ withDefaults(
     cursor: pointer;
 
     &:hover {
-      color: var(--text-color);
+      color: var(--theme-text-color);
     }
 
     &:focus-visible {
-      outline: 2px solid var(--focus-ring);
+      outline: 2px solid var(--theme-focus-ring-color);
       outline-offset: 2px;
     }
 
     &[aria-pressed='true'] {
-      background: var(--surface-variant);
-      color: var(--text-color);
-      box-shadow: inset 0 -2px 0 var(--link-color, var(--primary-color));
+      background: var(--theme-surface-variant-color);
+      color: var(--theme-text-color);
+      box-shadow: inset 0 -2px 0 var(--theme-link-color, var(--theme-primary-color));
     }
 
     &:disabled {
@@ -215,14 +218,14 @@ withDefaults(
       width: 100%;
       min-height: var(--touch-target, 44px);
       padding: 0 0.75rem;
-      border: 1px solid var(--form-border-color, var(--border-strong));
+      border: 1px solid var(--theme-border-strong-color, var(--theme-border-strong-color));
       border-radius: var(--border-radius-sm);
-      background: color-mix(in srgb, var(--surface-color) 80%, transparent);
+      background: color-mix(in srgb, var(--theme-surface-color) 80%, transparent);
       color: inherit;
       font-size: 1rem; // 16px: no iOS zoom-on-focus
 
       &:focus-visible {
-        outline: 2px solid var(--focus-ring);
+        outline: 2px solid var(--theme-focus-ring-color);
         outline-offset: 1px;
       }
     }
@@ -249,14 +252,14 @@ withDefaults(
     input {
       min-height: var(--touch-target, 44px);
       padding: 0 0.75rem;
-      border: 1px solid var(--form-border-color, var(--border-strong));
+      border: 1px solid var(--theme-border-strong-color, var(--theme-border-strong-color));
       border-radius: var(--border-radius-sm);
-      background: color-mix(in srgb, var(--surface-color) 80%, transparent);
+      background: color-mix(in srgb, var(--theme-surface-color) 80%, transparent);
       color: inherit;
       font-size: 1rem;
 
       &:focus-visible {
-        outline: 2px solid var(--focus-ring);
+        outline: 2px solid var(--theme-focus-ring-color);
         outline-offset: 1px;
       }
     }
@@ -268,11 +271,11 @@ withDefaults(
     align-items: center;
     justify-content: space-between;
     gap: 0.75rem;
-    color: var(--text-secondary-color);
+    color: var(--theme-text-secondary-color);
     font-size: var(--font-size-sm);
 
     strong {
-      color: var(--text-color);
+      color: var(--theme-text-color);
       font-variant-numeric: tabular-nums;
     }
   }
@@ -280,7 +283,7 @@ withDefaults(
   .browse-toolbar__clear {
     min-height: var(--touch-target, 44px);
     padding: 0 0.6rem;
-    color: var(--link-color, var(--primary-color));
+    color: var(--theme-link-color, var(--theme-primary-ink-color));
     text-transform: none;
     letter-spacing: 0;
     text-decoration: underline;
@@ -291,7 +294,7 @@ withDefaults(
 // Tablets/phones: Group and Filter swap to their labelled pickers (one control per facet).
 // A viewport query on purpose (not a container query): docs' toolbar is 672px wide on desktop and
 // keeps its segments, while a 683px tablet toolbar gets pickers — a device-class decision.
-@media (width <= #{$breakpoint-tablet}) {
+@media (width <= #{bp(tablet)}) {
   .browse-toolbar {
     // Even columns: pickers (and search) share the width; one column on phones.
     &__row {
@@ -321,7 +324,7 @@ withDefaults(
 
 // `inline` (gallery): one row on wide screens. The exact complement of the picker breakpoint
 // above, so 768px keeps the tablet pickers.
-@media (width > #{$breakpoint-tablet}) {
+@media (width > #{bp(tablet)}) {
   .browse-toolbar[data-inline] {
     display: flex;
     flex-wrap: wrap;
@@ -335,7 +338,7 @@ withDefaults(
     .browse-toolbar__groups,
     .browse-toolbar__kinds {
       padding-left: 0.75rem;
-      border-left: 1px solid var(--portfolio-rule);
+      border-left: 1px solid var(--portfolio-rule-color);
     }
   }
 }

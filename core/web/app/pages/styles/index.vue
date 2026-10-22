@@ -41,7 +41,7 @@ useHead({
     display: inline-flex;
     align-items: center;
     min-height: var(--touch-target, 44px);
-    color: var(--link-color);
+    color: var(--theme-link-color);
   }
 }
 </style>

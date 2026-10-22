@@ -1,0 +1,28 @@
+{
+  "name": "@tgmc/<%= name %>-e2e",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "axe-core": "^4.12.1",
+    "cypress": "^15.8.0"
+  },
+  "nx": {
+    "tags": ["type:e2e", "scope:<%= name %>"],
+    "implicitDependencies": ["@tgmc/<%= name %>"],
+    "targets": {
+      "e2e": {
+        "dependsOn": [],
+        "executor": "nx:run-commands",
+        "options": {
+          "cwd": "{projectRoot}",
+          "command": "cypress run",
+          "env": {
+            "TS_NODE_COMPILER_OPTIONS": "{\"customConditions\":null}"
+          }
+        },
+        "outputs": ["{projectRoot}/test-output/cypress/videos", "{projectRoot}/test-output/cypress/screenshots"]
+      }
+    }
+  }
+}

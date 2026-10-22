@@ -2,11 +2,11 @@
 
 The Nuxt app exposes two browse hubs that share the same pattern: a **root page**, a **grid or feed**, and **filter / group** controls.
 
-| Route                     | Role                                                                | Chrome                                                              |
-| ------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| [`/gallery`](/gallery)    | Social-style sample feed (reels, stills, code, diagrams)            | **Primary nav** label Gallery                                       |
-| [`/docs`](/docs)          | Technical documentation sourced from the repo `docs/` markdown tree | **Work sub-nav** (`AppWorkSubNav`) — not in `AppPrimaryNav`         |
-| [`/docs/...`](/docs/contributing) | Individual spec / runbook rendered from that markdown               | Linked from the docs catalog; Work sub-nav stays on Work pages only |
+| Route       | Role                                                                | Chrome                                                              |
+| ----------- | ------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| `/gallery`  | Social-style sample feed (reels, stills, code, diagrams)            | **Primary nav** label Gallery                                       |
+| `/docs`     | Technical documentation sourced from the repo `docs/` markdown tree | **Work sub-nav** (`AppWorkSubNav`) — not in `AppPrimaryNav`         |
+| `/docs/...` | Individual spec / runbook rendered from that markdown               | Linked from the docs catalog; Work sub-nav stays on Work pages only |
 
 Public primary rail is **Work / About / Gallery / Writing / Code**. Docs, AI Lab (`/ai-lab`), and Process (`/process`) live under Work.
 
@@ -45,6 +45,14 @@ Whenever those pages change, follow the [documentation sync checklist](../../con
 At **build** time Nuxt Content parses the tree into the Content SQLite dump. Lambda (`SYS_ENV=test` / `production`) and Docker local/dev images restore that dump from host `.output/<sysEnv>` — the original `.md` files are not required on the runtime image. `Dockerfile.app` copies that output tree; it does not `COPY docs` or rebuild Nuxt.
 
 Excludes: Jekyll `index.md` / `_*.md`, design-history `superpowers/` and `plans/`. The in-app catalog groups by path prefix (App, Agents, Packages, Developer tooling, Ops & delivery).
+
+Links: write them for GitHub (relative to the `.md` file). Nuxt Content keeps them relative and drops `.md`, so on `/docs/**` the global `ProseA` (`app/components/ProseA.global.vue` → `docsLinkHref` in `core/web/shared/docs-links.ts`) resolves each against the page's route (which mirrors the file tree) and maps it:
+
+- a published doc → its lowercase route (`./web/README.md` → `/docs/web/readme`; a folder link → the folder's `readme`);
+- an excluded doc (`superpowers/`, `plans/`, `_*`) or a repo file / folder that is not an app route (`../docker/`, `../AGENTS.md`) → the public repo (`likwidmack/portfolio`, `blob` for files, `tree` for folders);
+- app routes, anchors and external URLs are left alone.
+
+`core/web/tests/docs-links.spec.ts` pins the mapping and keeps `UNPUBLISHED_DOC_DIRS` in step with `DOCS_COLLECTION_EXCLUDE`.
 
 UML-style diagrams:
 

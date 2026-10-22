@@ -19,6 +19,8 @@ import type { ContactMessage, CreateContactMessageInput, MessageStore } from './
 export interface DynamoMessageStoreOptions {
   tableName?: string;
   region?: string;
+  /** DynamoDB Local endpoint; overrides `DYNAMODB_ENDPOINT` / `AWS_ENDPOINT_URL_DYNAMODB` / `AWS_ENDPOINT_URL`. */
+  endpoint?: string;
   /** Optional injected document client for tests. */
   docClient?: DocClient;
 }
@@ -71,7 +73,7 @@ export const createDynamoMessageStore = (options: DynamoMessageStoreOptions = {}
     throw new Error('DynamoDB MessageStore requires DYNAMO_TABLE (or NUXT_DYNAMO_TABLE)');
   }
 
-  const clientConfig = resolveDynamoClientConfig();
+  const clientConfig = resolveDynamoClientConfig(process.env, nonEmpty(options.endpoint));
   const docClient =
     options.docClient ??
     DynamoDBDocumentClient.from(

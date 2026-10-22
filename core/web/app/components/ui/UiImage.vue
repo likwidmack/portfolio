@@ -74,13 +74,14 @@ const resolvedAspect = computed(() => {
 
 const frameStyle = computed(() => {
   const style: Record<string, string> = {};
-  const bg = props.dominantColor || 'var(--surface-color, var(--muted, #27272a))';
-  style['--ui-image-bg'] = bg;
+  // The placeholder is the image's own dominant colour (image data) with an ink that reads on it;
+  // without one the stylesheet paints the theme surface / text colours.
   if (props.dominantColor) {
+    style.backgroundColor = props.dominantColor;
     try {
-      style['--ui-image-ink'] = pickContrastingInk({ backgroundColor: props.dominantColor });
+      style.color = pickContrastingInk({ backgroundColor: props.dominantColor });
     } catch {
-      style['--ui-image-ink'] = 'var(--text-color)';
+      // Unparseable colour: keep the stylesheet's text colour.
     }
   }
   if (resolvedAspect.value) {

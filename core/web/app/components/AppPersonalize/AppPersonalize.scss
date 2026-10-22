@@ -20,7 +20,7 @@
 
   &__hint {
     margin: 0 0 0.75rem;
-    color: var(--text-secondary-color);
+    color: var(--theme-text-secondary-color);
     font-size: 0.85rem;
   }
 
@@ -56,28 +56,12 @@
     align-items: center;
     gap: 0.5rem;
   }
-
-  &__swatches {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.35rem;
-  }
-
-  &__swatch {
-    width: 1.75rem;
-    height: 1.75rem;
-    min-width: 1.75rem;
-    padding: 0;
-    border: 1px solid var(--border-color);
-    border-radius: 999px;
-    background: var(--swatch) !important;
-  }
 }
 
 @include bp-down(mobile) {
   .personalize {
     &__option {
-      min-height: 2.75rem;
+      min-height: var(--touch-target);
     }
   }
 }

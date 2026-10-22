@@ -1,4 +1,4 @@
-import { readFile } from 'node:fs/promises';
+import { readdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 import { describe, expect, it } from 'vitest';
@@ -105,6 +105,24 @@ describe('home splash content', () => {
     }
   });
 
+  it('keeps each case study behind its chosen door (a product decision, not copy)', async () => {
+    // Moving a story to another door changes where Discovery / Process / Exhibition lead — update
+    // this deliberately, not as a side effect.
+    expect(CANONICAL_DOOR_BY_SLUG).toEqual({
+      'media-systems': 'discovery',
+      'data-visualization': 'discovery',
+      'experience-systems': 'discovery',
+      'human-controlled-ai-lab': 'process',
+      'innovation-prototyping': 'exhibition',
+      'spatial-experiences': 'exhibition',
+    });
+    // Every published case study has a door (a new one can't silently land nowhere).
+    const slugs = (await readdir(join(import.meta.dirname, '../content/case-studies')))
+      .filter((name) => name.endsWith('.json'))
+      .map((name) => name.replace(/\.json$/, ''));
+    expect(Object.keys(CANONICAL_DOOR_BY_SLUG).sort()).toEqual(slugs.sort());
+  });
+
   it('omits skip and previous-view when cookies are unreadable', async () => {
     const splash = await readFile(splashComponentPath, 'utf8');
     const preference = await readFile(join(import.meta.dirname, '../app/composables/useJourneyPreference.ts'), 'utf8');
@@ -127,7 +145,8 @@ describe('home splash content', () => {
   it('keeps door hit targets and focus rings usable', async () => {
     const styles = await readFile(splashStylesPath, 'utf8');
 
-    expect(styles).toContain('min-height: 2.75rem');
+    expect(styles).toContain('min-height: var(--touch-target)');
+    expect(styles).not.toContain('min-height: 2.75rem');
     expect(styles).toContain('&:focus-visible');
     expect(styles).toContain('.page-content.splash-page');
     // The splash scrolls like every page (no one-viewport lock); it only fills main's slack.

@@ -1,23 +1,23 @@
 <template lang="pug">
 PrimeSelect(
   v-if="isPrimeVue",
-  v-bind="$attrs",
+  v-bind="_rootAttrs()",
   v-model="_model",
   :options="options",
   :option-label="optionLabel",
   :option-value="optionValue",
   :placeholder="placeholder",
-  :input-id="inputId",
+  :input-id="_controlId()",
   :aria-label="ariaLabel",
   :name="name",
   :disabled="disabled",
-  :pt="{ option: { styles: { backgroundColor: 'var(--form-background)' } } }",
+  :pt="{ option: { styles: { backgroundColor: 'var(--theme-form-background-color)' } } }",
   fluid
 )/
 select.p-select.p-component.p-inputwrapper(
   v-else,
   v-bind="$attrs",
-  :id="inputId",
+  :id="_controlId()",
   :name="name",
   :aria-label="ariaLabel",
   :disabled="disabled",
@@ -34,6 +34,7 @@ defineOptions({ inheritAttrs: false });
 
 const { isPrimeVue } = useUiStack();
 const _model = defineModel<TValue | null>({ default: null });
+const _attrs = useAttrs();
 
 const props = defineProps<{
   options: unknown[];
@@ -45,6 +46,32 @@ const props = defineProps<{
   name?: string;
   disabled?: boolean;
 }>();
+
+/** `input-id`, else an `id` attribute — `:id` comes after `$attrs`, so it must carry that id through. */
+function _controlId(): string | undefined {
+  return props.inputId ?? (typeof _attrs.id === 'string' ? _attrs.id : undefined);
+}
+
+/** `$attrs` minus `id`: PrimeVue puts root attrs on its wrapper, and the id belongs on the inner control. */
+function _rootAttrs(): Record<string, unknown> {
+  return Object.fromEntries(Object.entries(_attrs).filter(([key]) => key !== 'id'));
+}
+
+/** PrimeVue's control is a `<span role="combobox">`, which a `label[for]` click cannot focus. */
+function _focusFromLabel(event: MouseEvent): void {
+  const id = _controlId();
+  const label = event.target instanceof Element ? event.target.closest('label') : null;
+  if (id && label?.htmlFor === id) {
+    document.getElementById(id)?.focus();
+  }
+}
+
+onMounted(() => {
+  if (isPrimeVue) {
+    document.addEventListener('click', _focusFromLabel);
+  }
+});
+onBeforeUnmount(() => document.removeEventListener('click', _focusFromLabel));
 
 type NativeOption = { key: string; label: string; value: string; raw: unknown };
 

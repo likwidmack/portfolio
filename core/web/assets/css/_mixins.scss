@@ -12,8 +12,8 @@
 }
 
 @mixin portfolio-soft-surface($mix: var(--portfolio-surface-mix, 88%)) {
-  border: 1px solid var(--portfolio-rule);
-  background: color-mix(in srgb, var(--surface-color) #{$mix}, transparent);
+  border: 1px solid var(--portfolio-rule-color);
+  background: color-mix(in srgb, var(--theme-surface-color) #{$mix}, transparent);
   box-shadow: var(--shadow-sm);
 }
 
@@ -29,7 +29,7 @@
 
 /// Eyebrow / kicker chrome — mono + wide tracking (tier 1).
 @mixin portfolio-type-eyebrow {
-  color: var(--primary-color);
+  color: var(--theme-primary-ink-color);
   font-family: var(--font-family-mono);
   font-size: max(var(--type-min, 12px), var(--type-eyebrow-size, 0.7rem));
   font-weight: var(--type-eyebrow-weight, 700);

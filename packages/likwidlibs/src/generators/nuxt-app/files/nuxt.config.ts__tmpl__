@@ -1,0 +1,17 @@
+import { defineNuxtConfig } from 'nuxt/config';
+
+// https://nuxt.com/docs/api/configuration/nuxt-config
+export default defineNuxtConfig({
+  compatibilityDate: '2026-04-03',
+  extends: ['@tgmc/nuxt-layer-base'],
+
+  // App-specific configuration overrides
+  app: {
+    head: {
+      title: '<%= name %> · TGMC',
+    },
+  },
+<% if (deploymentTarget === 'aws-sam') { %>
+  // The generated SAM stack has no S3/CloudFront, so the Lambda serves public assets itself.
+  nitro: process.env.NITRO_PRESET === 'aws_lambda' ? { serveStatic: 'inline', awsLambda: { streaming: false } } : {},
+<% } %>});

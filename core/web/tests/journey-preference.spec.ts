@@ -43,8 +43,8 @@ function loadDecisionCardIds(): string[] {
   return readdirSync(dir)
     .filter((name) => name.endsWith('.json'))
     .map((name) => {
-      const doc = JSON.parse(readFileSync(join(dir, name), 'utf8')) as { id?: string };
-      return doc.id ?? name.replace(/\.json$/, '');
+      const doc = JSON.parse(readFileSync(join(dir, name), 'utf8')) as { slug?: string };
+      return doc.slug ?? name.replace(/\.json$/, '');
     });
 }
 

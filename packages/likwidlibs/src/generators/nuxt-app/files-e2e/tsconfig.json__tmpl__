@@ -1,0 +1,12 @@
+{
+  "extends": "<%= offsetFromRoot %>tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "out-tsc/cypress",
+    "allowJs": true,
+    "lib": ["es2022", "dom"],
+    "types": ["cypress", "node"],
+    "sourceMap": false
+  },
+  "include": ["**/*.ts", "**/*.js", "cypress.config.ts", "**/*.cy.ts", "**/*.d.ts"],
+  "exclude": ["out-tsc", "test-output", "eslint.config.js"]
+}

@@ -26,7 +26,7 @@
 .back-link {
   @include m.touch-target;
   gap: 0.35rem;
-  color: var(--link-color, var(--primary-color));
+  color: var(--theme-link-color, var(--theme-primary-ink-color));
   text-decoration: none;
   text-underline-offset: 0.2em;
 
@@ -35,7 +35,7 @@
   }
 
   &:focus-visible {
-    outline: 2px solid var(--focus-ring, var(--primary-color));
+    outline: 2px solid var(--theme-focus-ring-color, var(--theme-primary-color));
     outline-offset: 2px;
   }
 }
@@ -56,17 +56,17 @@ hr {
   width: 98%;
   margin: var(--space-8) auto var(--space-4);
   background: {
-    color: color-mix(in srgb, var(--surface-color) 42%, transparent);
+    color: color-mix(in srgb, var(--theme-surface-color) 42%, transparent);
     image: linear-gradient(
       0deg,
-      color-mix(in srgb, var(--gray-200) 50%, transparent) 0%,
-      color-mix(in srgb, var(--gray-300) 25%, transparent) 40%,
-      color-mix(in srgb, var(--gray-100) 5%, transparent) 60%,
-      color-mix(in srgb, var(--gray-200) 50%, transparent) 100%
+      color-mix(in srgb, var(--theme-gray-200-color) 50%, transparent) 0%,
+      color-mix(in srgb, var(--theme-gray-300-color) 25%, transparent) 40%,
+      color-mix(in srgb, var(--theme-gray-100-color) 5%, transparent) 60%,
+      color-mix(in srgb, var(--theme-gray-200-color) 50%, transparent) 100%
     );
   }
   box-shadow: var(--shadow-sm);
-  border-top: 1px solid color-mix(in srgb, var(--gray-med, #{$color-gray-md}) 16%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--theme-gray-med-color, #{$color-gray-md}) 16%, transparent);
   border-radius: var(--border-radius-lg);
 }
 
@@ -89,7 +89,7 @@ footer nav a {
   }
 
   &:hover {
-    background-color: color-mix(in srgb, var(--surface-color) 55%, transparent);
+    background-color: color-mix(in srgb, var(--theme-surface-color) 55%, transparent);
     text-decoration: none;
   }
 }

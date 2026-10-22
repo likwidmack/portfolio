@@ -10,11 +10,16 @@ export type DynamoClientConfig = {
 
 /**
  * Build DynamoDBClient options for Lambda/test/Local.
- * Endpoint only when AWS_ENDPOINT_URL or DYNAMODB_ENDPOINT is set (Local).
+ * Endpoint only for DynamoDB Local: the `endpointOverride` argument, else (first set wins)
+ * `DYNAMODB_ENDPOINT`, `AWS_ENDPOINT_URL_DYNAMODB` (the media adapters' variable), `AWS_ENDPOINT_URL`.
  */
-export const resolveDynamoClientConfig = (env: NodeJS.ProcessEnv = process.env): DynamoClientConfig => {
+export const resolveDynamoClientConfig = (
+  env: NodeJS.ProcessEnv = process.env,
+  endpointOverride?: string
+): DynamoClientConfig => {
   const region = env.NUXT_AWS_REGION || env.AWS_REGION || 'us-west-2';
-  const endpoint = env.DYNAMODB_ENDPOINT || env.AWS_ENDPOINT_URL || undefined;
+  const endpoint =
+    endpointOverride || env.DYNAMODB_ENDPOINT || env.AWS_ENDPOINT_URL_DYNAMODB || env.AWS_ENDPOINT_URL || undefined;
   const config: DynamoClientConfig = { region };
 
   if (endpoint) {

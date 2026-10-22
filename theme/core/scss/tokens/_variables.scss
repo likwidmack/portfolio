@@ -117,7 +117,7 @@ $radius-md: 0.5rem !default;
 $radius-lg: 1rem !default;
 $radius-pill: 9999px !default;
 
-// Global transitions and elevations (CSS `--shadow-*` rebinds to `--rgb-shadow` in `_root.scss`).
+// Global transitions and elevations (CSS `--shadow-*` mix `--theme-shadow-color` in `_root.scss`).
 $transition-fast: 150ms ease !default;
 $transition-base: 250ms ease !default;
 $transition-slow: 350ms ease !default;

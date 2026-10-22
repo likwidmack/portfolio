@@ -47,6 +47,15 @@ describe('AppDepthField background modes', () => {
     expect(source).toContain('stopCameraStream');
   });
 
+  it('keeps the camera video out of hit-testing so it cannot swallow taps', async () => {
+    const scss = readFileSync(
+      join(import.meta.dirname, '../app/components/AppDepthField/AppDepthField.scss'),
+      'utf8'
+    );
+    const cameraBlock = scss.slice(scss.indexOf('&__camera {'), scss.indexOf('&__camera-note'));
+    expect(cameraBlock).toContain('pointer-events: none');
+  });
+
   it('renders a solid custom fill when background mode is custom', () => {
     const source = readFileSync(depthFieldPath, 'utf8');
     expect(source).toContain("background === 'custom'");

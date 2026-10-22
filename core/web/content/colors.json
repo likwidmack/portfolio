@@ -10,9 +10,9 @@
   },
   "theme": {
     "brightSkySunset": {
-      "pastelBlue": "#c8e8fc",
       "pastelPink": "#ffecf0",
-      "softWhite": "#ffdee4"
+      "softWhite": "#ffdee4",
+      "pastelBlue": "#c8e8fc"
     },
     "darkNightGoldenDay": {
       "blackPearl": "#001a26",

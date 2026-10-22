@@ -12,9 +12,9 @@ section#studio.style-studio(aria-labelledby="studio-heading")
             @click="onSelectSetup(setup)"
           )
             span.style-studio__setup-swatches(aria-hidden="true")
-              i(:style="{ background: setup.brandRoles.primary }")
-              i(:style="{ background: setup.brandRoles.secondary }")
-              i(:style="{ background: setup.brandRoles.accent }")
+              i(:style="{ background: setup.document.brandRoles.primary }")
+              i(:style="{ background: setup.document.brandRoles.secondary }")
+              i(:style="{ background: setup.document.brandRoles.accent }")
             span.style-studio__setup-name {{ setup.name }}
           button.style-studio__setup-delete(
             type="button",
@@ -112,8 +112,8 @@ section#studio.style-studio(aria-labelledby="studio-heading")
           label.style-studio__derive(v-if="activeRole !== 'primary'", for="studio-derive")
             UiToggleSwitch(v-model="deriveModel", input-id="studio-derive")
             span Derive from primary
-        span.style-studio__label Palette
-        .style-studio__swatches(role="list")
+        span#studio-palette-label.style-studio__label Palette
+        .style-studio__swatches(role="group", aria-labelledby="studio-palette-label")
           UiButton.style-studio__swatch(
             v-for="swatch in visibleSwatches",
             :key="swatch.id",
@@ -122,31 +122,27 @@ section#studio.style-studio(aria-labelledby="studio-heading")
             rounded,
             :aria-label="`${swatch.label} ${swatch.hex}`",
             :title="`${swatch.group}: ${swatch.label}`",
-            :style="{ '--swatch': swatch.hex }",
+            :style="{ background: `${swatch.hex} !important` }",
             @click="setRoleHex(swatch.hex)"
           )
 
       section.style-studio__contrast(aria-label="Contrast", aria-live="polite")
+        //- The pick is a source: the site paints it lightness-adjusted until it reads (≥ 3:1 on the
+        //- page), so show both the pick's own ratio and the colour it is shown as.
         p.style-studio__check
-          span White text on {{ activeRoleLabel.toLowerCase() }}
-          strong(:data-pass="String(roleContrast.onFill.pass)") {{ contrastLabel(roleContrast.onFill) }}
-          UiButton(
-            v-if="!roleContrast.onFill.pass",
-            label="Darken until it passes",
-            size="small",
-            text,
-            @click="fixOnFill"
-          )
-        p.style-studio__check
-          span As a mark on the page
-          strong(:data-pass="String(roleContrast.onPage.pass)") {{ contrastLabel(roleContrast.onPage) }}
-          UiButton(
-            v-if="!roleContrast.onPage.pass",
-            label="Use nearest passing shade",
-            size="small",
-            text,
-            @click="fixOnPage"
-          )
+          span On the page · {{ resolvedModeLabel.toLowerCase() }} mode
+          span.style-studio__check-value
+            | Your pick {{ pickContrast.ratio }}:1 · shown as
+            i.style-studio__chip(aria-hidden="true", :style="{ background: shownRoleHex }")
+            | {{ shownRoleHex }}
+          strong(:data-pass="String(shownContrast.pass)") {{ contrastLabel(shownContrast) }}
+        p.style-studio__check(v-if="activeRole === 'primary'")
+          span Button text
+          span.style-studio__check-value
+            | {{ buttonColors.ink }} on
+            i.style-studio__chip(aria-hidden="true", :style="{ background: buttonColors.fill }")
+            | {{ buttonColors.fill }}
+          strong(:data-pass="String(buttonContrast.pass)") {{ contrastLabel(buttonContrast) }}
 
       section.style-studio__paper-ink(aria-labelledby="studio-paper-ink-heading")
         h3#studio-paper-ink-heading.style-studio__label Paper &amp; ink · {{ resolvedModeLabel }} mode
@@ -165,8 +161,15 @@ section#studio.style-studio(aria-labelledby="studio-heading")
                 :model-value="paperInkPair[field.key]",
                 :input-id="`studio-${field.key}-hex`",
                 placeholder="#rrggbb",
+                :aria-invalid="paperInkErrors[field.key] ? 'true' : undefined",
+                :aria-describedby="paperInkErrors[field.key] ? `studio-${field.key}-error` : undefined",
                 @update:model-value="(value) => setPaperInkHex(field.key, value)"
               )
+            p.style-studio__save-error(
+              v-if="paperInkErrors[field.key]",
+              :id="`studio-${field.key}-error`",
+              role="alert"
+            ) {{ field.key === 'paper' ? 'Paper' : 'Ink' }} must be opaque: use #rrggbb (no transparency).
         .style-studio__paper-ink-preview(
           role="img",
           :aria-label="`Preview: ${paperInkPair.ink} ink on ${paperInkPair.paper} paper, with neutral steps and ink alpha washes`"
@@ -192,7 +195,7 @@ section#studio.style-studio(aria-labelledby="studio-heading")
             size="small",
             text,
             :disabled="paperInkIsDefault",
-            @click="resetDraftPaperInk"
+            @click="onResetPaperInk"
           )
 
       .grid-x.grid-margin-x.style-studio__cluster
@@ -224,6 +227,7 @@ section#studio.style-studio(aria-labelledby="studio-heading")
           AppBackgroundPicker(
             v-model="backgroundModel",
             v-model:custom="backgroundCustomModel",
+            v-model:options="backgroundOptionsModel",
             name="studio-background"
           )
 
@@ -260,28 +264,27 @@ section#studio.style-studio(aria-labelledby="studio-heading")
  * The draft previews site-wide (`persist: false`) until Apply or Discard; it is
  * no longer reverted on unmount, and the app-level `style-draft-guard` plugin asks before a reload.
  */
-import { evaluateRoleContrast, nearestPassingShade, type BrandRole, type RoleCheck } from '#shared/contrast-guard';
+import type { BrandRole, RoleCheck } from '#shared/contrast-guard';
 import {
+  applyBackgroundOptionChanges,
   isDefaultPaperInk,
+  normalizeOpaqueHex,
+  paintedPackColors,
+  STYLE_SETUPS_MAX,
   type BackgroundMode,
+  type BackgroundOptions,
   type BrandPack,
   type MotionPreference,
   type StyleSetup,
   type StyleSetupMode,
-} from '#shared/personalization';
+} from '#shared/preferences';
+import { readStudioPaintedColors, studioReadout, type StudioPaintedColors } from '#shared/studio-readout';
 import { resolveCssColorToHex } from '#shared/utils/resolve-css-color';
-import {
-  checkPaperInk,
-  Color,
-  NEUTRAL_ROLE_STEPS,
-  neutralStep,
-  parseCssColor,
-  relativeLuminance,
-  type PaperInkPair,
-} from '@tgmc/theme';
+import { checkPaperInk, Color, NEUTRAL_ROLE_STEPS, neutralStep, type PaperInkPair } from '@tgmc/theme';
+
+import { isStorageQuotaError } from '../../utils/storage-quota';
 
 const SETUP_UNDO_MS = 8000;
-const FALLBACK_PAGE_BACKGROUND = '#0f0908';
 
 const {
   dirty,
@@ -294,6 +297,7 @@ const {
   setDraftMotion,
   setDraftBackground,
   setDraftBackgroundCustom,
+  setDraftBackgroundOption,
   setDraftMode,
   setDraftPaperInk,
   setDraftPaperInkLinked,
@@ -311,7 +315,7 @@ const {
   paperInk,
   motion,
   background,
-  backgroundCustom,
+  backgroundCustomShown,
   brandPacks,
   accent,
   swatches,
@@ -324,23 +328,35 @@ const {
 const palettePacks = computed(() => brandPacks.filter((pack) => pack.kind === 'palette'));
 const colorPacks = computed(() => brandPacks.filter((pack) => pack.kind === 'color'));
 
-function labelTextVar(fills: string[]): string {
-  if (!import.meta.client || fills.length === 0) return 'var(--text-color)';
-  const text = resolveCssColorToHex('var(--text-color)');
-  const secondary = resolveCssColorToHex('var(--text-secondary-color)');
-  if (!text || !secondary) return 'var(--text-color)';
-  const worst = (ink: string) => Math.min(...fills.map((fill) => Color.contrastRatio(ink, Color.toHex(fill))));
-  return worst(text) >= worst(secondary) ? 'var(--text-color)' : 'var(--text-secondary-color)';
+const INK_VAR = 'var(--theme-ink-color)';
+const PAPER_VAR = 'var(--theme-paper-color)';
+
+/**
+ * Label text on a pack's gradient: ink or paper (opposite lightness), whichever reads better on
+ * the worst fill, with a halo of the other — no single colour reads on both ends of a light-to-dark
+ * gradient, the halo keeps every letter on a ground it contrasts with.
+ */
+function labelTextColors(fills: string[]): { text: string; halo: string } {
+  const fallback = { text: INK_VAR, halo: PAPER_VAR };
+  if (!import.meta.client || fills.length === 0) return fallback;
+  const ink = resolveCssColorToHex(INK_VAR);
+  const paper = resolveCssColorToHex(PAPER_VAR);
+  if (!ink || !paper) return fallback;
+  const worst = (text: string) => Math.min(...fills.map((fill) => Color.contrastRatio(text, Color.toHex(fill))));
+  return worst(ink) >= worst(paper) ? fallback : { text: PAPER_VAR, halo: INK_VAR };
 }
 
 function selectionLabelStyle(pack: BrandPack): Record<string, string> {
-  const mode = resolvedMode.value === 'light' ? 'light' : 'dark';
-  const primary = pack.primary[mode];
-  const secondary = pack.secondary[mode];
+  const mode = resolvedMode.value;
+  const painted = paintedPackColors(pack.id, mode, paperInk.value);
+  const primary = painted?.primary ?? pack.primary[mode];
+  const secondary = painted?.secondary ?? pack.secondary[mode];
+  const { text, halo } = labelTextColors([primary, secondary]);
   return {
     backgroundColor: primary,
     backgroundImage: `linear-gradient(90deg, ${primary}, ${secondary})`,
-    color: labelTextVar([primary, secondary]),
+    color: text,
+    textShadow: `0 0 0.2em ${halo}, 0 0 0.1em ${halo}`,
   };
 }
 
@@ -374,8 +390,13 @@ const backgroundModel = computed({
   get: () => background.value,
   set: (value: BackgroundMode) => setDraftBackground(value),
 });
+const backgroundOptionsModel = computed({
+  get: () => personalization.backgroundOptions.value,
+  set: (next: BackgroundOptions) =>
+    applyBackgroundOptionChanges(personalization.backgroundOptions.value, next, setDraftBackgroundOption),
+});
 const backgroundCustomModel = computed({
-  get: () => backgroundCustom.value,
+  get: () => backgroundCustomShown.value,
   set: (value: string) => {
     const hex = parseHex(value);
     if (hex) setDraftBackgroundCustom(hex);
@@ -384,10 +405,13 @@ const backgroundCustomModel = computed({
 
 const visibleSwatches = computed(() => swatches.slice(0, 24));
 
+/** A complete `#rrggbb` (or `rrggbb` from the picker); shorter text is still being typed. */
+const FULL_HEX = /^#?[0-9a-f]{6}$/i;
+
 function parseHex(value: string | number | null | undefined): string | null {
   if (value == null || value === '') return null;
   const raw = String(value).trim();
-  if (!Color.isValid(raw) && !Color.isValid(`#${raw}`)) return null;
+  if (!FULL_HEX.test(raw)) return null;
   return Color.toHex(raw.startsWith('#') ? raw : `#${raw}`);
 }
 
@@ -411,39 +435,32 @@ const deriveModel = computed({
   },
 });
 
-const pageBackground = ref(FALLBACK_PAGE_BACKGROUND);
+// The role as the page paints it: the active variation (`--theme-<role>-color`), which is the pick
+// lightness-adjusted until it reaches 3:1 on this mode's paper — and the primary button as painted
+// (`--theme-button-fill-color` under `--theme-button-fg-color`: the white-text fill in light mode).
+// Roles are derived at runtime (color-mix from paper / ink) — resolve what the page paints.
+const painted = ref<StudioPaintedColors>({ pageBackground: null, role: null, button: null });
 function readPageBackground(): void {
   if (!import.meta.client) return;
-  // Roles are derived at runtime (color-mix from paper / ink) — resolve what the page paints.
-  pageBackground.value = resolveCssColorToHex('var(--main-background)') ?? FALLBACK_PAGE_BACKGROUND;
+  painted.value = readStudioPaintedColors(activeRole.value, (css) => resolveCssColorToHex(css));
 }
 onMounted(readPageBackground);
 watch(
   () => personalization.mode.value,
   () => nextTick(readPageBackground)
 );
+watch([activeRole, () => ({ ...brandRoles.value })], () => nextTick(readPageBackground), { deep: true });
 
-const roleContrast = computed(() => evaluateRoleContrast(activeRole.value, roleHex.value, pageBackground.value));
+/** The raw pick as a mark on the page, the colour the page shows, and the primary button text. */
+const readout = computed(() => studioReadout(roleHex.value, painted.value));
+const pickContrast = computed(() => readout.value.pick);
+const shownRoleHex = computed(() => readout.value.shownHex);
+const shownContrast = computed(() => readout.value.shown);
+const buttonColors = computed(() => readout.value.buttonColors);
+const buttonContrast = computed<RoleCheck>(() => readout.value.button);
 
 function contrastLabel(check: Pick<RoleCheck, 'pass' | 'ratio' | 'min'>): string {
   return check.pass ? `${check.ratio}:1 ✓ AA` : `${check.ratio}:1 ✕ below ${check.min}:1`;
-}
-
-function fixOnFill(): void {
-  setRoleHex(nearestPassingShade(roleHex.value, '#ffffff', 4.5, '#000000'));
-}
-
-function fixOnPage(): void {
-  const rgb = parseCssColor(pageBackground.value);
-  const lighten = rgb ? relativeLuminance(rgb) < 0.5 : true;
-  setRoleHex(
-    nearestPassingShade(
-      roleHex.value,
-      pageBackground.value,
-      roleContrast.value.onPage.min,
-      lighten ? '#ffffff' : '#000000'
-    )
-  );
 }
 
 // --- Pen & paper (per mode) --------------------------------------------------------------
@@ -477,15 +494,55 @@ const paperInkFields: Array<{ key: keyof PaperInkPair; label: string }> = [
   { key: 'ink', label: 'Ink (text)' },
 ];
 
+/**
+ * Per field: its last parseable value was translucent (paper / ink must be opaque `#rrggbb`).
+ * Each field's alert / `aria-invalid` reflects only its own value; Swap, Reset, Discard and a
+ * mode change (the fields then show other values) clear both.
+ */
+const paperInkErrors = reactive<Record<keyof PaperInkPair, boolean>>({ paper: false, ink: false });
+function clearPaperInkErrors(): void {
+  paperInkErrors.paper = false;
+  paperInkErrors.ink = false;
+}
+watch(resolvedMode, clearPaperInkErrors);
+
 function setPaperInkHex(key: keyof PaperInkPair, value: unknown): void {
+  const raw = value == null || value === '' ? '' : String(value).trim();
+  // 8-digit hex (#rrggbbaa) is complete — including translucent. parseHex only accepts
+  // #rrggbb (still-typing gate for 6-digit), so route alpha forms through normalizeOpaqueHex
+  // before that gate or the Studio never shows the opaque-required alert (e2e style-studio).
+  if (/^#?[0-9a-f]{8}$/i.test(raw)) {
+    const withHash = raw.startsWith('#') ? raw : `#${raw}`;
+    const opaqueAlpha = normalizeOpaqueHex(withHash);
+    if (!opaqueAlpha) {
+      paperInkErrors[key] = true;
+      return;
+    }
+    paperInkErrors[key] = false;
+    setDraftPaperInk(resolvedMode.value, { ...paperInkPair.value, [key]: opaqueAlpha });
+    return;
+  }
   const hex = parseHex(value as string | null);
-  if (!hex) return;
-  setDraftPaperInk(resolvedMode.value, { ...paperInkPair.value, [key]: hex });
+  if (!hex) return; // not a colour (yet): still typing
+  // Alpha below 1 is refused (saved, it would fail the read-back and reset paper / ink on reload).
+  const opaque = normalizeOpaqueHex(hex);
+  if (!opaque) {
+    paperInkErrors[key] = true;
+    return;
+  }
+  paperInkErrors[key] = false;
+  setDraftPaperInk(resolvedMode.value, { ...paperInkPair.value, [key]: opaque });
 }
 
 function swapPaperInk(): void {
+  clearPaperInkErrors();
   const { paper, ink } = paperInkPair.value;
   setDraftPaperInk(resolvedMode.value, { paper: ink, ink: paper });
+}
+
+function onResetPaperInk(): void {
+  clearPaperInkErrors();
+  resetDraftPaperInk();
 }
 
 const paperInkLinkedModel = computed({
@@ -501,11 +558,11 @@ const paperInkPreview = computed(() => {
   const steps = NEUTRAL_ROLE_STEPS[resolvedMode.value];
   const solid = [
     0,
-    steps['--surface-color'],
-    steps['--surface-variant'],
-    steps['--border-strong'],
-    steps['--text-secondary-color'],
-    steps['--text-color'],
+    steps['--theme-surface-color'],
+    steps['--theme-surface-variant-color'],
+    steps['--theme-border-strong-color'],
+    steps['--theme-text-secondary-color'],
+    steps['--theme-text-color'],
   ].map((step) => ({ id: `neutral-${step}`, css: neutralStep(pair, step) }));
   const alpha = [8, 24, 48].map((a) => {
     const wash = `color-mix(in srgb, ${pair.ink} ${a}%, transparent)`;
@@ -527,28 +584,59 @@ function onDeleteSetup(id: string): void {
   const index = styleSetups.value.findIndex((item) => item.id === id);
   const setup = styleSetups.value[index];
   if (!setup) return;
-  pendingSetupUndo.value = { setup, index, wasActive: activeSetupId.value === id };
-  removeSetup(id);
+  const wasActive = activeSetupId.value === id;
+  if (!withStorageError(() => removeSetup(id))) return;
+  pendingSetupUndo.value = { setup, index, wasActive };
   if (setupUndoTimer) clearTimeout(setupUndoTimer);
   setupUndoTimer = setTimeout(() => {
     pendingSetupUndo.value = null;
   }, SETUP_UNDO_MS);
 }
 
+/** At the setup limit the Undo stays offered (until it expires) so it can be retried once a slot is free. */
 function undoDeleteSetup(): void {
   const pending = pendingSetupUndo.value;
   if (!pending) return;
-  restoreSetup(pending.setup, pending.index, pending.wasActive);
+  let restored = false;
+  if (!withStorageError(() => (restored = restoreSetup(pending.setup, pending.index, pending.wasActive)))) return;
+  if (!restored) {
+    saveError.value = SETUP_LIMIT_MESSAGE;
+    return;
+  }
+  saveError.value = '';
   pendingSetupUndo.value = null;
   if (setupUndoTimer) clearTimeout(setupUndoTimer);
 }
 
+const SETUP_LIMIT_MESSAGE = `You have ${STYLE_SETUPS_MAX} setups — delete one to save another`;
+const STORAGE_FULL_MESSAGE = 'Couldn’t save — browser storage is full';
 const replaceTarget = ref<StyleSetup | null>(null);
 const saveError = ref('');
 watch(saveName, () => {
   replaceTarget.value = null;
   saveError.value = '';
 });
+
+const atSetupLimit = () => styleSetups.value.length >= STYLE_SETUPS_MAX;
+
+/** Run a setups write; a full browser store shows in the save-error line instead of throwing. `false` on a full store. */
+function withStorageError(write: () => void): boolean {
+  try {
+    write();
+    return true;
+  } catch (error) {
+    if (!isStorageQuotaError(error)) throw error;
+    saveError.value = STORAGE_FULL_MESSAGE;
+    return false;
+  }
+}
+
+/** Save the draft as `name` (`id` replaces that setup); the limit shows in the save-error line. */
+function saveNamed(name: string, id?: string): void {
+  withStorageError(() => {
+    if ((!id && atSetupLimit()) || !saveDraftAs(name, id)) saveError.value = SETUP_LIMIT_MESSAGE;
+  });
+}
 
 function onSave(): void {
   const name = saveName.value.trim();
@@ -559,13 +647,13 @@ function onSave(): void {
     replaceTarget.value = existing;
     return;
   }
-  saveDraftAs(name);
+  saveNamed(name);
 }
 
 function confirmReplace(): void {
   const target = replaceTarget.value;
   if (!target) return;
-  saveDraftAs(target.name, target.id);
+  saveNamed(target.name, target.id);
   replaceTarget.value = null;
 }
 
@@ -573,8 +661,8 @@ function saveAsNew(): void {
   const base = saveName.value.trim();
   let name = `${base} (2)`;
   for (let n = 3; styleSetups.value.some((item) => item.name === name); n += 1) name = `${base} (${n})`;
-  saveDraftAs(name);
   replaceTarget.value = null;
+  saveNamed(name);
 }
 
 function onApply(): void {
@@ -584,6 +672,7 @@ function onApply(): void {
 }
 
 function onDiscard(): void {
+  clearPaperInkErrors();
   revertDraft();
   replaceTarget.value = null;
   saveError.value = '';

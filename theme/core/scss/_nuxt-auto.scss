@@ -6,6 +6,7 @@
 /// - color tokens: `$color-*`, brand `$primary-color-*` / `$secondary-color-*` / `$accent-color-*`, …
 /// - color helpers: `theme-lighten`, `theme-darken`, `theme-complementary`, `theme-contrast-ratio`, …
 /// - button mixins: `button-base`, `button-theme`
+/// - focus mixins: `focus-ring`, `focus-ring-shadow` (`tokens/_focus.scss`)
 ///
 /// Standalone app `.scss` sheets are not injected — `@use 'theme/scss/tokens'` (or `theme/scss/nuxt-auto`)
 /// for the same members. Foundation/PrimeVue Sass bridges load tokens via theme package paths.
@@ -14,3 +15,4 @@
 @forward 'tokens/colors';
 @forward 'tokens/color-fns';
 @forward 'tokens/button-mixins';
+@forward 'tokens/focus';

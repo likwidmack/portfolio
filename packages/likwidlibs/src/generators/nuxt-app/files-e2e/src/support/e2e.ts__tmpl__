@@ -1,0 +1,25 @@
+import type { AxeResults, RunOptions } from 'axe-core';
+
+declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace Cypress {
+    interface Chainable {
+      /** Injects axe-core into the page under test and runs it; yields the axe results. */
+      runAxe(options?: RunOptions): Chainable<AxeResults>;
+    }
+  }
+}
+
+type AxeWindow = Window & { axe?: { run(context: Document, options?: RunOptions): Promise<AxeResults> } };
+
+Cypress.Commands.add('runAxe', (options?: RunOptions) =>
+  cy.task<string>('axeSource', undefined, { log: false }).then((source) =>
+    cy.window({ log: false }).then((win) => {
+      const axeWindow = win as unknown as AxeWindow;
+      if (!axeWindow.axe) win.eval(source);
+      const axe = axeWindow.axe;
+      if (!axe) throw new Error('axe-core did not load into the page');
+      return axe.run(win.document, options);
+    })
+  )
+);

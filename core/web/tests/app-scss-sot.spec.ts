@@ -25,7 +25,7 @@ describe('app SCSS source of truth', () => {
     const launch = await readFile(css('portfolio-launch.scss'), 'utf8');
 
     expect(variables).toContain(':root');
-    expect(variables).toContain('--portfolio-coral');
+    expect(variables).toContain('--portfolio-coral-color');
     expect(variables).toContain('--portfolio-space');
     expect(variables).toContain("html[data-theme='dark']");
     expect(variables).toContain("html[data-theme='light']");
@@ -125,66 +125,67 @@ describe('app SCSS source of truth', () => {
     }
   });
 
-  it('keeps Foundation layout on and PrimeVue Sass layer off in styles.scss (Nora styled mode)', async () => {
+  it('keeps Foundation layout on in styles.scss; PrimeVue is Nora styled mode with no Sass switch', async () => {
     const styles = await readFile(css('styles.scss'), 'utf8');
     expect(styles).toContain('$theme-enable-foundation: true');
     expect(styles).toContain("$theme-foundation-mode: 'layout'");
-    expect(styles).toContain('$theme-enable-primevue: false');
+    expect(styles).not.toContain('$theme-enable-primevue');
     expect(styles).toMatch(/nuxt-auto/);
   });
 
   it('keeps coral as an accent bridge, not a static hex SoT', async () => {
     const variables = await readFile(css('_variables.scss'), 'utf8');
-    expect(variables).toMatch(/--portfolio-coral:\s*var\(--accent-color/);
-    expect(variables).not.toMatch(/--portfolio-coral:\s*#[0-9a-fA-F]/);
+    expect(variables).toMatch(/--portfolio-coral-color:\s*var\(--theme-accent-color\);/);
+    expect(variables).not.toMatch(/--portfolio-coral:/);
+    expect(variables).not.toMatch(/--portfolio-coral(?:-color)?:\s*#[0-9a-fA-F]/);
   });
 
   it('does not own proven twin hex SoTs for teal / ivory / ink (AE1)', async () => {
     const variables = await readFile(css('_variables.scss'), 'utf8');
 
-    // Both teal mode hexes must leave web. The theme emits the neutral `--teal-signal`; web may
-    // only alias it (`var(--teal-signal)`), never re-own the hex.
+    // Teal is the theme's success colour (dark: blended with paper to keep today's depth).
     expect(variables).not.toMatch(/#1b7a7a/i);
     expect(variables).not.toMatch(/#146060/i);
-    expect(variables).toMatch(/--portfolio-teal:\s*var\(--teal-signal\);/);
-    expect(variables).not.toMatch(/--portfolio-teal:\s*#/);
+    expect(variables).toMatch(/:root\s*\{[\s\S]*?--portfolio-teal-color:\s*var\(--theme-success-color\);/);
+    expect(variables).toMatch(
+      /html\[data-theme='dark'\][\s\S]*?--portfolio-teal-color:\s*color-mix\(in srgb, var\(--theme-success-color\) \d+%, var\(--theme-paper-color\)\);/
+    );
 
-    // Ivory / ink surface↔text flip must not re-own theme paper/ink hexes
-    // (Sass `#{$token}` interpolation is allowed; raw `#rrggbb` is not).
-    expect(variables).not.toMatch(/--portfolio-ivory:\s*#[0-9a-fA-F]/i);
-    expect(variables).not.toMatch(/--portfolio-ink:\s*#[0-9a-fA-F]/i);
-
-    // Positive KTD2 bridges — wrong twin targets must fail CI.
-    expect(variables).toMatch(/--portfolio-ivory:\s*#\{\$main-background-light\}/);
-    expect(variables).toMatch(/html\[data-theme='dark'\][\s\S]*?--portfolio-ivory:\s*var\(--main-background\)/);
-    expect(variables).toMatch(/html\[data-theme='dark'\][\s\S]*?--portfolio-ink:\s*var\(--text-color\)/);
-    // Light mode's ink follows a live `--ink` (five-input model), not a build-time hex.
-    expect(variables).toMatch(/html\[data-theme='light'\][\s\S]*?--portfolio-ink:\s*var\(--ink\)/);
-    expect(variables).toMatch(/:root\s*\{[\s\S]*?--portfolio-ink:\s*#\{\$main-background-dark\}/);
+    // Ivory / ink are the active paper / ink (dark ink = ink with a touch of paper, today's text).
+    expect(variables).toMatch(/:root\s*\{[\s\S]*?--portfolio-ivory-color:\s*var\(--theme-paper-color\);/);
+    expect(variables).toMatch(/:root\s*\{[\s\S]*?--portfolio-ink-color:\s*var\(--theme-ink-color\);/);
+    expect(variables).toMatch(
+      /html\[data-theme='dark'\][\s\S]*?--portfolio-ink-color:\s*color-mix\(in srgb, var\(--theme-ink-color\) \d+%, var\(--theme-paper-color\)\);/
+    );
+    expect(variables).not.toMatch(/--portfolio-(?:ivory|ink|teal)(?:-color)?:\s*#/i);
   });
 
-  it('keeps atmosphere chrome names without raw hex SoT (AE2)', async () => {
+  it('keeps atmosphere chrome as blends of theme colours, without Sass colour values (AE2)', async () => {
     const variables = await readFile(css('_variables.scss'), 'utf8');
-    const chromeProps = [
-      '--portfolio-rose',
-      '--portfolio-rose-strong',
-      '--portfolio-haze-1',
-      '--portfolio-haze-2',
-      '--portfolio-haze-3',
-      '--portfolio-haze-4',
-      '--portfolio-particle-strong',
-      '--portfolio-particle-mid',
-      '--portfolio-particle-soft',
-      '--portfolio-grid-glow',
+    const chromeStems = [
+      'rose',
+      'rose-strong',
+      'haze-1',
+      'haze-2',
+      'haze-3',
+      'haze-4',
+      'particle-strong',
+      'particle-mid',
+      'particle-soft',
+      'grid-glow',
     ] as const;
 
-    for (const prop of chromeProps) {
-      expect(variables, prop).toContain(prop);
-      expect(variables, prop).not.toMatch(new RegExp(`${prop}:\\s*#[0-9a-fA-F]`, 'i'));
+    for (const stem of chromeStems) {
+      expect(variables, stem).toMatch(new RegExp(`--portfolio-${stem}-color:\\s*(?:var|color-mix)\\(`));
+      expect(variables, stem).not.toMatch(new RegExp(`--portfolio-${stem}:`)); // old alias gone (Task 8)
     }
 
-    expect(variables).not.toMatch(/rgba\(\s*\d+/i);
-    expect(variables).toMatch(/theme-add-alpha|theme-lighten|theme-darken|color\.mix/);
+    // Rule 6: web globals hold CSS colour variables only — no Sass colour values or rgb()/hex.
+    const code = variables.replace(/\/\/.*$/gm, '');
+    expect(code).not.toMatch(/\$[a-z]/i);
+    expect(code).not.toMatch(/#\{/);
+    expect(code).not.toMatch(/rgba?\(/i);
+    expect(code).not.toMatch(/#[0-9a-f]{3,8}\b/i);
   });
 
   it('measure harness emits scss_lines and duplicate_color_sot inventory', () => {
@@ -197,7 +198,7 @@ describe('app SCSS source of truth', () => {
 
     const rows = metrics.duplicate_color_sot_rows as Array<{ id: string; webProp: string }>;
     expect(Array.isArray(rows)).toBe(true);
-    expect(rows.some((r) => r.webProp === '--portfolio-coral')).toBe(false);
+    expect(rows.some((r) => r.webProp === '--portfolio-coral-color')).toBe(false);
 
     // After twin cut: starter teal / ivory / ink rows and teal redeclaration are gone.
     const cutIds = new Set([
@@ -207,7 +208,7 @@ describe('app SCSS source of truth', () => {
       'ivory-dark',
       'ink-light',
       'ink-dark',
-      'redeclare---portfolio-teal',
+      'redeclare---portfolio-teal-color',
     ]);
     expect(rows.filter((r) => cutIds.has(r.id))).toEqual([]);
   });

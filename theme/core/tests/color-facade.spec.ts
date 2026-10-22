@@ -76,10 +76,10 @@ describe('Color facade', () => {
     const lightPrimary = themeColors.light.primary;
     const darkPrimary = themeColors.dark.primary;
     expect(Color.brandAccent(lightPrimary).toLowerCase()).toBe(
-      colorsLibrary.cssVariables.light['--accent-color']!.toLowerCase()
+      colorsLibrary.cssVariables.light['--theme-accent-color']!.toLowerCase()
     );
     expect(Color.brandAccent(darkPrimary).toLowerCase()).toBe(
-      colorsLibrary.cssVariables.dark['--accent-color']!.toLowerCase()
+      colorsLibrary.cssVariables.dark['--theme-accent-color']!.toLowerCase()
     );
     expect(Color.brandSecondaryCandidates(lightPrimary)).toHaveLength(2);
   });

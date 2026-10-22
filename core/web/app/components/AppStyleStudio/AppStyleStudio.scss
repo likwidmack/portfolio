@@ -5,6 +5,12 @@
   display: grid;
   gap: var(--section-gap, 2rem);
   min-width: 0;
+  // The theme's `section { overflow: hidden }` (rounded corners, the `::before` hairline, the
+  // backdrop blur) makes the studio a scroll container, so the sticky Apply / Discard bar below
+  // had nothing to stick to. `clip` paints the same clipping without a scroll container, so the
+  // bar sticks to the viewport. Safari < 16 ignores `clip` and keeps the theme's `hidden`: the
+  // corners stay clipped and the bar sits in flow at the end of the workbench (not sticky).
+  overflow: clip;
 
   &__workbench {
     display: grid;
@@ -40,20 +46,20 @@
     align-items: center;
     width: 100%;
     padding: 0.45rem 0.55rem;
-    border: 1px solid color-mix(in srgb, var(--border-color) 70%, transparent);
+    border: 1px solid color-mix(in srgb, var(--theme-border-color) 70%, transparent);
     border-radius: var(--border-radius-sm, 0.35rem);
-    background: color-mix(in srgb, var(--surface-color) 50%, transparent);
+    background: color-mix(in srgb, var(--theme-surface-color) 50%, transparent);
     color: inherit;
     text-align: left;
     cursor: pointer;
 
     &[data-active='true'] {
-      border-color: var(--primary-color);
-      box-shadow: inset 3px 0 0 var(--primary-color);
+      border-color: var(--theme-primary-color);
+      box-shadow: inset 3px 0 0 var(--theme-primary-color);
     }
 
     &:focus-visible {
-      outline: 2px solid var(--focus-ring, var(--primary-color));
+      outline: 2px solid var(--theme-focus-ring-color, var(--theme-primary-color));
       outline-offset: 2px;
     }
   }
@@ -81,7 +87,7 @@
     padding: 0;
     border: 0;
     background: transparent;
-    color: var(--text-secondary-color);
+    color: var(--theme-text-secondary-color);
     font-size: var(--font-size-xs);
     text-decoration: underline;
     cursor: pointer;
@@ -89,7 +95,7 @@
 
   &__empty {
     margin: 0;
-    color: var(--text-secondary-color);
+    color: var(--theme-text-secondary-color);
     font-size: var(--font-size-sm);
   }
 
@@ -120,7 +126,7 @@
     grid-template-columns: repeat(3, minmax(0, 1fr));
     min-height: clamp(4.5rem, 12vw, 7rem);
     overflow: hidden;
-    border: 1px solid color-mix(in srgb, var(--border-color) 65%, transparent);
+    border: 1px solid color-mix(in srgb, var(--theme-border-color) 65%, transparent);
 
     span {
       display: block;
@@ -138,8 +144,8 @@
     gap: 0.5rem;
     padding: 1rem 1.1rem;
     overflow: hidden;
-    border: 1px solid color-mix(in srgb, var(--border-color) 65%, transparent);
-    background: color-mix(in srgb, var(--surface-color) 40%, transparent);
+    border: 1px solid color-mix(in srgb, var(--theme-border-color) 65%, transparent);
+    background: color-mix(in srgb, var(--theme-surface-color) 40%, transparent);
 
     > :not(.style-studio__field) {
       position: relative;
@@ -180,9 +186,9 @@
     height: 1.75rem;
     min-width: 1.75rem;
     padding: 0;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--theme-border-color);
     border-radius: 999px;
-    background: var(--swatch) !important;
+    // The fill is the swatch itself (palette data), set inline as `background: <hex> !important`.
   }
 
   &__cluster {
@@ -222,7 +228,7 @@
     gap: 0.5rem;
     min-height: var(--touch-target, 44px);
     padding: 0 0.75rem;
-    border: 1px solid var(--border-strong);
+    border: 1px solid var(--theme-border-strong-color);
     border-radius: var(--border-radius-sm);
     cursor: pointer;
 
@@ -234,12 +240,12 @@
     }
 
     &:has(input:checked) {
-      border-color: var(--link-color);
-      box-shadow: inset 0 0 0 1px var(--link-color);
+      border-color: var(--theme-link-color);
+      box-shadow: inset 0 0 0 1px var(--theme-link-color);
     }
 
     &:has(input:focus-visible) {
-      outline: 2px solid var(--focus-ring);
+      outline: 2px solid var(--theme-focus-ring-color);
       outline-offset: 2px;
     }
   }
@@ -260,7 +266,7 @@
     flex-wrap: wrap;
     gap: 2px;
     padding: 0.1875rem;
-    border: 1px solid var(--border-strong);
+    border: 1px solid var(--theme-border-strong-color);
     border-radius: var(--border-radius-sm);
 
     button {
@@ -272,18 +278,18 @@
       border: 0;
       border-radius: 0.1875rem;
       background: transparent;
-      color: var(--text-secondary-color);
+      color: var(--theme-text-secondary-color);
       font-weight: 600;
       cursor: pointer;
 
       &[aria-pressed='true'] {
-        background: var(--surface-variant);
-        color: var(--text-color);
-        box-shadow: inset 0 -2px 0 var(--link-color);
+        background: var(--theme-surface-variant-color);
+        color: var(--theme-text-color);
+        box-shadow: inset 0 -2px 0 var(--theme-link-color);
       }
 
       &:focus-visible {
-        outline: 2px solid var(--focus-ring);
+        outline: 2px solid var(--theme-focus-ring-color);
         outline-offset: 2px;
       }
     }
@@ -293,7 +299,7 @@
     width: 0.7rem;
     height: 0.7rem;
     border-radius: 999px;
-    box-shadow: inset 0 0 0 1px var(--border-color);
+    box-shadow: inset 0 0 0 1px var(--theme-border-color);
   }
 
   &__editor {
@@ -313,7 +319,7 @@
     display: grid;
     gap: 0.25rem;
     padding: 0.5rem 1rem;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--theme-border-color);
     border-radius: var(--border-radius-md);
   }
 
@@ -325,17 +331,38 @@
     margin: 0;
     font-size: var(--font-size-sm);
 
+    // Label column (also the paper & ink check rows, which use a bare span).
     span {
       flex: 1 1 12rem;
     }
 
+    // Readout value: "Your pick … · shown as ▪ #hex" — wraps to stacked lines at phone width.
+
+    .style-studio__check-value {
+      display: inline-flex;
+      flex: 1 1 14rem;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.35em;
+      font-variant-numeric: tabular-nums;
+    }
+
     [data-pass='true'] {
-      color: var(--success-ink);
+      color: var(--theme-success-ink-color);
     }
 
     [data-pass='false'] {
-      color: var(--danger-ink);
+      color: var(--theme-error-ink-color);
     }
+  }
+
+  // Colour chip in the readout (decorative: the hex is in the text).
+  &__chip {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    border: 1px solid var(--theme-border-strong-color);
+    border-radius: var(--border-radius-sm);
   }
 
   // Pen & paper: paper (background) + ink (text) for the current mode.
@@ -343,13 +370,13 @@
     display: grid;
     gap: 0.75rem;
     padding: 0.75rem 1rem;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--theme-border-color);
     border-radius: var(--border-radius-md);
   }
 
   &__hint {
     margin: 0;
-    color: var(--text-secondary-color);
+    color: var(--theme-text-secondary-color);
     font-size: var(--font-size-sm);
   }
 
@@ -362,9 +389,9 @@
   &__paper-ink-preview {
     display: grid;
     grid-template-columns: repeat(9, 1fr);
-    min-height: 2.75rem;
+    min-height: 2.75rem; /* touch: n/a — a preview strip, not a control */
     overflow: hidden;
-    border: 1px solid var(--border-strong);
+    border: 1px solid var(--theme-border-strong-color);
     border-radius: var(--border-radius-md);
   }
 
@@ -399,11 +426,11 @@
     align-items: center;
     gap: 0.65rem;
     padding: 0.85rem 1rem;
-    border-top: 1px solid var(--border-color);
-    background: var(--surface-color);
+    border-top: 1px solid var(--theme-border-color);
+    background: var(--theme-surface-color);
 
     &[data-dirty='true'] {
-      border-top-color: var(--border-strong);
+      border-top-color: var(--theme-border-strong-color);
       box-shadow: var(--shadow-lg);
     }
   }
@@ -425,7 +452,7 @@
   }
 
   &__save-error {
-    color: var(--danger-ink);
+    color: var(--theme-error-ink-color);
   }
 
   &__save {
@@ -460,7 +487,7 @@
 
 // Tablets and phones: one column. A viewport query, not a container query: the studio sits in a
 // `fit-content` region, where inline-size containment would collapse it. `<=` keeps 768px stacked.
-@media (width <= #{$breakpoint-tablet}) {
+@media (width <= #{bp(tablet)}) {
   .style-studio__workbench {
     grid-template-columns: 1fr;
   }

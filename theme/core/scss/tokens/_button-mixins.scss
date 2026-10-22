@@ -1,6 +1,7 @@
 @use 'base-colors' as *;
 @use 'colors' as *;
 @use 'contrast' as *;
+@use 'focus' as *;
 
 /// Structural properties only — safe to use on pseudo-elements (::file-selector-button etc.)
 /// because this mixin emits no nested state rules (no `&.is-disabled`, `&:hover`, etc.).
@@ -24,10 +25,11 @@
   border: {
     width: 1px;
     style: solid;
-    color: color-mix(in srgb, var(--text-secondary-color) 25%, transparent);
+    color: color-mix(in srgb, var(--theme-text-secondary-color) 25%, transparent);
   }
-  // Ink contrasts solid `background-color` AND translucent gradient image stops.
-  @include contrast-fill(var(--primary-color), var(--button-bg), var(--button-fg));
+  // Primary fill: the primary variation (dark, under `--button-bg`) or the white-text primary fill
+  // (light, `--button-bg: none`) — `--theme-button-fill-color` switches per mode.
+  @include contrast-fill(var(--theme-button-fill-color), var(--button-bg), var(--theme-button-fg-color));
 }
 
 /// Structural button styles + interactive state rules (native controls + `.btn`).
@@ -38,25 +40,24 @@
 
   &:hover {
     text-decoration: none;
-    background-color: var(--primary-color-hover);
-    filter: saturate(1.05) brightness(1.04);
+    // Hover keeps the fill in both modes: light the white-text primary fill, dark the dark fill
+    // (`--theme-button-hover-fill-color`, declared per mode in `globals/_root.scss`).
+    background-color: var(--theme-button-hover-fill-color);
+    // No lightening filter: hover keeps the fill (and its ≥ 4.5:1 text) and only lifts.
     transform: translateY(-1px);
   }
 
   &:focus-visible,
   &:focus {
-    outline: none;
-    border-color: var(--secondary-color);
-    box-shadow:
-      0 0 0 3px var(--focus-ring),
-      var(--button-shadow-hover);
+    border-color: var(--theme-secondary-color);
+    @include focus-ring-shadow(0 0 0 3px var(--theme-focus-ring-color), var(--button-shadow-hover));
   }
 
   &:active {
     text-decoration: none;
     filter: saturate(0.96);
     transform: translateY(1px) scale(0.995);
-    background-color: var(--primary-color-active);
+    background-color: var(--theme-button-hover-fill-color);
   }
 
   &:disabled,
@@ -67,14 +68,14 @@
     filter: none;
     background-color: var(--primary-color-disabled);
     color: var(--text-color-disabled);
-    border-color: rgba($color-white, 0.18);
+    border-color: color-mix(in srgb, var(--theme-paper-light-color) 18%, transparent);
   }
 }
 
 /// Visual polish shared by `.btn` and PrimeVue `.p-button`.
 @mixin button-theme {
   text-decoration: none;
-  text-shadow: 1px -1px 1px color-mix(in srgb, var(--button-fg) 35%, transparent);
+  text-shadow: 1px -1px 1px color-mix(in srgb, var(--theme-button-fg-color) 35%, transparent);
   box-shadow: var(--button-shadow);
   border-radius: var(--button-radius);
   transition:
@@ -83,9 +84,10 @@
     background-color 220ms ease,
     background-image 220ms ease,
     border-color 180ms ease,
-    outline-color 180ms ease,
     color 180ms ease,
     filter 180ms ease;
+  // No `outline-color` transition: focus sets a transparent outline (`focus-ring-shadow`), which
+  // would otherwise fade in from `currentcolor` and flash a text-coloured ring.
 
   &:hover {
     text-decoration: none;
@@ -93,9 +95,7 @@
 
   &:focus-visible,
   &:focus {
-    box-shadow:
-      0 0 0 3px var(--focus-ring),
-      var(--button-shadow-hover);
+    @include focus-ring-shadow(0 0 0 3px var(--theme-focus-ring-color), var(--button-shadow-hover));
   }
 
   &:disabled,

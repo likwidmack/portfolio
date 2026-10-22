@@ -71,7 +71,7 @@
 }
 
 :where(h1, h2, h3, h4, h5, h6) {
-  color: var(--text-color);
+  color: var(--theme-text-color);
   text-transform: none;
   text-shadow: none;
 }
@@ -101,19 +101,19 @@
 
 .tag,
 .tag-list li {
-  border: 1px solid var(--portfolio-rule);
+  border: 1px solid var(--portfolio-rule-color);
   border-radius: 2px;
   padding: 0.3rem 0.65rem;
-  color: var(--text-secondary-color, var(--text-color));
+  color: var(--theme-text-secondary-color, var(--theme-text-color));
   @include portfolio-type-meta;
 }
 
 a:where(:not(.p-button):not([class*='btn'])) {
-  color: var(--portfolio-rose, var(--primary-color));
+  color: var(--portfolio-rose-color, var(--theme-primary-ink-color));
 
   &:hover,
   &:focus-visible {
-    color: var(--portfolio-rose-strong, var(--primary-color));
+    color: var(--portfolio-rose-strong-color, var(--theme-primary-ink-color));
   }
 }
 
@@ -140,7 +140,7 @@ html {
 .portfolio-hero {
   @include portfolio-stack;
   padding-block: var(--portfolio-space);
-  border-bottom: 1px solid var(--portfolio-rule);
+  border-bottom: 1px solid var(--portfolio-rule-color);
 }
 
 .portfolio-page {
@@ -167,20 +167,32 @@ html {
   }
 }
 
-// PrimeVue dialogs (teleported to <body>, so they cannot be scoped): the glass surface used by
-// the rest of the chrome instead of the plain default background.
+// PrimeVue dialogs (teleported to <body>, so they cannot be scoped): the soft surface used by
+// the rest of the chrome instead of the plain default background. No backdrop-filter: the mask
+// behind is opaque, and the blur makes iOS Safari stretch the close transition to seconds.
 .p-dialog {
   width: min(32rem, calc(100vw - 2rem));
   max-height: calc(100dvh - 2rem);
   @include portfolio-soft-surface;
-  backdrop-filter: blur(20px);
 }
 
 // The PrimeVue theme's mask token resolves to an opaque surface instead of its intended dark
 // scrim (`color-mix(..., black)`), which also hides the glass above — an app-level fix rather
 // than touching the shared `@tgmc/theme` preset.
 .p-dialog-mask {
-  background: color-mix(in srgb, var(--main-background) 35%, black) !important;
+  background: color-mix(in srgb, var(--theme-main-background-color) 35%, black) !important;
+}
+
+// PrimeVue removes the mask only after the dialog's leave transition ends, which iOS Safari can
+// delay by seconds. Hide it and let taps through as soon as the close starts (`pointer-events`
+// is an inline style on both elements, hence `!important`).
+.p-dialog-mask.p-overlay-mask-leave-active {
+  background: transparent !important;
+  pointer-events: none !important;
+}
+
+.p-dialog.p-dialog-leave-active {
+  pointer-events: none !important;
 }
 
 // Motion preference: `data-motion` (Personalize) wins; otherwise follow the OS.
@@ -195,6 +207,13 @@ html[data-motion='reduced'] {
   }
 }
 
+// Personalize open: inert the phone Menu so Done cannot click-through onto it.
+html[data-personalize-open] .primary-nav__menu-trigger {
+  pointer-events: none;
+}
+
+// The OS setting collapses the same things as `data-motion='reduced'` (transitions included), so
+// one preference gives one behaviour (guarded by tests/reduced-motion.spec.ts).
 @media (prefers-reduced-motion: reduce) {
   html:not([data-motion='playful']) {
     *,
@@ -203,6 +222,7 @@ html[data-motion='reduced'] {
       scroll-behavior: auto !important;
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
     }
   }
 }

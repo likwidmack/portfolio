@@ -35,12 +35,17 @@ a.btn {
   }
 }
 
+// Ghost links keep their hover underline (the non-colour hover cue) over `a.btn:hover`.
+a.btn:is([data-variant='ghost'], .btn--ghost, .ghost):hover {
+  text-decoration-line: underline;
+}
+
 .btn-theme {
   @include button-theme;
 }
 
 .btn {
-  text-shadow: -1px -1px 1px color-mix(in srgb, var(--primary-inverted) 52%, transparent);
+  text-shadow: -1px -1px 1px color-mix(in srgb, var(--theme-primary-inverted-color) 52%, transparent);
 
   &[data-variant='2d'],
   &[data-variant='solid'],
@@ -48,19 +53,30 @@ a.btn {
   &._2d,
   &--solid,
   &.solid {
-    background-color: var(--primary-color);
-    background-image: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
-    color: var(--button-secondary-fg, var(--button-fg));
-    border-color: rgba($color-white, 0.18);
+    // Dark: primary + secondary→primary gradient; light: the white-text fill, no gradient
+    // (`--button-solid-bg*` are `none` in light mode only).
+    background-color: var(--theme-button-fill-color);
+    background-image: var(
+      --button-solid-bg,
+      linear-gradient(135deg, var(--theme-secondary-fill-color) 0%, var(--theme-primary-color) 100%)
+    );
+    color: var(--theme-button-secondary-fg-color, var(--theme-button-fg-color));
+    border-color: color-mix(in srgb, var(--theme-paper-light-color) 18%, transparent);
 
     &:hover {
-      background-color: var(--primary-color-hover);
-      background-image: linear-gradient(135deg, var(--secondary-inverted) 0%, var(--primary-color) 100%);
+      background-color: var(--theme-button-hover-fill-color);
+      background-image: var(
+        --button-solid-bg-hover,
+        linear-gradient(135deg, var(--theme-secondary-inverted-color) 0%, var(--theme-primary-color) 100%)
+      );
     }
 
     &:active {
-      background-color: var(--primary-color-active);
-      background-image: linear-gradient(125deg, var(--secondary-inverted) 0%, var(--primary-color) 100%);
+      background-color: var(--theme-button-hover-fill-color);
+      background-image: var(
+        --button-solid-bg-hover,
+        linear-gradient(125deg, var(--theme-secondary-inverted-color) 0%, var(--theme-primary-color) 100%)
+      );
     }
   }
 
@@ -70,21 +86,28 @@ a.btn {
     background: {
       image: linear-gradient(
         220deg,
-        color-mix(in srgb, var(--primary-color) 16%, transparent) 0%,
-        rgba($color-black, 0.08) 100%
+        color-mix(in srgb, var(--theme-primary-color) 16%, transparent) 0%,
+        color-mix(in srgb, var(--theme-shadow-color) 8%, transparent) 100%
       );
       color: transparent;
     }
-    color: var(--text-color);
-    border-color: color-mix(in srgb, var(--primary-color) 18%, transparent);
-    text-shadow: -1px -1px 1px color-mix(in srgb, var(--primary-inverted) 52%, transparent);
+    color: var(--theme-text-color);
+    border-color: color-mix(in srgb, var(--theme-primary-color) 18%, transparent);
+    text-shadow: -1px -1px 1px color-mix(in srgb, var(--theme-primary-inverted-color) 52%, transparent);
 
+    // Keep the soft ground: `button-base` hover / active paint the primary hover fill, which
+    // would sit under this text-colour label.
     &:hover {
+      background-color: transparent;
       background-image: linear-gradient(
         220deg,
-        rgba($color-black, 0.12) 0%,
-        color-mix(in srgb, var(--primary-color) 20%, transparent) 100%
+        color-mix(in srgb, var(--theme-shadow-color) 12%, transparent) 0%,
+        color-mix(in srgb, var(--theme-primary-color) 20%, transparent) 100%
       );
+    }
+
+    &:active {
+      background-color: transparent;
     }
   }
 
@@ -92,22 +115,24 @@ a.btn {
   &--outline,
   &.outline {
     background: transparent none;
-    color: var(--primary-color);
-    border-color: color-mix(in srgb, var(--primary-color) 45%, transparent);
-    box-shadow: inset 0 0 0 0 color-mix(in srgb, var(--primary-color) 0%, transparent);
-    text-shadow: -1px -1px 1px color-mix(in srgb, var(--primary-inverted) 76%, transparent);
+    color: var(--theme-primary-ink-color);
+    border-color: color-mix(in srgb, var(--theme-primary-color) 45%, transparent);
+    box-shadow: inset 0 0 0 0 color-mix(in srgb, var(--theme-primary-color) 0%, transparent);
+    text-shadow: -1px -1px 1px color-mix(in srgb, var(--theme-primary-inverted-color) 76%, transparent);
 
+    // Hover / active: a computed wash (primary-ink text stays ≥ 4.5:1 on it over page and
+    // surfaces, `buildWashTokens`), an inset ring and the lift shadow — never colour alone.
     &:hover {
-      background-color: color-mix(in srgb, var(--primary-color) 12%, transparent);
+      background-color: color-mix(in srgb, var(--theme-primary-wash-color) $theme-wash-alpha, transparent);
       box-shadow:
-        inset 0 -3rem 0 0 color-mix(in srgb, var(--primary-color) 15%, transparent),
+        inset 0 0 0 1px var(--theme-primary-color),
         var(--button-shadow-hover);
     }
 
     &:active {
-      background-color: color-mix(in srgb, var(--secondary-color) 16%, transparent);
+      background-color: color-mix(in srgb, var(--theme-secondary-wash-color) $theme-wash-alpha, transparent);
       box-shadow:
-        inset 0 -3rem 0 0 color-mix(in srgb, var(--secondary-color) 20%, transparent),
+        inset 0 0 0 1px var(--theme-secondary-color),
         var(--button-shadow-active);
     }
   }
@@ -117,18 +142,21 @@ a.btn {
   &.ghost {
     background: transparent none;
     border-color: transparent;
-    color: var(--primary-color);
+    color: var(--theme-primary-ink-color);
     box-shadow: none;
-    text-shadow: -1px -1px 1px color-mix(in srgb, var(--primary-inverted) 76%, transparent);
+    text-shadow: -1px -1px 1px color-mix(in srgb, var(--theme-primary-inverted-color) 76%, transparent);
 
+    // No lift on ghost: hover underlines the label (see `a.btn:is(…ghost…)` below for links).
     &:hover {
-      background-color: color-mix(in srgb, var(--primary-color) 18%, transparent);
+      background-color: color-mix(in srgb, var(--theme-primary-wash-color) $theme-wash-alpha, transparent);
       box-shadow: none;
       transform: translateY(0);
+      text-decoration-line: underline;
+      text-underline-offset: 0.2em;
     }
 
     &:active {
-      background-color: color-mix(in srgb, var(--secondary-color) 20%, transparent);
+      background-color: color-mix(in srgb, var(--theme-secondary-wash-color) $theme-wash-alpha, transparent);
       box-shadow: none;
       transform: translateY(0);
     }
@@ -155,51 +183,71 @@ a.btn {
   background: {
     image: linear-gradient(
       135deg,
-      color-mix(in srgb, var(--gray-400) 8%, transparent) 0%,
-      color-mix(in srgb, var(--gray-400) 5%, transparent) 100%
+      color-mix(in srgb, var(--theme-gray-400-color) 8%, transparent) 0%,
+      color-mix(in srgb, var(--theme-gray-400-color) 5%, transparent) 100%
     );
     color: transparent;
   }
-  color: color-mix(in srgb, var(--primary-color) 26%, var(--text-color));
+  color: color-mix(in srgb, var(--theme-primary-ink-color) 26%, var(--theme-text-color));
   text-shadow:
-    1px 1px 0 color-mix(in srgb, var(--gray-400) 50%, transparent),
-    -1px -1px 0 color-mix(in srgb, var(--gray-200) 40%, transparent);
-  border-color: rgba($grey-300, 0.34);
+    1px 1px 0 color-mix(in srgb, var(--theme-gray-400-color) 50%, transparent),
+    -1px -1px 0 color-mix(in srgb, var(--theme-gray-200-color) 40%, transparent);
+  border-color: color-mix(in srgb, var(--theme-paper-light-color) 34%, transparent);
   box-shadow:
-    0 10px 24px rgba($shadow-color, 0.22),
-    2px 2px 0 color-mix(in srgb, var(--gray-400) 35%, transparent),
-    inset 2px 2px 0 color-mix(in srgb, var(--gray-300) 68%, transparent);
+    0 10px 24px color-mix(in srgb, var(--theme-shadow-color) 22%, transparent),
+    2px 2px 0 color-mix(in srgb, var(--theme-gray-400-color) 35%, transparent),
+    inset 2px 2px 0 color-mix(in srgb, var(--theme-gray-300-color) 68%, transparent);
   -webkit-backdrop-filter: blur(var(--blur-lg)) saturate(1.2);
   backdrop-filter: blur(var(--blur-lg)) saturate(1.2);
+
+  // Keep the glass ground (not the primary hover fill from `button-base`) under its label.
+  &:hover,
+  &:active {
+    background-color: transparent;
+  }
 
   &:hover {
     background-image: linear-gradient(
       135deg,
-      color-mix(in srgb, var(--gray-300) 34%, transparent) 0%,
-      color-mix(in srgb, var(--gray-300) 14%, transparent) 100%
+      color-mix(in srgb, var(--theme-gray-300-color) 34%, transparent) 0%,
+      color-mix(in srgb, var(--theme-gray-300-color) 14%, transparent) 100%
     );
     box-shadow:
-      0 14px 28px rgba($shadow-color, 0.28),
-      2px 2px 0 color-mix(in srgb, var(--gray-400) 47%, transparent),
-      inset 2px 2px 0 color-mix(in srgb, var(--gray-300) 82%, transparent);
+      0 14px 28px color-mix(in srgb, var(--theme-shadow-color) 28%, transparent),
+      2px 2px 0 color-mix(in srgb, var(--theme-gray-400-color) 47%, transparent),
+      inset 2px 2px 0 color-mix(in srgb, var(--theme-gray-300-color) 82%, transparent);
     transform: translateY(-1px);
   }
 
   &:focus-visible {
-    border-color: rgba($color-gray-lt, 0.65);
+    border-color: color-mix(in srgb, var(--theme-paper-light-color) 65%, transparent);
     box-shadow:
-      0 0 0 3px var(--button-focus-ring),
-      0 14px 28px color-mix(in srgb, var(--main-color) 28%, color-mix(in srgb, var(--main-background) 28%, transparent)),
-      2px 2px 0 color-mix(in srgb, var(--gray-400) 35%, transparent),
-      inset -2px 2px 0 color-mix(in srgb, var(--gray-300) 68%, transparent);
+      0 0 0 3px var(--theme-focus-ring-color),
+      0 14px 28px
+        color-mix(
+          in srgb,
+          var(--theme-main-color) 28%,
+          color-mix(in srgb, var(--theme-main-background-color) 28%, transparent)
+        ),
+      2px 2px 0 color-mix(in srgb, var(--theme-gray-400-color) 35%, transparent),
+      inset -2px 2px 0 color-mix(in srgb, var(--theme-gray-300-color) 68%, transparent);
   }
 
   &:active {
-    background-image: linear-gradient(135deg, rgba($grey-300, 0.28) 0%, rgba($grey-300, 0.08) 100%);
+    background-image: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--theme-paper-light-color) 28%, transparent) 0%,
+      color-mix(in srgb, var(--theme-paper-light-color) 8%, transparent) 100%
+    );
     box-shadow:
-      0 6px 16px color-mix(in srgb, var(--main-color) 22%, color-mix(in srgb, var(--main-background) 22%, transparent)),
-      -2px -2px 0 color-mix(in srgb, var(--gray-400) 65%, transparent),
-      inset -2px -2px 0 color-mix(in srgb, var(--gray-300) 96%, transparent);
+      0 6px 16px
+        color-mix(
+          in srgb,
+          var(--theme-main-color) 22%,
+          color-mix(in srgb, var(--theme-main-background-color) 22%, transparent)
+        ),
+      -2px -2px 0 color-mix(in srgb, var(--theme-gray-400-color) 65%, transparent),
+      inset -2px -2px 0 color-mix(in srgb, var(--theme-gray-300-color) 96%, transparent);
     transform: translateY(1px) scale(0.995);
   }
 
@@ -208,11 +256,11 @@ a.btn {
   &.is-disabled {
     background-image: linear-gradient(
       135deg,
-      color-mix(in srgb, var(--gray-400) 16%, transparent) 0%,
-      color-mix(in srgb, var(--gray-400) 8%, transparent) 100%
+      color-mix(in srgb, var(--theme-gray-400-color) 16%, transparent) 0%,
+      color-mix(in srgb, var(--theme-gray-400-color) 8%, transparent) 100%
     );
-    border-color: rgba($color-white, 0.2);
-    color: color-mix(in srgb, var(--text-color) 70%, transparent);
+    border-color: color-mix(in srgb, var(--theme-paper-light-color) 20%, transparent);
+    color: color-mix(in srgb, var(--theme-text-color) 70%, transparent);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
@@ -227,7 +275,7 @@ a.btn {
     background-image: linear-gradient(
       90deg,
       transparent,
-      color-mix(in srgb, var(--gray-200) 80%, transparent),
+      color-mix(in srgb, var(--theme-gray-200-color) 80%, transparent),
       transparent
     );
   }
@@ -242,9 +290,9 @@ a.btn {
     height: auto;
     background-image: linear-gradient(
       180deg,
-      color-mix(in srgb, var(--gray-200) 80%, transparent),
+      color-mix(in srgb, var(--theme-gray-200-color) 80%, transparent),
       transparent,
-      color-mix(in srgb, var(--gray-200) 30%, transparent)
+      color-mix(in srgb, var(--theme-gray-200-color) 30%, transparent)
     );
   }
 }
@@ -252,25 +300,25 @@ a.btn {
 // 3D variants
 .btn[data-variant='3d'],
 .btn--3d {
-  --btn-3d-edge: color-mix(in srgb, #{$shadow-alt-color} 42%, transparent);
+  --btn-3d-edge: color-mix(in srgb, var(--theme-shadow-color) 42%, transparent);
   transform-style: preserve-3d;
-  border-color: rgba($color-white, 0.18);
+  border-color: color-mix(in srgb, var(--theme-paper-light-color) 18%, transparent);
   box-shadow:
     0 var(--button-press-depth) 0 var(--btn-3d-edge),
-    0 12px 24px rgba($shadow-alt-color, 0.26);
+    0 12px 24px color-mix(in srgb, var(--theme-shadow-color) 26%, transparent);
 
   &:hover {
     transform: translateY(-2px);
     box-shadow:
       0 calc(var(--button-press-depth) + 1px) 0 var(--btn-3d-edge),
-      0 16px 28px rgba($shadow-alt-color, 0.32);
+      0 16px 28px color-mix(in srgb, var(--theme-shadow-color) 32%, transparent);
   }
 
   &:active {
     transform: translateY(calc(var(--button-press-depth) - 1px));
     box-shadow:
       0 1px 0 var(--btn-3d-edge),
-      0 6px 12px rgba($shadow-alt-color, 0.24);
+      0 6px 12px color-mix(in srgb, var(--theme-shadow-color) 24%, transparent);
   }
 }
 
@@ -296,7 +344,11 @@ a.btn {
     content: '';
     position: absolute;
     inset: 0;
-    background-image: linear-gradient(120deg, rgba($color-white, 0.34) 0%, rgba($color-white, 0) 45%);
+    background-image: linear-gradient(
+      120deg,
+      color-mix(in srgb, var(--theme-paper-light-color) 34%, transparent) 0%,
+      color-mix(in srgb, var(--theme-paper-light-color) 0%, transparent) 45%
+    );
     transform: translateX(-140%);
     transition: transform 400ms ease;
     pointer-events: none;
@@ -514,7 +566,12 @@ a.btn {
   content: '';
   position: absolute;
   inset: 0;
-  background-image: linear-gradient(90deg, transparent 0%, rgba($color-white, 0.28) 50%, transparent 100%);
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--theme-paper-light-color) 28%, transparent) 50%,
+    transparent 100%
+  );
   background-size: 200% 100%;
   opacity: 0;
   pointer-events: none;
@@ -534,7 +591,7 @@ a.btn {
   width: 0.5rem;
   height: 0.5rem;
   border-radius: 9999px;
-  background-image: rgba($color-white, 0.45);
+  background-color: color-mix(in srgb, var(--theme-paper-light-color) 45%, transparent);
   transform: translate(-50%, -50%) scale(0.2);
   opacity: 0;
   pointer-events: none;
@@ -561,7 +618,7 @@ a.btn {
       > input[type='button'],
       > input[type='submit'],
       > input[type='reset'] {
-        min-height: 2.75rem;
+        min-height: var(--touch-target);
         padding: 0.65rem 1.1rem;
       }
     }

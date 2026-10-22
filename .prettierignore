@@ -17,5 +17,10 @@
 *.lock
 .*ignore
 
-foundation/
-primevue/
+/theme/core/scss/_archive/2026-10-14-primevue-v3/
+/theme/core/scss/_archive/2026-10-14-foundation-normalize/normalize.scss
+
+# Written by npm run media:site-manifest (serializeSiteManifest owns the format)
+/core/web/content/media.json
+
+package-lock.json

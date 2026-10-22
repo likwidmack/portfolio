@@ -1,8 +1,19 @@
-// Foundation XY layout subset (no typography/forms/components chrome).
-// Use a repo-relative path (not the package name) so Vite's Sass importer does not
-// re-resolve `../_vendor/*` through `@tgmc/theme-foundation` package exports.
+// Foundation XY layout subset (no typography/forms/components chrome) from npm `foundation-sites`.
+// `pkg:` URLs need a Node package importer (apps: `scssImporters`; Sass tests: `sass.NodePackageImporter`).
 @import '../../bridges/foundation-settings';
-@import '../../../../foundation/scss/layout';
+@import 'pkg:foundation-sites/scss/vendor/normalize';
+@import 'pkg:foundation-sites/_vendor/sassy-lists/stylesheets/helpers/missing-dependencies';
+@import 'pkg:foundation-sites/_vendor/sassy-lists/stylesheets/helpers/true';
+@import 'pkg:foundation-sites/_vendor/sassy-lists/stylesheets/functions/contain';
+@import 'pkg:foundation-sites/_vendor/sassy-lists/stylesheets/functions/purge';
+@import 'pkg:foundation-sites/_vendor/sassy-lists/stylesheets/functions/remove';
+@import 'pkg:foundation-sites/_vendor/sassy-lists/stylesheets/functions/replace';
+@import 'pkg:foundation-sites/_vendor/sassy-lists/stylesheets/functions/to-list';
+@import 'pkg:foundation-sites/scss/util/util';
+@import 'pkg:foundation-sites/scss/global';
+@import 'pkg:foundation-sites/scss/xy-grid/xy-grid';
+@import 'pkg:foundation-sites/scss/components/flex';
+@import 'pkg:foundation-sites/scss/components/visibility';
 
 $global-flexbox: true !global;
 $xy-grid: true !global;

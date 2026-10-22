@@ -1,9 +1,9 @@
 @use 'config' as *;
 @use 'layers/normalize';
 @use 'layers/foundation';
-@use 'layers/primevue';
 @use 'layers/theme';
 
+// `primevue` is filled by PrimeVue's Nora styled-mode CSS (`themePrimeVueCssLayer`, src/primevue.ts).
 @layer normalize, foundation, primevue, theme;
 
 @import 'layout';

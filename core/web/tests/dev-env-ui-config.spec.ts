@@ -8,12 +8,13 @@ const navPath = join(import.meta.dirname, '../app/components/AppPrimaryNav/index
 const envDocsPath = join(import.meta.dirname, '../../../docs/web/setup/environment.md');
 
 describe('dev env UI Nuxt config contract', () => {
-  it('wires showEnvIndicator and a11y per Nuxt env layer', async () => {
+  it('shows the env chip for every SYS_ENV but production, and a11y per Nuxt env layer', async () => {
     const config = await readFile(nuxtConfigPath, 'utf8');
 
-    expect(config).toMatch(/\$development:\s*\{[\s\S]*showEnvIndicator:\s*true/);
-    expect(config).toMatch(/\$test:\s*\{[\s\S]*showEnvIndicator:\s*true/);
-    expect(config).toMatch(/\$production:\s*\{[\s\S]*showEnvIndicator:\s*false/);
+    expect(config).toMatch(/showEnvIndicator:\s*env\s*!==\s*'production'/);
+    expect(config).not.toMatch(
+      /\$(development|test|production):\s*\{\s*runtimeConfig:\s*\{\s*public:\s*\{\s*showEnvIndicator/
+    );
     expect(config).toMatch(/\$production:\s*\{[\s\S]*a11y:\s*\{[\s\S]*enabled:\s*false/);
     expect(config).not.toMatch(/\$env:\s*undefined/);
     expect(config).not.toMatch(/\$meta:\s*undefined/);

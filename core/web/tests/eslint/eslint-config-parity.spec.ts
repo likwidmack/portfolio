@@ -39,7 +39,9 @@ describe('eslint.config.mjs vs legacy .eslintrc intent', () => {
     expect(calculated.rules?.['no-unused-vars']?.[0]).toBe(1);
     expect(calculated.rules?.['no-unused-expressions']?.[0]).toBe(1);
     expect(calculated.rules?.['no-unused-labels']?.[0]).toBe(1);
-  });
+    // The first call loads the whole flat config (Nx, Prettier, Vue plugins): ~2 s alone, 20 s+
+    // under a full parallel run.
+  }, 60_000);
 
   it('enables vue-pug tokenizer and rules on Vue SFCs', async () => {
     const eslint = new ESLint({
@@ -54,5 +56,5 @@ describe('eslint.config.mjs vs legacy .eslintrc intent', () => {
       'vue-eslint-parser-template-tokenizer-pug'
     );
     expect(calculated.rules?.['vue-pug/no-parsing-error']?.[0]).toBe(2);
-  });
+  }, 60_000);
 });

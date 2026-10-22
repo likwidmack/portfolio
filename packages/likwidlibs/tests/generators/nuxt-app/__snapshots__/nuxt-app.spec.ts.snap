@@ -1,0 +1,1603 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`nuxt-app generator > generates the expected files for aws-sam 1`] = `
+{
+  ".github/workflows/portal-cd-prod.yml": "# CD — AWS SAM production deploy for @tgmc/portal. Mirrors .github/workflows/cd-aws-prod.yml:
+#   - GitHub Release published (non-prerelease) → deploy the tagged commit after production Environment approval
+#   - workflow_dispatch → requires input confirm=deploy + production Environment approval
+name: CD Deploy (portal - AWS SAM production)
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type deploy to confirm production release'
+        required: true
+        default: ''
+
+permissions:
+  contents: read
+  id-token: write # AWS OIDC
+
+concurrency:
+  group: cd-deploy-portal-prod
+  cancel-in-progress: false
+
+jobs:
+  deploy-production:
+    name: SAM deploy (production)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || !github.event.release.prerelease
+    environment: production
+    env:
+      HUSKY: '0'
+      AWS_REGION: \${{ vars.AWS_REGION || secrets.AWS_REGION || 'us-west-2' }}
+    steps:
+      - name: Confirm production intent (manual dispatch only)
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          if [ "\${{ github.event.inputs.confirm }}" != "deploy" ]; then
+            echo "Refusing production deploy: set input confirm=deploy"
+            exit 1
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: \${{ github.event_name == 'release' && github.event.release.tag_name || github.ref }}
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Setup SAM CLI
+        uses: aws-actions/setup-sam@v2
+        with:
+          use-installer: true
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: \${{ secrets.AWS_ROLE_ARN }}
+          aws-region: \${{ env.AWS_REGION }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build workspace libraries
+        run: npm run build:libs
+
+      - name: Build SSR app for Lambda
+        run: npx nx run @tgmc/portal:build
+        env:
+          SYS_ENV: production
+          NITRO_PRESET: aws_lambda
+
+      - name: SAM deploy
+        run: |
+          sam deploy \\
+            --template-file core/portal/infra/template.yaml \\
+            --stack-name tgmc-portal-prod \\
+            --parameter-overrides Stage=production \\
+            --capabilities CAPABILITY_IAM \\
+            --resolve-s3 \\
+            --no-confirm-changeset \\
+            --no-fail-on-empty-changeset
+
+      - name: Smoke test
+        run: |
+          url=$(aws cloudformation describe-stacks --stack-name tgmc-portal-prod \\
+            --query "Stacks[0].Outputs[?OutputKey=='HttpApiUrl'].OutputValue" --output text)
+          curl --fail --silent --show-error --retry 5 --retry-delay 5 --output /dev/null "$url"
+",
+  ".github/workflows/portal-cd.yml": "# CD — AWS SAM test deploy for @tgmc/portal. Mirrors .github/workflows/cd-aws.yml:
+# a gate job decides whether the app is affected, then deploy-test runs in the \`test\` Environment
+# (its AWS_ROLE_ARN secret is trusted by repo:OWNER/REPO:environment:test — docs/cicd.md).
+name: CD Deploy (portal - AWS SAM test)
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'core/portal/**'
+      - 'packages/**'
+      - 'theme/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write # AWS OIDC
+
+concurrency:
+  group: cd-deploy-portal-test
+  cancel-in-progress: false
+
+jobs:
+  deployable-gate:
+    name: Deployable gate
+    runs-on: ubuntu-latest
+    env:
+      HUSKY: '0'
+    outputs:
+      deployable: \${{ steps.gate.outputs.deployable }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Use Node.js 24
+        if: github.event_name == 'push'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        if: github.event_name == 'push'
+        run: npm ci
+
+      - name: Derive Nx base/head
+        if: github.event_name == 'push'
+        uses: nrwl/nx-set-shas@v4
+
+      - name: Is @tgmc/portal affected?
+        id: gate
+        run: |
+          if [ "\${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "deployable=true" >> "$GITHUB_OUTPUT"
+          elif npx nx show projects --affected --base="$NX_BASE" --head="$NX_HEAD" | grep -qx '@tgmc/portal'; then
+            echo "deployable=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "deployable=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  deploy-test:
+    name: SAM deploy (test)
+    needs: deployable-gate
+    if: needs.deployable-gate.outputs.deployable == 'true'
+    runs-on: ubuntu-latest
+    environment: test
+    env:
+      HUSKY: '0'
+      AWS_REGION: \${{ vars.AWS_REGION || secrets.AWS_REGION || 'us-west-2' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Setup SAM CLI
+        uses: aws-actions/setup-sam@v2
+        with:
+          use-installer: true
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: \${{ secrets.AWS_ROLE_ARN }}
+          aws-region: \${{ env.AWS_REGION }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build workspace libraries
+        run: npm run build:libs
+
+      - name: Build SSR app for Lambda
+        run: npx nx run @tgmc/portal:build
+        env:
+          SYS_ENV: test
+          NITRO_PRESET: aws_lambda
+
+      - name: SAM deploy
+        run: |
+          sam deploy \\
+            --template-file core/portal/infra/template.yaml \\
+            --stack-name tgmc-portal-test \\
+            --parameter-overrides Stage=test \\
+            --capabilities CAPABILITY_IAM \\
+            --resolve-s3 \\
+            --no-confirm-changeset \\
+            --no-fail-on-empty-changeset
+
+      - name: Smoke test
+        run: |
+          url=$(aws cloudformation describe-stacks --stack-name tgmc-portal-test \\
+            --query "Stacks[0].Outputs[?OutputKey=='HttpApiUrl'].OutputValue" --output text)
+          curl --fail --silent --show-error --retry 5 --retry-delay 5 --output /dev/null "$url"
+",
+  "core/portal-e2e/cypress.config.ts": "import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
+import { defineConfig } from 'cypress';
+
+const require = createRequire(import.meta.url);
+
+export default defineConfig({
+  e2e: {
+    baseUrl: process.env.E2E_BASE_URL || 'http://127.0.0.1:4200',
+    specPattern: 'src/e2e/**/*.cy.ts',
+    supportFile: 'src/support/e2e.ts',
+    setupNodeEvents(on) {
+      on('task', {
+        axeSource: () =>
+          readFileSync(require.resolve('axe-core/axe.min.js'), 'utf8'),
+      });
+    },
+  },
+});
+",
+  "core/portal-e2e/package.json": "{
+  "name": "@tgmc/portal-e2e",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "axe-core": "^4.12.1",
+    "cypress": "^15.8.0"
+  },
+  "nx": {
+    "tags": [
+      "type:e2e",
+      "scope:portal"
+    ],
+    "implicitDependencies": [
+      "@tgmc/portal"
+    ],
+    "targets": {
+      "e2e": {
+        "dependsOn": [],
+        "executor": "nx:run-commands",
+        "options": {
+          "cwd": "{projectRoot}",
+          "command": "cypress run",
+          "env": {
+            "TS_NODE_COMPILER_OPTIONS": "{\\"customConditions\\":null}"
+          }
+        },
+        "outputs": [
+          "{projectRoot}/test-output/cypress/videos",
+          "{projectRoot}/test-output/cypress/screenshots"
+        ]
+      }
+    }
+  }
+}
+",
+  "core/portal-e2e/src/e2e/a11y-audit.cy.ts": "describe('portal accessibility audit', () => {
+  beforeEach(() => {
+    cy.visit('/');
+  });
+
+  it('has no WCAG 2.2 AA axe violations on the landing page', () => {
+    cy.runAxe({
+      runOnly: {
+        type: 'tag',
+        values: ['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'],
+      },
+    }).then((results) => {
+      const summary = results.violations.map(
+        (violation) => \`\${violation.id}: \${violation.nodes.length} node(s)\`,
+      );
+      expect(summary, 'axe violations').to.deep.equal([]);
+    });
+  });
+
+  it('moves keyboard focus to a visible skip link first', () => {
+    cy.press(Cypress.Keyboard.Keys.TAB);
+    cy.focused().should('have.class', 'ui-skip-link').and('be.visible');
+  });
+});
+",
+  "core/portal-e2e/src/support/e2e.ts": "import type { AxeResults, RunOptions } from 'axe-core';
+
+declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace Cypress {
+    interface Chainable {
+      /** Injects axe-core into the page under test and runs it; yields the axe results. */
+      runAxe(options?: RunOptions): Chainable<AxeResults>;
+    }
+  }
+}
+
+type AxeWindow = Window & {
+  axe?: { run(context: Document, options?: RunOptions): Promise<AxeResults> };
+};
+
+Cypress.Commands.add('runAxe', (options?: RunOptions) =>
+  cy.task<string>('axeSource', undefined, { log: false }).then((source) =>
+    cy.window({ log: false }).then((win) => {
+      const axeWindow = win as unknown as AxeWindow;
+      if (!axeWindow.axe) win.eval(source);
+      const axe = axeWindow.axe;
+      if (!axe) throw new Error('axe-core did not load into the page');
+      return axe.run(win.document, options);
+    }),
+  ),
+);
+",
+  "core/portal-e2e/tsconfig.json": "{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "out-tsc/cypress",
+    "allowJs": true,
+    "lib": ["es2022", "dom"],
+    "types": ["cypress", "node"],
+    "sourceMap": false
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.js",
+    "cypress.config.ts",
+    "**/*.cy.ts",
+    "**/*.d.ts"
+  ],
+  "exclude": ["out-tsc", "test-output", "eslint.config.js"]
+}
+",
+  "core/portal/.gitignore": ".nuxt
+.output
+.data
+dist
+node_modules
+coverage
+*.log
+.env
+.env.*
+!.env.example
+",
+  "core/portal/app/app.vue": "<script setup lang="ts">
+// Inherits UiSkipLink and UiAnnouncer from @tgmc/nuxt-layer-base
+</script>
+
+<template>
+  <div class="app-layout">
+    <UiSkipLink />
+    <UiAnnouncer />
+    <header class="app-header">
+      <nav aria-label="Main Navigation">
+        <span class="app-title">portal</span>
+      </nav>
+    </header>
+    <main id="main-content" class="app-main">
+      <NuxtPage />
+    </main>
+    <footer class="app-footer">
+      <p>&copy; {{ new Date().getFullYear() }} Tamara Gisele Mack</p>
+    </footer>
+  </div>
+</template>
+
+<style lang="scss">
+.app-layout {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--theme-paper-color, #ffffff);
+  color: var(--theme-primary-ink-color, #111827);
+}
+
+.app-header {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--theme-border-color, #e5e7eb);
+}
+
+.app-title {
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--theme-primary-ink-color, #111827);
+}
+
+.app-main {
+  flex: 1;
+  padding: 2rem 1.5rem;
+  max-width: 64rem;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.app-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--theme-border-color, #e5e7eb);
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--theme-secondary-ink-color, #6b7280);
+}
+</style>
+",
+  "core/portal/app/pages/index.vue": "<script setup lang="ts">
+const { announce } = useA11yAnnouncer();
+
+function handleAction() {
+  announce('Action performed successfully', 'polite');
+}
+</script>
+
+<template>
+  <section class="welcome-hero" aria-labelledby="hero-title">
+    <h1 id="hero-title">Welcome to portal</h1>
+    <p class="hero-tagline">
+      Scaffolded with TGMC Nuxt 4 base layer, design tokens, and WCAG 2.2 AA
+      accessibility.
+    </p>
+    <div class="action-row">
+      <button type="button" class="action-btn" @click="handleAction">
+        Get Started
+      </button>
+    </div>
+  </section>
+</template>
+
+<style lang="scss" scoped>
+.welcome-hero {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  align-items: flex-start;
+}
+
+.hero-tagline {
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: var(--theme-secondary-ink-color, #4b5563);
+}
+
+.action-row {
+  margin-top: 0.5rem;
+}
+
+.action-btn {
+  min-height: var(--touch-target, 44px);
+  min-width: var(--touch-target, 44px);
+  padding: 0.625rem 1.25rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 0.375rem;
+  background-color: var(--theme-primary-color, #1e3a8a);
+  color: var(--theme-on-primary-color, #ffffff);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 0.9;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--theme-focus-ring-color, #0284c7);
+    outline-offset: 2px;
+  }
+}
+</style>
+",
+  "core/portal/eslint.config.js": "// @ts-check
+import { createConfigForNuxt } from '@nuxt/eslint-config/flat';
+
+export default createConfigForNuxt(
+  { features: { typescript: true } },
+  { ignores: ['.nuxt/**', '.output/**', 'dist/**', 'node_modules/**'] },
+  {
+    files: ['app/app.vue', 'app/pages/**/*.vue', 'app/layouts/**/*.vue'],
+    rules: { 'vue/multi-word-component-names': 'off' },
+  },
+  {
+    files: ['server/**/*', 'app/pages/**/*', 'app/components/**/*'],
+    ignores: ['**/*.client.vue', '**/*.client.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: '@tgmc/utilities/browser',
+              message:
+                'Forbidden: @tgmc/utilities/browser cannot be imported into SSR or universal code. Use @tgmc/utilities/universal or place in a *.client.{ts,vue} file.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+);
+",
+  "core/portal/infra/template.yaml": "AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: '@tgmc/portal — Nuxt SSR on Lambda behind an HTTP API'
+
+Parameters:
+  Stage:
+    Type: String
+    AllowedValues: [test, production]
+
+Globals:
+  Function:
+    Runtime: nodejs24.x
+    MemorySize: 1024
+    Timeout: 15
+
+Resources:
+  HttpApi:
+    Type: AWS::Serverless::HttpApi
+
+  NitroFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      # Nitro aws_lambda output; public assets are inlined (serveStatic: 'inline' in nuxt.config.ts).
+      CodeUri: ../.output/server
+      Handler: index.handler
+      Environment:
+        Variables:
+          NODE_ENV: production
+          SYS_ENV: !Ref Stage
+      Events:
+        Root:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /
+            Method: ANY
+        Proxy:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /{proxy+}
+            Method: ANY
+
+Outputs:
+  HttpApiUrl:
+    Description: Base URL of the app
+    Value: !Sub 'https://\${HttpApi}.execute-api.\${AWS::Region}.amazonaws.com/'
+",
+  "core/portal/nuxt.config.ts": "import { defineNuxtConfig } from 'nuxt/config';
+
+// https://nuxt.com/docs/api/configuration/nuxt-config
+export default defineNuxtConfig({
+  compatibilityDate: '2026-04-03',
+  extends: ['@tgmc/nuxt-layer-base'],
+
+  // App-specific configuration overrides
+  app: {
+    head: {
+      title: 'portal · TGMC',
+    },
+  },
+
+  // The generated SAM stack has no S3/CloudFront, so the Lambda serves public assets itself.
+  nitro:
+    process.env.NITRO_PRESET === 'aws_lambda'
+      ? { serveStatic: 'inline', awsLambda: { streaming: false } }
+      : {},
+});
+",
+  "core/portal/package.json": "{
+  "name": "@tgmc/portal",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@tgmc/nuxt-layer-base": "*",
+    "@tgmc/theme": "*",
+    "@tgmc/utilities": "*",
+    "nuxt": "^4.5.2",
+    "vue": "^3.5.0",
+    "vue-router": "^5.0.0"
+  },
+  "devDependencies": {
+    "@nuxt/eslint-config": "1.15.2",
+    "@vitejs/plugin-vue": "^6.0.1",
+    "@vue/test-utils": "^2.4.6",
+    "axe-core": "^4.12.1",
+    "eslint": "^9",
+    "jsdom": "^27.1.0",
+    "vitest": "^4.1.11"
+  },
+  "nx": {
+    "tags": [
+      "type:app",
+      "target:aws-sam"
+    ]
+  }
+}
+",
+  "core/portal/tests/a11y.spec.ts": "import { mount } from '@vue/test-utils';
+import axe from 'axe-core';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import IndexPage from '../app/pages/index.vue';
+
+const WCAG_22_AA = ['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'];
+
+describe('<IndexPage /> accessibility', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    document.body.innerHTML = '';
+  });
+
+  it('has no WCAG 2.2 AA axe violations', async () => {
+    vi.stubGlobal('useA11yAnnouncer', () => ({ announce: () => {} }));
+    const wrapper = mount(IndexPage, { attachTo: document.body });
+
+    const results = await axe.run(wrapper.element, {
+      runOnly: { type: 'tag', values: WCAG_22_AA },
+    });
+
+    expect(results.violations.map((violation) => violation.id)).toEqual([]);
+    wrapper.unmount();
+  });
+});
+",
+  "core/portal/tsconfig.json": "{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "preserve",
+    "types": ["vitest/globals"]
+  },
+  "include": ["app/**/*", "tests/**/*", "nuxt.config.ts"]
+}
+",
+  "core/portal/vitest.config.ts": "import vue from '@vitejs/plugin-vue';
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  plugins: [vue()],
+  test: {
+    environment: 'jsdom',
+    globals: true,
+  },
+});
+",
+  "tsconfig.json": "{
+  "references": [
+    {
+      "path": "./core/portal"
+    },
+    {
+      "path": "./core/portal-e2e"
+    }
+  ]
+}
+",
+}
+`;
+
+exports[`nuxt-app generator > generates the expected files for docker-node 1`] = `
+{
+  ".github/workflows/portal-cd.yml": "# CD — Docker Node-Server deploy for @tgmc/portal
+name: CD Deploy (portal - Docker)
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'core/portal/**'
+      - 'packages/**'
+      - 'theme/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: cd-deploy-portal-\${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    name: Build & Deploy Container
+    runs-on: ubuntu-latest
+    env:
+      HUSKY: '0'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build SSR app
+        run: npx nx run @tgmc/portal:build
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: \${{ github.actor }}
+          password: \${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: core/portal/Dockerfile
+          push: true
+          tags: ghcr.io/\${{ github.repository }}/portal:latest
+",
+  "core/portal-e2e/cypress.config.ts": "import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
+import { defineConfig } from 'cypress';
+
+const require = createRequire(import.meta.url);
+
+export default defineConfig({
+  e2e: {
+    baseUrl: process.env.E2E_BASE_URL || 'http://127.0.0.1:4200',
+    specPattern: 'src/e2e/**/*.cy.ts',
+    supportFile: 'src/support/e2e.ts',
+    setupNodeEvents(on) {
+      on('task', {
+        axeSource: () =>
+          readFileSync(require.resolve('axe-core/axe.min.js'), 'utf8'),
+      });
+    },
+  },
+});
+",
+  "core/portal-e2e/package.json": "{
+  "name": "@tgmc/portal-e2e",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "axe-core": "^4.12.1",
+    "cypress": "^15.8.0"
+  },
+  "nx": {
+    "tags": [
+      "type:e2e",
+      "scope:portal"
+    ],
+    "implicitDependencies": [
+      "@tgmc/portal"
+    ],
+    "targets": {
+      "e2e": {
+        "dependsOn": [],
+        "executor": "nx:run-commands",
+        "options": {
+          "cwd": "{projectRoot}",
+          "command": "cypress run",
+          "env": {
+            "TS_NODE_COMPILER_OPTIONS": "{\\"customConditions\\":null}"
+          }
+        },
+        "outputs": [
+          "{projectRoot}/test-output/cypress/videos",
+          "{projectRoot}/test-output/cypress/screenshots"
+        ]
+      }
+    }
+  }
+}
+",
+  "core/portal-e2e/src/e2e/a11y-audit.cy.ts": "describe('portal accessibility audit', () => {
+  beforeEach(() => {
+    cy.visit('/');
+  });
+
+  it('has no WCAG 2.2 AA axe violations on the landing page', () => {
+    cy.runAxe({
+      runOnly: {
+        type: 'tag',
+        values: ['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'],
+      },
+    }).then((results) => {
+      const summary = results.violations.map(
+        (violation) => \`\${violation.id}: \${violation.nodes.length} node(s)\`,
+      );
+      expect(summary, 'axe violations').to.deep.equal([]);
+    });
+  });
+
+  it('moves keyboard focus to a visible skip link first', () => {
+    cy.press(Cypress.Keyboard.Keys.TAB);
+    cy.focused().should('have.class', 'ui-skip-link').and('be.visible');
+  });
+});
+",
+  "core/portal-e2e/src/support/e2e.ts": "import type { AxeResults, RunOptions } from 'axe-core';
+
+declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace Cypress {
+    interface Chainable {
+      /** Injects axe-core into the page under test and runs it; yields the axe results. */
+      runAxe(options?: RunOptions): Chainable<AxeResults>;
+    }
+  }
+}
+
+type AxeWindow = Window & {
+  axe?: { run(context: Document, options?: RunOptions): Promise<AxeResults> };
+};
+
+Cypress.Commands.add('runAxe', (options?: RunOptions) =>
+  cy.task<string>('axeSource', undefined, { log: false }).then((source) =>
+    cy.window({ log: false }).then((win) => {
+      const axeWindow = win as unknown as AxeWindow;
+      if (!axeWindow.axe) win.eval(source);
+      const axe = axeWindow.axe;
+      if (!axe) throw new Error('axe-core did not load into the page');
+      return axe.run(win.document, options);
+    }),
+  ),
+);
+",
+  "core/portal-e2e/tsconfig.json": "{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "out-tsc/cypress",
+    "allowJs": true,
+    "lib": ["es2022", "dom"],
+    "types": ["cypress", "node"],
+    "sourceMap": false
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.js",
+    "cypress.config.ts",
+    "**/*.cy.ts",
+    "**/*.d.ts"
+  ],
+  "exclude": ["out-tsc", "test-output", "eslint.config.js"]
+}
+",
+  "core/portal/.gitignore": ".nuxt
+.output
+.data
+dist
+node_modules
+coverage
+*.log
+.env
+.env.*
+!.env.example
+",
+  "core/portal/app/app.vue": "<script setup lang="ts">
+// Inherits UiSkipLink and UiAnnouncer from @tgmc/nuxt-layer-base
+</script>
+
+<template>
+  <div class="app-layout">
+    <UiSkipLink />
+    <UiAnnouncer />
+    <header class="app-header">
+      <nav aria-label="Main Navigation">
+        <span class="app-title">portal</span>
+      </nav>
+    </header>
+    <main id="main-content" class="app-main">
+      <NuxtPage />
+    </main>
+    <footer class="app-footer">
+      <p>&copy; {{ new Date().getFullYear() }} Tamara Gisele Mack</p>
+    </footer>
+  </div>
+</template>
+
+<style lang="scss">
+.app-layout {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--theme-paper-color, #ffffff);
+  color: var(--theme-primary-ink-color, #111827);
+}
+
+.app-header {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--theme-border-color, #e5e7eb);
+}
+
+.app-title {
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--theme-primary-ink-color, #111827);
+}
+
+.app-main {
+  flex: 1;
+  padding: 2rem 1.5rem;
+  max-width: 64rem;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.app-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--theme-border-color, #e5e7eb);
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--theme-secondary-ink-color, #6b7280);
+}
+</style>
+",
+  "core/portal/app/pages/index.vue": "<script setup lang="ts">
+const { announce } = useA11yAnnouncer();
+
+function handleAction() {
+  announce('Action performed successfully', 'polite');
+}
+</script>
+
+<template>
+  <section class="welcome-hero" aria-labelledby="hero-title">
+    <h1 id="hero-title">Welcome to portal</h1>
+    <p class="hero-tagline">
+      Scaffolded with TGMC Nuxt 4 base layer, design tokens, and WCAG 2.2 AA
+      accessibility.
+    </p>
+    <div class="action-row">
+      <button type="button" class="action-btn" @click="handleAction">
+        Get Started
+      </button>
+    </div>
+  </section>
+</template>
+
+<style lang="scss" scoped>
+.welcome-hero {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  align-items: flex-start;
+}
+
+.hero-tagline {
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: var(--theme-secondary-ink-color, #4b5563);
+}
+
+.action-row {
+  margin-top: 0.5rem;
+}
+
+.action-btn {
+  min-height: var(--touch-target, 44px);
+  min-width: var(--touch-target, 44px);
+  padding: 0.625rem 1.25rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 0.375rem;
+  background-color: var(--theme-primary-color, #1e3a8a);
+  color: var(--theme-on-primary-color, #ffffff);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 0.9;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--theme-focus-ring-color, #0284c7);
+    outline-offset: 2px;
+  }
+}
+</style>
+",
+  "core/portal/eslint.config.js": "// @ts-check
+import { createConfigForNuxt } from '@nuxt/eslint-config/flat';
+
+export default createConfigForNuxt(
+  { features: { typescript: true } },
+  { ignores: ['.nuxt/**', '.output/**', 'dist/**', 'node_modules/**'] },
+  {
+    files: ['app/app.vue', 'app/pages/**/*.vue', 'app/layouts/**/*.vue'],
+    rules: { 'vue/multi-word-component-names': 'off' },
+  },
+  {
+    files: ['server/**/*', 'app/pages/**/*', 'app/components/**/*'],
+    ignores: ['**/*.client.vue', '**/*.client.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: '@tgmc/utilities/browser',
+              message:
+                'Forbidden: @tgmc/utilities/browser cannot be imported into SSR or universal code. Use @tgmc/utilities/universal or place in a *.client.{ts,vue} file.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+);
+",
+  "core/portal/nuxt.config.ts": "import { defineNuxtConfig } from 'nuxt/config';
+
+// https://nuxt.com/docs/api/configuration/nuxt-config
+export default defineNuxtConfig({
+  compatibilityDate: '2026-04-03',
+  extends: ['@tgmc/nuxt-layer-base'],
+
+  // App-specific configuration overrides
+  app: {
+    head: {
+      title: 'portal · TGMC',
+    },
+  },
+});
+",
+  "core/portal/package.json": "{
+  "name": "@tgmc/portal",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@tgmc/nuxt-layer-base": "*",
+    "@tgmc/theme": "*",
+    "@tgmc/utilities": "*",
+    "nuxt": "^4.5.2",
+    "vue": "^3.5.0",
+    "vue-router": "^5.0.0"
+  },
+  "devDependencies": {
+    "@nuxt/eslint-config": "1.15.2",
+    "@vitejs/plugin-vue": "^6.0.1",
+    "@vue/test-utils": "^2.4.6",
+    "axe-core": "^4.12.1",
+    "eslint": "^9",
+    "jsdom": "^27.1.0",
+    "vitest": "^4.1.11"
+  },
+  "nx": {
+    "tags": [
+      "type:app",
+      "target:docker-node"
+    ]
+  }
+}
+",
+  "core/portal/tests/a11y.spec.ts": "import { mount } from '@vue/test-utils';
+import axe from 'axe-core';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import IndexPage from '../app/pages/index.vue';
+
+const WCAG_22_AA = ['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'];
+
+describe('<IndexPage /> accessibility', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    document.body.innerHTML = '';
+  });
+
+  it('has no WCAG 2.2 AA axe violations', async () => {
+    vi.stubGlobal('useA11yAnnouncer', () => ({ announce: () => {} }));
+    const wrapper = mount(IndexPage, { attachTo: document.body });
+
+    const results = await axe.run(wrapper.element, {
+      runOnly: { type: 'tag', values: WCAG_22_AA },
+    });
+
+    expect(results.violations.map((violation) => violation.id)).toEqual([]);
+    wrapper.unmount();
+  });
+});
+",
+  "core/portal/tsconfig.json": "{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "preserve",
+    "types": ["vitest/globals"]
+  },
+  "include": ["app/**/*", "tests/**/*", "nuxt.config.ts"]
+}
+",
+  "core/portal/vitest.config.ts": "import vue from '@vitejs/plugin-vue';
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  plugins: [vue()],
+  test: {
+    environment: 'jsdom',
+    globals: true,
+  },
+});
+",
+  "tsconfig.json": "{
+  "references": [
+    {
+      "path": "./core/portal"
+    },
+    {
+      "path": "./core/portal-e2e"
+    }
+  ]
+}
+",
+}
+`;
+
+exports[`nuxt-app generator > generates the expected files for static-cloudflare 1`] = `
+{
+  ".github/workflows/portal-cd.yml": "# CD — Static Jamstack / Cloudflare Pages deploy for @tgmc/portal
+name: CD Deploy (portal - Static)
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'core/portal/**'
+      - 'packages/**'
+      - 'theme/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  deployments: write
+
+concurrency:
+  group: cd-deploy-portal-\${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    name: Generate & Deploy Pages
+    runs-on: ubuntu-latest
+    env:
+      HUSKY: '0'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate static output
+        run: npx nx run @tgmc/portal:generate
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: \${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: \${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: portal
+          directory: core/portal/dist
+",
+  "core/portal-e2e/cypress.config.ts": "import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
+import { defineConfig } from 'cypress';
+
+const require = createRequire(import.meta.url);
+
+export default defineConfig({
+  e2e: {
+    baseUrl: process.env.E2E_BASE_URL || 'http://127.0.0.1:4200',
+    specPattern: 'src/e2e/**/*.cy.ts',
+    supportFile: 'src/support/e2e.ts',
+    setupNodeEvents(on) {
+      on('task', {
+        axeSource: () =>
+          readFileSync(require.resolve('axe-core/axe.min.js'), 'utf8'),
+      });
+    },
+  },
+});
+",
+  "core/portal-e2e/package.json": "{
+  "name": "@tgmc/portal-e2e",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "axe-core": "^4.12.1",
+    "cypress": "^15.8.0"
+  },
+  "nx": {
+    "tags": [
+      "type:e2e",
+      "scope:portal"
+    ],
+    "implicitDependencies": [
+      "@tgmc/portal"
+    ],
+    "targets": {
+      "e2e": {
+        "dependsOn": [],
+        "executor": "nx:run-commands",
+        "options": {
+          "cwd": "{projectRoot}",
+          "command": "cypress run",
+          "env": {
+            "TS_NODE_COMPILER_OPTIONS": "{\\"customConditions\\":null}"
+          }
+        },
+        "outputs": [
+          "{projectRoot}/test-output/cypress/videos",
+          "{projectRoot}/test-output/cypress/screenshots"
+        ]
+      }
+    }
+  }
+}
+",
+  "core/portal-e2e/src/e2e/a11y-audit.cy.ts": "describe('portal accessibility audit', () => {
+  beforeEach(() => {
+    cy.visit('/');
+  });
+
+  it('has no WCAG 2.2 AA axe violations on the landing page', () => {
+    cy.runAxe({
+      runOnly: {
+        type: 'tag',
+        values: ['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'],
+      },
+    }).then((results) => {
+      const summary = results.violations.map(
+        (violation) => \`\${violation.id}: \${violation.nodes.length} node(s)\`,
+      );
+      expect(summary, 'axe violations').to.deep.equal([]);
+    });
+  });
+
+  it('moves keyboard focus to a visible skip link first', () => {
+    cy.press(Cypress.Keyboard.Keys.TAB);
+    cy.focused().should('have.class', 'ui-skip-link').and('be.visible');
+  });
+});
+",
+  "core/portal-e2e/src/support/e2e.ts": "import type { AxeResults, RunOptions } from 'axe-core';
+
+declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace Cypress {
+    interface Chainable {
+      /** Injects axe-core into the page under test and runs it; yields the axe results. */
+      runAxe(options?: RunOptions): Chainable<AxeResults>;
+    }
+  }
+}
+
+type AxeWindow = Window & {
+  axe?: { run(context: Document, options?: RunOptions): Promise<AxeResults> };
+};
+
+Cypress.Commands.add('runAxe', (options?: RunOptions) =>
+  cy.task<string>('axeSource', undefined, { log: false }).then((source) =>
+    cy.window({ log: false }).then((win) => {
+      const axeWindow = win as unknown as AxeWindow;
+      if (!axeWindow.axe) win.eval(source);
+      const axe = axeWindow.axe;
+      if (!axe) throw new Error('axe-core did not load into the page');
+      return axe.run(win.document, options);
+    }),
+  ),
+);
+",
+  "core/portal-e2e/tsconfig.json": "{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "out-tsc/cypress",
+    "allowJs": true,
+    "lib": ["es2022", "dom"],
+    "types": ["cypress", "node"],
+    "sourceMap": false
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.js",
+    "cypress.config.ts",
+    "**/*.cy.ts",
+    "**/*.d.ts"
+  ],
+  "exclude": ["out-tsc", "test-output", "eslint.config.js"]
+}
+",
+  "core/portal/.gitignore": ".nuxt
+.output
+.data
+dist
+node_modules
+coverage
+*.log
+.env
+.env.*
+!.env.example
+",
+  "core/portal/app/app.vue": "<script setup lang="ts">
+// Inherits UiSkipLink and UiAnnouncer from @tgmc/nuxt-layer-base
+</script>
+
+<template>
+  <div class="app-layout">
+    <UiSkipLink />
+    <UiAnnouncer />
+    <header class="app-header">
+      <nav aria-label="Main Navigation">
+        <span class="app-title">portal</span>
+      </nav>
+    </header>
+    <main id="main-content" class="app-main">
+      <NuxtPage />
+    </main>
+    <footer class="app-footer">
+      <p>&copy; {{ new Date().getFullYear() }} Tamara Gisele Mack</p>
+    </footer>
+  </div>
+</template>
+
+<style lang="scss">
+.app-layout {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--theme-paper-color, #ffffff);
+  color: var(--theme-primary-ink-color, #111827);
+}
+
+.app-header {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--theme-border-color, #e5e7eb);
+}
+
+.app-title {
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--theme-primary-ink-color, #111827);
+}
+
+.app-main {
+  flex: 1;
+  padding: 2rem 1.5rem;
+  max-width: 64rem;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.app-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--theme-border-color, #e5e7eb);
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--theme-secondary-ink-color, #6b7280);
+}
+</style>
+",
+  "core/portal/app/pages/index.vue": "<script setup lang="ts">
+const { announce } = useA11yAnnouncer();
+
+function handleAction() {
+  announce('Action performed successfully', 'polite');
+}
+</script>
+
+<template>
+  <section class="welcome-hero" aria-labelledby="hero-title">
+    <h1 id="hero-title">Welcome to portal</h1>
+    <p class="hero-tagline">
+      Scaffolded with TGMC Nuxt 4 base layer, design tokens, and WCAG 2.2 AA
+      accessibility.
+    </p>
+    <div class="action-row">
+      <button type="button" class="action-btn" @click="handleAction">
+        Get Started
+      </button>
+    </div>
+  </section>
+</template>
+
+<style lang="scss" scoped>
+.welcome-hero {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  align-items: flex-start;
+}
+
+.hero-tagline {
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: var(--theme-secondary-ink-color, #4b5563);
+}
+
+.action-row {
+  margin-top: 0.5rem;
+}
+
+.action-btn {
+  min-height: var(--touch-target, 44px);
+  min-width: var(--touch-target, 44px);
+  padding: 0.625rem 1.25rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 0.375rem;
+  background-color: var(--theme-primary-color, #1e3a8a);
+  color: var(--theme-on-primary-color, #ffffff);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 0.9;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--theme-focus-ring-color, #0284c7);
+    outline-offset: 2px;
+  }
+}
+</style>
+",
+  "core/portal/eslint.config.js": "// @ts-check
+import { createConfigForNuxt } from '@nuxt/eslint-config/flat';
+
+export default createConfigForNuxt(
+  { features: { typescript: true } },
+  { ignores: ['.nuxt/**', '.output/**', 'dist/**', 'node_modules/**'] },
+  {
+    files: ['app/app.vue', 'app/pages/**/*.vue', 'app/layouts/**/*.vue'],
+    rules: { 'vue/multi-word-component-names': 'off' },
+  },
+  {
+    files: ['server/**/*', 'app/pages/**/*', 'app/components/**/*'],
+    ignores: ['**/*.client.vue', '**/*.client.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: '@tgmc/utilities/browser',
+              message:
+                'Forbidden: @tgmc/utilities/browser cannot be imported into SSR or universal code. Use @tgmc/utilities/universal or place in a *.client.{ts,vue} file.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+);
+",
+  "core/portal/nuxt.config.ts": "import { defineNuxtConfig } from 'nuxt/config';
+
+// https://nuxt.com/docs/api/configuration/nuxt-config
+export default defineNuxtConfig({
+  compatibilityDate: '2026-04-03',
+  extends: ['@tgmc/nuxt-layer-base'],
+
+  // App-specific configuration overrides
+  app: {
+    head: {
+      title: 'portal · TGMC',
+    },
+  },
+});
+",
+  "core/portal/package.json": "{
+  "name": "@tgmc/portal",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@tgmc/nuxt-layer-base": "*",
+    "@tgmc/theme": "*",
+    "@tgmc/utilities": "*",
+    "nuxt": "^4.5.2",
+    "vue": "^3.5.0",
+    "vue-router": "^5.0.0"
+  },
+  "devDependencies": {
+    "@nuxt/eslint-config": "1.15.2",
+    "@vitejs/plugin-vue": "^6.0.1",
+    "@vue/test-utils": "^2.4.6",
+    "axe-core": "^4.12.1",
+    "eslint": "^9",
+    "jsdom": "^27.1.0",
+    "vitest": "^4.1.11"
+  },
+  "nx": {
+    "tags": [
+      "type:app",
+      "target:static-cloudflare"
+    ]
+  }
+}
+",
+  "core/portal/tests/a11y.spec.ts": "import { mount } from '@vue/test-utils';
+import axe from 'axe-core';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import IndexPage from '../app/pages/index.vue';
+
+const WCAG_22_AA = ['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'];
+
+describe('<IndexPage /> accessibility', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    document.body.innerHTML = '';
+  });
+
+  it('has no WCAG 2.2 AA axe violations', async () => {
+    vi.stubGlobal('useA11yAnnouncer', () => ({ announce: () => {} }));
+    const wrapper = mount(IndexPage, { attachTo: document.body });
+
+    const results = await axe.run(wrapper.element, {
+      runOnly: { type: 'tag', values: WCAG_22_AA },
+    });
+
+    expect(results.violations.map((violation) => violation.id)).toEqual([]);
+    wrapper.unmount();
+  });
+});
+",
+  "core/portal/tsconfig.json": "{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "preserve",
+    "types": ["vitest/globals"]
+  },
+  "include": ["app/**/*", "tests/**/*", "nuxt.config.ts"]
+}
+",
+  "core/portal/vitest.config.ts": "import vue from '@vitejs/plugin-vue';
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  plugins: [vue()],
+  test: {
+    environment: 'jsdom',
+    globals: true,
+  },
+});
+",
+  "tsconfig.json": "{
+  "references": [
+    {
+      "path": "./core/portal"
+    },
+    {
+      "path": "./core/portal-e2e"
+    }
+  ]
+}
+",
+}
+`;

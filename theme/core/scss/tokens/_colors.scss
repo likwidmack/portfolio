@@ -5,6 +5,7 @@
 @use 'sass:color';
 @use 'sass:math';
 @use 'color-fns' as *;
+@use 'variations.generated' as variations;
 
 @use 'base-colors' as *;
 @forward 'base-colors';
@@ -39,10 +40,10 @@ $pastel-pink: #ffecf0;
 $soft-white: #ffdee4;
 
 // Dark Night / Golden Day
-$black-pearl: #001a26;
-$dark-tarawera: #053752;
 $thanksgiving-orange: #ef810e;
 $wattle-yellow: #e5de44;
+$black-pearl: #001a26;
+$dark-tarawera: #053752;
 
 // Pastel Day/Night
 $sky-blue: #6696ba;
@@ -63,7 +64,6 @@ $midnight-violet-dk: #11001c;
 
 $accent-soft: #82aaff;
 $shadow-color: #081020;
-$shadow-alt-color: #0a1428;
 $neon-color: #50b4ff;
 
 $css-red-light: #dc2626;
@@ -118,7 +118,7 @@ $wine-default: $css-magenta-light;
 $wine-light: #4a0404;
 $wine-dark: #822659;
 
-// Named `sea` (not `teal`) — `$css-teal-*` / `--teal-signal` own the teal signal.
+// Named `sea` (not `teal`) — `$css-teal-*` / the success colour (`$teal-signal-*`) own the teal signal.
 $sea-default: $css-teal-light;
 $sea-light: #15292b;
 $sea-dark: #5a9690;
@@ -143,7 +143,7 @@ $parchment-dark: #dcd7c9;
 /* Brand roles                                                                */
 /* -------------------------------------------------------------------------- */
 
-// Ember / crimson (PrimeVue-facing `--primary-color` / `--secondary-color` / `--accent-color`).
+// Ember / crimson (PrimeVue-facing `--theme-primary-color` / `--theme-secondary-color` / `--theme-accent-color`).
 // Brand role harmony: secondary is an analogous partner of primary (hand-tuned hex);
 // accent is the complementary of primary (derived via `theme-complementary`).
 $primary-color-light: #d9531d; // ember, darkened for light surfaces
@@ -192,7 +192,7 @@ $ink: $light-ink;
 }
 
 /// Neutral scale step for a mode: 0 = paper (background) … 1000 = ink (foreground), mixed in
-/// OKLab (CSS: `--neutral-<step>`, which follows the active mode's `--paper` / `--ink`).
+/// OKLab (CSS: `--theme-neutral-<step>-color`, which follows the active mode's `--theme-paper-color` / `--theme-ink-color`).
 @function neutral($step, $mode: light) {
   $p: $light-paper;
   $i: $light-ink;
@@ -247,7 +247,7 @@ $main-secondary-color: $secondary-color;
 /* Semantic                                                                   */
 /* -------------------------------------------------------------------------- */
 
-/// Portfolio teal signal (also drives semantic success). Do not overwrite `$css-teal-*` / `--color-teal`.
+/// Portfolio teal signal (also drives semantic success). Do not overwrite `$css-teal-*` / `--teal-color`.
 $teal-signal-light: #146060;
 $teal-signal-dark: #1b7a7a;
 
@@ -282,10 +282,10 @@ $css-surface-dark: neutral(50, dark);
 $css-surface-variant-light: neutral(100);
 $css-surface-variant-dark: neutral(75, dark);
 
-$css-primary-light: $ink-light;
-$css-primary-dark: $parchment-dark;
-$css-primary-hover-light: color.adjust($css-primary-light, $lightness: -10%);
-$css-primary-hover-dark: color.adjust($css-primary-dark, $lightness: 10%);
+/// PrimeVue primary hover keeps the button fill (`--theme-primary-hover-color` →
+/// `--theme-button-hover-fill-color`): light the primary fill, dark the primary variation.
+$css-primary-hover-light: variations.$theme-primary-fill-light-color;
+$css-primary-hover-dark: variations.$theme-primary-dark-color;
 
 $css-border-light: rgba(0, 0, 0, 0.08);
 $css-border-dark: rgba(255, 255, 255, 0.08);
@@ -294,13 +294,18 @@ $css-border-dark: rgba(255, 255, 255, 0.08);
 /// Brand fills ($primary-color-*) stay unchanged; these carry text, focus and control contrast.
 $css-focus-ring-light: #b83f16; // ≥3:1 on page + surface
 $css-focus-ring-dark: #ffb38f;
-$css-link-light: #a8360e; // ≥4.5:1 on page
-$css-link-dark: #f0876a;
+/// Links: the primary source lightness-moved until ≥ 4.5:1 on page, surfaces, variant and its own
+/// 12 % / 16 % wash (`buildLinkTokens`, generated).
+$css-link-light: variations.$theme-link-light-color;
+$css-link-dark: variations.$theme-link-dark-color;
 $css-border-strong-light: neutral(500); // ≥3:1 on surface (controls)
 $css-border-strong-dark: neutral(450, dark);
-$css-primary-fill-light: #b83f16; // white text ≥4.5:1
-$css-primary-fill-dark: #ac1922;
-$css-on-primary: #ffffff;
+// The primary with only its lightness moved until the on-primary paper reads ≥ 4.5:1 (`buildPrimaryFillTokens`,
+// generated); the colors.json / tokens.ts mirror follows the painted fill (was #b83f16 / #ac1922).
+$css-primary-fill-light: variations.$theme-primary-fill-light-color;
+$css-primary-fill-dark: variations.$theme-primary-fill-dark-color;
+/// Text on the primary fill: the light paper (the fill is built for it).
+$css-on-primary: variations.$theme-paper-light-color;
 /// Status "ink" tones: each status hue mixed toward the mode's text colour just enough for
 /// ≥ 4.5:1 on page, surface and variant (CSS: `--<status>-ink`, same percentages).
 $css-success-ink-light: tone($success-light, 100%, $text-color-light);

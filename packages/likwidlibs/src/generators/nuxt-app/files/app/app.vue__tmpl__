@@ -1,0 +1,58 @@
+<script setup lang="ts">
+// Inherits UiSkipLink and UiAnnouncer from @tgmc/nuxt-layer-base
+</script>
+
+<template>
+  <div class="app-layout">
+    <UiSkipLink />
+    <UiAnnouncer />
+    <header class="app-header">
+      <nav aria-label="Main Navigation">
+        <span class="app-title"><%= name %></span>
+      </nav>
+    </header>
+    <main id="main-content" class="app-main">
+      <NuxtPage />
+    </main>
+    <footer class="app-footer">
+      <p>&copy; {{ new Date().getFullYear() }} Tamara Gisele Mack</p>
+    </footer>
+  </div>
+</template>
+
+<style lang="scss">
+.app-layout {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--theme-paper-color, #ffffff);
+  color: var(--theme-primary-ink-color, #111827);
+}
+
+.app-header {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--theme-border-color, #e5e7eb);
+}
+
+.app-title {
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--theme-primary-ink-color, #111827);
+}
+
+.app-main {
+  flex: 1;
+  padding: 2rem 1.5rem;
+  max-width: 64rem;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.app-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--theme-border-color, #e5e7eb);
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--theme-secondary-ink-color, #6b7280);
+}
+</style>

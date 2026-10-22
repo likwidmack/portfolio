@@ -22,7 +22,7 @@
           span.splash-door__copy
             span.splash-door__label {{ door.label }}
             span.splash-door__lede {{ door.lede }}
-            span.splash-door__scope(v-if="door.scope") {{ door.scope }} →
+            span.splash-door__scope(v-if="doorScopes[index]") {{ doorScopes[index] }} →
 
     label.splash-skip(v-if="cookiesReadable")
       input.splash-skip__input(v-model="skip", type="checkbox")
@@ -31,6 +31,8 @@
 
 <script setup lang="ts">
 import { firstBeatHref } from '#shared/journey-preference';
+import type { CaseStudy } from '#shared/portfolio-types';
+import { resolveDoorScope } from '#shared/splash-scope';
 import type { Collections } from '@nuxt/content';
 
 type HomeContent = Collections['home'];
@@ -45,6 +47,17 @@ if (!homeContent.value) {
 
 const content = computed(() => homeContent.value as HomeContent);
 const doorHrefs = computed(() => content.value.splash.doors.map((door) => firstBeatHref(door.id)));
+
+// Scope lines count the real collections (`{caseStudies}` in home.json), so "6 case studies"
+// can't go stale. Same cache key as /work, so the list is fetched once.
+const { data: caseStudies } = await useContentAsyncData('case-studies', () =>
+  fetchContentCollection<CaseStudy[]>('caseStudies', { mode: 'all' })
+);
+const doorScopes = computed(() =>
+  content.value.splash.doors.map((door) =>
+    resolveDoorScope(door.scope, { caseStudies: (caseStudies.value ?? []).length })
+  )
+);
 const { skip, previousPath, previousTitle, cookiesReadable } = useJourneyPreference();
 const route = useRoute();
 

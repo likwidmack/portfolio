@@ -25,6 +25,14 @@ describe('home landing routing', () => {
     expect(middleware).not.toContain('storage-service');
   });
 
+  it('resumes only on the first HTML response, never on in-app navigation to `/`', async () => {
+    const middleware = await readFile(middlewarePath, 'utf8');
+    const guard = middleware.indexOf('if (import.meta.client && !useNuxtApp().isHydrating) return;');
+
+    expect(guard).toBeGreaterThan(-1);
+    expect(guard).toBeLessThan(middleware.indexOf('navigateTo('));
+  });
+
   it('keeps `/splash` and interior first beats free of skip redirects', async () => {
     const splashPage = await readFile(splashPagePath, 'utf8');
     const workSlug = await readFile(workSlugPath, 'utf8');

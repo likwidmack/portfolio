@@ -1,0 +1,54 @@
+/// Optional Sass configuration bridge for PrimeVue designer variables.
+/// Used when `$theme-enable-primevue: true` (unstyled + classic PT / mytheme path).
+/// Aura/Lara content entries `@import` this before their vendor theme.
+/// Parallel to `@tgmc/theme` CSS variables — follows light/dark via `var()`.
+
+// Primary / action
+$primaryColor: var(--theme-primary-color) !default;
+$primaryDarkColor: var(--theme-primary-hover-color, var(--primary-default)) !default;
+$primaryDarkerColor: color-mix(in srgb, var(--theme-primary-color) 72%, black) !default;
+$primaryTextColor: var(--theme-button-fg-color) !default;
+
+// Typography (on-surface composition)
+$textColor: var(--theme-text-color) !default;
+$textSecondaryColor: var(--theme-text-secondary-color) !default;
+
+// Surfaces
+$surfaceGround: var(--theme-main-background-color) !default;
+$surfaceSection: var(--theme-surface-color) !default;
+$surfaceCard: var(--theme-surface-color) !default;
+$surfaceOverlay: var(--theme-surface-color) !default;
+$surfaceBorder: var(--theme-border-color) !default;
+$surfaceHover: var(--theme-surface-variant-color) !default;
+$maskBg: color-mix(in srgb, var(--theme-main-background-color) 35%, black) !default;
+
+// Focus / forms
+$focusRingColor: var(--theme-focus-ring-color) !default;
+$inputBg: var(--theme-form-background-color) !default;
+$inputTextColor: var(--theme-text-color) !default;
+$inputBorderColor: var(--theme-border-strong-color) !default;
+$inputPlaceholderTextColor: var(--theme-form-placeholder-color, var(--theme-text-secondary-color)) !default;
+$inputFilledBg: var(--theme-form-background-color) !default;
+$inputFilledHoverBg: color-mix(in srgb, var(--theme-form-background-color) 88%, var(--theme-primary-color)) !default;
+
+// Panels / overlays (complex components)
+$panelContentBg: var(--theme-surface-color) !default;
+$panelContentTextColor: var(--theme-text-color) !default;
+$panelHeaderBg: var(--theme-surface-variant-color) !default;
+$panelHeaderTextColor: var(--theme-text-color) !default;
+$overlayContentBg: var(--theme-surface-color) !default;
+$overlayContentBorderColor: var(--theme-border-color) !default;
+
+// Buttons
+$buttonBg: var(--theme-primary-color) !default;
+$buttonTextColor: var(--theme-button-fg-color) !default;
+
+// Semantic
+$green: var(--theme-success-hue-color) !default;
+$red: var(--theme-error-hue-color) !default;
+$orange: var(--theme-warning-hue-color) !default;
+$yellow: var(--theme-warning-hue-color) !default;
+$blue: var(--theme-info-hue-color) !default;
+$cyan: var(--theme-info-hue-color) !default;
+$highlightBg: color-mix(in srgb, var(--theme-primary-color) 18%, transparent) !default;
+$highlightColor: var(--theme-primary-color) !default;

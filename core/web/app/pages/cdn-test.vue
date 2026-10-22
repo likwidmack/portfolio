@@ -83,7 +83,7 @@ const utilityTests = computed(() => [
 section {
   margin-top: 1.5rem;
   padding: 1rem;
-  border: 1px solid color-mix(in srgb, var(--text-color) 15%, transparent);
+  border: 1px solid color-mix(in srgb, var(--theme-text-color) 15%, transparent);
   border-radius: 0.5rem;
 }
 

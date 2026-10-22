@@ -1,0 +1,111 @@
+{
+  "name": "@tgmc/image",
+  "version": "0.0.1",
+  "type": "module",
+  "description": "Server-side image ingest, color/geometry transforms, and delivery variants for TGMC apps (Node / Nitro / Lambda).",
+  "author": "Tamara Gisele Mack",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:likwidmack/portfolio.git",
+    "directory": "packages/image"
+  },
+  "homepage": "https://github.com/likwidmack/portfolio/tree/main/packages/image",
+  "bugs": {
+    "url": "https://github.com/likwidmack/portfolio/issues"
+  },
+  "keywords": [
+    "image",
+    "sharp",
+    "webp",
+    "lqip",
+    "typescript",
+    "tgmc"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "tgmc-portfolio": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./sanitize": {
+      "tgmc-portfolio": "./src/sanitize.ts",
+      "types": "./dist/sanitize.d.ts",
+      "import": "./dist/sanitize.js",
+      "default": "./dist/sanitize.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.lib.json",
+    "test": "vitest run",
+    "prepublishOnly": "npm run build"
+  },
+  "files": [
+    "dist",
+    "!**/*.tsbuildinfo"
+  ],
+  "nx": {
+    "tags": [
+      "type:lib",
+      "scope:shared"
+    ],
+    "targets": {
+      "build": {
+        "executor": "@nx/js:tsc",
+        "outputs": [
+          "{options.outputPath}"
+        ],
+        "dependsOn": [
+          "^build"
+        ],
+        "options": {
+          "outputPath": "packages/image/dist",
+          "main": "packages/image/src/index.ts",
+          "tsConfig": "packages/image/tsconfig.lib.json",
+          "rootDir": "packages/image/src",
+          "generatePackageJson": false
+        }
+      },
+      "test": {
+        "dependsOn": [
+          "build",
+          "^build"
+        ]
+      }
+    }
+  },
+  "dependencies": {
+    "@tgmc/theme": "*",
+    "@tgmc/utilities": "*",
+    "sharp": "^0.35.5",
+    "tslib": "^2.3.0"
+  },
+  "peerDependencies": {
+    "ffmpeg-static": "^5.3.0",
+    "pdf-lib": "^1.17.1",
+    "svgo": "^3.3.5"
+  },
+  "peerDependenciesMeta": {
+    "ffmpeg-static": {
+      "optional": true
+    },
+    "pdf-lib": {
+      "optional": true
+    },
+    "svgo": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "pdf-lib": "^1.17.1",
+    "svgo": "^3.3.5"
+  }
+}

@@ -3,9 +3,6 @@
  * breakpoint the link list collapses behind one labelled toggle button (no sideways-scrolling
  * row). CSS hides the list while closed and always shows it from tablet up, so SSR and the first
  * paint are right without JS; `Esc` closes it and returns focus to the toggle.
- *
- * Close on `route.path` only — hash-only changes (in-page anchors, scroll restoration) must not
- * collapse the disclosure mid-gesture. Panel links already set `open = false` on click.
  */
 export function usePageNavDisclosure() {
   const open = ref(false);
@@ -18,19 +15,14 @@ export function usePageNavDisclosure() {
     root?.querySelector<HTMLButtonElement>('.page-nav__toggle')?.focus();
   }
 
-  function toggleOpen(event: MouseEvent): void {
-    event.stopPropagation();
-    open.value = !open.value;
-  }
-
-  // Close on client-side path navigation (a route sub-nav link, or back / forward).
+  // Close on client-side navigation (a route sub-nav link, or back / forward).
   const route = useRoute();
   watch(
-    () => route.path,
+    () => route.fullPath,
     () => {
       open.value = false;
     }
   );
 
-  return { open, listId, closeAndFocus, toggleOpen };
+  return { open, listId, closeAndFocus };
 }

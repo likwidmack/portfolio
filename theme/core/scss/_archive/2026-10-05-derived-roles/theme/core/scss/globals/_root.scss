@@ -1,0 +1,698 @@
+@use 'sass:color';
+@use 'sass:map';
+@use 'sass:math';
+
+@use '../tokens/base-colors' as *;
+@use '../tokens/colors' as *;
+@use '../tokens/contrast' as *;
+@use '../tokens/variables' as *;
+@use '../tokens/variations.generated' as *;
+@use 'mixins' as m;
+
+// Colour system: the eight solid colours emitting their four variations + active pointers.
+$theme-solid-colors: (primary, secondary, accent, warning, error, info, success, focus);
+// Derived families: alpha steps (N% over transparent) and the neutral steps between paper (0) and ink (1000).
+$theme-alpha-steps: (4, 8, 12, 16, 24, 32, 48, 64, 80, 90);
+$theme-neutral-steps: (25, 50, 75, 100, 150, 200, 300, 400, 450, 500, 550, 600, 700, 800, 850, 900, 925, 950, 975);
+
+:root {
+  // Runtime / cascade only — font smoothing + text-shadow live on `html` / body classes.
+  color-scheme: light dark;
+  accent-color: #{$accent-color};
+  text-rendering: optimizeLegibility;
+  text-size-adjust: 100%;
+
+  // Base colors
+  --theme-default-white-color: #{$default-white};
+  --theme-default-black-color: #{$default-black};
+  --theme-default-grey-color: #{$dimgrey};
+
+  --rgb-white: #{color.channel($color-white, 'red', $space: rgb)} #{color.channel($color-white, 'green', $space: rgb)}
+    #{color.channel($color-white, 'blue', $space: rgb)};
+  --rgb-accent-soft: #{color.channel($accent-soft, 'red', $space: rgb)}
+    #{color.channel($accent-soft, 'green', $space: rgb)} #{color.channel($accent-soft, 'blue', $space: rgb)};
+  --rgb-shadow: #{color.channel($shadow-color, 'red', $space: rgb)}
+    #{color.channel($shadow-color, 'green', $space: rgb)} #{color.channel($shadow-color, 'blue', $space: rgb)};
+  --rgb-shadow-alt: #{color.channel($shadow-alt-color, 'red', $space: rgb)}
+    #{color.channel($shadow-alt-color, 'green', $space: rgb)} #{color.channel($shadow-alt-color, 'blue', $space: rgb)};
+  --rgb-neon: #{color.channel($neon-color, 'red', $space: rgb)} #{color.channel($neon-color, 'green', $space: rgb)}
+    #{color.channel($neon-color, 'blue', $space: rgb)};
+
+  // ── Five-input model ─────────────────────────────────────────────────────
+  // The app sets primary, secondary, accent, paper and ink; everything neutral derives from
+  // paper → ink here, so a live paper / ink change reaches every child. Pen & paper: paper is the
+  // background and ink the foreground in every mode, one pair per mode. Sass computes the same
+  // defaults (tokens/_colors.scss `neutral($step, $mode)`); `src/color-mix.ts` mirrors the maths.
+  // core/web (Style Studio, FOUC script) writes both modes' pairs inline as
+  // `--theme-paper-{light,dark}-color` / `--theme-ink-{light,dark}-color` (declared below with the
+  // defaults); the active `--theme-paper-color` / `--theme-ink-color` point at the mode's pair here
+  // and in `theme-light-vars`, so a mode switch needs no JS.
+  --theme-paper-color: var(--theme-paper-dark-color);
+  --theme-ink-color: var(--theme-ink-dark-color);
+
+  // Alpha variants: paper / ink / brand colours over transparent (hairlines, scrims, washes).
+  // Mode-relative: each reads the active variation (`--theme-<c>-color`).
+  @each $c in (paper, ink) {
+    @each $n in $theme-alpha-steps {
+      --theme-#{$c}-a#{$n}-color: color-mix(in srgb, var(--theme-#{$c}-color) #{$n}%, transparent);
+    }
+  }
+  @each $c in (primary, secondary, accent) {
+    @each $n in $theme-alpha-steps {
+      --theme-#{$c}-a#{$n}-color: color-mix(in srgb, var(--theme-#{$c}-color) #{$n}%, transparent);
+    }
+  }
+
+  // Neutral scale: 0 = paper (background) … 1000 = ink (foreground); follows the active pair.
+  --theme-neutral-0-color: var(--theme-paper-color);
+  @each $step in $theme-neutral-steps {
+    $pct: math.div($step, 10) * 1%;
+    --theme-neutral-#{$step}-color: color-mix(in oklab, var(--theme-ink-color) #{$pct}, var(--theme-paper-color));
+  }
+  --theme-neutral-1000-color: var(--theme-ink-color);
+
+  // Legacy grays → nearest neutral step (dark mode; light mode remaps in `theme-light-vars`).
+  --theme-gray-med-color: var(--theme-neutral-500-color);
+  --theme-gray-100-color: var(--theme-neutral-900-color);
+  --theme-gray-200-color: var(--theme-neutral-600-color);
+  --theme-gray-300-color: var(--theme-neutral-300-color);
+  --theme-gray-400-color: var(--theme-neutral-150-color);
+  --theme-gray-500-color: var(--theme-neutral-100-color);
+
+  --theme-gray-1-color: var(--theme-neutral-900-color);
+  --theme-gray-2-color: var(--theme-neutral-600-color);
+  --theme-gray-3-color: var(--theme-neutral-300-color);
+  --theme-gray-4-color: var(--theme-neutral-150-color);
+  --theme-gray-5-color: var(--theme-neutral-100-color);
+
+  // Palette helpers (data, not renamed — `palette` in src/color-rename-map.json).
+  --success-light-dark: #{$success};
+  --error-light-dark: #{$error};
+  --warning-light-dark: #{$warning};
+  --info-light-dark: #{$info};
+
+  // Status hues: the active status variation (`--theme-<s>-color`, ≥ 4.5:1 on the mode's paper);
+  // the `-ink` / `-surface` tones below derive from them. Mode switching happens on the variation.
+  @each $s in (success, error, warning, info) {
+    --theme-#{$s}-hue-color: var(--theme-#{$s}-color);
+  }
+
+  // 10 basic colours (dark) — palette names the owner kept (`paletteNames` in the rename map).
+  --red-color: #{$css-red-dark};
+  --orange-color: #{$css-orange-dark};
+  --amber-color: #{$css-amber-dark};
+  --yellow-color: #{$css-yellow-dark};
+  --lime-color: #{$css-lime-dark};
+  --green-color: #{$css-green-dark};
+  --teal-color: #{$css-teal-dark};
+  --blue-color: #{$css-blue-dark};
+  --purple-color: #{$css-purple-dark};
+  --magenta-color: #{$css-magenta-dark};
+
+  // Brand roles (ember / crimson) + hue-scale compatibility aliases.
+  // `--tertiary-*` … `--denary-*` alias hue Sass (`$oxblood-*` … `$ink-*` / `$parchment-*`), not brand roles.
+  --navy-default: #{$navy-default};
+  --forest-default: #{$forest-default};
+  --oxblood-default: #{$oxblood-default};
+  --violet-default: #{$violet-default};
+  --wine-default: #{$wine-default};
+  --sea-default: #{$sea-default};
+  --olive-default: #{$olive-default};
+  --plum-default: #{$plum-default};
+  --taupe-default: #{$taupe-default};
+  --ink-default: #{$ink-default};
+
+  --navy-light-dark: #{light-dark($navy-light, $azure-dark)};
+  --forest-light-dark: #{light-dark($forest-light, $forest-dark)};
+  --oxblood-light-dark: #{light-dark($oxblood-light, $oxblood-dark)};
+  --violet-light-dark: #{light-dark($violet-light, $violet-dark)};
+  --wine-light-dark: #{light-dark($wine-light, $wine-dark)};
+  --sea-light-dark: #{light-dark($sea-light, $sea-dark)};
+  --olive-light-dark: #{light-dark($olive-light, $olive-dark)};
+  --plum-light-dark: #{light-dark($plum-light, $tangerine-dark)};
+  --taupe-light-dark: #{light-dark($taupe-light, $taupe-dark)};
+  --ink-light-dark: #{light-dark($ink-light, $parchment-dark)};
+
+  --navy-color: #{$azure-dark};
+  --forest-color: #{$forest-dark};
+  --oxblood-color: #{$oxblood-dark};
+  --violet-color: #{$violet-dark};
+  --wine-color: #{$wine-dark};
+  --sea-color: #{$sea-dark};
+  --olive-color: #{$olive-dark};
+  --plum-color: #{$tangerine-dark};
+  --taupe-color: #{$taupe-dark};
+  --ink-color: #{$parchment-dark};
+
+  --primary-default: #{$primary-default-color};
+  --secondary-default: #{$secondary-default-color};
+  --primary-light-dark: #{$primary-color};
+  --secondary-light-dark: #{$secondary-color};
+  // Brand: the active variation `--theme-<c>-color` is declared with the solid colours below;
+  // Style Studio writes the per-mode variations inline.
+  --theme-primary-inverted-color: #{$primary-color-light};
+  --theme-secondary-inverted-color: #{$secondary-color-light};
+
+  // Compatibility hue aliases (tertiary…denary → oxblood…ink); not brand roles.
+  --tertiary-color: var(--oxblood-color);
+  --quaternary-color: var(--violet-color);
+  --quinary-color: var(--wine-color);
+  --senary-color: var(--sea-color);
+  --septenary-color: var(--olive-color);
+  --octonary-color: var(--plum-color);
+  --nonary-color: var(--taupe-color);
+  --denary-color: var(--ink-color);
+  --tertiary-light-dark: var(--oxblood-light-dark);
+  --quaternary-light-dark: var(--violet-light-dark);
+  --quinary-light-dark: var(--wine-light-dark);
+  --senary-light-dark: var(--sea-light-dark);
+  --septenary-light-dark: var(--olive-light-dark);
+  --octonary-light-dark: var(--plum-light-dark);
+  --nonary-light-dark: var(--taupe-light-dark);
+  --denary-light-dark: var(--ink-light-dark);
+
+  --theme-teal-signal-color: #{$teal-signal-dark};
+
+  /* 1. Background (Main) — paper is the ground */
+  --theme-main-background-color: var(--theme-neutral-0-color);
+  --theme-main-background-secondary-color: var(--theme-neutral-50-color);
+  --theme-main-background-accent-color: #{$main-background-dark-accent};
+
+  --theme-main-color: #{$main-color};
+  --theme-main-secondary-color: #{$main-secondary-color};
+
+  /* 2. Surface (Cards, Modules) */
+  --theme-surface-color: var(--theme-neutral-50-color);
+  /* 3. Surface Variant (Input, Hover) */
+  --theme-surface-variant-color: var(--theme-neutral-75-color);
+
+  /* 4. Text (Primary) */
+  --theme-text-color: var(--theme-neutral-975-color);
+  /* 5. Text (Secondary/Subtle) — ≥ 4.5:1 on page, surface and variant */
+  --theme-text-secondary-color: var(--theme-neutral-700-color);
+
+  /* 6. Primary Action/Accent */
+  --theme-primary-action-color: #{$css-primary-dark};
+  /* 7. Accent Hover/Light */
+  --theme-primary-hover-color: #{$css-primary-hover-dark};
+
+  /* 8. Border/Dividers — a hairline of ink over the paper ground */
+  --theme-border-color: var(--theme-ink-a8-color);
+  /* 9. Focus/Outline (also the form and button focus rings) — the active focus variation */
+  --theme-focus-ring-color: var(--theme-focus-color);
+  /* 10. Accessible interaction roles (AA; text + controls use these, brand vars stay for fills) */
+  --theme-link-color: #{$css-link-dark};
+  --theme-border-strong-color: var(--theme-neutral-450-color);
+  // The primary with only its lightness moved until white (`--theme-on-primary-color`) reads at
+  // ≥ 4.5:1, per mode (`buildPrimaryFillTokens`; Style Studio writes both per-mode names).
+  --theme-primary-fill-light-color: #{$theme-primary-fill-light-color};
+  --theme-primary-fill-dark-color: #{$theme-primary-fill-dark-color};
+  --theme-primary-fill-color: var(--theme-primary-fill-dark-color);
+  --theme-on-primary-color: #{$css-on-primary};
+  // The primary as text: only its lightness moved until it reads ≥ 4.5:1 on page, surface and
+  // variant, per mode (`buildPrimaryInkTokens`; Style Studio writes both per-mode names). Words
+  // (eyebrows, labels, hover / current text) use it; `--theme-primary-color` (3:1) stays for fills.
+  --theme-primary-ink-light-color: #{$theme-primary-ink-light-color};
+  --theme-primary-ink-dark-color: #{$theme-primary-ink-dark-color};
+  --theme-primary-ink-color: var(--theme-primary-ink-dark-color);
+  // The secondary as text, built the same way (`buildSecondaryInkTokens`): list markers, table
+  // headers, `dt` labels and other secondary-coloured words; `--theme-secondary-color` stays for fills.
+  --theme-secondary-ink-light-color: #{$theme-secondary-ink-light-color};
+  --theme-secondary-ink-dark-color: #{$theme-secondary-ink-dark-color};
+  --theme-secondary-ink-color: var(--theme-secondary-ink-dark-color);
+  // Hover (primary) / active (secondary) washes behind primary-ink text on outline, ghost and text
+  // buttons, painted at `$theme-wash-alpha`: the variation lightness-moved until the ink reads
+  // ≥ 4.5:1 on the wash over page, surfaces and variant (`buildWashTokens`; recomputed with the ink).
+  --theme-primary-wash-light-color: #{$theme-primary-wash-light-color};
+  --theme-primary-wash-dark-color: #{$theme-primary-wash-dark-color};
+  --theme-primary-wash-color: var(--theme-primary-wash-dark-color);
+  --theme-secondary-wash-light-color: #{$theme-secondary-wash-light-color};
+  --theme-secondary-wash-dark-color: #{$theme-secondary-wash-dark-color};
+  --theme-secondary-wash-color: var(--theme-secondary-wash-dark-color);
+  // Status tones: fixed hue per status, tone per use. `-ink` = the status as text (also the status
+  // border): the variation mixed toward the text colour (`STATUS_INK_MIX`), then lightness-adjusted
+  // until it reads ≥ 4.5:1 on page, secondary page, surface and variant (`buildStatusInkTokens`;
+  // core/web recomputes the per-mode pair for a custom paper / ink). `-surface` = a light tint of
+  // the hue over the surface (text on it uses `-ink`).
+  --theme-success-ink-light-color: #{$theme-success-ink-light-color};
+  --theme-success-ink-dark-color: #{$theme-success-ink-dark-color};
+  --theme-warning-ink-light-color: #{$theme-warning-ink-light-color};
+  --theme-warning-ink-dark-color: #{$theme-warning-ink-dark-color};
+  --theme-error-ink-light-color: #{$theme-error-ink-light-color};
+  --theme-error-ink-dark-color: #{$theme-error-ink-dark-color};
+  --theme-info-ink-light-color: #{$theme-info-ink-light-color};
+  --theme-info-ink-dark-color: #{$theme-info-ink-dark-color};
+  @each $s in (success, warning, error, info) {
+    --theme-#{$s}-ink-color: var(--theme-#{$s}-ink-dark-color);
+  }
+  @each $s in (success, warning, error, info) {
+    --theme-#{$s}-surface-color: color-mix(in oklab, var(--theme-#{$s}-hue-color) 14%, var(--theme-surface-color));
+  }
+
+  // Layout + spacing (Sass `$space-*` → CSS)
+  --space-0: #{$space-0};
+  --space-1: #{$space-1};
+  --space-2: #{$space-2};
+  --space-3: #{$space-3};
+  --space-4: #{$space-4};
+  --space-5: #{$space-5};
+  --space-6: #{$space-6};
+  --space-8: #{$space-8};
+  --space-10: #{$space-10};
+  --space-12: #{$space-12};
+  --section-gap: var(--space-8);
+  --vh: 100%;
+
+  // Typography
+  --font-family: #{$text-font-family};
+  --font-family-header: #{$header-font-family};
+  --font-family-title: #{$header-font-family};
+  --font-family-display: #{$header-font-family};
+
+  // Root font size as a percentage so the reader's browser text-size setting applies
+  // (a px root overrides it). 100% = 16px by default; ultrawide steps to 125%.
+  --font-size-default: 100%;
+  --font-size-alt: #{$font-size-alt};
+
+  // Fluid type scale — clamps between readable mins and design-token maxes.
+  --font-size-xs: clamp(max(var(--type-min, 12px), 0.7rem), 0.65rem + 0.2vw, #{$font-size-xs});
+  --font-size-sm: clamp(0.8rem, 0.75rem + 0.25vw, #{$font-size-sm});
+  --font-size-base: clamp(0.95rem, 0.9rem + 0.3vw, #{$font-size-base});
+  --font-size-lg: clamp(1rem, 0.95rem + 0.4vw, #{$font-size-lg});
+  --font-size-xl: clamp(1.05rem, 0.95rem + 0.7vw, #{$font-size-xl});
+  --font-size-2xl: clamp(1.15rem, 1rem + 1.1vw, #{$font-size-2xl});
+  --font-size-3xl: clamp(1.25rem, 1rem + 1.6vw, #{$font-size-3xl});
+  --font-size-4xl: clamp(1.35rem, 1rem + 2.2vw, #{$font-size-4xl});
+  --font-size-5xl: clamp(1.45rem, 1rem + 2.8vw, #{$font-size-5xl});
+  --font-size-6xl: clamp(1.55rem, 1rem + 3.4vw, #{$font-size-6xl});
+  --font-size-7xl: clamp(1.65rem, 1rem + 4vw, #{$font-size-7xl});
+  --font-size-8xl: clamp(1.75rem, 1rem + 4.6vw, #{$font-size-8xl});
+  --font-size-9xl: clamp(1.85rem, 1rem + 5.2vw, #{$font-size-9xl});
+  --font-size-10xl: clamp(2rem, 1.1rem + 5.8vw, #{$font-size-10xl});
+
+  // Page fit measures — mobile 480 / tablet 768 / standard 1080 / widescreen 1440 / ultrawide 1920.
+  // Content shells are fluid with a hard max of 1440px and centered (`margin-inline: auto` on `.page-content`).
+  // See docs/packages/theme.md (page-fit tokens + content-must-fit-containers).
+  --page-pad: clamp(#{$space-3}, 2.5vw, #{$space-8});
+  --page-max: 90rem;
+  --page-shell-max: 90rem;
+  --page-screen-max: 90rem;
+  --prose-max: 42rem;
+  --page-chrome: 6.5rem;
+  --page-fill-min: calc(100dvh - var(--page-chrome));
+  --card-min: #{$card-min};
+  --card-min-md: #{$card-min-md};
+  --card-min-compact: #{$card-min-compact};
+  --stack-min: #{$stack-min};
+  // Allowed frame ratios only: 9:16 · 16:9 · 1:1 (media / image-led cards & subsections).
+  // Portrait default → 9:16; landscape overrides below.
+  --surface-ratio: 9 / 16;
+  --card-ratio: 1 / 1;
+  --media-ratio: 9 / 16;
+
+  // Radius (Sass `$radius-*` → CSS)
+  --border-radius-sm: #{$radius-sm};
+  --border-radius-md: #{$radius-md};
+  --border-radius-lg: #{$radius-lg};
+  --border-radius-circle: 50%;
+  --border-radius-pill: #{$radius-pill};
+
+  // Effects / motion
+  --blur-sm: #{$blur-sm};
+  --blur-md: #{$blur-md};
+  --blur-lg: #{$blur-lg};
+  --transition-fast: #{$transition-fast};
+  --transition-base: #{$transition-base};
+  --transition-slow: #{$transition-slow};
+  --transition-base-duration: 250ms;
+  // Elevation scale — brand shadow ink (`--rgb-shadow`), not raw black.
+  --shadow-sm: 0 1px 2px rgb(var(--rgb-shadow) / 0.14);
+  --shadow-md: 0 4px 14px rgb(var(--rgb-shadow) / 0.18);
+  --shadow-lg: 0 14px 36px rgb(var(--rgb-shadow) / 0.26);
+  --text-shadow-root:
+    0 1px 0 color-mix(in srgb, var(--theme-primary-inverted-color) 52%, var(--primary-default)),
+    -1px 0 0 color-mix(in srgb, var(--theme-primary-color) 36%, var(--primary-default));
+  --text-shadow-sm: 0 1px 2px #{$text-shadow-dark};
+  --text-shadow-md: 0 2px 4px #{$text-shadow-dark};
+  --text-shadow-lg: 0 4px 8px #{$text-shadow-dark};
+  --text-shadow-xl: 0 8px 16px #{$text-shadow-dark};
+
+  // Breakpoints
+  --breakpoint: #{m.bp(widescreen)};
+
+  // Form
+  --form-gap: var(--space-4);
+  // Form colours (border and focus ring share `--theme-border-strong-color` / `--theme-focus-ring-color`).
+  --theme-form-background-color: rgba(0, 0, 0, 0.5);
+  --theme-form-background-disabled-color: rgba(#{$css-form-background-disabled}, 0.18);
+  --theme-form-placeholder-color: #{$css-form-placeholder};
+  --theme-form-invalid-color: #{$error};
+  --theme-form-help-color: #{$css-form-placeholder};
+  --form-radius: var(--border-radius-sm);
+  // Touch + type floors (repo UI rule: responsive · accessible · touch). Every control is at
+  // least --touch-target tall/wide; no text renders below --type-min.
+  // rem grows with the reader's text size; the px half keeps the hard floor if they shrink it.
+  --touch-target: max(2.75rem, 44px);
+  --type-min: max(0.75rem, 12px);
+  --form-control-height: max(var(--touch-target), 2.5rem);
+
+  // Buttons — gradient stops stay in the same luminance family as the solid
+  // `background-color` so `--theme-button-fg-color` contrasts both layers.
+  --button-bg: linear-gradient(
+    135deg,
+    #{color.change($secondary-color-dark, $alpha: 0.5)} 0%,
+    #{color.change($primary-color-dark, $alpha: 0.5)} 100%
+  );
+  --button-primary-bg: linear-gradient(
+    135deg,
+    #{color.change($primary-color-dark, $alpha: 0.62)} 0%,
+    #{color.change($secondary-color-dark, $alpha: 0.42)} 100%
+  );
+  --button-secondary-bg: linear-gradient(
+    135deg,
+    #{color.change($secondary-color-dark, $alpha: 0.62)} 0%,
+    #{color.change($primary-color-dark, $alpha: 0.42)} 100%
+  );
+  // Primary buttons (`button-base`, `.btn` solid, PrimeVue primary, Foundation `.button`):
+  // - dark: the primary variation under the gradients above, text ≥ 4.5:1 on it
+  //   (`buildButtonInkTokens` → `--theme-button-fg-dark-color`, written by Style Studio too);
+  // - light (owner option C, Task 3 fix round 1): the white-text primary fill, no gradient, white
+  //   text — see `theme-light-vars`.
+  // `--theme-button-fg-color` points at the active text colour, so a mode switch needs no JS.
+  --theme-button-fg-dark-color: #{$theme-button-fg-dark-color};
+  --theme-button-fg-color: var(--theme-button-fg-dark-color);
+  --theme-button-fill-color: var(--theme-primary-color);
+  // Hover / active keep the dark fill (its text, `--theme-button-fg-dark-color`, is ≥ 4.5:1 on it
+  // by construction); was undeclared in dark, so hover painted transparent under the gradients.
+  --theme-button-hover-fill-color: var(--theme-button-fill-color);
+  // `--button-solid-bg` / `--button-solid-bg-hover` are declared only in light mode (`none`): the
+  // `.btn` solid and PrimeVue primary rules fall back to their own secondary→primary gradients.
+  --theme-button-secondary-fg-color: #{dyn-color-against-fill($primary-color-light, $secondary-color-light)};
+  --theme-button-border-color: color-mix(in srgb, #{$color-white} 20%, transparent);
+  --button-shadow: 0 8px 24px color-mix(in srgb, #{$shadow-alt-color} 22%, transparent);
+  --button-shadow-hover: 0 12px 30px color-mix(in srgb, #{$shadow-alt-color} 28%, transparent);
+  --button-shadow-active: 0 4px 14px color-mix(in srgb, #{$shadow-alt-color} 20%, transparent);
+  --button-radius: var(--border-radius-sm);
+  --button-press-depth: 0.3125rem;
+
+  // Foundation Sites — a third-party interface: the `--foundation-*` names are kept (like
+  // PrimeVue's `--p-*`); their values read the `--theme-*-color` names, so they follow light/dark.
+  --foundation-primary: var(--theme-primary-color);
+  --foundation-secondary: var(--theme-secondary-color);
+  --foundation-accent: var(--theme-accent-color);
+  --foundation-success: var(--theme-success-hue-color);
+  --foundation-warning: var(--theme-warning-hue-color);
+  --foundation-alert: var(--theme-error-hue-color);
+  --foundation-info: var(--theme-info-hue-color);
+  --foundation-body-background: var(--theme-main-background-color);
+  --foundation-body-font-color: var(--theme-text-color);
+  --foundation-body-font-secondary: var(--theme-text-secondary-color);
+  --foundation-header-color: var(--theme-text-color);
+  --foundation-global-radius: var(--border-radius-md);
+  --foundation-light-gray: var(--theme-gray-100-color);
+  --foundation-medium-gray: var(--theme-gray-200-color);
+  --foundation-dark-gray: var(--theme-gray-300-color);
+  --foundation-black: var(--theme-default-black-color);
+  --foundation-white: var(--theme-default-white-color);
+  --foundation-border: var(--theme-border-color);
+  --foundation-surface: var(--theme-surface-color);
+  --foundation-surface-variant: var(--theme-surface-variant-color);
+  --foundation-focus: var(--theme-focus-ring-color);
+  --foundation-text-secondary: var(--theme-text-secondary-color);
+  --foundation-button-fg: var(--theme-button-fg-color);
+  --foundation-placeholder: var(--theme-form-placeholder-color, var(--theme-text-secondary-color));
+
+  // Colour system — solid colours (spec: docs/superpowers/specs/2026-09-24-color-system-design.md).
+  // These hold the build-time defaults; core/web overrides the paper / ink pairs and the brand
+  // variations inline (both modes at once). The active pointers switch per mode.
+  --theme-paper-light-color: #{$theme-paper-light-color};
+  --theme-paper-dark-color: #{$theme-paper-dark-color};
+  --theme-ink-light-color: #{$theme-ink-light-color};
+  --theme-ink-dark-color: #{$theme-ink-dark-color};
+  @each $c in $theme-solid-colors {
+    --theme-#{$c}-light-color: #{map.get($theme-variations, $c, light)};
+    --theme-#{$c}-dark-color: #{map.get($theme-variations, $c, dark)};
+    --theme-#{$c}-light-background-color: #{map.get($theme-variations, $c, light-background)};
+    --theme-#{$c}-dark-background-color: #{map.get($theme-variations, $c, dark-background)};
+    --theme-#{$c}-color: var(--theme-#{$c}-dark-color);
+    --theme-#{$c}-background-color: var(--theme-#{$c}-dark-background-color);
+  }
+  --theme-alert-color: var(--theme-error-color);
+  --theme-alert-background-color: var(--theme-error-background-color);
+}
+
+@mixin theme-light-vars {
+  // Light mode's pen & paper pair (the per-mode values live on :root; this switches the pointer).
+  --theme-paper-color: var(--theme-paper-light-color);
+  --theme-ink-color: var(--theme-ink-light-color);
+
+  // Legacy grays → nearest neutral step (light mode).
+  --theme-gray-med-color: var(--theme-neutral-200-color);
+  --theme-gray-100-color: var(--theme-neutral-25-color);
+  --theme-gray-200-color: var(--theme-neutral-100-color);
+  --theme-gray-300-color: var(--theme-neutral-200-color);
+  --theme-gray-400-color: var(--theme-neutral-700-color);
+  --theme-gray-500-color: var(--theme-neutral-850-color);
+
+  --theme-gray-1-color: var(--theme-neutral-900-color);
+  --theme-gray-2-color: var(--theme-neutral-800-color);
+  --theme-gray-3-color: var(--theme-neutral-500-color);
+  --theme-gray-4-color: var(--theme-neutral-200-color);
+  --theme-gray-5-color: var(--theme-neutral-100-color);
+
+  --red-color: #{$css-red-light};
+  --orange-color: #{$css-orange-light};
+  --amber-color: #{$css-amber-light};
+  --yellow-color: #{$css-yellow-light};
+  --lime-color: #{$css-lime-light};
+  --green-color: #{$css-green-light};
+  --teal-color: #{$css-teal-light};
+  --blue-color: #{$css-blue-light};
+  --purple-color: #{$css-purple-light};
+  --magenta-color: #{$css-magenta-light};
+
+  --navy-color: #{$navy-light};
+  --forest-color: #{$forest-light};
+  --oxblood-color: #{$oxblood-light};
+  --violet-color: #{$violet-light};
+  --wine-color: #{$wine-light};
+  --sea-color: #{$sea-light};
+  --olive-color: #{$olive-light};
+  --plum-color: #{$plum-light};
+  --taupe-color: #{$taupe-light};
+  --ink-color: #{$ink-light};
+
+  // Keep tertiary…denary aliases pointed at the light-mode hue colors above.
+  --tertiary-color: var(--oxblood-color);
+  --quaternary-color: var(--violet-color);
+  --quinary-color: var(--wine-color);
+  --senary-color: var(--sea-color);
+  --septenary-color: var(--olive-color);
+  --octonary-color: var(--plum-color);
+  --nonary-color: var(--taupe-color);
+  --denary-color: var(--ink-color);
+
+  --theme-primary-inverted-color: #{$primary-color-dark};
+  --theme-secondary-inverted-color: #{$secondary-color-dark};
+
+  --theme-teal-signal-color: #{$teal-signal-light};
+
+  // Light mode: paper is the ground.
+  --theme-main-background-color: var(--theme-neutral-0-color);
+  --theme-main-background-secondary-color: var(--theme-neutral-50-color);
+  --theme-main-background-accent-color: #{$main-background-light-accent};
+
+  --theme-surface-color: var(--theme-neutral-50-color);
+  --theme-surface-variant-color: var(--theme-neutral-100-color);
+
+  --theme-text-color: var(--theme-neutral-950-color);
+  --theme-text-secondary-color: var(--theme-neutral-700-color);
+
+  --theme-primary-action-color: #{$css-primary-light};
+  --theme-primary-hover-color: #{$css-primary-hover-light};
+
+  --theme-border-color: var(--theme-ink-a8-color);
+  --theme-link-color: #{$css-link-light};
+  --theme-border-strong-color: var(--theme-neutral-500-color);
+  --theme-primary-fill-color: var(--theme-primary-fill-light-color);
+  --theme-on-primary-color: #{$css-on-primary};
+  --theme-primary-ink-color: var(--theme-primary-ink-light-color);
+  --theme-secondary-ink-color: var(--theme-secondary-ink-light-color);
+  --theme-primary-wash-color: var(--theme-primary-wash-light-color);
+  --theme-secondary-wash-color: var(--theme-secondary-wash-light-color);
+  @each $s in (success, warning, error, info) {
+    --theme-#{$s}-ink-color: var(--theme-#{$s}-ink-light-color);
+  }
+
+  --text-shadow-sm: 0 1px 2px #{$text-shadow-light};
+  --text-shadow-md: 0 2px 4px #{$text-shadow-light};
+  --text-shadow-lg: 0 4px 8px #{$text-shadow-light};
+  --text-shadow-xl: 0 8px 16px #{$text-shadow-light};
+
+  --theme-form-background-color: color-mix(in srgb, #{$css-form-background-disabled} 8%, transparent);
+  --theme-form-background-disabled-color: color-mix(in srgb, #{$css-form-background-disabled} 18%, transparent);
+  --theme-form-placeholder-color: color-mix(in srgb, #{$css-form-placeholder} 75%, transparent);
+  --theme-form-invalid-color: #{$error};
+  --theme-form-help-color: color-mix(in srgb, #{$css-form-placeholder} 90%, transparent);
+
+  // Primary buttons: a solid white-text fill, no gradient (owner option C, Task 3 fix round 1).
+  --button-bg: none;
+  --button-solid-bg: none;
+  --button-solid-bg-hover: none;
+  --theme-button-fill-color: var(--theme-primary-fill-color);
+  // Hover / active keep the fill (dark: the dark fill, declared on :root).
+  --theme-button-hover-fill-color: var(--theme-primary-fill-color);
+  --button-primary-bg: linear-gradient(
+    135deg,
+    #{color.change($primary-color-light, $alpha: 0.62)} 0%,
+    #{color.change($secondary-color-light, $alpha: 0.42)} 100%
+  );
+  --button-secondary-bg: linear-gradient(
+    135deg,
+    #{color.change($secondary-color-light, $alpha: 0.62)} 0%,
+    #{color.change($primary-color-light, $alpha: 0.42)} 100%
+  );
+  --theme-button-fg-color: var(--theme-on-primary-color);
+  --theme-button-secondary-fg-color: var(--theme-on-primary-color);
+  --theme-button-border-color: color-mix(in srgb, #{$color-black} 20%, transparent);
+  --button-shadow: 0 8px 24px color-mix(in srgb, #{$shadow-alt-color} 22%, transparent);
+  --button-shadow-hover: 0 12px 30px color-mix(in srgb, #{$shadow-alt-color} 28%, transparent);
+  --button-shadow-active: 0 4px 14px color-mix(in srgb, #{$shadow-alt-color} 20%, transparent);
+
+  // Colour system — active pointers for light mode (the four-variation set stays mode-independent, declared once on :root).
+  @each $c in $theme-solid-colors {
+    --theme-#{$c}-color: var(--theme-#{$c}-light-color);
+    --theme-#{$c}-background-color: var(--theme-#{$c}-light-background-color);
+  }
+  --theme-alert-color: var(--theme-error-color);
+  --theme-alert-background-color: var(--theme-error-background-color);
+}
+
+:root {
+  // Theme Background variables (`--background-color*` are external hooks; nothing in the theme sets them).
+  --theme-background-color: var(--background-color);
+  --theme-background-soft-color: color-mix(in srgb, var(--theme-background-color) 80%, transparent);
+  --theme-background-secondary-color: var(--background-color-secondary);
+  --theme-background-secondary-soft-color: color-mix(in srgb, var(--theme-background-secondary-color) 80%, transparent);
+  --theme-background-accent-color: var(--background-color-accent);
+  --theme-background-accent-soft-color: color-mix(in srgb, var(--theme-background-accent-color) 80%, transparent);
+  --theme-background-image: linear-gradient(
+    to bottom,
+    var(--theme-background-soft-color),
+    var(--theme-background-color)
+  );
+  --theme-background-repeat: no-repeat;
+  --theme-background-size: cover;
+  --theme-background-position: center;
+  --theme-background-attachment: fixed;
+  --theme-background-blend-mode: multiply;
+
+  // Theme box ratios
+  --theme-box-ratio: 1 / 2; // 1:2 (default)
+  --theme-box-ratio-wide: 16 / 9; // 16:9 (landscape)
+  --theme-box-ratio-tall: 9 / 16; // 9:16 (portrait)
+  --theme-box-ratio-portrait: 2 / 3; // 2:3 (portrait)
+  --theme-box-ratio-landscape: 3 / 2; // 3:2 (landscape)
+  --theme-box-ratio-banner: 21 / 9; // 21:9 (banner)
+  --theme-box-ratio-square: 1 / 1; // 1:1 (square)
+
+  // Theme breakpoints
+  --theme-breakpoint-ultrawide: #{m.bp(ultrawide)};
+  --theme-breakpoint-widescreen: #{m.bp(widescreen)};
+  --theme-breakpoint-standard: #{m.bp(standard)};
+  --theme-breakpoint-tablet: #{m.bp(tablet)};
+  --theme-breakpoint-mobile: #{m.bp(mobile)};
+  --theme-breakpoint-wide: #{m.bp(widescreen)};
+  --theme-breakpoint: #{m.bp(standard)};
+  --theme-breakpoint-narrow: #{m.bp(tablet)};
+  --theme-breakpoint-tiny: #{m.bp(mobile)};
+}
+
+// Before JS sets data-theme: follow OS light preference.
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) {
+    @include theme-light-vars;
+  }
+}
+
+// Explicit light mode (unified with JS color-mode controller).
+:root[data-theme='light'] {
+  @include theme-light-vars;
+}
+
+@include m.bp-up(ultrawide) {
+  :root {
+    --breakpoint: #{m.bp(ultrawide)};
+    --font-size-default: 125%;
+    --page-pad: clamp(#{$space-6}, 3vw, #{$space-12});
+    --page-shell-max: 90rem;
+    --page-screen-max: 90rem;
+    --prose-max: 48rem;
+    --page-chrome: 7rem;
+    --surface-ratio: var(--theme-box-ratio-wide);
+    --card-ratio: var(--theme-box-ratio-wide);
+    --media-ratio: var(--theme-box-ratio-wide);
+  }
+}
+@include m.bp-down(widescreen) {
+  :root {
+    --breakpoint: #{m.bp(standard)};
+    --page-shell-max: min(100%, 90rem);
+    --page-screen-max: min(100%, 90rem);
+    --prose-max: 42rem;
+  }
+}
+@include m.bp-down(standard) {
+  :root {
+    --breakpoint: #{m.bp(tablet)};
+    --page-shell-max: 100%;
+    --page-screen-max: 100%;
+    --page-pad: clamp(#{$space-3}, 3vw, #{$space-6});
+    --prose-max: 40rem;
+    --page-chrome: 8.5rem;
+  }
+}
+@include m.bp-down(tablet) {
+  :root {
+    --breakpoint: #{m.bp(mobile)};
+    // Body text stays at the reader's size on phones (was × 0.75 = 12px, which shrank every
+    // rem size). Archived: scss/_archive/2026-09-24-pre-a11y.
+    --font-size-default: 100%;
+    --page-shell-max: 100%;
+    --page-screen-max: 100%;
+    --page-pad: #{$space-3};
+    --prose-max: 100%;
+    --page-chrome: 9rem;
+  }
+}
+@include m.bp-down(mobile) {
+  :root {
+    --page-pad: #{$space-2};
+    --page-chrome: 10rem;
+  }
+}
+
+// Horizontal / landscape screens: landscape media & cards use 16:9 (or 1:1 for square tiles).
+@media (orientation: landscape) {
+  :root {
+    --surface-ratio: var(--theme-box-ratio-wide);
+    --card-ratio: var(--theme-box-ratio-wide);
+    --media-ratio: var(--theme-box-ratio-wide);
+  }
+}
+
+@media (orientation: landscape) and (width >= #{m.bp(standard)}) {
+  :root {
+    --surface-ratio: var(--theme-box-ratio-wide);
+    --card-ratio: var(--theme-box-ratio-wide);
+    --media-ratio: var(--theme-box-ratio-wide);
+  }
+}
+
+@media (orientation: portrait) and (width < #{m.bp(tablet)}) {
+  :root {
+    --surface-ratio: var(--theme-box-ratio-tall);
+    --card-ratio: var(--theme-box-ratio-square);
+    --media-ratio: var(--theme-box-ratio-tall);
+  }
+}

@@ -18,6 +18,20 @@ html {
   font-size: var(--font-size-default);
   line-height: 1.5;
   tab-size: 4;
+}
+
+// Smooth in-page scrolling only when nobody asked for less motion: not under the OS
+// `prefers-reduced-motion: reduce`, and not when the site's motion setting is `reduced`
+// (`html[data-motion]`, written by the app's preferences). `playful` opts in even under the OS
+// setting, matching `usePrefersReducedMotion`. Scripted scrolls pass `behavior: 'auto'`, which
+// defers to this property (KI-9: a long smooth jump could also be cut short before it arrived).
+@media (prefers-reduced-motion: no-preference) {
+  html:not([data-motion='reduced']) {
+    scroll-behavior: smooth;
+  }
+}
+
+html[data-motion='playful'] {
   scroll-behavior: smooth;
 }
 
@@ -36,7 +50,7 @@ body {
   overflow-x: hidden;
   overflow-y: auto;
   font-family: var(--font-family), serif;
-  color: var(--text-color);
+  color: var(--theme-text-color);
   text-shadow: var(--text-shadow-root);
-  background-color: var(--main-background);
+  background-color: var(--theme-main-background-color);
 }

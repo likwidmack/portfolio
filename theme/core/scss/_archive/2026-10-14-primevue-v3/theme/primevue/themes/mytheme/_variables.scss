@@ -1,0 +1,49 @@
+@forward 'variables/palette' hide $textColor, $textSecondaryColor;
+@forward 'variables/general';
+@forward 'variables/form';
+@forward 'variables/button';
+@forward 'variables/panel';
+@forward 'variables/data';
+@forward 'variables/overlay';
+@forward 'variables/message';
+@forward 'variables/menu';
+@forward 'variables/media';
+@forward 'variables/misc';
+
+@use 'variables/general' as general;
+@use 'variables/panel' as panel;
+
+/// Prime-specific aliases only — brand tokens live in `@layer theme` globals.
+:root {
+  --content-padding: #{panel.$panelContentPadding};
+  --inline-spacing: #{general.$inlineSpacing};
+  --border-radius: #{general.$borderRadius};
+  --surface-a: var(--theme-surface-color);
+  --surface-b: var(--theme-surface-variant-color);
+  --surface-c: color-mix(in srgb, var(--theme-border-color) 55%, transparent);
+  --surface-d: var(--theme-border-color);
+  --surface-e: var(--theme-surface-color);
+  --surface-f: var(--theme-surface-color);
+  --text-color-secondary: var(--theme-text-secondary-color);
+  --primary-color-text: var(--theme-button-fg-color);
+  --surface-0: var(--theme-surface-color);
+  --surface-50: color-mix(in srgb, var(--theme-surface-color) 92%, var(--theme-text-color));
+  --surface-100: color-mix(in srgb, var(--theme-surface-color) 88%, var(--theme-text-color));
+  --surface-200: color-mix(in srgb, var(--theme-surface-color) 80%, var(--theme-text-color));
+  --surface-300: color-mix(in srgb, var(--theme-surface-color) 70%, var(--theme-text-color));
+  --surface-400: color-mix(in srgb, var(--theme-surface-color) 55%, var(--theme-text-color));
+  --surface-500: color-mix(in srgb, var(--theme-surface-color) 40%, var(--theme-text-color));
+  --surface-600: color-mix(in srgb, var(--theme-surface-color) 28%, var(--theme-text-color));
+  --surface-700: color-mix(in srgb, var(--theme-surface-color) 18%, var(--theme-text-color));
+  --surface-800: color-mix(in srgb, var(--theme-surface-color) 10%, var(--theme-text-color));
+  --surface-900: color-mix(in srgb, var(--theme-surface-color) 4%, var(--theme-text-color));
+  --surface-ground: var(--theme-main-background-color);
+  --surface-section: var(--theme-surface-color);
+  --surface-card: var(--theme-surface-color);
+  --surface-overlay: var(--theme-surface-variant-color);
+  --surface-border: var(--theme-border-color);
+  --surface-hover: color-mix(in srgb, var(--theme-primary-color) 10%, var(--theme-surface-color));
+  --maskbg: #{general.$maskBg};
+  --highlight-bg: color-mix(in srgb, var(--theme-primary-color) 22%, transparent);
+  --highlight-text-color: var(--theme-text-color);
+}

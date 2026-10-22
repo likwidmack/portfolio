@@ -1,0 +1,24 @@
+// Focus-ring mixins (no CSS output). Forwarded by `tokens/_index.scss` and `_nuxt-auto.scss`, so
+// theme globals, standalone app sheets (`@use 'theme/scss/tokens'`) and Vue SFCs share one recipe.
+// Docs: `docs/packages/theme.md#focus-rings`.
+
+/// The site focus ring: `2px solid --theme-focus-ring-color`, offset 2px (≥ 3:1 on page and
+/// surface — the contrast role). An outline survives forced-colors mode (the system repaints it).
+/// `$offset: -2px` draws it inset, for a control inside a box that clips its overflow.
+@mixin focus-ring($offset: 2px) {
+  outline: 2px solid var(--theme-focus-ring-color);
+  outline-offset: $offset;
+}
+
+/// A box-shadow focus ring (the buttons' 3px glow). Forced-colors mode drops box-shadows, so it
+/// pairs with a transparent outline: forced colours repaint the outline in the system highlight,
+/// and the explicit rule keeps it visible where a UA would keep `transparent`.
+@mixin focus-ring-shadow($shadow...) {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow: $shadow;
+
+  @media (forced-colors: active) {
+    outline-color: Highlight;
+  }
+}

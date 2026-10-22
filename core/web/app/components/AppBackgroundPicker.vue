@@ -77,37 +77,22 @@ fieldset.background-picker
 import {
   BACKGROUND_CUSTOM_OPTIONS,
   BACKGROUND_MODES,
-  buildPresetBackgroundTokens,
   type BackgroundMode,
-} from '#shared/personalization';
+  type BackgroundOptions,
+  type BackgroundOptionVariable,
+} from '#shared/preferences';
 import { resolveCssColorToHex } from '#shared/utils/resolve-css-color';
 
 defineProps<{ name: string }>();
 
 const backgroundOptions = BACKGROUND_MODES;
 const customOptions = BACKGROUND_CUSTOM_OPTIONS;
-const optionValues = ref<Record<string, string>>({});
 
 const model = defineModel<BackgroundMode>({ required: true });
 const custom = defineModel<string>('custom', { default: '' });
 const pending = ref<BackgroundMode | null>(null);
-const { accent, brandRoles } = usePersonalization();
-
-watch(
-  [accent, model],
-  () => {
-    if (model.value !== 'custom' || !accent.value) return;
-    const tokens = buildPresetBackgroundTokens(accent.value, brandRoles.value, 'dark');
-    if (!tokens['--portfolio-background-image']) return;
-    const next = { ...optionValues.value };
-    for (const option of BACKGROUND_CUSTOM_OPTIONS) {
-      const value = tokens[option.variable];
-      if (value) next[option.variable] = value;
-    }
-    optionValues.value = next;
-  },
-  { immediate: true }
-);
+/** Visitor overrides by CSS variable; the parent routes changes (Studio: draft, Personalize: commit). */
+const options = defineModel<BackgroundOptions>('options', { default: () => ({}) });
 
 function onPick(value: unknown): void {
   const next = value as BackgroundMode;
@@ -129,12 +114,28 @@ function onCustom(value: unknown): void {
   custom.value = String(value);
 }
 
-function colorValue(variable: string): string {
-  return optionValues.value[variable] || resolveCssColorToHex(`var(${variable})`) || '';
+const { accent, mode: themeMode } = usePersonalization();
+
+/** Painted (preset / theme) values by variable, re-read whenever a pack, mode or option change repaints them. */
+const effective = computed<Partial<Record<BackgroundOptionVariable, string>>>(() => {
+  void [accent.value, themeMode.value, model.value, options.value];
+  if (!import.meta.client) return {};
+  const style = getComputedStyle(document.documentElement);
+  return Object.fromEntries(
+    customOptions.map((option) => [option.variable, style.getPropertyValue(option.variable).trim()])
+  );
+});
+
+// Shown value: the visitor's option, else the effective (preset / theme) value painted right now.
+// An unset variable has no painted colour: resolving it would read the inherited text colour.
+function colorValue(variable: BackgroundOptionVariable): string {
+  if (options.value[variable]) return options.value[variable];
+  const painted = effective.value[variable];
+  return (painted && resolveCssColorToHex(painted)) || '';
 }
 
-function textValue(variable: string): string {
-  return optionValues.value[variable] ?? '';
+function textValue(variable: BackgroundOptionVariable): string {
+  return options.value[variable] ?? effective.value[variable] ?? '';
 }
 
 function choicesFor(option: (typeof BACKGROUND_CUSTOM_OPTIONS)[number]): readonly string[] {
@@ -154,13 +155,12 @@ function choiceOptions(choices: readonly string[]): Array<{ label: string; value
   return [{ label: 'Theme default', value: '' }, ...choices.map((value) => ({ label: value, value }))];
 }
 
-function onOption(variable: string, value: unknown): void {
+function onOption(variable: BackgroundOptionVariable, value: unknown): void {
   const next = value == null ? '' : String(value);
-  optionValues.value = { ...optionValues.value, [variable]: next };
-  if (!import.meta.client) return;
-  const root = document.documentElement;
-  if (next) root.style.setProperty(variable, next);
-  else root.style.removeProperty(variable);
+  const rest = Object.fromEntries(
+    Object.entries(options.value).filter(([key]) => key !== variable)
+  ) as BackgroundOptions;
+  options.value = next ? { ...rest, [variable]: next } : rest;
 }
 </script>
 
@@ -197,7 +197,7 @@ function onOption(variable: string, value: unknown): void {
     display: grid;
     gap: var(--space-2);
     padding: var(--space-3);
-    border: 1px solid var(--border-strong);
+    border: 1px solid var(--theme-border-strong-color);
     border-radius: var(--border-radius-md);
 
     p {

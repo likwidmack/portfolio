@@ -49,11 +49,10 @@ describe('scssLoadPaths', () => {
     expect(normalized.some((p) => p.endsWith('/assets/css'))).toBe(true);
   });
 
-  it('includes theme SCSS plus PrimeVue and Foundation Sass roots', () => {
+  it('includes theme SCSS and no vendored theme roots (Foundation resolves through pkg:)', () => {
     const normalized = scssLoadPaths.map((p) => p.replace(/\\/g, '/'));
     expect(normalized).toContain(themeScssRoot.replace(/\\/g, '/'));
-    expect(normalized.some((p) => p.endsWith('/theme/primevue'))).toBe(true);
-    expect(normalized.some((p) => p.endsWith('/theme/foundation'))).toBe(true);
+    expect(normalized.some((p) => /\/theme\/(?:primevue|foundation)$/.test(p))).toBe(false);
   });
 });
 

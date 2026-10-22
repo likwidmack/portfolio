@@ -1,0 +1,47 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: '@tgmc/<%= name %> — Nuxt SSR on Lambda behind an HTTP API'
+
+Parameters:
+  Stage:
+    Type: String
+    AllowedValues: [test, production]
+
+Globals:
+  Function:
+    Runtime: nodejs24.x
+    MemorySize: 1024
+    Timeout: 15
+
+Resources:
+  HttpApi:
+    Type: AWS::Serverless::HttpApi
+
+  NitroFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      # Nitro aws_lambda output; public assets are inlined (serveStatic: 'inline' in nuxt.config.ts).
+      CodeUri: ../.output/server
+      Handler: index.handler
+      Environment:
+        Variables:
+          NODE_ENV: production
+          SYS_ENV: !Ref Stage
+      Events:
+        Root:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /
+            Method: ANY
+        Proxy:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /{proxy+}
+            Method: ANY
+
+Outputs:
+  HttpApiUrl:
+    Description: Base URL of the app
+    Value: !Sub 'https://${HttpApi}.execute-api.${AWS::Region}.amazonaws.com/'

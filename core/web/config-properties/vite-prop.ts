@@ -8,16 +8,15 @@ import type { ViteOptions } from '@nuxt/schema';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 import vueJsx from '@vitejs/plugin-vue-jsx';
 
-import { scssAdditionalData, scssLoadPaths, themeRoot, themeScssRoot } from './scss-additional-data';
+import { scssAdditionalData, scssImporters, scssLoadPaths, themeRoot, themeScssRoot } from './scss-additional-data';
 import { viteFsAllowRoots } from './vite-fs-allow';
 
 export {
   appCssRoot,
   scssAdditionalData,
   scssAutoUseEntry,
+  scssImporters,
   scssLoadPaths,
-  themeFoundationRoot,
-  themePrimeVueRoot,
   themeRoot,
   themeScssRoot,
 } from './scss-additional-data';
@@ -95,6 +94,7 @@ export const vite: () => ViteOptions = () => ({
         silenceDeprecations: ['import', 'global-builtin', 'if-function'],
         additionalData: scssAdditionalData,
         loadPaths: scssLoadPaths,
+        importers: scssImporters,
       },
     },
   },

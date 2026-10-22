@@ -8,8 +8,8 @@
 .work-grid {
   display: grid;
   grid-template-columns: 1fr;
-  border-top: 1px solid var(--portfolio-rule);
-  border-left: 1px solid var(--portfolio-rule);
+  border-top: 1px solid var(--portfolio-rule-color);
+  border-left: 1px solid var(--portfolio-rule-color);
   // AppWorkCard (`layout="row"`) switches to media | body from this list's width, not the viewport.
   container-type: inline-size;
 }
@@ -33,15 +33,15 @@
   @include portfolio-type-eyebrow;
   padding-right: 0.5rem;
   font-size: var(--type-min, 12px); // the eyebrow floor
-  color: var(--text-secondary-color, var(--text-color));
+  color: var(--theme-text-secondary-color, var(--theme-text-color));
 }
 
 .jump-link {
   @include touch-target;
   padding: 0.5625rem 0.875rem;
-  border: 1px solid var(--portfolio-rule);
+  border: 1px solid var(--portfolio-rule-color);
   border-radius: 2px;
-  color: var(--text-secondary-color, var(--text-color));
+  color: var(--theme-text-secondary-color, var(--theme-text-color));
   @include portfolio-type-meta;
   font-size: max(var(--type-min, 12px), 0.6875rem);
   letter-spacing: 0.1em;
@@ -53,13 +53,13 @@
 
   &:hover,
   &:focus-visible {
-    border-color: var(--portfolio-rose);
-    color: var(--text-color);
+    border-color: var(--portfolio-rose-color);
+    color: var(--theme-text-color);
   }
 
   &--active {
-    background: color-mix(in srgb, var(--portfolio-rose) 16%, transparent);
-    border-color: color-mix(in srgb, var(--portfolio-rose) 40%, transparent);
-    color: var(--portfolio-rose-strong);
+    background: color-mix(in srgb, var(--portfolio-rose-color) 16%, transparent);
+    border-color: color-mix(in srgb, var(--portfolio-rose-color) 40%, transparent);
+    color: var(--portfolio-rose-strong-color);
   }
 }

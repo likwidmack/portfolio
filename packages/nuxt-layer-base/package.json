@@ -1,0 +1,46 @@
+{
+  "name": "@tgmc/nuxt-layer-base",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Standard Nuxt 4 base layer for TGMC apps: theme tokens, utilities, a11y, and Nitro defaults.",
+  "main": "./nuxt.config.ts",
+  "exports": {
+    ".": "./nuxt.config.ts",
+    "./config": "./src/config/index.ts",
+    "./a11y": "./src/config/a11y.ts",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "app",
+    "src",
+    "nuxt.config.ts",
+    "README.md",
+    "!**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"
+  ],
+  "keywords": [
+    "nuxt",
+    "nuxt-layer",
+    "tgmc",
+    "theme",
+    "utilities",
+    "a11y"
+  ],
+  "peerDependencies": {
+    "nuxt": "^4.0.0"
+  },
+  "dependencies": {
+    "@nuxt/a11y": "latest",
+    "@nuxt/icon": "^2.5.1",
+    "@tgmc/theme": "*",
+    "@tgmc/utilities": "*"
+  },
+  "devDependencies": {
+    "nuxt": "^4.3.1"
+  },
+  "nx": {
+    "tags": [
+      "type:nuxt-layer"
+    ]
+  }
+}

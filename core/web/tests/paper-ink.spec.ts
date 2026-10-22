@@ -1,21 +1,28 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import {
-  applyStyleSetup,
-  buildPaperInkTokens,
-  buildPersonalizationFoucScript,
+  createStyleSetup,
   defaultPaperInk,
   isDefaultPaperInk,
-  loadPaperInk,
-  loadPersonalization,
-  PAPER_INK_KEY,
-  persistPaperInk,
-  resetPersonalization,
-  snapshotFromLive,
-  upsertStyleSetup,
+  Preferences,
+  STYLE_SETUPS_KEY,
   withPaperInk,
   withPaperInkLinked,
-} from '../shared/personalization';
+} from '../shared/preferences';
+import { COLOR_TOKENS_KEY, LEGACY_KEYS } from '../shared/preferences/document';
+import { flush, loadDocument } from '../shared/preferences/draft';
+import { foucScript } from '../shared/preferences/fouc';
+import { readLegacyPreferences } from '../shared/preferences/legacy';
+import { buildPaperInkTokens } from '../shared/preferences/paint';
+import { setupsApi } from '../shared/preferences/setups';
+import {
+  defaultPreferenceDocument,
+  loadPreferenceDocument,
+  persistPreferenceDocument,
+  PREFERENCES_KEY,
+  resetPreferenceStorage,
+} from '../shared/preferences/storage';
+import { setPaintForTests } from '../shared/preferences/testing';
 
 function memoryStorage(seed: Record<string, string> = {}) {
   const values = new Map(Object.entries(seed));
@@ -32,8 +39,13 @@ describe('pen & paper personalization', () => {
     const state = defaultPaperInk();
     expect(state.linked).toBe(true);
     expect(state.dark).toEqual({ paper: state.light.ink, ink: state.light.paper });
-    expect(buildPaperInkTokens(state, 'light')).toEqual({ '--paper': '#faf6f3', '--ink': '#0f0908' });
-    expect(buildPaperInkTokens(state, 'dark')).toEqual({ '--paper': '#0f0908', '--ink': '#faf6f3' });
+    // Both modes at once, under the per-mode names (R-T3a); the stylesheet picks the active pair.
+    expect(buildPaperInkTokens(state)).toEqual({
+      '--theme-paper-light-color': '#faf6f3',
+      '--theme-ink-light-color': '#0f0908',
+      '--theme-paper-dark-color': '#0f0908',
+      '--theme-ink-dark-color': '#faf6f3',
+    });
     expect(isDefaultPaperInk(state)).toBe(true);
   });
 
@@ -53,41 +65,53 @@ describe('pen & paper personalization', () => {
 
   it('persists only non-defaults and survives corrupt storage', () => {
     const storage = memoryStorage();
-    persistPaperInk(storage, defaultPaperInk());
-    expect(storage.values.has(PAPER_INK_KEY)).toBe(false);
+    persistPreferenceDocument(storage, defaultPreferenceDocument());
+    expect(JSON.parse(storage.values.get(PREFERENCES_KEY)!)).not.toHaveProperty('paperInk');
     const custom = withPaperInk(defaultPaperInk(), 'light', { paper: '#fffdf8', ink: '#1a1a2e' });
-    persistPaperInk(storage, custom);
-    expect(loadPaperInk(storage)).toEqual(custom);
-    expect(loadPersonalization(storage).paperInk).toEqual(custom);
-    expect(loadPaperInk(memoryStorage({ [PAPER_INK_KEY]: '{nope' }))).toEqual(defaultPaperInk());
-    expect(loadPaperInk(memoryStorage({ [PAPER_INK_KEY]: '{"light":{"paper":"red"}}' }))).toEqual(defaultPaperInk());
-    resetPersonalization(storage);
-    expect(storage.values.has(PAPER_INK_KEY)).toBe(false);
+    persistPreferenceDocument(storage, { ...defaultPreferenceDocument(), paperInk: custom });
+    expect(loadPreferenceDocument(storage).paperInk).toEqual(custom);
+    const corrupt = { [PREFERENCES_KEY]: '{"v":1,"paperInk":{"light":{"paper":"red"}}}' };
+    expect(loadPreferenceDocument(memoryStorage(corrupt)).paperInk).toEqual(defaultPaperInk());
+    expect(readLegacyPreferences(memoryStorage({ [LEGACY_KEYS.paperInk]: '{nope' })).paperInk).toEqual(
+      defaultPaperInk()
+    );
+    resetPreferenceStorage(storage);
+    expect(storage.values.has(PREFERENCES_KEY)).toBe(false);
   });
 
-  it('style setups carry the pair; older setups without one apply the defaults', () => {
-    const custom = withPaperInk(defaultPaperInk(), 'dark', { paper: '#101820', ink: '#f5f0e6' });
-    const base = {
-      name: 'Night',
-      brandRoles: { primary: '#dc4256', secondary: '#dc8a42', accent: '#42dcc8' },
-      motion: 'system' as const,
-      background: 'particles' as const,
-    };
-    const setup = snapshotFromLive({ ...base, paperInk: custom });
-    expect(upsertStyleSetup([], setup)[0]!.paperInk).toEqual(custom);
-    const storage = memoryStorage();
-    expect(applyStyleSetup(storage, setup).paperInk).toEqual(custom);
-    expect(JSON.parse(storage.values.get(PAPER_INK_KEY)!)).toEqual(custom);
-    const legacy = snapshotFromLive(base);
-    expect(legacy.paperInk).toBeUndefined();
-    expect(applyStyleSetup(storage, legacy).paperInk).toEqual(defaultPaperInk());
-    expect(storage.values.has(PAPER_INK_KEY)).toBe(false);
+  describe('style setups', () => {
+    afterEach(() => {
+      flush();
+      setPaintForTests(null);
+      setupsApi.invalidate();
+    });
+
+    it('carry the pair; older setups without one apply the defaults', () => {
+      setPaintForTests(vi.fn());
+      const custom = withPaperInk(defaultPaperInk(), 'dark', { paper: '#101820', ink: '#f5f0e6' });
+      const brandRoles = { primary: '#dc4256', secondary: '#dc8a42', accent: '#42dcc8' };
+      const storage = memoryStorage({
+        [STYLE_SETUPS_KEY]: JSON.stringify([{ id: 'old', name: 'Old', brandRoles, motion: 'system' }]),
+      });
+      loadDocument(storage);
+      const setup = createStyleSetup('Night', { ...defaultPreferenceDocument(), paperInk: custom });
+      setupsApi.save(storage, setup);
+      const [legacy, saved] = setupsApi.list(storage);
+      expect(saved!.document.paperInk).toEqual(custom);
+      expect(Preferences.setups.apply(storage, saved!).paperInk).toEqual(custom);
+      expect(loadPreferenceDocument(storage).paperInk).toEqual(custom);
+      expect(legacy!.document.paperInk).toEqual(defaultPaperInk());
+      expect(Preferences.setups.apply(storage, legacy!).paperInk).toEqual(defaultPaperInk());
+      expect(JSON.parse(storage.values.get(PREFERENCES_KEY)!)).not.toHaveProperty('paperInk');
+    });
   });
 
-  it('FOUC script applies the resolved mode pair before paint', () => {
-    const script = buildPersonalizationFoucScript();
-    expect(script).toContain(`localStorage.getItem('${PAPER_INK_KEY}')`);
-    expect(script).toContain("r.style.setProperty('--paper',pp.paper)");
-    expect(script).toContain("r.style.setProperty('--ink',pp.ink)");
+  it('FOUC script applies the persisted variation map (both modes’ pairs), not --paper / --ink', () => {
+    const script = foucScript();
+    expect(script).toContain(`getItem('${COLOR_TOKENS_KEY}')`);
+    expect(script).toContain('--theme-paper-light-color');
+    expect(script).toContain('--theme-ink-dark-color');
+    expect(script).not.toContain("setProperty('--paper'");
+    expect(script).not.toContain("setProperty('--ink'");
   });
 });

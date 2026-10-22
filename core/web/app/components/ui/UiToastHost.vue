@@ -42,8 +42,8 @@ void nativeToasts;
   pointer-events: auto;
   padding: 0.85rem 1rem;
   border-radius: var(--border-radius-md, 0.5rem);
-  background: color-mix(in srgb, var(--surface-color) 92%, transparent);
-  border: 1px solid color-mix(in srgb, var(--border-color) 70%, transparent);
+  background: color-mix(in srgb, var(--theme-surface-color) 92%, transparent);
+  border: 1px solid color-mix(in srgb, var(--theme-border-color) 70%, transparent);
   box-shadow: var(--shadow-md);
 }
 

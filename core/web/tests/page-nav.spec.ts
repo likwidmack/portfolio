@@ -37,21 +37,10 @@ describe('page nav on phones', () => {
     expect(scss).toMatch(/\.page-nav__toggle \{\s*display: flex;[\s\S]*min-height: var\(--touch-target, 44px\);/);
   });
 
-  it('closes on Esc (focus back to the toggle) and on path navigation', async () => {
+  it('closes on Esc (focus back to the toggle) and on navigation', async () => {
     const src = await read('app/composables/usePageNavDisclosure.ts');
     expect(src).toContain("querySelector<HTMLButtonElement>('.page-nav__toggle')?.focus()");
-    expect(src).toContain('route.path');
-    expect(src).not.toContain('route.fullPath');
-    expect(src).toContain('toggleOpen');
+    expect(src).toContain('route.fullPath');
     expect(src).toContain('useId()');
-  });
-
-  it('wires both nav toggles through toggleOpen (stopPropagation)', async () => {
-    for (const rel of ['app/components/AppPageNav/index.vue', 'app/components/AppWorkSubNav.vue']) {
-      const src = await read(rel);
-      expect(src, rel).toContain('@click="toggleOpen"');
-      expect(src, rel).toContain('toggleOpen');
-      expect(src, rel).not.toContain('@click="open = !open"');
-    }
   });
 });

@@ -107,10 +107,10 @@ const edgePaths = computed(() =>
   margin: 0;
   padding: 0.75rem;
   overflow: auto;
-  border: 1px solid color-mix(in srgb, var(--border-color) 70%, transparent);
+  border: 1px solid color-mix(in srgb, var(--theme-border-color) 70%, transparent);
   border-radius: var(--border-radius-md, 0.5rem);
-  background: color-mix(in srgb, var(--surface-color) 72%, transparent);
-  color: var(--text-color);
+  background: color-mix(in srgb, var(--theme-surface-color) 72%, transparent);
+  color: var(--theme-text-color);
 
   svg {
     display: block;
@@ -121,37 +121,39 @@ const edgePaths = computed(() =>
 
   figcaption {
     margin-top: 0.75rem;
-    color: var(--text-secondary-color, var(--text-color));
+    color: var(--theme-text-secondary-color, var(--theme-text-color));
     font-size: var(--font-size-sm);
     font-style: italic;
   }
 
   &__group {
-    fill: color-mix(in srgb, var(--primary-color) 8%, transparent);
-    stroke: color-mix(in srgb, var(--primary-color) 28%, transparent);
+    fill: color-mix(in srgb, var(--theme-primary-color) 8%, transparent);
+    stroke: color-mix(in srgb, var(--theme-primary-color) 28%, transparent);
     stroke-width: 1.5;
   }
 
   &__group-label {
-    fill: var(--secondary-color, var(--primary-color));
+    // Secondary ink, a quarter toward the text colour: the label sits on the 8% primary group fill,
+    // not bare paper. ≥ 4.5:1 for every preset — `tests/secondary-ink-sites.spec.ts`.
+    fill: color-mix(in srgb, var(--theme-secondary-ink-color) 75%, var(--theme-text-color));
     font-size: 0.875rem;
     font-weight: 700;
   }
 
   &__node {
-    fill: color-mix(in srgb, var(--surface-color) 88%, transparent);
-    stroke: color-mix(in srgb, var(--border-color) 80%, transparent);
+    fill: color-mix(in srgb, var(--theme-surface-color) 88%, transparent);
+    stroke: color-mix(in srgb, var(--theme-border-color) 80%, transparent);
     stroke-width: 1.5;
   }
 
   &__node-label {
-    fill: var(--text-color);
+    fill: var(--theme-text-color);
     font-size: 0.8125rem;
     font-weight: 600;
   }
 
   &__edges {
-    color: color-mix(in srgb, var(--primary-color) 70%, var(--text-color));
+    color: color-mix(in srgb, var(--theme-primary-color) 70%, var(--theme-text-color));
   }
 }
 </style>

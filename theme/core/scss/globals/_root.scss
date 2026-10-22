@@ -1,123 +1,131 @@
 @use 'sass:color';
+@use 'sass:map';
+@use 'sass:math';
 
 @use '../tokens/base-colors' as *;
 @use '../tokens/colors' as *;
 @use '../tokens/contrast' as *;
 @use '../tokens/variables' as *;
+@use '../tokens/variations.generated' as *;
 @use 'mixins' as m;
+
+// Colour system: the eight solid colours emitting their four variations + active pointers.
+$theme-solid-colors: (primary, secondary, accent, warning, error, info, success, focus);
+// Derived families: alpha steps (N% over transparent) and the neutral steps between paper (0) and ink (1000).
+$theme-alpha-steps: (4, 8, 12, 16, 24, 32, 48, 64, 80, 90);
+$theme-neutral-steps: (25, 50, 75, 100, 150, 200, 300, 400, 450, 500, 550, 600, 700, 750, 800, 850, 900, 925, 950, 975);
 
 :root {
   // Runtime / cascade only — font smoothing + text-shadow live on `html` / body classes.
   color-scheme: light dark;
-  accent-color: #{$accent-color};
+  accent-color: var(--theme-accent-color);
   text-rendering: optimizeLegibility;
   text-size-adjust: 100%;
 
-  // Base colors
-  --default-white: #{$default-white};
-  --default-black: #{$default-black};
-  --default-grey: #{$dimgrey};
-
-  --rgb-white: #{color.channel($color-white, 'red', $space: rgb)} #{color.channel($color-white, 'green', $space: rgb)}
-    #{color.channel($color-white, 'blue', $space: rgb)};
+  // Syntax-palette channels (exception to rule 3: the code-highlighting palette is data on an
+  // always-dark code pane — `globals/_syntax.scss`). The unused `--rgb-white` / `--rgb-neon` /
+  // `--rgb-shadow*` and `--theme-default-*-color` were retired (scss/_archive/2026-10-05-derived-roles/).
   --rgb-accent-soft: #{color.channel($accent-soft, 'red', $space: rgb)}
     #{color.channel($accent-soft, 'green', $space: rgb)} #{color.channel($accent-soft, 'blue', $space: rgb)};
-  --rgb-shadow: #{color.channel($shadow-color, 'red', $space: rgb)}
-    #{color.channel($shadow-color, 'green', $space: rgb)} #{color.channel($shadow-color, 'blue', $space: rgb)};
-  --rgb-shadow-alt: #{color.channel($shadow-alt-color, 'red', $space: rgb)}
-    #{color.channel($shadow-alt-color, 'green', $space: rgb)} #{color.channel($shadow-alt-color, 'blue', $space: rgb)};
-  --rgb-neon: #{color.channel($neon-color, 'red', $space: rgb)} #{color.channel($neon-color, 'green', $space: rgb)}
-    #{color.channel($neon-color, 'blue', $space: rgb)};
+
+  // Shadow ink: the dark end of the pen & paper pair (dark mode's paper, light mode's ink), so
+  // shadows follow a custom pair and never turn into a glow.
+  --theme-shadow-color: var(--theme-paper-dark-color);
 
   // ── Five-input model ─────────────────────────────────────────────────────
   // The app sets primary, secondary, accent, paper and ink; everything neutral derives from
-  // paper → ink here, so a live change to `--paper` / `--ink` reaches every child. Pen & paper:
-  // paper is the background and ink the foreground in every mode, one pair per mode (light mode
-  // sets its own pair in `theme-light-vars`). Sass computes the same defaults
-  // (tokens/_colors.scss `neutral($step, $mode)`); `src/color-mix.ts` mirrors the maths.
-  --paper: #{$dark-paper};
-  --ink: #{$dark-ink};
+  // paper → ink here, so a live paper / ink change reaches every child. Pen & paper: paper is the
+  // background and ink the foreground in every mode, one pair per mode. Sass computes the same
+  // defaults (tokens/_colors.scss `neutral($step, $mode)`); `src/color-mix.ts` mirrors the maths.
+  // core/web (Style Studio, FOUC script) writes both modes' pairs inline as
+  // `--theme-paper-{light,dark}-color` / `--theme-ink-{light,dark}-color` (declared below with the
+  // defaults); the active `--theme-paper-color` / `--theme-ink-color` point at the mode's pair here
+  // and in `theme-light-vars`, so a mode switch needs no JS.
+  --theme-paper-color: var(--theme-paper-dark-color);
+  --theme-ink-color: var(--theme-ink-dark-color);
 
-  // Alpha variants: paper / ink over transparent (hairlines, scrims, washes). Mode-relative.
-  --paper-a4: color-mix(in srgb, var(--paper) 4%, transparent);
-  --paper-a8: color-mix(in srgb, var(--paper) 8%, transparent);
-  --paper-a12: color-mix(in srgb, var(--paper) 12%, transparent);
-  --paper-a16: color-mix(in srgb, var(--paper) 16%, transparent);
-  --paper-a24: color-mix(in srgb, var(--paper) 24%, transparent);
-  --paper-a32: color-mix(in srgb, var(--paper) 32%, transparent);
-  --paper-a48: color-mix(in srgb, var(--paper) 48%, transparent);
-  --paper-a64: color-mix(in srgb, var(--paper) 64%, transparent);
-  --paper-a80: color-mix(in srgb, var(--paper) 80%, transparent);
-  --paper-a90: color-mix(in srgb, var(--paper) 90%, transparent);
-  --ink-a4: color-mix(in srgb, var(--ink) 4%, transparent);
-  --ink-a8: color-mix(in srgb, var(--ink) 8%, transparent);
-  --ink-a12: color-mix(in srgb, var(--ink) 12%, transparent);
-  --ink-a16: color-mix(in srgb, var(--ink) 16%, transparent);
-  --ink-a24: color-mix(in srgb, var(--ink) 24%, transparent);
-  --ink-a32: color-mix(in srgb, var(--ink) 32%, transparent);
-  --ink-a48: color-mix(in srgb, var(--ink) 48%, transparent);
-  --ink-a64: color-mix(in srgb, var(--ink) 64%, transparent);
-  --ink-a80: color-mix(in srgb, var(--ink) 80%, transparent);
-  --ink-a90: color-mix(in srgb, var(--ink) 90%, transparent);
+  // Alpha variants: paper / ink / brand colours over transparent (hairlines, scrims, washes).
+  // Mode-relative: each reads the active variation (`--theme-<c>-color`).
+  @each $c in (paper, ink) {
+    @each $n in $theme-alpha-steps {
+      --theme-#{$c}-a#{$n}-color: color-mix(in srgb, var(--theme-#{$c}-color) #{$n + '%'}, transparent);
+    }
+  }
+  @each $c in (primary, secondary, accent) {
+    @each $n in $theme-alpha-steps {
+      --theme-#{$c}-a#{$n}-color: color-mix(in srgb, var(--theme-#{$c}-color) #{$n + '%'}, transparent);
+    }
+  }
 
   // Neutral scale: 0 = paper (background) … 1000 = ink (foreground); follows the active pair.
-  --neutral-0: var(--paper);
-  --neutral-25: color-mix(in oklab, var(--ink) 2.5%, var(--paper));
-  --neutral-50: color-mix(in oklab, var(--ink) 5%, var(--paper));
-  --neutral-75: color-mix(in oklab, var(--ink) 7.5%, var(--paper));
-  --neutral-100: color-mix(in oklab, var(--ink) 10%, var(--paper));
-  --neutral-150: color-mix(in oklab, var(--ink) 15%, var(--paper));
-  --neutral-200: color-mix(in oklab, var(--ink) 20%, var(--paper));
-  --neutral-300: color-mix(in oklab, var(--ink) 30%, var(--paper));
-  --neutral-400: color-mix(in oklab, var(--ink) 40%, var(--paper));
-  --neutral-450: color-mix(in oklab, var(--ink) 45%, var(--paper));
-  --neutral-500: color-mix(in oklab, var(--ink) 50%, var(--paper));
-  --neutral-550: color-mix(in oklab, var(--ink) 55%, var(--paper));
-  --neutral-600: color-mix(in oklab, var(--ink) 60%, var(--paper));
-  --neutral-700: color-mix(in oklab, var(--ink) 70%, var(--paper));
-  --neutral-800: color-mix(in oklab, var(--ink) 80%, var(--paper));
-  --neutral-850: color-mix(in oklab, var(--ink) 85%, var(--paper));
-  --neutral-900: color-mix(in oklab, var(--ink) 90%, var(--paper));
-  --neutral-925: color-mix(in oklab, var(--ink) 92.5%, var(--paper));
-  --neutral-950: color-mix(in oklab, var(--ink) 95%, var(--paper));
-  --neutral-975: color-mix(in oklab, var(--ink) 97.5%, var(--paper));
-  --neutral-1000: var(--ink);
+  --theme-neutral-0-color: var(--theme-paper-color);
+  @each $step in $theme-neutral-steps {
+    $pct: math.div($step, 10) * 1%;
+    --theme-neutral-#{$step}-color: color-mix(in oklab, var(--theme-ink-color) #{$pct}, var(--theme-paper-color));
+  }
+  --theme-neutral-1000-color: var(--theme-ink-color);
+
+  // Primary Paper scale: 0 = paper (background) … 1000 = primary (foreground); follows the active pair.
+  @each $step in $theme-neutral-steps {
+    $pct: math.div($step, 10) * 1%;
+    --theme-primary-paper-#{$step}-color: color-mix(in oklab, var(--theme-primary-color) #{$pct}, var(--theme-paper-color));
+  }
+
+  // Secondary Paper scale: 0 = paper (background) … 1000 = secondary (foreground); follows the active pair.
+  @each $step in $theme-neutral-steps {
+    $pct: math.div($step, 10) * 1%;
+    --theme-secondary-paper-#{$step}-color: color-mix(in oklab, var(--theme-secondary-color) #{$pct}, var(--theme-paper-color));
+  }
+
+  // Secondary Ink scale: 0 = ink (background) … 1000 = secondary (foreground); follows the active pair.
+  @each $step in $theme-neutral-steps {
+    $pct: math.div($step, 10) * 1%;
+    --theme-secondary-ink-#{$step}-color: color-mix(in oklab, var(--theme-secondary-color) #{$pct}, var(--theme-ink-color));
+  }
+
+  // Accent Ink scale: 0 = ink (background) … 1000 = accent (foreground); follows the active pair.
+  @each $step in $theme-neutral-steps {
+    $pct: math.div($step, 10) * 1%;
+    --theme-accent-ink-#{$step}-color: color-mix(in oklab, var(--theme-accent-color) #{$pct}, var(--theme-ink-color));
+  }
 
   // Legacy grays → nearest neutral step (dark mode; light mode remaps in `theme-light-vars`).
-  --gray-med: var(--neutral-500);
-  --gray-100: var(--neutral-900);
-  --gray-200: var(--neutral-600);
-  --gray-300: var(--neutral-300);
-  --gray-400: var(--neutral-150);
-  --gray-500: var(--neutral-100);
+  --theme-gray-med-color: var(--theme-neutral-500-color);
+  --theme-gray-100-color: var(--theme-neutral-900-color);
+  --theme-gray-200-color: var(--theme-neutral-600-color);
+  --theme-gray-300-color: var(--theme-neutral-300-color);
+  --theme-gray-400-color: var(--theme-neutral-150-color);
+  --theme-gray-500-color: var(--theme-neutral-100-color);
 
-  --gray-1: var(--neutral-900);
-  --gray-2: var(--neutral-600);
-  --gray-3: var(--neutral-300);
-  --gray-4: var(--neutral-150);
-  --gray-5: var(--neutral-100);
+  --theme-gray-1-color: var(--theme-neutral-900-color);
+  --theme-gray-2-color: var(--theme-neutral-600-color);
+  --theme-gray-3-color: var(--theme-neutral-300-color);
+  --theme-gray-4-color: var(--theme-neutral-150-color);
+  --theme-gray-5-color: var(--theme-neutral-100-color);
 
+  // Palette helpers (data, not renamed — `palette` in src/color-rename-map.json).
   --success-light-dark: #{$success};
   --error-light-dark: #{$error};
   --warning-light-dark: #{$warning};
   --info-light-dark: #{$info};
 
-  --success: #{$success-dark};
-  --error: #{$error-dark};
-  --warning: #{$warning-dark};
-  --info: #{$info-dark};
+  // Status hues: the active status variation (`--theme-<s>-color`, ≥ 4.5:1 on the mode's paper);
+  // the `-ink` / `-surface` tones below derive from them. Mode switching happens on the variation.
+  @each $s in (success, error, warning, info) {
+    --theme-#{$s}-hue-color: var(--theme-#{$s}-color);
+  }
 
-  // 10 accent colors dark
-  --color-red: #{$css-red-dark};
-  --color-orange: #{$css-orange-dark};
-  --color-amber: #{$css-amber-dark};
-  --color-yellow: #{$css-yellow-dark};
-  --color-lime: #{$css-lime-dark};
-  --color-green: #{$css-green-dark};
-  --color-teal: #{$css-teal-dark};
-  --color-blue: #{$css-blue-dark};
-  --color-purple: #{$css-purple-dark};
-  --color-magenta: #{$css-magenta-dark};
+  // 10 basic colours (dark) — palette names the owner kept (`paletteNames` in the rename map).
+  --red-color: #{$css-red-dark};
+  --orange-color: #{$css-orange-dark};
+  --amber-color: #{$css-amber-dark};
+  --yellow-color: #{$css-yellow-dark};
+  --lime-color: #{$css-lime-dark};
+  --green-color: #{$css-green-dark};
+  --teal-color: #{$css-teal-dark};
+  --blue-color: #{$css-blue-dark};
+  --purple-color: #{$css-purple-dark};
+  --magenta-color: #{$css-magenta-dark};
 
   // Brand roles (ember / crimson) + hue-scale compatibility aliases.
   // `--tertiary-*` … `--denary-*` alias hue Sass (`$oxblood-*` … `$ink-*` / `$parchment-*`), not brand roles.
@@ -158,13 +166,23 @@
   --secondary-default: #{$secondary-default-color};
   --primary-light-dark: #{$primary-color};
   --secondary-light-dark: #{$secondary-color};
-  --primary-color: #{$primary-color-dark};
-  --secondary-color: #{$secondary-color-dark};
-  --accent-color: #{$accent-color-dark};
-  --primary-inverted: #{$primary-color-light};
-  --secondary-inverted: #{$secondary-color-light};
-  // Alias for older `--primary-color-inverted` references.
-  --primary-color-inverted: var(--primary-inverted);
+  // Brand: the active variation `--theme-<c>-color` is declared with the solid colours below;
+  // Style Studio writes the per-mode variations inline.
+  // The other mode's primary variation (1px text-shadows under labels and body text).
+  --theme-primary-inverted-color: var(--theme-primary-light-color);
+  // Solid-button gradient stops (`buildButtonStopTokens`; Style Studio writes both per-mode names):
+  // the button label reads ≥ 4.5:1 on every colour each gradient paints. `secondary-fill` starts the
+  // resting sheen (and fills Foundation `.button.secondary`), `secondary-inverted` starts the hover /
+  // active sheen, `primary-sheen` ends `--button-secondary-bg`.
+  --theme-secondary-fill-light-color: #{$theme-secondary-fill-light-color};
+  --theme-secondary-fill-dark-color: #{$theme-secondary-fill-dark-color};
+  --theme-secondary-fill-color: var(--theme-secondary-fill-dark-color);
+  --theme-secondary-inverted-light-color: #{$theme-secondary-inverted-light-color};
+  --theme-secondary-inverted-dark-color: #{$theme-secondary-inverted-dark-color};
+  --theme-secondary-inverted-color: var(--theme-secondary-inverted-dark-color);
+  --theme-primary-sheen-light-color: #{$theme-primary-sheen-light-color};
+  --theme-primary-sheen-dark-color: #{$theme-primary-sheen-dark-color};
+  --theme-primary-sheen-color: var(--theme-primary-sheen-dark-color);
 
   // Compatibility hue aliases (tertiary…denary → oxblood…ink); not brand roles.
   --tertiary-color: var(--oxblood-color);
@@ -184,56 +202,86 @@
   --nonary-light-dark: var(--taupe-light-dark);
   --denary-light-dark: var(--ink-light-dark);
 
-  --teal-signal: #{$teal-signal-dark};
-
   /* 1. Background (Main) — paper is the ground */
-  --main-background: var(--neutral-0);
-  --main-background-secondary: var(--neutral-50);
-  --main-background-accent: #{$main-background-dark-accent};
+  --theme-main-background-color: var(--theme-neutral-0-color);
+  --theme-main-background-secondary-color: var(--theme-neutral-50-color);
 
-  --main-color: #{$main-color};
-  --main-secondary-color: #{$main-secondary-color};
+  // The main colour (glass-button focus / active shadow tint): the active primary variation.
+  --theme-main-color: var(--theme-primary-color);
 
   /* 2. Surface (Cards, Modules) */
-  --surface-color: var(--neutral-50);
+  --theme-surface-color: var(--theme-neutral-50-color);
   /* 3. Surface Variant (Input, Hover) */
-  --surface-variant: var(--neutral-75);
+  --theme-surface-variant-color: var(--theme-neutral-75-color);
 
   /* 4. Text (Primary) */
-  --text-color: var(--neutral-975);
+  --theme-text-color: var(--theme-neutral-975-color);
   /* 5. Text (Secondary/Subtle) — ≥ 4.5:1 on page, surface and variant */
-  --text-secondary-color: var(--neutral-700);
+  --theme-text-secondary-color: var(--theme-neutral-700-color);
 
-  /* 6. Primary Action/Accent */
-  --primary: #{$css-primary-dark};
-  /* 7. Accent Hover/Light */
-  --primary-hover: #{$css-primary-hover-dark};
+  /* 6–7. Primary hover (PrimeVue `primary.hoverColor`): keeps the button fill, whose label is
+     ≥ 4.5:1 on it by construction (the "hover keeps the fill" rule). */
+  --theme-primary-hover-color: var(--theme-button-hover-fill-color);
 
   /* 8. Border/Dividers — a hairline of ink over the paper ground */
-  --border-color: var(--ink-a8);
-  /* 9. Focus/Outline */
-  --focus-ring: #{$css-focus-ring-dark};
+  --theme-border-color: var(--theme-ink-a8-color);
+  /* 9. Focus/Outline (also the form and button focus rings) — the active focus variation */
+  --theme-focus-ring-color: var(--theme-focus-color);
   /* 10. Accessible interaction roles (AA; text + controls use these, brand vars stay for fills) */
-  --link-color: #{$css-link-dark};
-  --border-strong: var(--neutral-450);
-  --primary-fill: #{$css-primary-fill-dark};
-  --on-primary: #{$css-on-primary};
-  // Status tones: fixed hue per status, tone per use. `-ink` = hue mixed toward the text colour
-  // just enough for ≥ 4.5:1 on page / surface / variant; `-border` = the ink tone; `-surface` =
-  // a light tint of the hue over the surface (text on it uses `-ink`).
-  --success-ink: color-mix(in oklab, var(--success) 80%, var(--text-color));
-  --warning-ink: var(--warning);
-  --error-ink: color-mix(in oklab, var(--error) 80%, var(--text-color));
-  --info-ink: color-mix(in oklab, var(--info) 90%, var(--text-color));
-  --danger-ink: var(--error-ink);
-  --success-border: var(--success-ink);
-  --warning-border: var(--warning-ink);
-  --error-border: var(--error-ink);
-  --info-border: var(--info-ink);
-  --success-surface: color-mix(in oklab, var(--success) 14%, var(--surface-color));
-  --warning-surface: color-mix(in oklab, var(--warning) 14%, var(--surface-color));
-  --error-surface: color-mix(in oklab, var(--error) 14%, var(--surface-color));
-  --info-surface: color-mix(in oklab, var(--info) 14%, var(--surface-color));
+  // Links: the primary source with only its lightness moved until it reads ≥ 4.5:1 on page,
+  // surfaces and variant and on its own 12 % / 16 % wash (`buildLinkTokens`; Style Studio writes
+  // both per-mode names). core/web's `--portfolio-rose-color` is this colour.
+  --theme-link-light-color: #{$theme-link-light-color};
+  --theme-link-dark-color: #{$theme-link-dark-color};
+  --theme-link-color: var(--theme-link-dark-color);
+  --theme-border-strong-color: var(--theme-neutral-450-color);
+  // The primary with only its lightness moved until the on-primary label (`--theme-on-primary-color`,
+  // the light paper) reads at ≥ 4.5:1, per mode (`buildPrimaryFillTokens`; Style Studio writes both
+  // per-mode names).
+  --theme-primary-fill-light-color: #{$theme-primary-fill-light-color};
+  --theme-primary-fill-dark-color: #{$theme-primary-fill-dark-color};
+  --theme-primary-fill-color: var(--theme-primary-fill-dark-color);
+  // Text on the primary fill: the light paper (the fill is built for it — `buildPrimaryFillTokens`).
+  --theme-on-primary-color: var(--theme-paper-light-color);
+  // The primary as text: only its lightness moved until it reads ≥ 4.5:1 on page, surface and
+  // variant, per mode (`buildPrimaryInkTokens`; Style Studio writes both per-mode names). Words
+  // (eyebrows, labels, hover / current text) use it; `--theme-primary-color` (3:1) stays for fills.
+  --theme-primary-ink-light-color: #{$theme-primary-ink-light-color};
+  --theme-primary-ink-dark-color: #{$theme-primary-ink-dark-color};
+  --theme-primary-ink-color: var(--theme-primary-ink-dark-color);
+  // The secondary as text, built the same way (`buildSecondaryInkTokens`): list markers, table
+  // headers, `dt` labels and other secondary-coloured words; `--theme-secondary-color` stays for fills.
+  --theme-secondary-ink-light-color: #{$theme-secondary-ink-light-color};
+  --theme-secondary-ink-dark-color: #{$theme-secondary-ink-dark-color};
+  --theme-secondary-ink-color: var(--theme-secondary-ink-dark-color);
+  // Hover (primary) / active (secondary) washes behind primary-ink text on outline, ghost and text
+  // buttons, painted at `$theme-wash-alpha`: the variation lightness-moved until the ink reads
+  // ≥ 4.5:1 on the wash over page, surfaces and variant (`buildWashTokens`; recomputed with the ink).
+  --theme-primary-wash-light-color: #{$theme-primary-wash-light-color};
+  --theme-primary-wash-dark-color: #{$theme-primary-wash-dark-color};
+  --theme-primary-wash-color: var(--theme-primary-wash-dark-color);
+  --theme-secondary-wash-light-color: #{$theme-secondary-wash-light-color};
+  --theme-secondary-wash-dark-color: #{$theme-secondary-wash-dark-color};
+  --theme-secondary-wash-color: var(--theme-secondary-wash-dark-color);
+  // Status tones: fixed hue per status, tone per use. `-ink` = the status as text (also the status
+  // border): the variation mixed toward the text colour (`STATUS_INK_MIX`), then lightness-adjusted
+  // until it reads ≥ 4.5:1 on page, secondary page, surface and variant (`buildStatusInkTokens`;
+  // core/web recomputes the per-mode pair for a custom paper / ink). `-surface` = a light tint of
+  // the hue over the surface (text on it uses `-ink`).
+  --theme-success-ink-light-color: #{$theme-success-ink-light-color};
+  --theme-success-ink-dark-color: #{$theme-success-ink-dark-color};
+  --theme-warning-ink-light-color: #{$theme-warning-ink-light-color};
+  --theme-warning-ink-dark-color: #{$theme-warning-ink-dark-color};
+  --theme-error-ink-light-color: #{$theme-error-ink-light-color};
+  --theme-error-ink-dark-color: #{$theme-error-ink-dark-color};
+  --theme-info-ink-light-color: #{$theme-info-ink-light-color};
+  --theme-info-ink-dark-color: #{$theme-info-ink-dark-color};
+  @each $s in (success, warning, error, info) {
+    --theme-#{$s}-ink-color: var(--theme-#{$s}-ink-dark-color);
+  }
+  @each $s in (success, warning, error, info) {
+    --theme-#{$s}-surface-color: color-mix(in oklab, var(--theme-#{$s}-hue-color) 14%, var(--theme-surface-color));
+  }
 
   // Layout + spacing (Sass `$space-*` → CSS)
   --space-0: #{$space-0};
@@ -283,7 +331,7 @@
   --page-max: 90rem;
   --page-shell-max: 90rem;
   --page-screen-max: 90rem;
-  --prose-max: 42rem;
+  --prose-max: 100%;
   --page-chrome: 6.5rem;
   --page-fill-min: calc(100dvh - var(--page-chrome));
   --card-min: #{$card-min};
@@ -311,30 +359,33 @@
   --transition-base: #{$transition-base};
   --transition-slow: #{$transition-slow};
   --transition-base-duration: 250ms;
-  // Elevation scale — brand shadow ink (`--rgb-shadow`), not raw black.
-  --shadow-sm: 0 1px 2px rgb(var(--rgb-shadow) / 0.14);
-  --shadow-md: 0 4px 14px rgb(var(--rgb-shadow) / 0.18);
-  --shadow-lg: 0 14px 36px rgb(var(--rgb-shadow) / 0.26);
+  // Elevation scale — the shadow ink (`--theme-shadow-color`), not raw black.
+  --shadow-sm: 0 1px 2px color-mix(in srgb, var(--theme-shadow-color) 14%, transparent);
+  --shadow-md: 0 4px 14px color-mix(in srgb, var(--theme-shadow-color) 18%, transparent);
+  --shadow-lg: 0 14px 36px color-mix(in srgb, var(--theme-shadow-color) 26%, transparent);
   --text-shadow-root:
-    0 1px 0 color-mix(in srgb, var(--primary-inverted) 52%, var(--primary-default)),
-    -1px 0 0 color-mix(in srgb, var(--primary-color) 36%, var(--primary-default));
-  --text-shadow-sm: 0 1px 2px #{$text-shadow-dark};
-  --text-shadow-md: 0 2px 4px #{$text-shadow-dark};
-  --text-shadow-lg: 0 4px 8px #{$text-shadow-dark};
-  --text-shadow-xl: 0 8px 16px #{$text-shadow-dark};
+    -1px 0 0 color-mix(in srgb, var(--theme-primary-color) 32%, var(--theme-ink-color)),
+    0 0.5px 0 var(--theme-paper-color);
+  --text-shadow-sm: 0 1px 2px var(--theme-text-shadow-color);
+  --text-shadow-md: 0 2px 4px var(--theme-text-shadow-color);
+  --text-shadow-lg: 0 4px 8px var(--theme-text-shadow-color);
+  --text-shadow-xl: 0 8px 16px var(--theme-text-shadow-color);
+  --theme-text-shadow-color: color-mix(in srgb, var(--theme-shadow-color) 48%, transparent);
 
   // Breakpoints
   --breakpoint: #{m.bp(widescreen)};
 
   // Form
   --form-gap: var(--space-4);
-  --form-border-color: var(--border-strong);
-  --form-background: rgba(0, 0, 0, 0.5);
-  --form-background-disabled: rgba(#{$css-form-background-disabled}, 0.18);
-  --form-placeholder: #{$css-form-placeholder};
-  --form-focus-ring: #{$css-focus-ring-dark};
-  --form-invalid-color: #{$error};
-  --form-help-color: #{$css-form-placeholder};
+  // Form colours (border and focus ring share `--theme-border-strong-color` / `--theme-focus-ring-color`).
+  // The input ground is a paper alpha in dark mode (an ink alpha in light); placeholder text is
+  // the neutral step between secondary text and text (≥ 4.5:1 on the input ground), help text the
+  // secondary text, invalid the error ink (text ≥ 4.5:1; the border reads ≥ 3:1).
+  --theme-form-background-color: var(--theme-paper-a48-color);
+  --theme-form-background-disabled-color: var(--theme-ink-a12-color);
+  --theme-form-placeholder-color: var(--theme-neutral-750-color);
+  --theme-form-invalid-color: var(--theme-error-ink-color);
+  --theme-form-help-color: var(--theme-text-secondary-color);
   --form-radius: var(--border-radius-sm);
   // Touch + type floors (repo UI rule: responsive · accessible · touch). Every control is at
   // least --touch-target tall/wide; no text renders below --type-min.
@@ -343,98 +394,120 @@
   --type-min: max(0.75rem, 12px);
   --form-control-height: max(var(--touch-target), 2.5rem);
 
-  // Buttons — gradient stops stay in the same luminance family as the solid
-  // `background-color` so `--button-fg` contrasts both layers.
+  // Buttons — the gradient stops are built (`buildButtonStopTokens`) so `--theme-button-fg-color`
+  // reads ≥ 4.5:1 on every colour the gradient paints over its fill.
   --button-bg: linear-gradient(
     135deg,
-    #{color.change($secondary-color-dark, $alpha: 0.5)} 0%,
-    #{color.change($primary-color-dark, $alpha: 0.5)} 100%
+    color-mix(in srgb, var(--theme-secondary-fill-color) 50%, transparent) 0%,
+    color-mix(in srgb, var(--theme-primary-color) 50%, transparent) 100%
   );
+  // Decorative (the /about kicker bar).
   --button-primary-bg: linear-gradient(
     135deg,
-    #{color.change($primary-color-dark, $alpha: 0.62)} 0%,
-    #{color.change($secondary-color-dark, $alpha: 0.42)} 100%
+    color-mix(in srgb, var(--theme-primary-color) 62%, transparent) 0%,
+    color-mix(in srgb, var(--theme-secondary-fill-color) 42%, transparent) 100%
   );
+  // Foundation `.button.secondary`, over `--theme-secondary-fill-color`.
   --button-secondary-bg: linear-gradient(
     135deg,
-    #{color.change($secondary-color-dark, $alpha: 0.62)} 0%,
-    #{color.change($primary-color-dark, $alpha: 0.42)} 100%
+    color-mix(in srgb, var(--theme-secondary-fill-color) 62%, transparent) 0%,
+    color-mix(in srgb, var(--theme-primary-sheen-color) 42%, transparent) 100%
   );
-  --button-fg: #{dyn-color-against-fill($primary-color-dark, $secondary-color-dark)};
-  --button-secondary-fg: #{dyn-color-against-fill($primary-color-light, $secondary-color-light)};
-  --button-border: color-mix(in srgb, #{$color-white} 20%, transparent);
-  --button-shadow: 0 8px 24px color-mix(in srgb, #{$shadow-alt-color} 22%, transparent);
-  --button-shadow-hover: 0 12px 30px color-mix(in srgb, #{$shadow-alt-color} 28%, transparent);
-  --button-shadow-active: 0 4px 14px color-mix(in srgb, #{$shadow-alt-color} 20%, transparent);
-  --button-focus-ring: #{$css-focus-ring-dark};
+  // Primary buttons (`button-base`, `.btn` solid, PrimeVue primary, Foundation `.button`):
+  // - dark: the primary variation under the gradients above, text ≥ 4.5:1 on it
+  //   (`buildButtonInkTokens` → `--theme-button-fg-dark-color`, written by Style Studio too);
+  // - light (owner option C, Task 3 fix round 1): the primary fill, no gradient, under the
+  //   on-primary label (the light paper) — see `theme-light-vars`.
+  // `--theme-button-fg-color` points at the active text colour, so a mode switch needs no JS.
+  --theme-button-fg-dark-color: #{$theme-button-fg-dark-color};
+  --theme-button-fg-color: var(--theme-button-fg-dark-color);
+  --theme-button-fill-color: var(--theme-primary-color);
+  // Hover / active keep the dark fill (its text, `--theme-button-fg-dark-color`, is ≥ 4.5:1 on it
+  // by construction); was undeclared in dark, so hover painted transparent under the gradients.
+  --theme-button-hover-fill-color: var(--theme-button-fill-color);
+  // `--button-solid-bg` / `--button-solid-bg-hover` are declared only in light mode (`none`): the
+  // `.btn` solid and PrimeVue primary rules fall back to their own secondary→primary gradients.
+  // The solid-button label over the secondary → primary sheen: the button text (its stops are built for it).
+  --theme-button-secondary-fg-color: var(--theme-button-fg-color);
+  --button-shadow: var(--shadow-sm);
+  --button-shadow-hover: var(--shadow-lg);
+  --button-shadow-active: var(--shadow-md);
   --button-radius: var(--border-radius-sm);
   --button-press-depth: 0.3125rem;
 
-  // Foundation Sites — aliases stay parallel to theme tokens (follow light/dark).
-  --foundation-primary: var(--primary-color);
-  --foundation-secondary: var(--secondary-color);
-  --foundation-accent: var(--accent-color);
-  --foundation-success: var(--success);
-  --foundation-warning: var(--warning);
-  --foundation-alert: var(--error);
-  --foundation-info: var(--info);
-  --foundation-body-background: var(--main-background);
-  --foundation-body-font-color: var(--text-color);
-  --foundation-body-font-secondary: var(--text-secondary-color);
-  --foundation-header-color: var(--text-color);
+  // Foundation Sites — a third-party interface: the `--foundation-*` names are kept (like
+  // PrimeVue's `--p-*`); their values read the `--theme-*-color` names, so they follow light/dark.
+  --foundation-primary: var(--theme-primary-color);
+  --foundation-secondary: var(--theme-secondary-color);
+  --foundation-accent: var(--theme-accent-color);
+  --foundation-success: var(--theme-success-hue-color);
+  --foundation-warning: var(--theme-warning-hue-color);
+  --foundation-alert: var(--theme-error-hue-color);
+  --foundation-info: var(--theme-info-hue-color);
+  --foundation-body-background: var(--theme-main-background-color);
+  --foundation-body-font-color: var(--theme-text-color);
+  --foundation-body-font-secondary: var(--theme-text-secondary-color);
+  --foundation-header-color: var(--theme-text-color);
   --foundation-global-radius: var(--border-radius-md);
-  --foundation-light-gray: var(--gray-100);
-  --foundation-medium-gray: var(--gray-200);
-  --foundation-dark-gray: var(--gray-300);
-  --foundation-black: var(--default-black);
-  --foundation-white: var(--default-white);
-  --foundation-border: var(--border-color);
-  --foundation-surface: var(--surface-color);
-  --foundation-surface-variant: var(--surface-variant);
-  --foundation-focus: var(--focus-ring);
-  --foundation-text-secondary: var(--text-secondary-color);
-  --foundation-button-fg: var(--button-fg);
-  --foundation-placeholder: var(--form-placeholder, var(--text-secondary-color));
+  --foundation-light-gray: var(--theme-gray-100-color);
+  --foundation-medium-gray: var(--theme-gray-200-color);
+  --foundation-dark-gray: var(--theme-gray-300-color);
+  --foundation-border: var(--theme-border-color);
+  --foundation-surface: var(--theme-surface-color);
+  --foundation-surface-variant: var(--theme-surface-variant-color);
+  --foundation-focus: var(--theme-focus-ring-color);
+  --foundation-text-secondary: var(--theme-text-secondary-color);
+  --foundation-button-fg: var(--theme-button-fg-color);
+  --foundation-placeholder: var(--theme-form-placeholder-color, var(--theme-text-secondary-color));
+
+  // Colour system — solid colours (spec: docs/superpowers/specs/2026-09-24-color-system-design.md).
+  // These hold the build-time defaults; core/web overrides the paper / ink pairs and the brand
+  // variations inline (both modes at once). The active pointers switch per mode.
+  --theme-paper-light-color: #{$theme-paper-light-color};
+  --theme-paper-dark-color: #{$theme-paper-dark-color};
+  --theme-ink-light-color: #{$theme-ink-light-color};
+  --theme-ink-dark-color: #{$theme-ink-dark-color};
+  @each $c in $theme-solid-colors {
+    --theme-#{$c}-light-color: #{map.get($theme-variations, $c, light)};
+    --theme-#{$c}-dark-color: #{map.get($theme-variations, $c, dark)};
+    --theme-#{$c}-light-background-color: #{map.get($theme-variations, $c, light-background)};
+    --theme-#{$c}-dark-background-color: #{map.get($theme-variations, $c, dark-background)};
+    --theme-#{$c}-color: var(--theme-#{$c}-dark-color);
+    --theme-#{$c}-background-color: var(--theme-#{$c}-dark-background-color);
+  }
+  --theme-alert-color: var(--theme-error-color);
+  --theme-alert-background-color: var(--theme-error-background-color);
 }
 
 @mixin theme-light-vars {
-  // Light mode's pen & paper pair.
-  --paper: #{$light-paper};
-  --ink: #{$light-ink};
+  // Light mode's pen & paper pair (the per-mode values live on :root; this switches the pointer).
+  --theme-paper-color: var(--theme-paper-light-color);
+  --theme-ink-color: var(--theme-ink-light-color);
 
   // Legacy grays → nearest neutral step (light mode).
-  --gray-med: var(--neutral-200);
-  --gray-100: var(--neutral-25);
-  --gray-200: var(--neutral-100);
-  --gray-300: var(--neutral-200);
-  --gray-400: var(--neutral-700);
-  --gray-500: var(--neutral-850);
+  --theme-gray-med-color: var(--theme-neutral-200-color);
+  --theme-gray-100-color: var(--theme-neutral-25-color);
+  --theme-gray-200-color: var(--theme-neutral-100-color);
+  --theme-gray-300-color: var(--theme-neutral-200-color);
+  --theme-gray-400-color: var(--theme-neutral-700-color);
+  --theme-gray-500-color: var(--theme-neutral-850-color);
 
-  --gray-1: var(--neutral-900);
-  --gray-2: var(--neutral-800);
-  --gray-3: var(--neutral-500);
-  --gray-4: var(--neutral-200);
-  --gray-5: var(--neutral-100);
+  --theme-gray-1-color: var(--theme-neutral-900-color);
+  --theme-gray-2-color: var(--theme-neutral-800-color);
+  --theme-gray-3-color: var(--theme-neutral-500-color);
+  --theme-gray-4-color: var(--theme-neutral-200-color);
+  --theme-gray-5-color: var(--theme-neutral-100-color);
 
-  --success: #{$success-light};
-  --error: #{$error-light};
-  --warning: #{$warning-light};
-  --info: #{$info-light};
-
-  --color-red: #{$css-red-light};
-  --color-orange: #{$css-orange-light};
-  --color-amber: #{$css-amber-light};
-  --color-yellow: #{$css-yellow-light};
-  --color-lime: #{$css-lime-light};
-  --color-green: #{$css-green-light};
-  --color-teal: #{$css-teal-light};
-  --color-blue: #{$css-blue-light};
-  --color-purple: #{$css-purple-light};
-  --color-magenta: #{$css-magenta-light};
-
-  --primary-color: #{$primary-color-light};
-  --secondary-color: #{$secondary-color-light};
-  --accent-color: #{$accent-color-light};
+  --red-color: #{$css-red-light};
+  --orange-color: #{$css-orange-light};
+  --amber-color: #{$css-amber-light};
+  --yellow-color: #{$css-yellow-light};
+  --lime-color: #{$css-lime-light};
+  --green-color: #{$css-green-light};
+  --teal-color: #{$css-teal-light};
+  --blue-color: #{$css-blue-light};
+  --purple-color: #{$css-purple-light};
+  --magenta-color: #{$css-magenta-light};
 
   --navy-color: #{$navy-light};
   --forest-color: #{$forest-light};
@@ -457,109 +530,75 @@
   --nonary-color: var(--taupe-color);
   --denary-color: var(--ink-color);
 
-  --primary-inverted: #{$primary-color-dark};
-  --secondary-inverted: #{$secondary-color-dark};
-  --primary-color-inverted: var(--primary-inverted);
-
-  --teal-signal: #{$teal-signal-light};
+  --theme-primary-inverted-color: var(--theme-primary-dark-color);
+  --theme-secondary-fill-color: var(--theme-secondary-fill-light-color);
+  --theme-secondary-inverted-color: var(--theme-secondary-inverted-light-color);
+  --theme-primary-sheen-color: var(--theme-primary-sheen-light-color);
+  --theme-shadow-color: var(--theme-ink-light-color);
 
   // Light mode: paper is the ground.
-  --main-background: var(--neutral-0);
-  --main-background-secondary: var(--neutral-50);
-  --main-background-accent: #{$main-background-light-accent};
+  --theme-main-background-color: var(--theme-neutral-0-color);
+  --theme-main-background-secondary-color: var(--theme-neutral-50-color);
 
-  --surface-color: var(--neutral-50);
-  --surface-variant: var(--neutral-100);
+  --theme-surface-color: var(--theme-neutral-50-color);
+  --theme-surface-variant-color: var(--theme-neutral-100-color);
 
-  --text-color: var(--neutral-950);
-  --text-secondary-color: var(--neutral-700);
+  --theme-text-color: var(--theme-neutral-950-color);
+  --theme-text-secondary-color: var(--theme-neutral-700-color);
 
-  --primary: #{$css-primary-light};
-  --primary-hover: #{$css-primary-hover-light};
+  --theme-border-color: var(--theme-ink-a8-color);
+  --theme-link-color: var(--theme-link-light-color);
+  --theme-border-strong-color: var(--theme-neutral-500-color);
+  --theme-primary-fill-color: var(--theme-primary-fill-light-color);
+  --theme-primary-ink-color: var(--theme-primary-ink-light-color);
+  --theme-secondary-ink-color: var(--theme-secondary-ink-light-color);
+  --theme-primary-wash-color: var(--theme-primary-wash-light-color);
+  --theme-secondary-wash-color: var(--theme-secondary-wash-light-color);
+  @each $s in (success, warning, error, info) {
+    --theme-#{$s}-ink-color: var(--theme-#{$s}-ink-light-color);
+  }
 
-  --border-color: var(--ink-a8);
-  --focus-ring: #{$css-focus-ring-light};
-  --link-color: #{$css-link-light};
-  --border-strong: var(--neutral-500);
-  --primary-fill: #{$css-primary-fill-light};
-  --on-primary: #{$css-on-primary};
-  --success-ink: var(--success);
-  --warning-ink: color-mix(in oklab, var(--warning) 70%, var(--text-color));
-  --error-ink: color-mix(in oklab, var(--error) 90%, var(--text-color));
-  --info-ink: var(--info);
-  --danger-ink: var(--error-ink);
+  --theme-text-shadow-color: color-mix(in srgb, var(--theme-shadow-color) 32%, transparent);
 
-  --text-shadow-sm: 0 1px 2px #{$text-shadow-light};
-  --text-shadow-md: 0 2px 4px #{$text-shadow-light};
-  --text-shadow-lg: 0 4px 8px #{$text-shadow-light};
-  --text-shadow-xl: 0 8px 16px #{$text-shadow-light};
+  --theme-form-background-color: var(--theme-ink-a4-color);
 
-  --form-border-color: var(--border-strong);
-  --form-background: color-mix(in srgb, #{$css-form-background-disabled} 8%, transparent);
-  --form-background-disabled: color-mix(in srgb, #{$css-form-background-disabled} 18%, transparent);
-  --form-placeholder: color-mix(in srgb, #{$css-form-placeholder} 75%, transparent);
-  --form-focus-ring: #{$css-focus-ring-light};
-  --form-invalid-color: #{$error};
-  --form-help-color: color-mix(in srgb, #{$css-form-placeholder} 90%, transparent);
+  // Primary buttons: a solid fill under the on-primary label (the light paper), no gradient (owner
+  // option C, Task 3 fix round 1).
+  --button-bg: none;
+  --button-solid-bg: none;
+  --button-solid-bg-hover: none;
+  --theme-button-fill-color: var(--theme-primary-fill-color);
+  // Hover / active keep the fill (dark: the dark fill, declared on :root).
+  --theme-button-hover-fill-color: var(--theme-primary-fill-color);
+  --theme-button-fg-color: var(--theme-on-primary-color);
 
-  --button-bg: linear-gradient(
-    135deg,
-    #{color.change($primary-color-light, $alpha: 0.5)} 0%,
-    #{color.change($secondary-color-light, $alpha: 0.5)} 100%
-  );
-  --button-primary-bg: linear-gradient(
-    135deg,
-    #{color.change($primary-color-light, $alpha: 0.62)} 0%,
-    #{color.change($secondary-color-light, $alpha: 0.42)} 100%
-  );
-  --button-secondary-bg: linear-gradient(
-    135deg,
-    #{color.change($secondary-color-light, $alpha: 0.62)} 0%,
-    #{color.change($primary-color-light, $alpha: 0.42)} 100%
-  );
-  --button-fg: #{dyn-color-against-fill($primary-color-light, $secondary-color-light)};
-  --button-secondary-fg: #{dyn-color-against-fill($primary-color-light, $secondary-color-light)};
-  --button-border: color-mix(in srgb, #{$color-black} 20%, transparent);
-  --button-shadow: 0 8px 24px color-mix(in srgb, #{$shadow-alt-color} 22%, transparent);
-  --button-shadow-hover: 0 12px 30px color-mix(in srgb, #{$shadow-alt-color} 28%, transparent);
-  --button-shadow-active: 0 4px 14px color-mix(in srgb, #{$shadow-alt-color} 20%, transparent);
-  --button-focus-ring: #{$css-focus-ring-light};
+  // Colour system — active pointers for light mode (the four-variation set stays mode-independent, declared once on :root).
+  @each $c in $theme-solid-colors {
+    --theme-#{$c}-color: var(--theme-#{$c}-light-color);
+    --theme-#{$c}-background-color: var(--theme-#{$c}-light-background-color);
+  }
+  --theme-alert-color: var(--theme-error-color);
+  --theme-alert-background-color: var(--theme-error-background-color);
 }
 
 :root {
-  // Theme colors
-  --theme-color: var(--primary-color);
-  --theme-color-soft: color-mix(in srgb, var(--theme-color) 80%, transparent);
-  --theme-color-dark: color-mix(in srgb, var(--theme-color) 20%, transparent);
-  --theme-color-light: color-mix(in srgb, var(--theme-color) 80%, transparent);
-  --theme-color-secondary: var(--secondary-color);
-  --theme-color-secondary-soft: color-mix(in srgb, var(--theme-color-secondary) 80%, transparent);
-  --theme-color-secondary-dark: color-mix(in srgb, var(--theme-color-secondary) 20%, transparent);
-  --theme-color-secondary-light: color-mix(in srgb, var(--theme-color-secondary) 80%, transparent);
-  --theme-color-accent: var(--accent-color);
-  --theme-color-accent-soft: color-mix(in srgb, var(--theme-color-accent) 80%, transparent);
-  --theme-color-accent-dark: color-mix(in srgb, var(--theme-color-accent) 20%, transparent);
-  --theme-color-accent-light: color-mix(in srgb, var(--theme-color-accent) 80%, transparent);
-  --theme-color-accent-dark-soft: color-mix(in srgb, var(--theme-color-accent-dark) 80%, transparent);
-  --theme-color-accent-light-soft: color-mix(in srgb, var(--theme-color-accent-light) 80%, transparent);
-
-  // Theme Background variables
+  // Theme Background variables (`--background-color*` are external hooks; nothing in the theme sets them).
   --theme-background-color: var(--background-color);
-  --theme-background-color-soft: color-mix(in srgb, var(--theme-background-color) 80%, transparent);
-  --theme-background-color-secondary: var(--background-color-secondary);
-  --theme-background-color-secondary-soft: color-mix(in srgb, var(--theme-background-color-secondary) 80%, transparent);
-  --theme-background-color-accent: var(--background-color-accent);
-  --theme-background-color-accent-soft: color-mix(in srgb, var(--theme-background-color-accent) 80%, transparent);
+  --theme-background-soft-color: color-mix(in srgb, var(--theme-background-color) 80%, transparent);
+  --theme-background-secondary-color: var(--background-color-secondary);
+  --theme-background-secondary-soft-color: color-mix(in srgb, var(--theme-background-secondary-color) 80%, transparent);
+  --theme-background-accent-color: var(--background-color-accent);
+  --theme-background-accent-soft-color: color-mix(in srgb, var(--theme-background-accent-color) 80%, transparent);
   --theme-background-image: linear-gradient(
     to bottom,
-    var(--theme-background-color-soft),
+    var(--theme-background-soft-color),
     var(--theme-background-color)
   );
   --theme-background-repeat: no-repeat;
   --theme-background-size: cover;
   --theme-background-position: center;
-  --theme-background-attachment: fixed;
-  --theme-background-blend-mode: multiply;
+  --theme-background-attachment: inherit;
+  --theme-background-blend-mode: normal;
 
   // Theme box ratios
   --theme-box-ratio: 1 / 2; // 1:2 (default)
@@ -599,9 +638,9 @@
     --breakpoint: #{m.bp(ultrawide)};
     --font-size-default: 125%;
     --page-pad: clamp(#{$space-6}, 3vw, #{$space-12});
-    --page-shell-max: 90rem;
-    --page-screen-max: 90rem;
-    --prose-max: 48rem;
+    --page-shell-max: 120rem;
+    --page-screen-max: 120rem;
+    --prose-max: 84rem;
     --page-chrome: 7rem;
     --surface-ratio: var(--theme-box-ratio-wide);
     --card-ratio: var(--theme-box-ratio-wide);
@@ -613,7 +652,7 @@
     --breakpoint: #{m.bp(standard)};
     --page-shell-max: min(100%, 90rem);
     --page-screen-max: min(100%, 90rem);
-    --prose-max: 42rem;
+    --prose-max: 60rem;
   }
 }
 @include m.bp-down(standard) {
@@ -622,7 +661,7 @@
     --page-shell-max: 100%;
     --page-screen-max: 100%;
     --page-pad: clamp(#{$space-3}, 3vw, #{$space-6});
-    --prose-max: 40rem;
+    --prose-max: 42rem;
     --page-chrome: 8.5rem;
   }
 }

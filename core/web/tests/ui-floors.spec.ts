@@ -42,9 +42,9 @@ describe('theme floors: responsive · accessible · touch', () => {
     const button = read(join(theme, 'globals/_button.scss'));
     expect(button).not.toMatch(/min-height: 2\.(1|25)rem/);
     expect(read(join(theme, 'tokens/_button-mixins.scss'))).not.toContain('min-height: 2rem;');
-    expect(read(join(theme, 'globals/_primevue-union.scss'))).toMatch(
-      /\.p-tabs \.p-tab \{\s*min-height: var\(--touch-target, 44px\);/
-    );
+    const primevue = read(join(theme, 'globals/_primevue-union.scss'));
+    expect(primevue).toMatch(/\.p-tabs \.p-tab \{\s*min-height: var\(--touch-target, 44px\);/);
+    expect(primevue).toMatch(/\.p-select \{[^}]*min-height: var\(--form-control-height\);/);
     expect(read(join(theme, 'globals/_form.scss'))).toContain("label:has(input[type='checkbox'], input[type='radio'])");
     // `.page-nav` moved from the theme to its component (theme stays universal).
     const pageNav = read(join(web, 'app/components/AppPageNav/AppPageNav.scss'));
@@ -75,6 +75,34 @@ describe('theme floors: responsive · accessible · touch', () => {
     expect(offenders).toEqual([]);
   });
 
+  it('no stylesheet hard-codes the touch floor as a bare 2.75rem (use var(--touch-target))', () => {
+    // A bare 2.75rem is 38.5px when the reader's text size is 14px; `--touch-target` keeps 44px.
+    // Pending (tracked in the TODO, owned by a parallel PR): the phone Menu and /about.
+    // A box that is not a control opts out on its own line with `/* touch: n/a … */`.
+    const allowed = ['app/components/AppPrimaryNav/AppPrimaryNav.scss', 'app/pages/about.scss'].map((rel) =>
+      join(web, rel)
+    );
+    const offenders: string[] = [];
+    const walk = (dir: string): void => {
+      for (const entry of readdirSync(dir, { withFileTypes: true })) {
+        const path = join(dir, entry.name);
+        if (entry.isDirectory()) {
+          if (!['node_modules', '_archive', '.nuxt', '.output'].includes(entry.name)) walk(path);
+        } else if (/\.(scss|vue)$/.test(entry.name) && !allowed.includes(path)) {
+          for (const line of read(path).split('\n')) {
+            if (/min-(?:height|width):\s*2\.75rem\s*;/.test(line) && !line.includes('/* touch: n/a')) {
+              offenders.push(`${path}: ${line.trim()}`);
+            }
+          }
+        }
+      }
+    };
+    walk(join(web, 'app'));
+    walk(join(web, 'assets'));
+    walk(theme);
+    expect(offenders).toEqual([]);
+  });
+
   it('archives the replaced styling instead of deleting it (not compiled)', () => {
     const archive = join(theme, '_archive/2026-09-24-pre-a11y');
     expect(existsSync(join(archive, 'README.md'))).toBe(true);
@@ -88,7 +116,7 @@ describe('theme floors: responsive · accessible · touch', () => {
 describe('footer + social links', () => {
   it('builds social links from the profile, with the public source repo and email', () => {
     const links = socialLinks(SITE_PROFILE);
-    expect(links.map((l) => l.id)).toEqual(['github', 'source', 'email']);
+    expect(links.map((l) => l.id)).toEqual(['github', 'linkedin', 'source', 'email']);
     expect(links.find((l) => l.id === 'source')?.href).toBe(PUBLIC_REPO.url);
     expect(links.find((l) => l.id === 'email')?.href).toBe(`mailto:${SITE_PROFILE.contact.email}`);
     const github = links.find((l) => l.id === 'github')!;
@@ -104,7 +132,11 @@ describe('footer + social links', () => {
     const shown = socialLinks(SITE_PROFILE).map((l) => l.id);
     for (const entry of social.filter((l) => l.href === null)) expect(shown).not.toContain(entry.id);
     const sameAs = profileSameAs(SITE_PROFILE);
-    expect(sameAs).toEqual(['https://github.com/tamaramack']);
+    expect(sameAs).toEqual([
+      'https://github.com/tamaramack',
+      'https://www.linkedin.com/in/likwidmack',
+      SITE_PROFILE.contact.website,
+    ]);
     expect(sameAs).not.toContain(PUBLIC_REPO.url); // reference links are UI-only
     expect(personContactJsonLd(SITE_PROFILE)).toEqual({});
     for (const key of ['phone', 'website', 'location', 'booking'] as const) {

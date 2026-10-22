@@ -1,0 +1,81 @@
+{
+  "name": "@tgmc/media-nuxt",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "Nuxt module: /api/media/* route kit and MediaLibrary factory for TGMC apps (workspace-only; depends on private @tgmc/web-layer-admin).",
+  "author": "Tamara Gisele Mack",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:likwidmack/portfolio.git",
+    "directory": "packages/media-nuxt"
+  },
+  "homepage": "https://github.com/likwidmack/portfolio/tree/main/packages/media-nuxt",
+  "bugs": {
+    "url": "https://github.com/likwidmack/portfolio/issues"
+  },
+  "keywords": [
+    "media",
+    "nuxt",
+    "nitro",
+    "tgmc"
+  ],
+  "main": "./src/module.ts",
+  "exports": {
+    ".": "./src/module.ts",
+    "./runtime/server/utils/media-cdn": "./runtime/server/utils/media-cdn.ts",
+    "./runtime/server/utils/media-library": "./runtime/server/utils/media-library.ts",
+    "./runtime/server/utils/media-local-s3": "./runtime/server/utils/media-local-s3.ts",
+    "./runtime/server/utils/media-public-url": "./runtime/server/utils/media-public-url.ts"
+  },
+  "files": [
+    "src",
+    "runtime",
+    "!**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"
+  ],
+  "peerDependencies": {
+    "nuxt": "^4.0.0"
+  },
+  "dependencies": {
+    "@nuxt/kit": "^4.0.0",
+    "@tgmc/media": "*",
+    "@tgmc/media-aws": "*",
+    "@tgmc/utilities": "*",
+    "@tgmc/web-layer-admin": "*",
+    "h3": "^1.15.11"
+  },
+  "devDependencies": {
+    "nuxt": "^4.3.1",
+    "vitest": "^4.0.0"
+  },
+  "scripts": {
+    "test": "npm run build --workspace=@tgmc/image --workspace=@tgmc/utilities --workspace=@tgmc/media --workspace=@tgmc/media-aws && vitest run",
+    "build": "node -e \"process.exit(0)\""
+  },
+  "nx": {
+    "tags": [
+      "type:nuxt-module",
+      "scope:shared"
+    ],
+    "targets": {
+      "build": {
+        "executor": "nx:noop",
+        "cache": true,
+        "dependsOn": [
+          "^build"
+        ]
+      },
+      "test": {
+        "executor": "nx:run-commands",
+        "dependsOn": [
+          "^build"
+        ],
+        "options": {
+          "cwd": "{projectRoot}",
+          "command": "npx vitest run"
+        }
+      }
+    }
+  }
+}

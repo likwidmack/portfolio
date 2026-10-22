@@ -17,6 +17,18 @@
     },
     {
       "path": "./theme/core"
+    },
+    {
+      "path": "./packages/image"
+    },
+    {
+      "path": "./packages/media"
+    },
+    {
+      "path": "./packages/media-aws"
+    },
+    {
+      "path": "./packages/media-client"
     }
   ]
 }

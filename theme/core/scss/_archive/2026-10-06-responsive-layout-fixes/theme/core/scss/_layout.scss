@@ -1,0 +1,42 @@
+@use 'theme/scss/tokens' as *;
+
+/// Universal document basics (`*` box sizing, `html`, `body`). Emitted via `@tgmc/theme`
+/// (`scss/index.scss`). App page shells live in the app's layout layer
+/// (`core/web/app/layouts/site.scss`) — the theme never references app ids or routes.
+
+*,
+::before,
+::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: var(--font-family), serif;
+  // `--font-size-default` is a percentage (100% / 125%), so the reader's text size applies.
+  font-size: var(--font-size-default);
+  line-height: 1.5;
+  tab-size: 4;
+  scroll-behavior: smooth;
+}
+
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+  height: auto;
+}
+
+body {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  font-family: var(--font-family), serif;
+  color: var(--theme-text-color);
+  text-shadow: var(--text-shadow-root);
+  background-color: var(--theme-main-background-color);
+}

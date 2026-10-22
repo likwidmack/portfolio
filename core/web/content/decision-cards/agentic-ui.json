@@ -1,5 +1,5 @@
 {
-  "id": "agentic-ui-exploration",
+  "slug": "agentic-ui-exploration",
   "date": "2026-08-02",
   "source": "chatgpt",
   "title": "Turn agent reasoning into interface state",

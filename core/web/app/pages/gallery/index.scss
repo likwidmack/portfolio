@@ -26,7 +26,7 @@
   overflow-y: auto;
   overscroll-behavior: contain;
   scroll-snap-type: y mandatory;
-  background: var(--main-background);
+  background: var(--theme-main-background-color);
   // Defensive: any ancestor/self backdrop-filter (or transform/filter/perspective)
   // turns this scroll container into a containing block for fixed descendants,
   // which would trap a `position: fixed` topbar at the wrong offset. Sticky (below)
@@ -42,24 +42,38 @@
     align-items: center;
     gap: 0.625rem;
     padding: 1rem 1.5rem;
-    background: color-mix(in srgb, var(--surface-color) 86%, transparent);
-    border-bottom: 1px solid var(--portfolio-rule);
-    backdrop-filter: blur(18px);
+    background: color-mix(in srgb, var(--theme-surface-color) 86%, transparent);
+    border-bottom: 1px solid var(--portfolio-rule-color);
+    // Same Safari/iOS sticky + backdrop-filter hit-test trap as `header.site-chrome`
+    // (docs/solutions/ui-bugs/sticky-backdrop-filter-kills-touch.md): blur on a non-interactive
+    // layer, not on the sticky box that holds the controls.
+    isolation: isolate;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      backdrop-filter: blur(18px);
+    }
   }
 
   &__status {
     @include portfolio-type-eyebrow;
-    color: var(--text-secondary-color, var(--text-color));
+    color: var(--theme-text-secondary-color, var(--theme-text-color));
     font-size: max(var(--type-min, 12px), 0.65rem);
   }
 
+  // The dialog's close: ≥ 44px tall (touch floor) and the standard focus ring.
   &__back {
+    @include touch-target;
     margin-left: auto;
     padding: 0.55rem 1rem;
-    border: 1px solid var(--portfolio-rule);
+    border: 1px solid var(--portfolio-rule-color);
     border-radius: 2px;
-    background: color-mix(in srgb, var(--text-color) 4%, transparent);
-    color: var(--text-color);
+    background: color-mix(in srgb, var(--theme-text-color) 4%, transparent);
+    color: var(--theme-text-color);
     @include portfolio-type-meta;
     letter-spacing: 0.18em;
     text-transform: uppercase;
@@ -67,8 +81,12 @@
 
     &:hover,
     &:focus-visible {
-      border-color: var(--portfolio-rose);
-      color: var(--portfolio-rose, var(--primary-color));
+      border-color: var(--portfolio-rose-color);
+      color: var(--portfolio-rose-color, var(--theme-primary-ink-color));
+    }
+
+    &:focus-visible {
+      @include focus-ring;
     }
   }
 
@@ -94,52 +112,72 @@
   width: 100%;
   max-width: 100%;
 
+  // The aspect ratio is reserved on the media box (not the whole tile): the meta row below takes
+  // its own height, so a short wide tile never squeezes the media to nothing or pushes text under
+  // it, and the box does not change size when the image / video / code arrives.
   &__tile {
     display: grid;
-    grid-template-rows: minmax(0, 1fr) auto;
+    // minmax(0, 1fr): a text exhibit that grows its media box must not widen the column through
+    // the aspect ratio (a taller box would transfer a wider minimum).
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
     padding: 0;
-    border: 1px solid var(--border-color, var(--portfolio-rule));
+    border: 1px solid var(--theme-border-color, var(--portfolio-rule-color));
     border-radius: var(--border-radius-md, 0.75rem);
-    background: var(--surface-color, var(--main-background-secondary));
+    background: var(--theme-surface-color, var(--theme-main-background-secondary-color));
     color: inherit;
-    cursor: pointer;
     text-align: left;
     min-width: 0;
     max-width: 100%;
     overflow: hidden;
 
-    &[data-aspect='tall'] {
+    &[data-aspect='tall'] .gallery-grid__media {
       aspect-ratio: 9 / 16;
     }
 
-    &[data-aspect='wide'] {
+    &[data-aspect='wide'] .gallery-grid__media {
       aspect-ratio: 16 / 9;
     }
 
-    &[data-aspect='square'] {
+    &[data-aspect='square'] .gallery-grid__media {
       aspect-ratio: 1 / 1;
     }
 
     &:hover .gallery-grid__platform,
     &:focus-visible .gallery-grid__platform {
-      border-color: var(--primary-color);
-      color: var(--primary-color);
+      border-color: var(--theme-primary-color);
+      color: var(--theme-primary-ink-color);
     }
 
-    &:focus-visible {
-      outline: 2px solid var(--focus-ring, var(--primary-color));
+    &:has(.gallery-grid__open:focus-visible) {
+      outline: 2px solid var(--theme-focus-ring-color, var(--theme-primary-color));
       outline-offset: 2px;
     }
 
     &--on-view {
-      box-shadow: 0 0 0 3px var(--focus-ring, var(--primary-color));
+      box-shadow: 0 0 0 3px var(--theme-focus-ring-color, var(--theme-primary-color));
     }
   }
 
   &__media {
     position: relative;
+    aspect-ratio: 4 / 5;
+    min-width: 0;
     min-height: 0;
     overflow: hidden;
+
+    // Text exhibits (a viz series / diagram, the fallback title) have nothing to load: the aspect
+    // ratio is a floor and the box grows to its content, so no row or label is cut off. Photos and
+    // video keep the strict ratio (no shift while they load); code stays a cropped preview window.
+    &:is([data-surface='viz'], [data-surface='text']) {
+      min-height: auto; // the automatic minimum lets the aspect ratio grow to fit the content
+      overflow: visible;
+
+      .gallery-exhibit {
+        height: auto;
+        min-height: 100%;
+      }
+    }
   }
 
   // The exhibit fills the tile's media box (its img / video fill the exhibit — GalleryExhibit).
@@ -151,15 +189,21 @@
     object-fit: cover;
   }
 
+  // Kind + platform chips: their own wrapping row at the top of the meta (were absolute overlays
+  // on the media, sitting on the exhibit caption / code text).
+  &__chips {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem;
+    margin-bottom: 0.15rem;
+  }
+
   &__badge {
-    position: absolute;
-    z-index: 1;
-    top: 0.5rem;
-    left: 0.5rem;
     padding: 0.15rem 0.5rem;
     border-radius: var(--border-radius-sm);
-    background: color-mix(in srgb, var(--main-background) 70%, transparent);
-    color: var(--text-color);
+    background: color-mix(in srgb, var(--theme-main-background-color) 70%, transparent);
+    color: var(--theme-text-color);
     font-size: max(var(--type-min, 12px), 0.65rem);
     font-weight: 700;
     letter-spacing: 0.06em;
@@ -167,16 +211,12 @@
   }
 
   &__platform {
-    position: absolute;
-    left: 0.55rem;
-    bottom: 0.55rem;
-    z-index: 1;
     display: inline-flex;
     padding: 0.2rem 0.5rem;
-    border: 1px solid color-mix(in srgb, var(--text-color) 35%, transparent);
+    border: 1px solid color-mix(in srgb, var(--theme-text-color) 35%, transparent);
     border-radius: var(--border-radius-pill, 999px);
-    background: color-mix(in srgb, var(--main-background) 78%, transparent);
-    color: var(--text-color);
+    background: color-mix(in srgb, var(--theme-main-background-color) 78%, transparent);
+    color: var(--theme-text-color);
     font-size: max(var(--type-min, 12px), 0.7rem);
     font-weight: 700;
     letter-spacing: 0.08em;
@@ -185,6 +225,7 @@
 
   &__meta {
     display: grid;
+    align-content: start;
     gap: 0.2rem;
     padding: 0.55rem 0.65rem 0.7rem;
     min-width: 0;
@@ -197,18 +238,45 @@
     overflow-wrap: anywhere;
   }
 
+  // The exhibit caption, in the meta (was a frosted chip over the media, which covered most of a
+  // small wide tile's image and was cut off below text exhibits).
+  &__caption {
+    margin: 0;
+    color: var(--theme-text-secondary-color, var(--theme-text-color));
+    font-size: max(var(--type-min, 12px), 0.75rem);
+    line-height: 1.35;
+  }
+
   &__category {
-    color: var(--text-secondary-color, var(--text-color));
+    color: var(--theme-text-secondary-color, var(--theme-text-color));
     font-size: max(var(--type-min, 12px), 0.7rem);
     letter-spacing: 0.04em;
     text-transform: uppercase;
   }
 
   &__stats {
-    color: var(--portfolio-teal);
+    color: var(--portfolio-teal-color);
     font-size: 0.75rem;
     font-weight: 600;
     letter-spacing: 0.03em;
+  }
+
+  &__open {
+    justify-self: start;
+    margin-top: 0.35rem;
+    padding: 0.35rem 0.55rem;
+    border: 1px solid var(--theme-border-color, var(--portfolio-rule-color));
+    border-radius: var(--border-radius-sm, 0.35rem);
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    font: inherit;
+
+    &:hover,
+    &:focus-visible {
+      border-color: var(--theme-focus-ring-color, var(--theme-primary-color));
+      color: var(--theme-primary-ink-color);
+    }
   }
 
   @include bp-up(tablet) {

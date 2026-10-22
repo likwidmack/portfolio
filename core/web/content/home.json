@@ -13,7 +13,7 @@
         "id": "discovery",
         "label": "Discovery",
         "lede": "Get to know the work by walking it.",
-        "scope": "6 case studies"
+        "scope": "{caseStudies}"
       },
       {
         "id": "process",

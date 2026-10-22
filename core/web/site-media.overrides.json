@@ -1,0 +1,15 @@
+{
+  "exclude": {
+    "/i/portfolio/social-card.png": "Same bytes as /i/portfolio/manhattan-2150-keyframe.png; the default social image (usePortfolioSeo) moves to that asset in PR 5 part 2.",
+    "/i/profile_pic_2.jpg": "Unused alternate portrait; stays on disk, not imported.",
+    "/d/Tamara G Mack_Resume_2026.pdf": "Unused copy of the 2026 resume; /d/Resume2026.pdf is imported as tamara-mack-resume-2026."
+  },
+  "entries": {
+    "/d/Resume2026.pdf": { "name": "tamara-mack-resume-2026" },
+    "/i/portfolio/generated/vimg-algorithmic-helix.webp": { "credit": "Tamara Mack (AI-assisted)" },
+    "/i/portfolio/generated/vimg-cosmic-network.webp": { "credit": "Tamara Mack (AI-assisted)" },
+    "/i/portfolio/generated/vimg-crystal-volume.webp": { "credit": "Tamara Mack (AI-assisted)" },
+    "/v/portfolio/generated/vimg-crystal-binary-helix.mp4": { "credit": "Tamara Mack (AI-assisted)" },
+    "/v/portfolio/generated/vimg-tesseract-framework.mp4": { "credit": "Tamara Mack (AI-assisted)" }
+  }
+}

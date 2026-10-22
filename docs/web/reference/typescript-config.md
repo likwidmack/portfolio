@@ -57,15 +57,15 @@ Configured in `tsconfig.app.json`:
 
 ### Alias Reference
 
-| Alias                  | Resolves To             | Purpose          |
-| ---------------------- | ----------------------- | ---------------- |
-| `#shared/*`            | `./shared/*`            | Shared utilities |
-| `#types/*`             | `./types/*`             | Type definitions |
-| `theme/scss`           | `../../theme/core/scss` | Theme SCSS       |
-| `#theme/scss`          | `../../theme/core/scss` | Alt theme SCSS   |
-| `@tgmc/theme`          | Theme dist              | Theme package    |
-| `@tgmc/theme/tokens`   | Tokens dist             | Theme tokens     |
-| `@tgmc/theme/primevue` | PrimeVue dist           | PrimeVue theme   |
+| Alias                  | Resolves To             | Purpose                                          |
+| ---------------------- | ----------------------- | ------------------------------------------------ |
+| `#shared/*`            | `./shared/*`            | Shared utilities                                 |
+| `#types/*`             | `./types/*`             | Type definitions                                 |
+| `theme/scss`           | `../../theme/core/scss` | Theme SCSS                                       |
+| `#theme/scss`          | `../../theme/core/scss` | Alt theme SCSS                                   |
+| `@tgmc/theme`          | Theme dist              | Theme package                                    |
+| `@tgmc/theme/tokens`   | Tokens dist             | Theme tokens                                     |
+| `@tgmc/theme/primevue` | PrimeVue dist           | Nora preset + Nuxt module config (named exports) |
 
 ## Type Inclusion
 
@@ -100,7 +100,7 @@ import type { ThemeTokensApi } from '#shared/theme/theme-tokens-api';
 
 ```typescript
 import tokens from '@tgmc/theme/tokens';
-import primevueTheme from '@tgmc/theme/primevue';
+import { themePrimeVuePreset } from '@tgmc/theme/primevue';
 ```
 
 ### Importing SCSS

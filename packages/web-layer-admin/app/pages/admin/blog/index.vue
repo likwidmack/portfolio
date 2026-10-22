@@ -50,18 +50,20 @@
 
 <script setup lang="ts">
 import type { BlogPost, BlogPostStatus } from '@tgmc/web-layer-admin/shared/blog-types';
-import { useAdminDatabase } from '../../../composables/useAdminDatabase';
-import type { AdminDatabase } from '../../../utils/admin-database';
-import { adminRequestHeaders, fetchErrorStatus, readAdminToken } from '../../../utils/admin-token';
+import { useAdminSession } from '../../../composables/useAdminSession';
+import { useAdminFetch } from '../../../utils/admin-fetch';
+import { fetchErrorStatus } from '../../../utils/fetch-error';
 
 definePageMeta({
   breadcrumb: 'Admin Blog',
+  middleware: 'admin-auth',
 });
 
 type StatusFilter = 'all' | BlogPostStatus;
 
 const config = useRuntimeConfig();
-const { selected: adminDatabase } = useAdminDatabase();
+const { database: adminDatabase } = useAdminSession();
+const adminFetch = useAdminFetch();
 const writesEnabled = computed(() => Boolean(config.public.adminWritesEnabled));
 const errorMessage = ref('');
 const posts = ref<BlogPost[] | null>(null);
@@ -88,37 +90,18 @@ const formatDate = (iso: string) => {
   }
 };
 
-// Tracks which backend the list was last fetched for, so the composable's post-mount
-// sessionStorage hydration (which mutates `adminDatabase` once, separately from the initial
-// onMounted load) doesn't trigger a second, redundant fetch for the same database.
-let loadedDatabase: AdminDatabase | null = null;
-
 const loadPosts = async () => {
   if (!writesEnabled.value) {
     pending.value = false;
-    return;
-  }
-  if (!readAdminToken()) {
-    await navigateTo('/admin');
-    return;
-  }
-  if (loadedDatabase === adminDatabase.value) {
     return;
   }
 
   pending.value = true;
   errorMessage.value = '';
   try {
-    posts.value = await $fetch<BlogPost[]>('/api/admin/posts', {
-      headers: adminRequestHeaders(),
-    });
-    // Only mark this backend "loaded" once the fetch actually succeeds, so a failed
-    // request (network error, 500) doesn't block a later retry for the same database.
-    loadedDatabase = adminDatabase.value;
+    posts.value = await adminFetch<BlogPost[]>('/api/admin/posts');
   } catch (error: unknown) {
     if (fetchErrorStatus(error) === 401) {
-      errorMessage.value = 'Unauthorized — check the admin token.';
-      await navigateTo('/admin');
       return;
     }
     errorMessage.value = 'Unable to load posts.';
@@ -167,12 +150,13 @@ void formatDate;
   text-transform: uppercase;
   letter-spacing: 0.04em;
 
+  // Contrast roles (≥ 4.5:1): secondary text, and the primary ink — never the 3:1 primary fill.
   &[data-status='draft'] {
-    color: var(--text-color-secondary, inherit);
+    color: var(--theme-text-secondary-color);
   }
 
   &[data-status='published'] {
-    color: var(--primary-color, inherit);
+    color: var(--theme-primary-ink-color);
   }
 }
 </style>

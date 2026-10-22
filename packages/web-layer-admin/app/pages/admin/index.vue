@@ -7,9 +7,7 @@
 
   .page-with-nav
     div(data-region="body")
-      UiMessage(v-if="!writesEnabled", severity="warn")
-        | Admin writes are disabled. Set ADMIN_TOKEN (or NUXT_ADMIN_TOKEN) and restart the server.
-      form.admin-gate(v-else, @submit.prevent="onSubmit")
+      form.admin-gate(@submit.prevent="onSubmit")
         label(for="admin-token") Admin token
         UiPassword(
           v-model="token",
@@ -20,7 +18,12 @@
           toggle-mask
         )
         .button-row
-          UiButton(type="submit", label="Continue", icon="lock-open", :disabled="!token.trim()")
+          UiButton(
+            type="submit",
+            :label="checking ? 'Checking…' : 'Continue'",
+            icon="lock-open",
+            :disabled="!token.trim() || checking"
+          )
           UiButton(
             v-if="hasStored",
             type="button",
@@ -33,40 +36,67 @@
 </template>
 
 <script setup lang="ts">
-import { clearAdminToken, readAdminToken, writeAdminToken } from '../../utils/admin-token';
+import { useAdminSession } from '../../composables/useAdminSession';
+import { safeAdminRedirect } from '../../utils/admin-auth-redirect';
+import { type AdminTokenCheck, verifyAdminToken } from '../../utils/admin-fetch';
+import { rejectedTokenMessage, signInErrorMessage } from '../../utils/admin-sign-in-messages';
 
 definePageMeta({
   breadcrumb: 'Admin',
 });
 
-const config = useRuntimeConfig();
-const writesEnabled = computed(() => Boolean(config.public.adminWritesEnabled));
+const route = useRoute();
+const { token: storedToken, signedIn, signIn, signOut } = useAdminSession();
 
-const token = ref('');
-const hasStored = ref(false);
+const token = ref(storedToken.value);
+const hasStored = computed(() => signedIn.value);
 const message = ref('');
-const messageSeverity = ref<'success' | 'error' | 'info'>('info');
+const messageSeverity = ref<'success' | 'error' | 'info' | 'warn'>('info');
+const checking = ref(false);
 
-onMounted(() => {
-  const stored = readAdminToken();
-  hasStored.value = Boolean(stored);
-  if (stored) {
-    token.value = stored;
+const focusToken = async () => {
+  await nextTick();
+  document.getElementById('admin-token')?.focus();
+};
+
+onMounted(async () => {
+  if (route.query.expired === '1') {
+    messageSeverity.value = 'warn';
+    message.value = 'Session expired — enter the token again.';
+    await focusToken();
   }
 });
 
-const onSubmit = () => {
-  writeAdminToken(token.value);
-  hasStored.value = Boolean(token.value.trim());
+const onSubmit = async () => {
+  const candidate = token.value.trim();
+  if (!candidate || checking.value) return;
+  checking.value = true;
+  message.value = '';
+  let check: AdminTokenCheck;
+  try {
+    check = await verifyAdminToken(candidate);
+  } catch (error) {
+    messageSeverity.value = 'error';
+    message.value = signInErrorMessage(error);
+    return;
+  } finally {
+    checking.value = false;
+  }
+  if (!check.ok) {
+    messageSeverity.value = 'error';
+    message.value = rejectedTokenMessage(check.statusMessage);
+    await focusToken();
+    return;
+  }
+  signIn(candidate);
   messageSeverity.value = 'success';
   message.value = 'Token saved for this browser session.';
-  navigateTo('/admin/blog');
+  navigateTo(safeAdminRedirect(route.query.redirect));
 };
 
 const onClear = () => {
-  clearAdminToken();
+  signOut();
   token.value = '';
-  hasStored.value = false;
   messageSeverity.value = 'info';
   message.value = 'Saved token cleared.';
 };
@@ -76,7 +106,6 @@ useHead({
   meta: [{ name: 'robots', content: 'noindex' }],
 });
 
-void writesEnabled.value;
 void onSubmit;
 void onClear;
 </script>

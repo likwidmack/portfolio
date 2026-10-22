@@ -44,7 +44,7 @@ describe('code page', () => {
     expect(page).toContain("fetchContentCollection<CodeContent>('code'");
     expect(page).toContain('data-fit="fluid"');
     expect(page).toContain('code-page__lang');
-    expect(page).toContain('--portfolio-teal');
+    expect(page).toContain('--portfolio-teal-color');
     expect(page).toContain('UiCodeBlock');
     expect(page).toContain('joinCodeSampleSource');
     expect(page).toContain('content.value.samples');

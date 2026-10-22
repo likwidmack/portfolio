@@ -6,7 +6,7 @@ aside.page-nav(:aria-label="ariaLabel", @keydown.esc="closeAndFocus")
     type="button",
     :aria-expanded="open ? 'true' : 'false'",
     :aria-controls="listId",
-    @click="toggleOpen"
+    @click="open = !open"
   )
     span.page-nav__toggle-text
       span.page-nav__toggle-label {{ label }}
@@ -50,7 +50,7 @@ function isActive(to: string): boolean {
 }
 
 // Phone disclosure (hidden from tablet up, where the list is always shown).
-const { open, listId, closeAndFocus, toggleOpen } = usePageNavDisclosure();
+const { open, listId, closeAndFocus } = usePageNavDisclosure();
 const currentLabel = computed(() => props.items.find((item) => isActive(item.to))?.label);
 </script>
 

@@ -19,7 +19,7 @@
       .portfolio-depth-field__plane(
         v-for="(plane, i) in planes",
         :key="'plane-' + i",
-        :style="{ left: plane.x + '%', top: plane.y + '%', width: plane.w + 'px', height: plane.h + 'px', marginLeft: -plane.w / 2 + 'px', marginTop: -plane.h / 2 + 'px', background: 'radial-gradient(closest-side, var(--portfolio-primary) 0%, transparent 72%)', filter: `blur(${plane.blur}px)`, opacity: plane.o, transform: `translateZ(${plane.z}px)`, animationDelay: `${i * -3}s` }"
+        :style="{ left: plane.x + '%', top: plane.y + '%', width: plane.w + 'px', height: plane.h + 'px', marginLeft: -plane.w / 2 + 'px', marginTop: -plane.h / 2 + 'px', background: 'radial-gradient(closest-side, var(--portfolio-primary-color) 0%, transparent 72%)', filter: `blur(${plane.blur}px)`, opacity: plane.o, transform: `translateZ(${plane.z}px)`, animationDelay: `${i * -3}s` }"
       )
       .portfolio-depth-field__particle(v-for="(p, i) in particles", :key="'p-' + i", :style="{ left: p.x, top: p.y }")
         span(
@@ -31,7 +31,7 @@
 <script setup lang="ts">
 /**
  * Site-wide depth backdrop. Mode from `usePersonalization().background`:
- * particles (default), grid, camera stream, or custom solid (`--portfolio-depth-custom`).
+ * particles (default), grid, camera stream, or custom solid (`--portfolio-depth-custom-color`).
  */
 interface Props {
   seed?: number;
@@ -86,8 +86,8 @@ function generateParticles(count: number, seed: number): Particle[] {
       size,
       dur: `${dur}s`,
       delay: `${(-rand() * parseFloat(dur)).toFixed(1)}s`,
-      color: 'var(--portfolio-primary)',
-      shadow: near > 0.78 ? '0 0 10px var(--portfolio-primary)' : 'none',
+      color: 'var(--portfolio-primary-color)',
+      shadow: near > 0.78 ? '0 0 10px var(--portfolio-primary-color)' : 'none',
       blur: near < 0.3 ? 'blur(1.4px)' : 'none',
     });
   }

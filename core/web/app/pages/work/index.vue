@@ -66,7 +66,7 @@ function onJumpClick(event: MouseEvent, slug: string): void {
   activeSlug.value = slug;
   const id = `work-${slug}`;
   history.replaceState(null, '', `#${id}`);
-  const behavior = reducedMotion.value ? 'auto' : 'smooth';
+  const behavior = reducedMotion.value ? 'instant' : 'smooth';
   document.getElementById(id)?.scrollIntoView({ behavior, block: 'start' });
 }
 
