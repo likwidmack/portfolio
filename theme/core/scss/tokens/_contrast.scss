@@ -32,7 +32,11 @@
 }
 
 /// Pair opaque `background-color` + gradient `background-image` with contrasting ink.
-@mixin contrast-fill($bg-color: var(--primary-color), $bg-image: var(--button-bg), $ink: var(--button-fg)) {
+@mixin contrast-fill(
+  $bg-color: var(--theme-primary-color),
+  $bg-image: var(--button-bg),
+  $ink: var(--theme-button-fg-color)
+) {
   background-color: $bg-color;
   background-image: $bg-image;
   color: $ink;

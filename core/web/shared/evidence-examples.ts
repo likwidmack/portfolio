@@ -148,8 +148,8 @@ player.on('state', (state) => {
     code: `.work-card {
   --work-card-media-ratio: 16 / 9;
   --work-card-media-width: 22.5rem;
-  border-right: 1px solid var(--portfolio-rule);
-  background: color-mix(in srgb, var(--surface-color) 88%, transparent);
+  border-right: 1px solid var(--portfolio-rule-color);
+  background: color-mix(in srgb, var(--theme-surface-color) 88%, transparent);
 }
 
 .work-card__media {
@@ -188,9 +188,9 @@ player.on('state', (state) => {
 }
 
 .evidence-example-card {
-  border: 1px solid var(--portfolio-rule);
+  border: 1px solid var(--portfolio-rule-color);
   padding: 1rem 1.1rem;
-  background: color-mix(in srgb, var(--surface-color) 92%, transparent);
+  background: color-mix(in srgb, var(--theme-surface-color) 92%, transparent);
 }`,
   },
 ];

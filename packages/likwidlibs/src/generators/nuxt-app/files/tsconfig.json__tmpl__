@@ -1,0 +1,12 @@
+{
+  "extends": "<%= offsetFromRoot %>tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "preserve",
+    "types": ["vitest/globals"]
+  },
+  "include": [
+    "app/**/*",
+    "tests/**/*",
+    "nuxt.config.ts"
+  ]
+}

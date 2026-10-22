@@ -1,0 +1,56 @@
+# CD — Docker Node-Server deploy for @tgmc/<%= name %>
+name: CD Deploy (<%= name %> - Docker)
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '<%= projectRoot %>/**'
+      - 'packages/**'
+      - 'theme/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: cd-deploy-<%= name %>-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    name: Build & Deploy Container
+    runs-on: ubuntu-latest
+    env:
+      HUSKY: '0'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build SSR app
+        run: npx nx run @tgmc/<%= name %>:build
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: <%= projectRoot %>/Dockerfile
+          push: true
+          tags: ghcr.io/${{ github.repository }}/<%= name %>:latest

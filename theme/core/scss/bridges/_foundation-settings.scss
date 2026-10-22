@@ -2,15 +2,15 @@
 ///
 /// Loaded before Foundation `_global.scss` when `$theme-enable-foundation` is true.
 /// Palette / greys stay **concrete hex** (Foundation `scale-color` math cannot use `var()`).
-/// Runtime light/dark follows theme via `--foundation-*` CSS aliases in `_root.scss`
-/// (see `applyFoundationBridge`, which clears inline overrides so aliases win).
+/// Runtime light/dark follows theme via the `--foundation-*` interface values in `_root.scss`
+/// (they read `--theme-*-color`; `applyFoundationBridge` clears inline overrides so they win).
 @use '../tokens/colors' as *;
 @use '../tokens/variables' as *;
 
 // ─── Palette (ZF `$foundation-palette` keys) ─────────────────────────────────
 // Canonical compile-time defaults use shared default / semantic-dark tokens.
 // Brand accent (complementary of primary) is exposed at runtime as `--foundation-accent`
-// / `--accent-color`; ZF's palette map has no accent slot — keep primary/secondary here.
+// / `--theme-accent-color`; ZF's palette map has no accent slot — keep primary/secondary here.
 // Vue SFCs get `theme-*` helpers via `_nuxt-auto`; this bridge `@use`s `tokens/colors` only.
 $foundation-palette: (
   primary: $primary-default-color,
@@ -23,7 +23,7 @@ $foundation-palette: (
 $primary-color: $primary-default-color !default;
 $secondary-color: $secondary-default-color !default;
 /// Concrete accent hex for custom Foundation chrome (not ZF `$foundation-palette`).
-/// Prefer CSS `var(--foundation-accent)` / `var(--accent-color)` at runtime.
+/// Prefer CSS `var(--foundation-accent)` / `var(--theme-accent-color)` at runtime.
 $foundation-accent-color: $accent-color-dark !default;
 $success-color: $success-dark !default;
 $warning-color: $warning-dark !default;
@@ -36,7 +36,7 @@ $dark-gray: $grey-600 !default;
 $black: $default-black !default;
 $white: $default-white !default;
 
-// ─── Body / type (dark-first compile baseline; runtime via CSS aliases) ───────
+// ─── Body / type (dark-first compile baseline; runtime via `--foundation-*`) ───────
 $body-font-family: $text-font-family !default;
 $body-background: $main-background-dark !default;
 $body-font-color: $text-color-dark !default;

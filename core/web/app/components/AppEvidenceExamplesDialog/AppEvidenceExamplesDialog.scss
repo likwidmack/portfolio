@@ -1,3 +1,5 @@
+@use 'mixins' as *;
+
 // Global on purpose, under ONE named class: UiDialog teleports the PrimeVue dialog to <body>,
 // where this component's scope doesn't reach its root / `.p-dialog-content`. Everything is nested
 // so nothing leaks (the old top-level `.tag-list` restyled tag lists on /work pages).
@@ -14,7 +16,7 @@
   &__lede {
     margin: 0 0 1rem;
     max-width: 42rem;
-    color: var(--text-secondary-color, inherit);
+    color: var(--theme-text-secondary-color, inherit);
   }
 
   .evidence-example-list {
@@ -23,10 +25,10 @@
 
   .evidence-example-card,
   .evidence-example-card__preview {
-    border: 1px solid var(--portfolio-rule, color-mix(in srgb, currentColor 18%, transparent));
+    border: 1px solid var(--portfolio-rule-color, color-mix(in srgb, currentColor 18%, transparent));
     border-radius: var(--border-radius-md, 0.5rem);
     padding: 1rem 1.1rem;
-    background: color-mix(in srgb, var(--surface-color, Canvas) 92%, transparent);
+    background: color-mix(in srgb, var(--theme-surface-color, Canvas) 92%, transparent);
   }
 
   .evidence-example-card {
@@ -37,7 +39,7 @@
 
       > p:last-child {
         margin: 0;
-        color: var(--text-secondary-color, inherit);
+        color: var(--theme-text-secondary-color, inherit);
       }
     }
 
@@ -47,9 +49,10 @@
     }
 
     &__link {
-      display: inline-flex;
+      // Theme touch floor: the text link is a 44px-tall target (was the 24px line box).
+      @include touch-target;
       gap: 0.35rem;
-      margin-top: 0.75rem;
+      margin-top: 0.5rem;
       font-weight: 600;
     }
   }
@@ -69,7 +72,7 @@
     list-style: none;
 
     li {
-      border: 1px solid var(--portfolio-rule);
+      border: 1px solid var(--portfolio-rule-color);
       border-radius: var(--border-radius-sm, 0.25rem);
       padding: 0.25rem 0.55rem;
       font-size: 0.78rem;

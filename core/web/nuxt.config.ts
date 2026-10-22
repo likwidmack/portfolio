@@ -232,6 +232,12 @@ const iconConfig = {
       'lucide:github',
       'lucide:code',
       'lucide:mail',
+      // Admin media kind icons (`core/admin/app/utils/media-kind.ts`, bound dynamically).
+      'lucide:image',
+      'lucide:pen-tool',
+      'lucide:audio-lines',
+      'lucide:film',
+      'lucide:box',
     ],
   },
 };
@@ -248,19 +254,17 @@ export default defineNuxtConfig({
         },
       }
     : {}),
-  // Nuxt build-mode layers (NODE_ENV), not SYS_ENV — env-chip + a11y/log tooling.
+  // Nuxt build-mode layers (NODE_ENV), not SYS_ENV — a11y/log tooling. The env chip follows SYS_ENV
+  // (`showEnvIndicator` in runtimeConfig.public), so Docker/SAM builds of non-production envs show it.
   $development: {
-    runtimeConfig: { public: { showEnvIndicator: true } },
     nitro: { logLevel: 5 },
     a11y: { defaultHighlight: true, logIssues: true },
   },
   $production: {
-    runtimeConfig: { public: { showEnvIndicator: false } },
     nitro: { logLevel: 0 },
     a11y: { enabled: false },
   },
   $test: {
-    runtimeConfig: { public: { showEnvIndicator: true } },
     nitro: { logLevel: 3 },
     a11y: { report: { enabled: true, output: 'a11y-report.md', failOnViolation: true } },
   },
@@ -308,9 +312,11 @@ export default defineNuxtConfig({
       },
       // Public CDN URL used by the app at runtime (empty when not configured)
       cdnUrl: CDN_URL || undefined,
+      // Site media origin override (NUXT_PUBLIC_MEDIA_BASE_URL); empty → shared/media-public.ts constant.
+      mediaBaseUrl: '',
       sysEnv: env,
-      /** Fail-closed default; `$development` / `$test` layers flip this on. */
-      showEnvIndicator: false,
+      /** Nav env chip: every SYS_ENV except production. */
+      showEnvIndicator: env !== 'production',
       siteUrl,
       aiLabLiveEnabled: aiLabLiveEnabledRaw === '1' && Boolean(openaiApiKey && aiLabSigningSecret),
     },
@@ -363,6 +369,9 @@ export default defineNuxtConfig({
     ...(nitroPreset === 'aws_lambda' ? { serveStatic: false as const } : {}),
     logLevel: debug ? 5 : isDev ? 3 : 0,
     inlineDynamicImports: true,
+    // Nuxt 4.6 renderer imports must resolve build-time virtual modules, not package stubs.
+    // Keep PrimeVue's utility barrel and subpaths in the same Rollup graph.
+    externals: { inline: ['nuxt', '@primeuix/utils'] },
     output: outputObj,
     prerender: {},
     preset: nitroPreset,

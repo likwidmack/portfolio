@@ -19,12 +19,14 @@ import {
   type ThemeModePreference,
   type ThemeResolvedMode,
 } from './color-mode.js';
+import { normalizeColorNames } from './color-rename.js';
 import { resolveButtonForeground } from './contrast.js';
 import type { StudioPreset } from './studio-presets.js';
 import presetCatalog from './theme-presets.json' with { type: 'json' };
 import {
   getToken,
   getTokens,
+  removeTokens,
   resetTokens,
   setTokens,
   subscribeTokens,
@@ -32,13 +34,7 @@ import {
   type ThemeBridgeOptions,
   type ThemeTokenMap,
 } from './token-registry.js';
-import {
-  darkCssVariables,
-  getInlineTokensForMode,
-  lightCssVariables,
-  palettes,
-  withoutDerivedRoles,
-} from './tokens.js';
+import { getInlineTokensForMode, palettes } from './tokens.js';
 
 export type ThemeRatios = {
   surface?: string;
@@ -66,7 +62,8 @@ export type ThemeDefinition = {
   tokens?: ThemeTokenMap;
   /**
    * The five colour inputs. Everything else derives from them in CSS: the neutral scale
-   * (`--neutral-0…1000`, paper → ink), surfaces, text, borders and status tones.
+   * (`--theme-neutral-0…1000-color`, paper → ink), surfaces, text, borders and status tones.
+   * Written under the active `--theme-…-color` names (inline, so they hold in both modes).
    */
   colors?: {
     primary?: string;
@@ -95,6 +92,29 @@ const BUILTIN_DARK = 'dark';
 
 export type ThemeWriteOptions = ThemeBridgeOptions & { source?: string };
 
+export type ThemeApplyInput = ThemeTokenMap | ThemeDefinition;
+
+export type ThemeApplyOptions = ThemeBridgeOptions & { source?: string; dryRun?: boolean };
+
+const DEFAULT_APPLY_BRIDGES: ThemeBridgeOptions = { primevue: true, foundation: true };
+
+function resolveApplyOptions(options: ThemeApplyOptions = {}): ThemeWriteOptions {
+  return {
+    ...DEFAULT_APPLY_BRIDGES,
+    ...options,
+    source: options.source ?? 'theme:apply',
+  };
+}
+
+function isThemeDefinition(input: ThemeApplyInput): input is ThemeDefinition {
+  return (
+    input != null &&
+    typeof input === 'object' &&
+    ('colors' in input || 'text' in input || 'ratios' in input || 'breakpoints' in input || 'tokens' in input) &&
+    !Object.keys(input).some((key) => key.startsWith('--'))
+  );
+}
+
 const packs = new Map<string, ThemeTokenMap>();
 let selectedName: string | null = null;
 
@@ -106,13 +126,14 @@ function normalizeTokenName(property: string): string {
   return property.startsWith('--') ? property : `--${property}`;
 }
 
+/** Keys get their `--` prefix; old colour keys move to their new names (R-T8c). */
 function normalizeTokenMap(variables: ThemeTokenMap): ThemeTokenMap {
   const normalized: ThemeTokenMap = {};
   for (const [key, value] of Object.entries(variables)) {
     if (value == null) continue;
     normalized[normalizeTokenName(key)] = String(value);
   }
-  return normalized;
+  return normalizeColorNames(normalized);
 }
 
 function paletteToTokens(swatches: Record<string, string>): ThemeTokenMap {
@@ -121,12 +142,12 @@ function paletteToTokens(swatches: Record<string, string>): ThemeTokenMap {
   const secondary = values[1] ?? primary;
   const accent = values[2] ?? primary;
   return {
-    '--primary-color': primary,
+    '--theme-primary-color': primary,
     '--primary-default': primary,
-    '--secondary-color': secondary,
-    '--accent-color': accent,
-    // `--focus-ring` stays the theme's contrast role (≥ 3:1) — a brand primary may not pass.
-    '--button-fg': resolveButtonForeground('dark', primary, secondary),
+    '--theme-secondary-color': secondary,
+    '--theme-accent-color': accent,
+    // `--theme-focus-ring-color` stays the theme's contrast role (≥ 3:1) — a brand primary may not pass.
+    '--theme-button-fg-color': resolveButtonForeground('dark', primary, secondary),
   };
 }
 
@@ -140,34 +161,35 @@ function definitionToTokens(definition: ThemeDefinition): ThemeTokenMap {
   const { colors } = definition;
   if (colors) {
     if (colors.primary) {
-      patch['--primary-color'] = colors.primary;
+      patch['--theme-primary-color'] = colors.primary;
       patch['--primary-default'] = colors.primary;
-      const secondary = colors.secondary ?? getToken('--secondary-color') ?? colors.primary;
-      patch['--button-fg'] = resolveButtonForeground('dark', colors.primary, secondary);
+      const secondary = colors.secondary ?? getToken('--theme-secondary-color') ?? colors.primary;
+      patch['--theme-button-fg-color'] = resolveButtonForeground('dark', colors.primary, secondary);
     }
-    if (colors.secondary) patch['--secondary-color'] = colors.secondary;
-    if (colors.accent) patch['--accent-color'] = colors.accent;
-    else if (colors.primary) patch['--accent-color'] = colors.primary;
-    if (colors.paper) patch['--paper'] = colors.paper;
-    if (colors.ink) patch['--ink'] = colors.ink;
-    if (colors.background) patch['--main-background'] = colors.background;
-    if (colors.backgroundSecondary) patch['--main-background-secondary'] = colors.backgroundSecondary;
-    if (colors.surface) patch['--surface-color'] = colors.surface;
-    if (colors.surfaceVariant) patch['--surface-variant'] = colors.surfaceVariant;
+    if (colors.secondary) patch['--theme-secondary-color'] = colors.secondary;
+    if (colors.accent) patch['--theme-accent-color'] = colors.accent;
+    else if (colors.primary) patch['--theme-accent-color'] = colors.primary;
+    if (colors.paper) patch['--theme-paper-color'] = colors.paper;
+    if (colors.ink) patch['--theme-ink-color'] = colors.ink;
+    if (colors.background) patch['--theme-main-background-color'] = colors.background;
+    if (colors.backgroundSecondary) patch['--theme-main-background-secondary-color'] = colors.backgroundSecondary;
+    if (colors.surface) patch['--theme-surface-color'] = colors.surface;
+    if (colors.surfaceVariant) patch['--theme-surface-variant-color'] = colors.surfaceVariant;
   }
 
   Object.assign(patch, textToTokens(definition.text));
   Object.assign(patch, ratiosToTokens(definition.ratios));
   Object.assign(patch, breakpointsToTokens(definition.breakpoints));
 
-  return patch;
+  // Old colour keys in `definition.tokens` go out under their `--theme-…-color` names only (R-T8c).
+  return normalizeColorNames(patch);
 }
 
 function textToTokens(text?: ThemeTextSettings): ThemeTokenMap {
   if (!text) return {};
   const patch: ThemeTokenMap = {};
-  if (text.color) patch['--text-color'] = text.color;
-  if (text.secondary) patch['--text-secondary-color'] = text.secondary;
+  if (text.color) patch['--theme-text-color'] = text.color;
+  if (text.secondary) patch['--theme-text-secondary-color'] = text.secondary;
   return patch;
 }
 
@@ -193,9 +215,12 @@ function breakpointsToTokens(breakpoints?: ThemeBreakpoints): ThemeTokenMap {
 }
 
 function seedBuiltins(): void {
-  // Built-in packs never pin the runtime-derived roles inline (five-input model).
-  packs.set(BUILTIN_LIGHT, withoutDerivedRoles(lightCssVariables) as ThemeTokenMap);
-  packs.set(BUILTIN_DARK, withoutDerivedRoles(darkCssVariables) as ThemeTokenMap);
+  // The built-in light / dark packs never pin a mode colour or derived role inline: the stylesheet
+  // switches every colour per mode (R-T3d), so they carry only what the colour-mode writer writes.
+  // The palette packs seeded below do pin mode colours and derived roles (`paletteToTokens`), which
+  // a mode switch drops — see the TODO (docs/web/features/interaction-redesign.md#todo).
+  packs.set(BUILTIN_LIGHT, getInlineTokensForMode('light') as ThemeTokenMap);
+  packs.set(BUILTIN_DARK, getInlineTokensForMode('dark') as ThemeTokenMap);
   for (const [name, swatches] of Object.entries(palettes)) {
     packs.set(name, paletteToTokens(swatches as Record<string, string>));
   }
@@ -267,26 +292,39 @@ export const Theme = {
     return updateTokens(pack, write);
   },
 
-  /** Merge token updates (low-level path; same as `updateTokens`). */
-  update(patch: ThemeTokenMap, options: ThemeWriteOptions = {}): Readonly<ThemeTokenMap> {
-    return updateTokens(patch, withSource(options, 'theme'));
+  /**
+   * Preferences-facing paint seam: merge a token map or {@link ThemeDefinition}.
+   * Bridges default on; callers may override (e.g. Theme tests with `dryRun`).
+   */
+  apply(input: ThemeApplyInput, options: ThemeApplyOptions = {}): Readonly<ThemeTokenMap> {
+    const write = resolveApplyOptions(options);
+    const patch = isThemeDefinition(input) ? definitionToTokens(input) : normalizeTokenMap(input);
+    return updateTokens(patch, write);
   },
 
-  /** Replace the full token map (low-level path; same as `setTokens`). */
+  /**
+   * Remove names from the registry and `:root` (keeps `getToken()` and the DOM in sync).
+   * Preferences paint uses this when clearing defaults / absent background layer keys.
+   */
+  remove(names: readonly string[], options: ThemeApplyOptions = {}): Readonly<ThemeTokenMap> {
+    return removeTokens(names, resolveApplyOptions(options));
+  },
+
+  /** Replace the full token map (low-level path; same as registry `setTokens`). */
   set(tokens: ThemeTokenMap, options: ThemeWriteOptions = {}): Readonly<ThemeTokenMap> {
     return setTokens(tokens, withSource(options, 'theme'));
   },
 
   setText(text: ThemeTextSettings, options: ThemeWriteOptions = {}): Readonly<ThemeTokenMap> {
-    return Theme.update(textToTokens(text), withSource(options, 'theme:text'));
+    return Theme.apply(textToTokens(text), withSource(options, 'theme:text'));
   },
 
   setRatios(ratios: ThemeRatios, options: ThemeWriteOptions = {}): Readonly<ThemeTokenMap> {
-    return Theme.update(ratiosToTokens(ratios), withSource(options, 'theme:ratios'));
+    return Theme.apply(ratiosToTokens(ratios), withSource(options, 'theme:ratios'));
   },
 
   setBreakpoints(breakpoints: ThemeBreakpoints, options: ThemeWriteOptions = {}): Readonly<ThemeTokenMap> {
-    return Theme.update(breakpointsToTokens(breakpoints), withSource(options, 'theme:breakpoints'));
+    return Theme.apply(breakpointsToTokens(breakpoints), withSource(options, 'theme:breakpoints'));
   },
 
   /** Apply light/dark CSS maps for a resolved mode without changing mode preference storage. */

@@ -14,13 +14,13 @@ import {
 } from '../src/tokens.js';
 
 const REQUIRED_CSS_KEYS = [
-  '--primary-color',
-  '--secondary-color',
-  '--text-color',
-  '--main-background',
-  '--main-background-secondary',
-  '--primary-hover',
-  '--button-fg',
+  '--theme-primary-color',
+  '--theme-secondary-color',
+  '--theme-text-color',
+  '--theme-main-background-color',
+  '--theme-main-background-secondary-color',
+  '--theme-primary-hover-color',
+  '--theme-button-fg-color',
 ] as const;
 
 const cssDump = colorsLibrary.cssVariables;
@@ -59,8 +59,8 @@ describe('Sass-aligned token mirrors (JSON-backed)', () => {
 
   it('pins Sass primary-hover from parchment/ink adjust (pipeline golden in colors.json)', () => {
     // Values come from dart-sass `color.adjust` on $css-primary-*-hover — pin Sass output via JSON dump.
-    expect(darkCssVariables['--primary-hover']).toBe(cssDump.dark['--primary-hover']);
-    expect(lightCssVariables['--primary-hover']).toBe(cssDump.light['--primary-hover']);
+    expect(darkCssVariables['--theme-primary-hover-color']).toBe(cssDump.dark['--theme-primary-hover-color']);
+    expect(lightCssVariables['--theme-primary-hover-color']).toBe(cssDump.light['--theme-primary-hover-color']);
   });
 
   it('exposes wide Sass dump tokens on colorsLibrary.sass / named', () => {
@@ -78,8 +78,8 @@ describe('Sass-aligned token mirrors (JSON-backed)', () => {
   });
 
   it('mirrors Sass accent as complementary of primary', () => {
-    expect(lightCssVariables['--accent-color']).toBe(cssDump.light['--accent-color']);
-    expect(darkCssVariables['--accent-color']).toBe(cssDump.dark['--accent-color']);
+    expect(lightCssVariables['--theme-accent-color']).toBe(cssDump.light['--theme-accent-color']);
+    expect(darkCssVariables['--theme-accent-color']).toBe(cssDump.dark['--theme-accent-color']);
   });
 
   it('includes required CSS keys on light and dark maps', () => {
@@ -87,8 +87,8 @@ describe('Sass-aligned token mirrors (JSON-backed)', () => {
       expect(lightCssVariables[key]).toBeTruthy();
       expect(darkCssVariables[key]).toBeTruthy();
     }
-    expect(lightCssVariables['--primary-color']).toBe(themeColors.light.primary);
-    expect(darkCssVariables['--primary-color']).toBe(themeColors.dark.primary);
+    expect(lightCssVariables['--theme-primary-color']).toBe(themeColors.light.primary);
+    expect(darkCssVariables['--theme-primary-color']).toBe(themeColors.dark.primary);
   });
 
   it('omits layout ratio/breakpoint keys from mode maps (Sass media queries own those)', () => {
@@ -109,12 +109,16 @@ describe('Sass-aligned token mirrors (JSON-backed)', () => {
   });
 
   it('mirrors the accessible interaction roles from _colors.scss via JSON', () => {
-    expect(darkCssVariables['--focus-ring']).toBe(cssDump.dark['--focus-ring']);
-    expect(lightCssVariables['--focus-ring']).toBe(cssDump.light['--focus-ring']);
-    expect(darkCssVariables['--link-color']).toBe(cssDump.dark['--link-color']);
-    expect(lightCssVariables['--link-color']).toBe(cssDump.light['--link-color']);
-    expect(darkCssVariables['--form-border-color']).toBe(cssDump.dark['--form-border-color']);
-    expect(lightCssVariables['--primary-fill']).toBe(cssDump.light['--primary-fill']);
-    expect(darkCssVariables['--success-ink']).toBe(cssDump.dark['--success-ink']);
+    for (const key of [
+      '--theme-focus-ring-color',
+      '--theme-link-color',
+      '--theme-border-strong-color',
+      '--theme-primary-fill-color',
+      '--theme-success-ink-color',
+      '--theme-error-ink-color',
+    ] as const) {
+      expect(darkCssVariables[key], key).toBe(cssDump.dark[key]);
+      expect(lightCssVariables[key], key).toBe(cssDump.light[key]);
+    }
   });
 });

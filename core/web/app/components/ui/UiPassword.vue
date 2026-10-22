@@ -1,9 +1,9 @@
 <template lang="pug">
 PrimePassword(
   v-if="isPrimeVue",
-  v-bind="$attrs",
+  v-bind="_rootAttrs()",
   v-model="_model",
-  :input-id="inputId",
+  :input-id="_controlId()",
   :aria-label="ariaLabel",
   :disabled="disabled",
   :feedback="feedback",
@@ -13,7 +13,7 @@ PrimePassword(
 input.p-inputtext.p-component.p-password-input(
   v-else,
   v-bind="$attrs",
-  :id="inputId",
+  :id="_controlId()",
   type="password",
   :disabled="disabled",
   :aria-label="ariaLabel",
@@ -29,8 +29,9 @@ defineOptions({ inheritAttrs: false });
 
 const { isPrimeVue } = useUiStack();
 const _model = defineModel<string | null>({ default: null });
+const _attrs = useAttrs();
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     inputId?: string;
     ariaLabel?: string;
@@ -45,6 +46,16 @@ withDefaults(
     toggleMask: true,
   }
 );
+
+/** `input-id`, else an `id` attribute — `:id` comes after `$attrs`, so it must carry that id through. */
+function _controlId(): string | undefined {
+  return props.inputId ?? (typeof _attrs.id === 'string' ? _attrs.id : undefined);
+}
+
+/** `$attrs` minus `id`: PrimeVue puts root attrs on its wrapper, and the id belongs on the inner input. */
+function _rootAttrs(): Record<string, unknown> {
+  return Object.fromEntries(Object.entries(_attrs).filter(([key]) => key !== 'id'));
+}
 
 function _onNativeInput(event: Event): void {
   const target = event.target;

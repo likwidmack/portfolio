@@ -76,11 +76,9 @@ const _nativeClass = computed(() => {
 .p-button {
   border-radius: var(--button-radius, 2px);
   font-family: var(--font-family-mono);
-  // `max()` floors, not just rem: the theme halves --font-size-default at tablet/mobile
-  // widths (site-wide fluid type), which otherwise shrinks this rem-based label and
-  // padding down to an ~8.6px / ~24px-tall button — readable on desktop, illegible
-  // and barely tappable everywhere else.
-  font-size: max(0.75rem, 12px);
+  // The theme floors (`--type-min`, `--touch-target`): rem-based, so they grow with the reader's
+  // text size, with a px floor if they shrink it.
+  font-size: var(--type-min, max(0.75rem, 12px));
   min-height: var(--touch-target, 44px); // touch target (WCAG 2.5.5 / repo UI rule)
   font-weight: 600;
   letter-spacing: 0.16em;
@@ -96,7 +94,7 @@ const _nativeClass = computed(() => {
 
   &[href] {
     text-decoration: none;
-    color: var(--text-secondary-color, var(--button-fg));
+    color: var(--theme-text-secondary-color, var(--theme-button-fg-color));
 
     &:hover,
     &:focus,
@@ -105,29 +103,39 @@ const _nativeClass = computed(() => {
     }
   }
 
+  // Theme `focus-ring-shadow`: the 3px glow (the same ring as native buttons) plus a transparent
+  // outline that forced-colors mode repaints, since it drops the glow.
   &:focus-visible,
   &:focus {
-    box-shadow:
-      0 0 0 3px var(--focus-ring),
-      var(--button-shadow-hover, var(--button-shadow));
+    @include focus-ring-shadow(
+      0 0 0 3px var(--theme-focus-ring-color),
+      var(--button-shadow-hover, var(--button-shadow))
+    );
   }
 
-  &:not([disabled]):not(.p-button-text):not(.p-button-link):not(.p-button-outlined) {
-    color: var(--button-secondary-fg, var(--button-fg));
+  // Filled status buttons take the theme's status text (the mode paper), not the primary ink.
+  &:not([disabled]):not(.p-button-text):not(.p-button-link):not(.p-button-outlined):not(.p-button-success):not(
+      .p-button-warn
+    ):not(.p-button-warning):not(.p-button-danger):not(.p-button-info) {
+    color: var(--theme-button-secondary-fg-color, var(--theme-button-fg-color));
   }
 
-  &.p-button-outlined {
-    text-shadow: 1px -1px 1px color-mix(in srgb, var(--text-color) 76%, transparent);
+  // Outlined status buttons keep the theme's status ink / hue (`pv-outline-tone`); the rest hover in
+  // the primary ink (≥ 4.5:1 on the theme's hover wash) — not a palette mix that is not checked.
+  &.p-button-outlined:not(.p-button-success):not(.p-button-warn):not(.p-button-warning):not(.p-button-danger):not(
+      .p-button-info
+    ) {
+    text-shadow: 1px -1px 1px color-mix(in srgb, var(--theme-text-color) 76%, transparent);
 
     &:hover,
     &:focus-visible {
-      border-color: var(--portfolio-rose, var(--primary-color));
-      color: var(--portfolio-rose, var(--primary-color));
+      border-color: var(--portfolio-rose-color, var(--theme-primary-color));
+      color: var(--theme-primary-ink-color);
     }
   }
 
   &.p-button-text {
-    text-shadow: 1px -1px 1px color-mix(in srgb, var(--primary-inverted) 52%, transparent);
+    text-shadow: 1px -1px 1px color-mix(in srgb, var(--theme-primary-inverted-color) 52%, transparent);
     box-shadow: none;
   }
 }

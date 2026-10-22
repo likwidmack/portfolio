@@ -13,21 +13,20 @@ export type ThemeModeChange = {
 export type ThemeModeListener = (change: ThemeModeChange) => void;
 
 export type InitThemeModeOptions = ThemeBridgeOptions & {
-  /** Initial preference when storage is empty. */
+  /** Initial preference (used as-is when no `storageKey`, else when storage is empty). */
   preference?: ThemeModePreference;
-  /** localStorage key for explicit light/dark; `system` clears it. */
+  /** Opt-in localStorage key for the preference; omit to keep Theme storage-free. `system` clears it. */
   storageKey?: string;
   /** When true, re-apply on `prefers-color-scheme` changes while preference is `system`. */
   listenToSystem?: boolean;
 };
 
-const STORAGE_KEY_DEFAULT = 'tgmc-theme-mode';
 const MEDIA_QUERY = '(prefers-color-scheme: dark)';
 
 let preference: ThemeModePreference = 'system';
 let resolved: ThemeResolvedMode = 'dark';
 let bridges: ThemeBridgeOptions = { primevue: true, foundation: true };
-let storageKey = STORAGE_KEY_DEFAULT;
+let storageKey: string | null = null;
 let mediaQueryList: MediaQueryList | null = null;
 let mediaListener: ((event: MediaQueryListEvent) => void) | null = null;
 const listeners = new Set<ThemeModeListener>();
@@ -95,7 +94,7 @@ function notify(change: ThemeModeChange): void {
 function applyResolvedMode(nextResolved: ThemeResolvedMode, source = 'color-mode'): ThemeModeChange {
   resolved = nextResolved;
   // Derived roles (surfaces, text, borders, status inks) stay with the stylesheet so a live
-  // `--paper` / `--ink` change reaches them — see `DERIVED_ROLE_TOKENS`.
+  // paper / ink change (`--theme-paper-{light,dark}-color` …) reaches them — see `DERIVED_ROLE_TOKENS`.
   const tokens = setTokens(getInlineTokensForMode(nextResolved), {
     ...bridges,
     source,
@@ -142,7 +141,7 @@ export function getResolvedThemeMode(): ThemeResolvedMode {
 }
 
 /**
- * Set the mode preference, persist when explicit, apply tokens + DOM signals.
+ * Set the mode preference and apply tokens + DOM signals. Persists only when `initThemeMode` was given a `storageKey`.
  * Pass `system` to follow OS preference and clear storage override.
  */
 export function setThemeMode(
@@ -158,7 +157,7 @@ export function setThemeMode(
       ...(options.dryRun !== undefined ? { dryRun: options.dryRun } : {}),
     };
   }
-  if (options.persist !== false) {
+  if (storageKey && options.persist !== false) {
     writeStoredPreference(storageKey, next);
   }
   return applyResolvedMode(resolveThemeMode(next), 'color-mode');
@@ -182,9 +181,9 @@ export function initThemeMode(options: InitThemeModeOptions = {}): ThemeModeChan
     foundation: options.foundation ?? true,
     dryRun: options.dryRun,
   };
-  storageKey = options.storageKey ?? STORAGE_KEY_DEFAULT;
+  storageKey = options.storageKey ?? null;
 
-  const stored = readStoredPreference(storageKey);
+  const stored = storageKey ? readStoredPreference(storageKey) : null;
   preference = stored ?? options.preference ?? 'system';
 
   if (options.listenToSystem !== false) {

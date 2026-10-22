@@ -1,49 +1,37 @@
-import { Color, DEFAULT_PAPER_INK, palettes, sassColors, themeColors } from '@tgmc/theme';
+import { adjustLightnessFor, Color, DEFAULT_PAPER_INK, palettes, sassColors, themeColors } from '@tgmc/theme';
 import { describe, expect, it } from 'vitest';
 
 import {
-  ACCENT_KEY,
-  ACCENT_PRESETS,
-  applyStyleSetup,
-  BACKGROUND_CUSTOM_KEY,
   BACKGROUND_MODES,
+  backgroundCustomFor,
   BRAND_PACKS,
-  BRAND_ROLES_KEY,
   brandRolesFromPack,
-  buildAccentTokens,
-  buildBrandTokens,
-  buildPersonalizationFoucScript,
-  buildPresetBackgroundTokens,
-  createStyleSetupId,
-  DEFAULT_ACCENT_COLOR,
   DEFAULT_ACCENT_ID,
   DEFAULT_BACKGROUND_CUSTOM,
   DEFAULT_BACKGROUND_MODE,
   defaultBrandRoles,
-  deleteStyleSetup,
-  loadActiveStyleSetupId,
-  loadBrandRoles,
-  loadPersonalization,
-  loadStyleSetups,
-  MOTION_KEY,
-  persistActiveStyleSetupId,
-  persistBrandRoles,
-  persistStyleSetups,
-  PORTFOLIO_INK,
-  PORTFOLIO_IVORY,
-  resetPersonalization,
-  resolveAccentId,
+  defaultPaperInk,
+  paintedBackgroundCustom,
   resolveBackgroundCustom,
-  resolveBackgroundMode,
-  resolveBrandRolesState,
-  snapshotFromLive,
   STYLE_SETUP_ACTIVE_KEY,
   STYLE_SETUPS_KEY,
-  upsertStyleSetup,
   withAccent,
   withPrimary,
   withSecondary,
-} from '../shared/personalization';
+} from '../shared/preferences';
+import {
+  COLOR_TOKENS_KEY,
+  LEGACY_KEYS,
+  PORTFOLIO_INK,
+  PORTFOLIO_IVORY,
+  resolveAccentId,
+  resolveBackgroundMode,
+  resolveBrandRolesState,
+} from '../shared/preferences/document';
+import { foucScript } from '../shared/preferences/fouc';
+import { readLegacyPreferences } from '../shared/preferences/legacy';
+import { buildBrandTokens, buildPresetBackgroundTokens, RUNTIME_COLOR_TOKEN_NAMES } from '../shared/preferences/paint';
+import { resetPreferenceStorage } from '../shared/preferences/storage';
 
 describe('portfolio personalization', () => {
   it('builds palette packs and light/dark single colors from theme JSON', () => {
@@ -51,7 +39,6 @@ describe('portfolio personalization', () => {
     const colorsOnly = BRAND_PACKS.filter((pack) => pack.kind === 'color');
     expect(palettesOnly.map((pack) => pack.id)).toEqual(Object.keys(palettes));
     expect(colorsOnly.length).toBeGreaterThan(0);
-    expect(ACCENT_PRESETS).toEqual(BRAND_PACKS);
     expect(DEFAULT_ACCENT_ID).toBeNull();
     expect(BRAND_PACKS.some((pack) => pack.id === 'ember' || pack.id === 'crimson')).toBe(false);
     const red = colorsOnly.find((pack) => pack.id === 'colorRed');
@@ -62,52 +49,63 @@ describe('portfolio personalization', () => {
     const redRoles = brandRolesFromPack('colorRed', 'dark');
     const redStyle = buildPresetBackgroundTokens('colorRed', redRoles, 'dark');
     expect(
-      Color.contrastRatio(redStyle['--portfolio-primary-light']!, DEFAULT_PAPER_INK.light.paper)
+      Color.contrastRatio(redStyle['--portfolio-primary-light-color']!, DEFAULT_PAPER_INK.light.paper)
     ).toBeGreaterThanOrEqual(3);
     expect(
-      Color.contrastRatio(redStyle['--portfolio-primary-dark']!, DEFAULT_PAPER_INK.dark.paper)
+      Color.contrastRatio(redStyle['--portfolio-primary-dark-color']!, DEFAULT_PAPER_INK.dark.paper)
+    ).toBeGreaterThanOrEqual(3);
+    // The background triad is the painted brand triad (owner ruling), so it is held to 3:1 on paper.
+    expect(redStyle['--portfolio-background-primary-light-color']).toBe(redStyle['--portfolio-primary-light-color']);
+    expect(redStyle['--portfolio-background-primary-dark-color']).toBe(redStyle['--portfolio-primary-dark-color']);
+    expect(
+      Color.contrastRatio(redStyle['--portfolio-secondary-light-color']!, DEFAULT_PAPER_INK.light.paper)
     ).toBeGreaterThanOrEqual(3);
     expect(
-      Color.contrastRatio(redStyle['--portfolio-background-primary-light']!, DEFAULT_PAPER_INK.light.ink)
-    ).toBeGreaterThanOrEqual(4.5);
-    expect(
-      Color.contrastRatio(redStyle['--portfolio-background-primary-dark']!, DEFAULT_PAPER_INK.dark.ink)
-    ).toBeGreaterThanOrEqual(4.5);
-    expect(
-      Color.contrastRatio(redStyle['--portfolio-secondary-light']!, DEFAULT_PAPER_INK.light.paper)
+      Color.contrastRatio(redStyle['--portfolio-accent-dark-color']!, DEFAULT_PAPER_INK.dark.paper)
     ).toBeGreaterThanOrEqual(3);
     expect(
-      Color.contrastRatio(redStyle['--portfolio-accent-dark']!, DEFAULT_PAPER_INK.dark.paper)
+      Color.contrastRatio(redStyle['--portfolio-background-secondary-light-color']!, DEFAULT_PAPER_INK.light.paper)
     ).toBeGreaterThanOrEqual(3);
     expect(
-      Color.contrastRatio(redStyle['--portfolio-background-secondary-light']!, DEFAULT_PAPER_INK.light.ink)
-    ).toBeGreaterThanOrEqual(4.5);
-    expect(
-      Color.contrastRatio(redStyle['--portfolio-background-accent-dark']!, DEFAULT_PAPER_INK.dark.ink)
-    ).toBeGreaterThanOrEqual(4.5);
-    expect(redStyle['--portfolio-primary']?.toLowerCase()).toBe(redStyle['--portfolio-primary-dark']?.toLowerCase());
+      Color.contrastRatio(redStyle['--portfolio-background-accent-dark-color']!, DEFAULT_PAPER_INK.dark.paper)
+    ).toBeGreaterThanOrEqual(3);
+    expect(redStyle['--portfolio-primary-color']?.toLowerCase()).toBe(
+      redStyle['--portfolio-primary-dark-color']?.toLowerCase()
+    );
     const night = buildPresetBackgroundTokens(
       'darkNightGoldenDay',
       brandRolesFromPack('darkNightGoldenDay', 'dark'),
       'dark'
     );
-    expect(night['--portfolio-background-primary-light']).toBeTruthy();
+    expect(night['--portfolio-background-primary-light-color']).toBeTruthy();
     expect(night['--portfolio-background-image']).toContain('radial-gradient');
     expect(night['--portfolio-background-image-dark']).toContain('radial-gradient');
-    expect(night['--portfolio-background-accent']?.toLowerCase()).not.toBe(redRoles.primary.toLowerCase());
+    expect(night['--portfolio-background-accent-color']?.toLowerCase()).not.toBe(redRoles.primary.toLowerCase());
     expect(buildPresetBackgroundTokens(null, redRoles)).toEqual({});
     for (const preset of BRAND_PACKS) {
-      const roles = brandRolesFromPack(preset.id, 'dark');
-      const dark = buildBrandTokens(roles, 'dark');
-      const light = buildBrandTokens(brandRolesFromPack(preset.id, 'light'), 'light');
-      expect(dark['--primary-color']!.toLowerCase()).toBe(preset.primary.dark.toLowerCase());
-      expect(dark['--accent-color']!.toLowerCase()).not.toBe(dark['--primary-color']!.toLowerCase());
-      // Focus ring stays on the theme's AA role (--focus-ring from @tgmc/theme), not the brand primary.
-      expect(dark['--focus-ring']).toBeUndefined();
-      expect(light['--primary-color']!.toLowerCase()).toBe(preset.primary.light.toLowerCase());
-      expect(light['--button-fg']).toMatch(/^#/i);
-      expect(buildAccentTokens(preset.id, 'dark')['--primary-color']!.toLowerCase()).toBe(
-        preset.primary.dark.toLowerCase()
+      // Both modes' variations from the pack's light / dark pair, whichever mode picked it (R-T3b).
+      const dark = buildBrandTokens(brandRolesFromPack(preset.id, 'dark'), 'dark', undefined, preset.id);
+      const light = buildBrandTokens(brandRolesFromPack(preset.id, 'light'), 'light', undefined, preset.id);
+      expect(light).toEqual(dark);
+      for (const mode of ['light', 'dark'] as const) {
+        const { paper, ink } = DEFAULT_PAPER_INK[mode];
+        expect(dark[`--theme-primary-${mode}-color`]).toBe(
+          adjustLightnessFor(preset.primary[mode], paper, 3).toLowerCase()
+        );
+        expect(Color.contrastRatio(dark[`--theme-accent-${mode}-color`]!, paper)).toBeGreaterThanOrEqual(3);
+        expect(Color.contrastRatio(ink, dark[`--theme-secondary-${mode}-background-color`]!)).toBeGreaterThanOrEqual(
+          4.5
+        );
+        expect(Color.contrastRatio('#ffffff', dark[`--theme-primary-fill-${mode}-color`]!)).toBeGreaterThanOrEqual(4.5);
+      }
+      expect(
+        Color.contrastRatio(dark['--theme-button-fg-dark-color']!, dark['--theme-primary-dark-color']!)
+      ).toBeGreaterThanOrEqual(4.5);
+      // Focus ring stays on the theme's AA focus variation, never the brand primary.
+      expect(dark['--theme-focus-light-color']).toBeUndefined();
+      expect(dark['--primary-color']).toBeUndefined();
+      expect(buildBrandTokens(brandRolesFromPack(preset.id, 'dark'), 'dark', defaultPaperInk(), preset.id)).toEqual(
+        dark
       );
     }
   });
@@ -144,40 +142,33 @@ describe('portfolio personalization', () => {
     expect(resolveAccentId('colorRed')).toBe('colorRed');
   });
 
-  it('builds FOUC script with brand roles (not accent=primary)', () => {
-    const script = buildPersonalizationFoucScript();
-    expect(script).toContain(BRAND_ROLES_KEY);
-    expect(script).toContain(DEFAULT_ACCENT_COLOR);
-    expect(script).toContain('--secondary-color');
-    expect(script).toContain('--accent-color');
-    expect(script).toContain('--button-fg');
+  it('builds the FOUC script from the persisted variation map (no brand-role maths before paint)', () => {
+    const script = foucScript();
+    expect(script).toContain(`getItem('${COLOR_TOKENS_KEY}')`);
+    for (const name of RUNTIME_COLOR_TOKEN_NAMES) expect(script).toContain(name);
+    // R-T3e: the old runtime names and the in-head button-ink picker are gone.
+    for (const old of ["'--primary-color'", "'--secondary-color'", "'--accent-color'", "'--button-fg'"])
+      expect(script).not.toContain(old);
+    expect(script).not.toContain('function bf(');
     expect(script).not.toContain('coral');
-    for (const preset of BRAND_PACKS) {
-      expect(script).toContain(`${preset.id}:`);
-    }
   });
 
-  it('keeps FOUC button-fg aligned with buildBrandTokens / pickContrastingInk', () => {
-    const script = buildPersonalizationFoucScript();
-    // Evaluate the embedded bf() helper the same way the IIFE does.
-    const helperMatch = script.match(/function bf\(p\)\{[\s\S]*?return cr\(li,bg\)>=cr\(di,bg\)\?'[^']+':'[^']+'\};/);
-    expect(helperMatch?.[0]).toBeTruthy();
-
-    // eslint-disable-next-line no-unused-vars -- function type parameter
-    type ButtonFg = (hex: string) => string;
-    const bf = new Function(`${helperMatch![0]}; return bf;`)() as ButtonFg;
-
-    const nearThreshold = ['#0077dd', '#4466ff', '#dc4256', '#ff6b35', '#ac1922'];
-    for (const primary of nearThreshold) {
-      const roles = resolveBrandRolesState(primary);
-      const tokens = buildBrandTokens(roles, 'dark');
-      expect(bf(primary).toLowerCase()).toBe(tokens['--button-fg']!.toLowerCase());
-    }
-
-    for (const preset of BRAND_PACKS) {
-      const roles = brandRolesFromPack(preset.id, 'dark');
-      const tokens = buildBrandTokens(roles, 'dark');
-      expect(bf(roles.primary).toLowerCase()).toBe(tokens['--button-fg']!.toLowerCase());
+  it('keeps button text ≥ 4.5:1 on its fill for near-threshold picks and every pack (dark ink / light white fill)', () => {
+    const picks = ['#0077dd', '#4466ff', '#dc4256', '#ff6b35', '#ac1922', '#777777', '#d9531d'];
+    const rolesList = [
+      ...picks.map((p) => ({ roles: resolveBrandRolesState(p), pack: null as string | null })),
+      ...BRAND_PACKS.map((preset) => ({ roles: brandRolesFromPack(preset.id, 'dark'), pack: preset.id })),
+    ];
+    for (const { roles, pack } of rolesList) {
+      const tokens = buildBrandTokens(roles, 'dark', undefined, pack);
+      expect(
+        Color.contrastRatio(tokens['--theme-button-fg-dark-color']!, tokens['--theme-primary-dark-color']!),
+        `${pack ?? roles.primary} dark`
+      ).toBeGreaterThanOrEqual(4.5);
+      expect(
+        Color.contrastRatio('#ffffff', tokens['--theme-primary-fill-light-color']!),
+        `${pack ?? roles.primary} light fill`
+      ).toBeGreaterThanOrEqual(4.5);
     }
   });
 
@@ -191,37 +182,23 @@ describe('portfolio personalization', () => {
     expect(defaults.secondary.toLowerCase()).toBe(themeColors.dark.secondary.toLowerCase());
   });
 
-  it('persists brand roles and migrates legacy accent packs on load', () => {
+  it('reads legacy accent packs that no longer exist as no pack and the default roles', () => {
     const values = new Map<string, string>([
-      [ACCENT_KEY, 'crimson'],
-      [MOTION_KEY, 'reduced'],
+      [LEGACY_KEYS.accent, 'crimson'],
+      [LEGACY_KEYS.motion, 'reduced'],
     ]);
-    const storage = {
-      getItem: (key: string) => values.get(key) ?? null,
-      setItem: (key: string, value: string) => {
-        values.set(key, value);
-      },
-      removeItem: (key: string) => values.delete(key),
-    };
-    const loaded = loadPersonalization(storage);
+    const loaded = readLegacyPreferences({ getItem: (key: string) => values.get(key) ?? null });
     expect(loaded.accent).toBeNull();
     expect(loaded.brandRoles.primary.toLowerCase()).toBe(themeColors.dark.primary.toLowerCase());
     expect(loaded.motion).toBe('reduced');
     expect(loaded.background).toBe('particles');
-
-    persistBrandRoles(storage, defaultBrandRoles('dark'));
-    expect(values.has(BRAND_ROLES_KEY)).toBe(true);
-    expect(loadBrandRoles(storage).primary).toBe(defaultBrandRoles('dark').primary);
-
-    resetPersonalization(storage);
-    expect(values.size).toBe(0);
   });
 
-  it('falls back legacy coral storage to crimson on load', () => {
+  it('falls back legacy coral storage to no pack', () => {
     const storage = {
-      getItem: (key: string) => (key === ACCENT_KEY ? 'coral' : null),
+      getItem: (key: string) => (key === LEGACY_KEYS.accent ? 'coral' : null),
     };
-    expect(loadPersonalization(storage)).toMatchObject({
+    expect(readLegacyPreferences(storage)).toMatchObject({
       accent: null,
       motion: 'system',
       background: 'particles',
@@ -238,91 +215,53 @@ describe('portfolio personalization', () => {
     expect(resolveBackgroundCustom('#abcdef').toLowerCase()).toBe('#abcdef');
   });
 
-  it('loads and resets custom background color separately from mode', () => {
+  it('an unpicked custom colour follows the active mode paper', () => {
+    const paperInk = defaultPaperInk();
+    for (const mode of ['light', 'dark'] as const) {
+      expect(backgroundCustomFor(DEFAULT_BACKGROUND_CUSTOM, paperInk, mode)).toBe(paperInk[mode].paper);
+      const doc = { backgroundCustom: DEFAULT_BACKGROUND_CUSTOM, paperInk } as Parameters<
+        typeof paintedBackgroundCustom
+      >[0];
+      expect(paintedBackgroundCustom(doc, mode)).toBe(paperInk[mode].paper);
+    }
+    expect(backgroundCustomFor('#112233', paperInk, 'light')).toBe('#112233');
+  });
+
+  it('paints the custom fill so the active mode ink reads on it (≥ 4.5:1)', () => {
+    const paperInk = defaultPaperInk();
+    for (const backgroundCustom of [DEFAULT_BACKGROUND_CUSTOM, '#ffffff', '#facc15', '#1543fa']) {
+      for (const mode of ['light', 'dark'] as const) {
+        const doc = { backgroundCustom, paperInk } as Parameters<typeof paintedBackgroundCustom>[0];
+        const painted = paintedBackgroundCustom(doc, mode);
+        expect(Color.contrastRatio(paperInk[mode].ink, painted)).toBeGreaterThanOrEqual(4.5);
+      }
+    }
+  });
+
+  it('reads and resets the legacy custom background color separately from mode', () => {
     const values = new Map<string, string>([
-      ['tgmc-background', 'custom'],
-      [BACKGROUND_CUSTOM_KEY, '#112233'],
+      [LEGACY_KEYS.background, 'custom'],
+      [LEGACY_KEYS.backgroundCustom, '#112233'],
     ]);
     const storage = {
       getItem: (key: string) => values.get(key) ?? null,
       removeItem: (key: string) => values.delete(key),
     };
-    const loaded = loadPersonalization(storage);
+    const loaded = readLegacyPreferences(storage);
     expect(loaded.background).toBe('custom');
     expect(loaded.backgroundCustom.toLowerCase()).toBe('#112233');
-    resetPersonalization(storage);
-    expect(values.has(BACKGROUND_CUSTOM_KEY)).toBe(false);
+    expect(loaded.mode).toBe('system');
+    resetPreferenceStorage(storage);
+    expect(values.has(LEGACY_KEYS.backgroundCustom)).toBe(false);
   });
 
-  it('round-trips style setups and applies them onto live preference keys', () => {
-    const values = new Map<string, string>();
-    const storage = {
-      getItem: (key: string) => values.get(key) ?? null,
-      setItem: (key: string, value: string) => {
-        values.set(key, value);
-      },
-      removeItem: (key: string) => values.delete(key),
-    };
-
-    const setup = snapshotFromLive({
-      name: 'Studio dusk',
-      brandRoles: brandRolesFromPack('colorRed', 'dark'),
-      motion: 'playful',
-      background: 'grid',
-      backgroundCustom: '#112233',
-      mode: 'dark',
-    });
-    expect(setup.id).toBeTruthy();
-    expect(createStyleSetupId()).not.toBe(setup.id);
-
-    persistStyleSetups(storage, upsertStyleSetup([], setup));
-    persistActiveStyleSetupId(storage, setup.id);
-    expect(loadStyleSetups(storage)).toHaveLength(1);
-    expect(loadActiveStyleSetupId(storage)).toBe(setup.id);
-
-    const applied = applyStyleSetup(storage, setup);
-    expect(applied.motion).toBe('playful');
-    expect(applied.background).toBe('grid');
-    expect(loadBrandRoles(storage).primary.toLowerCase()).toBe(setup.brandRoles.primary.toLowerCase());
-    expect(values.get(MOTION_KEY)).toBe('playful');
-    expect(values.get(BACKGROUND_CUSTOM_KEY)?.toLowerCase()).toBe('#112233');
-
-    const renamed = snapshotFromLive({ ...setup, name: 'Studio dusk v2', id: setup.id });
-    persistStyleSetups(storage, upsertStyleSetup(loadStyleSetups(storage), renamed));
-    expect(loadStyleSetups(storage)[0]?.name).toBe('Studio dusk v2');
-
-    const deleted = deleteStyleSetup(loadStyleSetups(storage), setup.id, setup.id);
-    expect(deleted.setups).toHaveLength(0);
-    expect(deleted.clearedActive).toBe(true);
-    persistStyleSetups(storage, deleted.setups);
-    if (deleted.clearedActive) persistActiveStyleSetupId(storage, null);
-    expect(loadActiveStyleSetupId(storage)).toBeNull();
-  });
-
-  it('returns an empty setup list for corrupt JSON without touching live prefs', () => {
-    const values = new Map<string, string>([
-      [STYLE_SETUPS_KEY, '{not-json'],
-      [BRAND_ROLES_KEY, JSON.stringify(defaultBrandRoles('dark'))],
-    ]);
-    const storage = {
-      getItem: (key: string) => values.get(key) ?? null,
-    };
-    expect(loadStyleSetups(storage)).toEqual([]);
-    expect(loadBrandRoles(storage).primary).toBe(defaultBrandRoles('dark').primary);
-  });
-
-  it('clears style setup keys on resetPersonalization', () => {
+  it('clears style setup keys on resetPreferenceStorage', () => {
     const values = new Map<string, string>([
       [STYLE_SETUPS_KEY, '[]'],
       [STYLE_SETUP_ACTIVE_KEY, 'abc'],
-      [MOTION_KEY, 'system'],
+      [LEGACY_KEYS.motion, 'system'],
     ]);
-    const storage = {
-      getItem: (key: string) => values.get(key) ?? null,
-      removeItem: (key: string) => values.delete(key),
-    };
-    resetPersonalization(storage);
-    expect(values.has(STYLE_SETUPS_KEY)).toBe(false);
-    expect(values.has(STYLE_SETUP_ACTIVE_KEY)).toBe(false);
+    resetPreferenceStorage({ removeItem: (key: string) => void values.delete(key) });
+    expect(values.size).toBe(0);
   });
 });

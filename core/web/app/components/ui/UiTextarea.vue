@@ -2,8 +2,8 @@
 PrimeTextarea(
   v-if="isPrimeVue",
   v-bind="$attrs",
+  :id="_controlId()",
   v-model="_model",
-  :id="inputId",
   :name="name",
   :aria-label="ariaLabel",
   :placeholder="placeholder",
@@ -15,7 +15,7 @@ PrimeTextarea(
 textarea.p-inputtextarea.p-inputtext.p-component(
   v-else,
   v-bind="$attrs",
-  :id="inputId",
+  :id="_controlId()",
   :name="name",
   :aria-label="ariaLabel",
   :placeholder="placeholder",
@@ -32,8 +32,9 @@ defineOptions({ inheritAttrs: false });
 
 const { isPrimeVue } = useUiStack();
 const _model = defineModel<string | null>({ default: null });
+const _attrs = useAttrs();
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     name?: string;
     inputId?: string;
@@ -49,6 +50,11 @@ withDefaults(
     disabled: false,
   }
 );
+
+/** `input-id`, else an `id` attribute — `:id` comes after `$attrs`, so it must carry that id through. */
+function _controlId(): string | undefined {
+  return props.inputId ?? (typeof _attrs.id === 'string' ? _attrs.id : undefined);
+}
 
 function _onNativeInput(event: Event): void {
   const target = event.target;

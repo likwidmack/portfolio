@@ -26,6 +26,10 @@ The default entry must stay free of `window` / `document` / `localStorage` at **
 - `isClass(x)` — object/function with a callable `constructor` (note: many plain objects qualify because `Object` is a function)
 - `isNodeEnv()` / `isBrowserEnv()` — safe try/catch detection
 
+### `resolveDataBackend`
+
+`resolveDataBackend(env = process.env)` returns `'sqlite' | 'postgres' | 'dynamodb'` (`DATA_BACKENDS`, `DataBackend`). `DATA_BACKEND` (trimmed, case-insensitive) wins; invalid values throw `Invalid DATA_BACKEND "…": expected one of sqlite, postgres, dynamodb`. When unset, `SYS_ENV` decides (a non-blank `E2E_STORE_SYS_ENV` stands in for it, the same override the stores use): `development` / `remote` / `test` / `production` → `dynamodb`, anything else → `sqlite` (that per-`SYS_ENV` default is internal; call `resolveDataBackend({ SYS_ENV })` to get it). Node entry only; used by `core/web/server/db/*` and `@tgmc/media-nuxt`. See [data-stores.md](../web/data-stores.md#backend-selection-data_backend).
+
 ### `deepAssign` / `deepSet`
 
 `deepAssign(root, ...sources)` mutates `root`:

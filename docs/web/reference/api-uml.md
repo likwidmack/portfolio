@@ -87,13 +87,13 @@ classDiagram
 
 ### Adapter selection
 
-| `SYS_ENV` / store env | MessageStore               | BlogPostStore    |
-| --------------------- | -------------------------- | ---------------- |
-| `local`               | SQLite `data/local.sqlite` | SQLite           |
-| `development`         | Postgres                   | Postgres         |
-| `test` / `production` | DynamoDB `Messages`        | DynamoDB `Posts` |
+| `DATA_BACKEND` (or its `SYS_ENV` default)                  | MessageStore               | BlogPostStore    |
+| ---------------------------------------------------------- | -------------------------- | ---------------- |
+| `sqlite` (`local` default)                                 | SQLite `data/local.sqlite` | SQLite           |
+| `postgres` (opt-in)                                        | Postgres                   | Postgres         |
+| `dynamodb` (`development` / `test` / `production` default) | DynamoDB `Messages`        | DynamoDB `Posts` |
 
-`E2E_STORE_SYS_ENV` can override store selection (e.g. CI keeps public `SYS_ENV=test` while stores use SQLite). Factories: `core/web/server/db/index.ts`, `blog-store.ts`. Migrations: `server/db/migrations/001_messages.sql`, `002_posts.sql` via `npm run db:migrate:local`.
+`DATA_BACKEND` wins over `SYS_ENV` (resolver: `resolveDataBackend` in `@tgmc/utilities`). `E2E_STORE_SYS_ENV` can still override the `SYS_ENV` used for the default (e.g. CI keeps public `SYS_ENV=test` while stores use SQLite), and `scripts/e2e-regression.mjs` also pins `DATA_BACKEND=sqlite`. Factories: `core/web/server/db/index.ts`, `blog-store.ts`. Migrations: `server/db/migrations/001_messages.sql`, `002_posts.sql` via `npm run db:migrate:local`.
 
 ## API package diagram
 

@@ -62,7 +62,7 @@ const engagement = computed(() => galleryEngagementLabel(props.post));
   &__role {
     @include portfolio-type-meta;
     margin: 0;
-    color: var(--text-color-secondary, inherit);
+    color: inherit;
     font-size: 0.8rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
@@ -79,16 +79,16 @@ const engagement = computed(() => galleryEngagementLabel(props.post));
     display: inline-flex;
     align-items: center;
     padding: 0.15rem 0.45rem;
-    border: 1px solid var(--border-color, currentColor);
+    border: 1px solid var(--theme-border-color, currentColor);
     border-radius: var(--border-radius-pill, 999px);
-    color: var(--text-color);
+    color: var(--theme-text-color);
     @include portfolio-type-meta;
     letter-spacing: 0.08em;
   }
 
   &__stats {
     margin: 0.25rem 0 0;
-    color: var(--portfolio-teal);
+    color: var(--portfolio-teal-color);
     font-size: 0.8rem;
     font-weight: 600;
     letter-spacing: 0.04em;
@@ -105,7 +105,12 @@ const engagement = computed(() => galleryEngagementLabel(props.post));
     max-width: 100%;
     aspect-ratio: var(--media-ratio, 16 / 9);
     border-radius: 1.1rem;
+    // Media needs radius clipping; code frames keep overflow visible for the focus ring.
     overflow: hidden;
+  }
+
+  &[data-kind='code'] &__frame {
+    overflow: visible;
   }
 
   &[data-aspect='tall'] &__frame {

@@ -28,8 +28,8 @@ describe('AppBrowseToolbar', () => {
     expect(src).toContain('optionText(option)');
     // Exactly one control per facet at each width: segments hide where pickers show.
     // Range syntax pair (≤ 768 pickers / > 768 inline) so exactly one applies at 768px.
-    expect(src).toMatch(/@media \(width <= #\{\$breakpoint-tablet\}\)[\s\S]*&__groups,\s*&__kinds \{\s*display: none;/);
-    expect(src).toContain('@media (width > #{$breakpoint-tablet})');
+    expect(src).toMatch(/@media \(width <= #\{bp\(tablet\)\}\)[\s\S]*&__groups,\s*&__kinds \{\s*display: none;/);
+    expect(src).toContain('@media (width > #{bp(tablet)})');
     // Touch: 44px targets, 16px select text (no iOS zoom), no swipe-only scroll row.
     expect(src).toContain('min-height: var(--touch-target, 44px)');
     expect(src).toContain('font-size: 1rem');

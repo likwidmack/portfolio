@@ -1,0 +1,17 @@
+describe('<%= name %> accessibility audit', () => {
+  beforeEach(() => {
+    cy.visit('/');
+  });
+
+  it('has no WCAG 2.2 AA axe violations on the landing page', () => {
+    cy.runAxe({ runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa'] } }).then((results) => {
+      const summary = results.violations.map((violation) => `${violation.id}: ${violation.nodes.length} node(s)`);
+      expect(summary, 'axe violations').to.deep.equal([]);
+    });
+  });
+
+  it('moves keyboard focus to a visible skip link first', () => {
+    cy.press(Cypress.Keyboard.Keys.TAB);
+    cy.focused().should('have.class', 'ui-skip-link').and('be.visible');
+  });
+});

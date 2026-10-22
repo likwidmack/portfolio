@@ -36,6 +36,8 @@
   "scripts": {
     "build": "node ./bin/build-colors-json.mjs && tsc -p tsconfig.lib.json && node ./bin/copy-colors-json.mjs",
     "build:colors": "node ./bin/build-colors-json.mjs",
+    "build:presets": "tsc -p tsconfig.lib.json && node ./bin/build-theme-presets.mjs",
+    "build:variations": "tsc -p tsconfig.lib.json && node ./bin/build-color-variations.mjs",
     "test": "node ./bin/run-vitest.mjs"
   },
   "files": [
@@ -64,7 +66,7 @@
             },
             {
               "input": "./theme/core/src",
-              "glob": "{colors,theme-presets}.json",
+              "glob": "{colors,theme-presets,color-rename-map}.json",
               "output": "."
             }
           ]
@@ -79,8 +81,7 @@
   },
   "dependencies": {
     "@primeuix/themes": "*",
-    "@tgmc/theme-foundation": "*",
-    "@tgmc/theme-primevue": "*",
+    "foundation-sites": "6.9.0",
     "sass": "^1.85.0",
     "tslib": "^2.3.0"
   },

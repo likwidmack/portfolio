@@ -21,7 +21,7 @@
   &__custom {
     position: absolute;
     inset: 0;
-    background-color: var(--portfolio-depth-custom, var(--portfolio-background-primary));
+    background-color: var(--portfolio-depth-custom-color, var(--portfolio-background-primary-color));
     background-image: var(--portfolio-background-image);
     background-repeat: var(--portfolio-background-repeat);
     background-size: var(--portfolio-background-size);
@@ -64,6 +64,9 @@
     height: 100%;
     object-fit: cover;
     opacity: 0.6;
+    // Parent is pointer-events: none, but that is not inherited — a live <video> would
+    // otherwise sit above the page and swallow every tap while camera mode is on.
+    pointer-events: none;
   }
 
   &__camera-note {
@@ -72,10 +75,10 @@
     top: 6rem;
     z-index: 45;
     padding: 0.55rem 0.9rem;
-    border: 1px solid var(--portfolio-rule);
+    border: 1px solid var(--portfolio-rule-color);
     border-radius: 2px;
-    background: color-mix(in srgb, var(--surface-color) 82%, transparent);
-    color: var(--text-color);
+    background: color-mix(in srgb, var(--theme-surface-color) 82%, transparent);
+    color: var(--theme-text-color);
     @include portfolio-type-eyebrow;
     font-size: max(var(--type-min, 12px), 0.65rem);
     letter-spacing: 0.2em;
@@ -90,7 +93,7 @@
     height: 760px;
     margin: -380px 0 0 -750px;
     border-radius: 50%;
-    background: radial-gradient(closest-side, var(--portfolio-primary) 0%, transparent 70%);
+    background: radial-gradient(closest-side, var(--portfolio-primary-color) 0%, transparent 70%);
     filter: blur(46px);
     opacity: 0.8;
     transform: translateZ(-950px);
@@ -104,8 +107,12 @@
     height: 1900px;
     margin-left: -1800px;
     background-image:
-      linear-gradient(color-mix(in srgb, var(--portfolio-primary) 50%, transparent) 0.25rem, transparent 0.25rem),
-      linear-gradient(90deg, color-mix(in srgb, var(--portfolio-primary) 50%, transparent) 0.25rem, transparent 0.25rem);
+      linear-gradient(color-mix(in srgb, var(--portfolio-primary-color) 50%, transparent) 0.25rem, transparent 0.25rem),
+      linear-gradient(
+        90deg,
+        color-mix(in srgb, var(--portfolio-primary-color) 50%, transparent) 0.25rem,
+        transparent 0.25rem
+      );
     background-size: 92px 92px;
     animation: portfolio-grid-scroll 4.5s linear infinite;
   }
@@ -115,8 +122,8 @@
     transform-origin: 50% 100%;
     transform: rotateX(82deg);
     opacity: 0.6;
-    mask-image: linear-gradient(to top, #000 0%, transparent 74%);
-    -webkit-mask-image: linear-gradient(to top, #000 0%, transparent 74%);
+    mask-image: linear-gradient(to top, var(--theme-paper-dark-color) 0%, transparent 74%);
+    -webkit-mask-image: linear-gradient(to top, var(--theme-paper-dark-color) 0%, transparent 74%);
   }
 
   &__grid-ceil {
@@ -124,8 +131,8 @@
     transform-origin: 50% 0%;
     transform: rotateX(-82deg);
     opacity: 0.34;
-    mask-image: linear-gradient(to bottom, #000 0%, transparent 74%);
-    -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 74%);
+    mask-image: linear-gradient(to bottom, var(--theme-paper-dark-color) 0%, transparent 74%);
+    -webkit-mask-image: linear-gradient(to bottom, var(--theme-paper-dark-color) 0%, transparent 74%);
   }
 }
 
@@ -138,8 +145,8 @@
   background: radial-gradient(
     1300px 900px at 52% 42%,
     transparent 0%,
-    color-mix(in srgb, var(--main-background) 40%, transparent) 62%,
-    color-mix(in srgb, var(--main-background) 85%, transparent) 100%
+    color-mix(in srgb, var(--theme-main-background-color) 40%, transparent) 62%,
+    color-mix(in srgb, var(--theme-main-background-color) 85%, transparent) 100%
   );
 }
 

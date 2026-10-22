@@ -41,7 +41,7 @@
     @include portfolio-stack(0.25rem);
 
     strong {
-      color: var(--primary-color);
+      color: var(--theme-primary-ink-color);
       font-size: var(--font-size-lg);
       line-height: 1.25;
     }

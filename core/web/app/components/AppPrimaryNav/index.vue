@@ -1,5 +1,5 @@
 <template lang="pug">
-.primary-nav.layout(data-algo="cluster")
+.primary-nav.layout(ref="navRoot", data-algo="cluster")
   NuxtLink.primary-nav__brand(to="/", :aria-label="`${profile.names.casual} home`")
     strong TM
     span {{ profile.names.signature }}
@@ -26,11 +26,12 @@
         path(d="M12 3a9 9 0 0 1 0 18z", fill="currentColor")
     a.primary-nav__contact(v-if="showContact", :href="contactMailto", @click="onContactClick") Get in touch
     button.primary-nav__menu-trigger(
+      ref="menuTrigger",
       type="button",
       :aria-expanded="menuOpen ? 'true' : 'false'",
       aria-controls="primary-nav-panel",
       aria-label="Toggle navigation menu",
-      @click.stop="toggleMenu"
+      @click="toggleMenu"
     )
       | Menu
       span.primary-nav__menu-bars(aria-hidden="true")
@@ -45,17 +46,18 @@
           :key="item.to",
           :to="item.to",
           :aria-current="item.active ? 'page' : undefined",
-          @click="menuOpen = false"
+          @click="onSheetLinkClick(item.to)"
         ) {{ item.label }}
-        NuxtLink(v-if="showDoors", :to="splashPath", @click="menuOpen = false") Doors
-        a(v-if="showContact", :href="contactMailto", @click="onContactClick") Get in touch
+        NuxtLink(v-if="showDoors", :to="splashPath", @click="onSheetLinkClick(splashPath)") Doors
+        a(v-if="showContact", :href="contactMailto", @click="onSheetContactClick") Get in touch
 </template>
 
 <script setup lang="ts">
 import { isSplashPath, ON_VIEW_ACCESSIBLE_NAME, ON_VIEW_PATH, SPLASH_PATH } from '#shared/journey-preference';
-import { isNavItemActive, PRIMARY_NAV_ITEMS } from '#shared/primary-nav';
+import { isNavItemActive, linkStaysOnPage, PRIMARY_NAV_ITEMS } from '#shared/primary-nav';
 import { mailtoHref } from '#shared/site-person';
 
+import { type DisclosureCloseReason, focusIsInside, returnFocusToTrigger } from '../../utils/disclosure-focus';
 import { resolveEnvIndicator } from '../../utils/env-indicator';
 
 const config = useRuntimeConfig();
@@ -72,9 +74,8 @@ const envChip = computed(() =>
 );
 
 const menuOpen = ref(false);
-/** Ignore Menu clicks that ride the same gesture as closing Personalize (modal click-through). */
-const menuToggleLocked = ref(false);
-let unlockMenuToggle: number | null = null;
+const navRoot = ref<HTMLElement | null>(null);
+const menuTrigger = ref<HTMLButtonElement | null>(null);
 const personalizeOpen = usePersonalizeDialog();
 const route = useRoute();
 const isSplash = computed(() => isSplashPath(route.path));
@@ -93,9 +94,48 @@ useHead({
   titleTemplate: computed(() => (isSplash.value ? '%s' : undefined)),
 });
 
+// Why the sheet is closing, read by the focus-return watcher below (one close at a time).
+let closeReason: DisclosureCloseReason = 'other';
+
+function closeMenu(reason: DisclosureCloseReason): void {
+  if (!menuOpen.value) return;
+  closeReason = reason;
+  menuOpen.value = false;
+}
+
+// The sheet unmounts on close, so focus inside it would fall to <body>. `Esc`, a sheet link that
+// stays on the page (mailto, the current page) and any close while focus was in the sheet (except
+// a link navigation or an outside click) return it to the Menu trigger.
+// Pre-flush: runs before the re-render, while the sheet (and its focused link) still exist.
+watch(menuOpen, (isOpen, wasOpen) => {
+  const reason = closeReason;
+  closeReason = 'other';
+  if (isOpen || !wasOpen || !import.meta.client) return;
+  const focusWasInPanel = focusIsInside(document.getElementById('primary-nav-panel'));
+  nextTick(() => returnFocusToTrigger(menuTrigger.value, reason, focusWasInPanel));
+});
+
+/** Menu button: opens the sheet, or closes it as a `toggle` (focus is already on the button). */
+function toggleMenu(): void {
+  if (menuOpen.value) closeMenu('toggle');
+  else menuOpen.value = true;
+}
+
+/** Header "Get in touch" (outside the sheet): focus stays on the link, so never move it. */
 function onContactClick(): void {
   trackContact();
-  menuOpen.value = false;
+  closeMenu('navigate');
+}
+
+/** Sheet "Get in touch": `mailto:` does not navigate, so focus returns to the Menu trigger. */
+function onSheetContactClick(): void {
+  trackContact();
+  closeMenu('stay');
+}
+
+/** Sheet links: the current page's link does not navigate (focus returns to Menu); others do. */
+function onSheetLinkClick(to: string): void {
+  closeMenu(linkStaysOnPage(route.path, to) ? 'stay' : 'navigate');
 }
 
 function openPersonalize(): void {
@@ -103,46 +143,51 @@ function openPersonalize(): void {
   menuOpen.value = false;
 }
 
-function toggleMenu(): void {
-  if (menuToggleLocked.value) return;
-  menuOpen.value = !menuOpen.value;
-}
-
-function lockMenuToggleForCloseGesture(): void {
-  menuToggleLocked.value = true;
-  menuOpen.value = false;
-  if (unlockMenuToggle != null) window.clearTimeout(unlockMenuToggle);
-  // After the closing click finishes (modal click-through), unlock for the next gesture.
-  unlockMenuToggle = window.setTimeout(() => {
-    menuToggleLocked.value = false;
-    unlockMenuToggle = null;
-  }, 0);
+// Close on a click outside the nav. `composedPath()` is the path at dispatch time, so a click on
+// the Menu button (or anything inside the nav) still counts as inside even if Vue re-rendered
+// that element. The click is not stopped, so page-wide listeners (analytics, …) still see it.
+function onDocumentClick(event: MouseEvent): void {
+  if (!menuOpen.value || !navRoot.value) return;
+  if (!event.composedPath().includes(navRoot.value)) closeMenu('outside');
 }
 
 function onKeydown(event: KeyboardEvent): void {
-  if (event.key === 'Escape' && menuOpen.value) menuOpen.value = false;
+  if (event.key === 'Escape' && menuOpen.value) closeMenu('escape');
 }
 
 onMounted(() => {
+  document.addEventListener('click', onDocumentClick);
   document.addEventListener('keydown', onKeydown);
 });
 onBeforeUnmount(() => {
+  document.removeEventListener('click', onDocumentClick);
   document.removeEventListener('keydown', onKeydown);
-  if (unlockMenuToggle != null) window.clearTimeout(unlockMenuToggle);
+  if (import.meta.client) document.documentElement.removeAttribute('data-personalize-open');
 });
 
-watch(personalizeOpen, (isOpen, wasOpen) => {
-  if (isOpen) {
+// Close Menu while Personalize is open. `data-personalize-open` disables Menu hit-testing so
+// the Done click cannot fall through onto the trigger (which would open the sheet; the next
+// Cypress/user click would then toggle it closed).
+watch(
+  personalizeOpen,
+  (isOpen) => {
     menuOpen.value = false;
-    return;
-  }
-  if (wasOpen) lockMenuToggleForCloseGesture();
-});
+    if (!import.meta.client) return;
+    if (isOpen) {
+      document.documentElement.setAttribute('data-personalize-open', '');
+      return;
+    }
+    window.setTimeout(() => {
+      if (!personalizeOpen.value) document.documentElement.removeAttribute('data-personalize-open');
+    }, 0);
+  },
+  { immediate: true }
+);
 
 watch(
   () => route.path,
   () => {
-    menuOpen.value = false;
+    closeMenu('navigate');
   }
 );
 </script>
@@ -154,12 +199,12 @@ watch(
   display: inline-block;
   margin-left: 0.75rem;
   padding: 0.15rem 0.45rem;
-  border: 1px solid var(--border-color, currentColor);
+  border: 1px solid var(--theme-border-color, currentColor);
   border-radius: var(--border-radius-sm, 0.25rem);
   font-size: 0.75rem;
   line-height: 1.2;
   letter-spacing: 0.02em;
-  color: var(--text-color-secondary, var(--text-color, inherit));
+  color: var(--theme-text-color);
   opacity: 0.85;
   vertical-align: middle;
   user-select: none;

@@ -31,7 +31,7 @@ h6 {
       text-align: left;
       font-size-adjust: none;
       letter-spacing: -0.04em;
-      border-bottom: 3px ridge rgba($color-gray-md, 0.55);
+      border-bottom: 3px ridge color-mix(in srgb, var(--theme-border-strong-color) 55%, transparent);
       line-height: 1.2;
       margin-bottom: 1rem;
       font-variant: petite-caps;
@@ -106,35 +106,35 @@ h6 {
 }
 
 a {
-  color: var(--color-blue);
+  color: var(--blue-color);
   text-shadow:
-    1px 1px 0 color-mix(in srgb, var(--text-secondary-color) 50%, transparent),
-    0 -1px 0 color-mix(in srgb, var(--text-color) 76%, transparent);
+    1px 1px 0 color-mix(in srgb, var(--theme-secondary-color) 50%, transparent),
+    0 -1px 0 color-mix(in srgb, var(--theme-paper-color) 76%, transparent);
   text-decoration: none;
   transition:
     color 150ms ease,
     text-shadow 150ms ease;
 
   &:hover {
-    text-decoration: underline dotted var(--text-color);
-    color: var(--color-yellow);
+    text-decoration: underline dotted var(--theme-text-color);
+    color: var(--yellow-color);
   }
 
   &:visited {
-    color: var(--color-purple);
+    color: var(--purple-color);
 
     &:hover {
-      color: color-mix(in srgb, var(--color-yellow) 70%, var(--color-purple));
+      color: color-mix(in srgb, var(--yellow-color) 70%, var(--purple-color));
     }
   }
 
   &:focus-visible {
-    text-shadow: 0 0 2px rgba($color-gray-md, 0.25);
+    text-shadow: 0 0 2px color-mix(in srgb, var(--theme-text-secondary-color) 25%, transparent);
   }
 
   &:active {
-    text-decoration: underline dotted var(--color-red);
-    color: var(--text-color);
+    text-decoration: underline dotted var(--red-color);
+    color: var(--theme-text-color);
   }
 }
 
@@ -144,18 +144,25 @@ p {
   font-size: var(--font-size-base);
   font-weight: 400;
   text-shadow:
-    0 -1px 0 var(--primary-inverted),
-    1px 1px 0 light-dark(rgba($secondary-color-light, 0.5), rgba($secondary-color-dark, 0.5));
+    1px 1px 0 var(--theme-paper-color),
+    0 -1px 0 color-mix(in srgb, var(--theme-secondary-color) 50%, var(--theme-ink-color) 50%);
 }
 
 blockquote {
   margin: 0.75rem 1rem;
   padding: 0.5rem 0.9rem;
-  border-left: 5px solid var(--secondary-color);
-  color: var(--text-color);
-  text-shadow: 0 -1px 2px light-dark(rgba($secondary-color-light, 0.5), rgba($secondary-color-dark, 0.2));
+  border-left: 5px solid var(--theme-secondary-color);
+  color: var(--theme-text-color);
+  text-shadow: 0 -1px 2px
+    light-dark(
+      color-mix(in srgb, var(--theme-secondary-color) 50%, transparent),
+      color-mix(in srgb, var(--theme-secondary-color) 20%, transparent)
+    );
   font-style: italic;
-  background-color: light-dark(rgba($color-gray-dk, 0.24), rgba($color-gray-lt, 0.1));
+  background-color: light-dark(
+    color-mix(in srgb, var(--theme-ink-color) 24%, transparent),
+    color-mix(in srgb, var(--theme-ink-color) 10%, transparent)
+  );
   border-radius: var(--border-radius-md);
 }
 
@@ -165,13 +172,13 @@ q {
 
 cite {
   font-style: italic;
-  color: color-mix(in srgb, var(--secondary-color) 45%, var(--text-color));
+  color: color-mix(in srgb, var(--theme-secondary-ink-color) 45%, var(--theme-text-color));
 }
 
 abbr {
   font-weight: bolder;
-  color: var(--text-color);
-  text-decoration: underline dotted color-mix(in srgb, var(--text-color) 60%, transparent) !important;
+  color: var(--theme-text-color);
+  text-decoration: underline dotted color-mix(in srgb, var(--theme-text-color) 60%, transparent) !important;
   text-underline-offset: 0.15em;
 }
 
@@ -212,14 +219,14 @@ dl {
     font-weight: 700;
     font-size: var(--font-size-base);
     text-transform: capitalize;
-    color: var(--secondary-color);
-    text-shadow: 0 -1px 1px color-mix(in srgb, var(--text-secondary-color) 65%, var(--secondary-color));
+    color: var(--theme-secondary-ink-color);
+    text-shadow: 0 -1px 1px color-mix(in srgb, var(--theme-text-secondary-color) 65%, var(--theme-secondary-color));
     margin-top: 0.75rem;
   }
 
   dd {
     margin: 0.25rem 0 0.75rem 1.25rem;
-    color: var(--text-color);
+    color: var(--theme-text-color);
   }
 }
 
@@ -233,42 +240,44 @@ var {
 kbd {
   padding: 0.1em 0.35em;
   border-radius: var(--border-radius-sm);
-  border: 1px solid color-mix(in srgb, var(--text-color) 35%, transparent);
-  background-color: color-mix(in srgb, var(--text-color) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--theme-text-color) 35%, transparent);
+  background-color: color-mix(in srgb, var(--theme-text-color) 8%, transparent);
 }
 
 samp {
   padding: 0.1em 0.25em;
   border-radius: var(--border-radius-sm);
   border: 1px solid transparent;
-  background-color: color-mix(in srgb, var(--text-color) 8%, transparent);
+  background-color: color-mix(in srgb, var(--theme-text-color) 8%, transparent);
 }
 
 mark {
   font-weight: lighter;
   font-stretch: expanded;
   letter-spacing: 0.05em;
-  color: var(--text-color);
-  background-color: color-mix(in srgb, var(--color-yellow) 18%, transparent);
+  color: var(--theme-text-color);
+  background-color: color-mix(in srgb, var(--yellow-color) 18%, transparent);
   text-shadow:
-    -1px 0 1px color-mix(in srgb, var(--text-color) 46%, var(--color-yellow)),
-    0 -1px 0 color-mix(in srgb, var(--text-secondary-color) 76%, transparent);
+    -1px 0 1px color-mix(in srgb, var(--theme-text-color) 46%, var(--yellow-color)),
+    0 -1px 0 color-mix(in srgb, var(--theme-text-secondary-color) 76%, transparent);
   border-radius: var(--border-radius-sm);
   padding: 0.05rem 0.2rem;
 }
 
 ins {
-  color: color-mix(in srgb, var(--color-green) 95%, transparent);
+  color: color-mix(in srgb, var(--green-color) 95%, transparent);
   text-decoration: underline;
 }
 
 del,
 s {
-  color: color-mix(in srgb, var(--color-red) 90%, transparent);
+  color: color-mix(in srgb, var(--red-color) 90%, transparent);
   text-decoration: line-through;
 }
 
 time {
-  color: color-mix(in srgb, var(--secondary-color) 36%, var(--main-background));
+  // The neutral muted text role (≥ 4.5:1 on page and surfaces, `checkPaperInk`); the old
+  // secondary faded toward the page read 2.08:1 light / 1.48:1 dark.
+  color: var(--theme-text-secondary-color);
   font-variant-numeric: tabular-nums;
 }

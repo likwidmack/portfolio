@@ -23,6 +23,8 @@ import { nonEmpty } from './env-value';
 export interface DynamoBlogStoreOptions {
   tableName?: string;
   region?: string;
+  /** DynamoDB Local endpoint; overrides `DYNAMODB_ENDPOINT` / `AWS_ENDPOINT_URL_DYNAMODB` / `AWS_ENDPOINT_URL`. */
+  endpoint?: string;
   /** Optional injected document client for tests. */
   docClient?: DocClient;
 }
@@ -165,7 +167,7 @@ export const createDynamoBlogPostStore = (options: DynamoBlogStoreOptions = {}):
     throw new Error('DynamoDB BlogPostStore requires DYNAMO_POSTS_TABLE (or NUXT_DYNAMO_POSTS_TABLE)');
   }
 
-  const clientConfig = resolveDynamoClientConfig();
+  const clientConfig = resolveDynamoClientConfig(process.env, nonEmpty(options.endpoint));
   const docClient =
     options.docClient ??
     DynamoDBDocumentClient.from(

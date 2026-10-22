@@ -28,7 +28,7 @@ export const EXHIBITION_FIRST_BEAT = '/gallery?specimen=tesseract-framework-reel
 export const ON_VIEW_PATH = DISCOVERY_FIRST_BEAT;
 export const ON_VIEW_ACCESSIBLE_NAME = 'On view: Media Systems';
 
-/** Public decision-card ids that skip-home may remember. Keep in sync with `content/decision-cards/`. */
+/** Public decision-card slugs (`/process#…`) that skip-home may remember. Keep in sync with `content/decision-cards/*.slug`. */
 export const PROCESS_CARD_IDS = [
   'agentic-ui-exploration',
   'manhattan-2150-refinement',

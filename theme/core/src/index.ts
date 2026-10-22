@@ -32,6 +32,7 @@ export {
   getThemeColor,
   hexToRgb,
   hslToHex,
+  isModeVariationName,
   lightCssVariables,
   lighten,
   namedColors,
@@ -65,11 +66,7 @@ export {
   getToken,
   getTokens,
   registerTokenSource,
-  resetTokens,
-  setTokens,
   subscribeTokens,
-  updateToken,
-  updateTokens,
 } from './token-registry.js';
 export type {
   ThemeBridgeOptions,
@@ -100,7 +97,15 @@ export type {
 export { buildStudioPresets } from './studio-presets.js';
 export type { StudioPreset, StudioPresetBackground, StudioPresetKind } from './studio-presets.js';
 export { Theme } from './theme.js';
-export type { ThemeBreakpoints, ThemeDefinition, ThemeRatios, ThemeTextSettings, ThemeWriteOptions } from './theme.js';
+export type {
+  ThemeApplyInput,
+  ThemeApplyOptions,
+  ThemeBreakpoints,
+  ThemeDefinition,
+  ThemeRatios,
+  ThemeTextSettings,
+  ThemeWriteOptions,
+} from './theme.js';
 
 export {
   MAX_ANALOGOUS_COUNT,
@@ -130,6 +135,62 @@ export { analyzeColorQuality, analyzePaletteQuality, calculateContrastRatio, enh
 export type { ColorPaletteQuality, ColorQuality, ColorQualityMetrics, ColorTemperature } from './color-quality.js';
 
 export { contrast as contrastHex, mixOklab } from './color-mix.js';
+export {
+  COLOR_ALPHA_STEPS,
+  COLOR_RENAME_MAP,
+  THEME_COLOR_NAME,
+  excludedColorNames,
+  isNewColorName,
+  normalizeColorName,
+  normalizeColorNames,
+  retiredColorNames,
+  themeColorNameFor,
+} from './color-rename.js';
+export type { ColorRenameMap } from './color-rename.js';
+export {
+  BUTTON_INK_TARGET,
+  CONTRAST_TARGET,
+  DEFAULT_COLOR_SOURCES,
+  LIGHTNESS_CEILING,
+  LIGHTNESS_FLOOR,
+  LINK_TARGET,
+  LINK_WASH_ALPHAS,
+  ON_PRIMARY_INK,
+  PRIMARY_INK_TARGET,
+  SECONDARY_INK_TARGET,
+  SECONDARY_SHEEN_ALPHAS,
+  SOLID_COLORS,
+  STATUS_COLORS,
+  STATUS_INK_MIX,
+  STATUS_INK_TARGET,
+  WASH_ALPHA,
+  WASH_TARGET,
+  adjustLightnessFor,
+  backgroundFor,
+  buildButtonInkTokens,
+  buildButtonStopTokens,
+  buildColorVariations,
+  buildLinkTokens,
+  buildPrimaryFillTokens,
+  buildPrimaryInkTokens,
+  buildSecondaryInkTokens,
+  buildStatusInkTokens,
+  buildWashTokens,
+  buttonInkFor,
+  compositeOver,
+  gradientColorsOver,
+  gradientStopFor,
+  linkInkFor,
+  onPrimaryFor,
+  primaryFillFor,
+  primaryInkFor,
+  secondaryInkFor,
+  statusInkFor,
+  textGroundsFor,
+  washFor,
+  withinLightnessBand,
+} from './color-variations.js';
+export type { ColorSources, GradientStop, GradientUse, SolidColor, StatusColor } from './color-variations.js';
 export {
   DEFAULT_PAPER_INK,
   NEUTRAL_ROLE_STEPS,

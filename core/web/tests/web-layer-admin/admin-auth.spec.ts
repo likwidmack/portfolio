@@ -6,13 +6,31 @@ import {
   resolveAdminToken,
   secureCompare,
 } from '@tgmc/web-layer-admin/server/utils/admin-auth';
-import { describe, expect, it } from 'vitest';
+import * as nodeCrypto from 'node:crypto';
+import { describe, expect, it, vi } from 'vitest';
+
+vi.mock('node:crypto', async (importOriginal) => {
+  const actual = await importOriginal<typeof nodeCrypto>();
+  return { ...actual, timingSafeEqual: vi.fn(actual.timingSafeEqual) };
+});
 
 describe('secureCompare', () => {
   it('returns true for equal strings and false otherwise', () => {
     expect(secureCompare('secret', 'secret')).toBe(true);
     expect(secureCompare('secret', 'Secret')).toBe(false);
     expect(secureCompare('short', 'longer')).toBe(false);
+  });
+
+  it('compares fixed-size SHA-256 digests, so a wrong-length token takes the same path', () => {
+    const timingSafeEqual = vi.mocked(nodeCrypto.timingSafeEqual);
+    timingSafeEqual.mockClear();
+
+    expect(secureCompare('short', 'a-much-longer-secret')).toBe(false);
+
+    expect(timingSafeEqual).toHaveBeenCalledTimes(1);
+    const [left, right] = timingSafeEqual.mock.calls[0]!;
+    expect(left.byteLength).toBe(32);
+    expect(right.byteLength).toBe(32);
   });
 });
 

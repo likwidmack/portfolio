@@ -484,9 +484,14 @@
  */
 import type { ThemeModePreference, ThemeResolvedMode } from '#shared/theme/theme-tokens-api';
 
-const _codeScss = `:root[data-theme='light'] {
-  --button-fg: #{dyn-color-against-fill($primary-color-light, $secondary-color-light)};
-  --button-bg: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+const _codeScss = `// Light primary buttons: a solid fill built for the light paper label, no gradient.
+:root[data-theme='light'] {
+  --button-bg: none;
+  --button-solid-bg: none;
+  --button-solid-bg-hover: none;
+  --theme-button-fill-color: var(--theme-primary-fill-color);
+  --theme-button-hover-fill-color: var(--theme-primary-fill-color);
+  --theme-button-fg-color: var(--theme-on-primary-color);
 }`;
 
 const _codeTs = `import { pickContrastingInk } from '@tgmc/theme';
@@ -513,38 +518,38 @@ const _codeJson = `{
 }`;
 
 const _semanticSwatches = [
-  { token: '--primary-color', label: 'Primary' },
-  { token: '--secondary-color', label: 'Secondary' },
+  { token: '--theme-primary-color', label: 'Primary' },
+  { token: '--theme-secondary-color', label: 'Secondary' },
   { token: '--tertiary-color', label: 'Tertiary' },
-  { token: '--accent-color', label: 'Accent' },
-  { token: '--success', label: 'Success' },
-  { token: '--warning', label: 'Warning' },
-  { token: '--error', label: 'Error' },
-  { token: '--info', label: 'Info' },
+  { token: '--theme-accent-color', label: 'Accent' },
+  { token: '--theme-success-hue-color', label: 'Success' },
+  { token: '--theme-warning-hue-color', label: 'Warning' },
+  { token: '--theme-error-hue-color', label: 'Error' },
+  { token: '--theme-info-hue-color', label: 'Info' },
 ] as const;
 
 const _brandSwatches = [
-  { token: '--main-background', label: 'Main background' },
-  { token: '--main-background-secondary', label: 'Secondary background' },
-  { token: '--surface-color', label: 'Surface' },
-  { token: '--surface-variant', label: 'Surface variant' },
-  { token: '--text-color', label: 'Text' },
-  { token: '--text-secondary-color', label: 'Text secondary' },
-  { token: '--border-color', label: 'Border' },
-  { token: '--focus-ring', label: 'Focus ring' },
+  { token: '--theme-main-background-color', label: 'Main background' },
+  { token: '--theme-main-background-secondary-color', label: 'Secondary background' },
+  { token: '--theme-surface-color', label: 'Surface' },
+  { token: '--theme-surface-variant-color', label: 'Surface variant' },
+  { token: '--theme-text-color', label: 'Text' },
+  { token: '--theme-text-secondary-color', label: 'Text secondary' },
+  { token: '--theme-border-color', label: 'Border' },
+  { token: '--theme-focus-ring-color', label: 'Focus ring' },
 ] as const;
 
 const _spectrumSwatches = [
-  { token: '--color-red' },
-  { token: '--color-orange' },
-  { token: '--color-amber' },
-  { token: '--color-yellow' },
-  { token: '--color-lime' },
-  { token: '--color-green' },
-  { token: '--color-teal' },
-  { token: '--color-blue' },
-  { token: '--color-purple' },
-  { token: '--color-magenta' },
+  { token: '--red-color' },
+  { token: '--orange-color' },
+  { token: '--amber-color' },
+  { token: '--yellow-color' },
+  { token: '--lime-color' },
+  { token: '--green-color' },
+  { token: '--teal-color' },
+  { token: '--blue-color' },
+  { token: '--purple-color' },
+  { token: '--magenta-color' },
 ] as const;
 
 const _surfaces = [
@@ -554,11 +559,11 @@ const _surfaces = [
     laneLabel: 'Native',
     title: 'Main canvas',
     body: 'Default page canvas using main background and body text.',
-    tokens: ['--main-background', '--text-color'],
+    tokens: ['--theme-main-background-color', '--theme-text-color'],
     style: {
-      background: 'var(--main-background)',
-      color: 'var(--text-color)',
-      borderColor: 'var(--border-color)',
+      background: 'var(--theme-main-background-color)',
+      color: 'var(--theme-text-color)',
+      borderColor: 'var(--theme-border-color)',
     },
   },
   {
@@ -567,11 +572,11 @@ const _surfaces = [
     laneLabel: 'Foundation',
     title: 'Surface panel',
     body: 'Raised panel using surface contrast — typical XY cell fill.',
-    tokens: ['--surface-color', '--text-secondary-color'],
+    tokens: ['--theme-surface-color', '--theme-text-secondary-color'],
     style: {
-      background: 'var(--surface-color)',
-      color: 'var(--text-color)',
-      borderColor: 'var(--border-color)',
+      background: 'var(--theme-surface-color)',
+      color: 'var(--theme-text-color)',
+      borderColor: 'var(--theme-border-color)',
     },
   },
   {
@@ -579,12 +584,12 @@ const _surfaces = [
     lane: 'primevue',
     laneLabel: 'PrimeVue',
     title: 'Accent wash',
-    body: 'Soft primary tint for callouts and highlighted Prime surfaces.',
-    tokens: ['--primary-color', '--border-color'],
+    body: 'Soft accent tint for callouts and highlighted Prime surfaces.',
+    tokens: ['--theme-accent-color', '--theme-border-color'],
     style: {
-      background: 'color-mix(in srgb, var(--primary-color-default) 16%, var(--main-background))',
-      color: 'var(--text-color)',
-      borderColor: 'color-mix(in srgb, var(--primary-color-default) 35%, transparent)',
+      background: 'color-mix(in srgb, var(--theme-accent-color) 16%, var(--theme-main-background-color))',
+      color: 'var(--theme-text-color)',
+      borderColor: 'color-mix(in srgb, var(--theme-accent-color) 35%, transparent)',
     },
   },
 ] as const;
@@ -630,8 +635,10 @@ onBeforeUnmount(() => {
   stopThemeSubscription?.();
 });
 
+const { setDraftMode } = useStyleStudioDraft();
+
 function _setThemePreference(mode: ThemeModePreference): void {
-  useThemeTokens().setThemeMode(mode);
+  setDraftMode(mode);
 }
 
 function _onChipRemove(): void {
@@ -653,7 +660,7 @@ function _onChipRemove(): void {
 
   [data-type='kicker'] {
     margin: 0 0 0.35rem;
-    color: var(--text-secondary-color, var(--text-color));
+    color: var(--theme-text-secondary-color, var(--theme-text-color));
     font-size: var(--font-size-sm);
     font-weight: 700;
     letter-spacing: 0.06em;
@@ -677,9 +684,9 @@ function _onChipRemove(): void {
 .styles-lanes {
   margin: 0 0 0.5rem;
   padding: 0.55rem 0.65rem;
-  border: 1px solid color-mix(in srgb, var(--border-color) 65%, transparent);
+  border: 1px solid color-mix(in srgb, var(--theme-border-color) 65%, transparent);
   border-radius: var(--border-radius-md, 0.5rem);
-  background: color-mix(in srgb, var(--surface-color) 55%, transparent);
+  background: color-mix(in srgb, var(--theme-surface-color) 55%, transparent);
 
   span {
     margin: 0;
@@ -698,9 +705,9 @@ function _onChipRemove(): void {
   height: 100%;
   margin: 0;
   padding: 0.9rem 1rem 1.1rem;
-  border: 1px solid color-mix(in srgb, var(--border-color) 65%, transparent);
+  border: 1px solid color-mix(in srgb, var(--theme-border-color) 65%, transparent);
   border-radius: var(--border-radius-md, 0.5rem);
-  background: color-mix(in srgb, var(--surface-color) 45%, transparent);
+  background: color-mix(in srgb, var(--theme-surface-color) 45%, transparent);
   box-shadow: none;
 
   &.surface-demo {
@@ -721,7 +728,9 @@ function _onChipRemove(): void {
 
 .styles-col__label {
   margin: 0;
-  color: var(--secondary-color, var(--primary-color));
+  // Secondary ink, 40% toward the text colour: labels also sit on the column washes and the 16%
+  // accent panel (ink alone: 4.43:1 there in dark). ≥ 4.5:1 for every preset — `tests/secondary-ink-sites.spec.ts`.
+  color: color-mix(in srgb, var(--theme-secondary-ink-color) 60%, var(--theme-text-color));
   font-size: var(--font-size-xs);
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -733,7 +742,7 @@ function _onChipRemove(): void {
   align-items: center;
   padding: 0.2rem 0.65rem;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--primary-color) 14%, transparent);
+  background: color-mix(in srgb, var(--theme-primary-color) 14%, transparent);
   font-size: var(--font-size-sm);
   font-weight: 600;
 }

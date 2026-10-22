@@ -15,8 +15,8 @@
   section.decision-list.layout(data-algo="stack", aria-label="Sanitized AI decision journal")
     article.decision-card.layout(
       v-for="card in cards",
-      :id="card.id",
-      :key="card.id",
+      :id="card.slug",
+      :key="card.slug",
       data-algo="split",
       tabindex="-1"
     )
@@ -56,7 +56,7 @@ const { data } = await useContentAsyncData('public-decision-cards', () =>
 const cards = computed(() =>
   ((data.value ?? []) as DecisionCard[]).filter(isPublicDecisionCard).sort((a, b) => {
     const byDate = b.date.localeCompare(a.date);
-    return byDate !== 0 ? byDate : a.id.localeCompare(b.id);
+    return byDate !== 0 ? byDate : a.slug.localeCompare(b.slug);
   })
 );
 const formatDate = (date: string) =>

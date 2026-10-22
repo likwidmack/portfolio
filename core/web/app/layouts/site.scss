@@ -67,23 +67,26 @@
     z-index: 100;
     @include touch-target;
     padding: 0.5rem 0.75rem;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--theme-border-color);
     border-radius: var(--border-radius-sm, 0.375rem);
-    background: var(--surface-color);
-    color: var(--text-color);
+    background: var(--theme-surface-color);
+    color: var(--theme-text-color);
     text-decoration: none;
 
     &:focus-visible {
       top: 0.5rem;
-      outline: 2px solid var(--focus-ring, var(--primary-color));
+      outline: 2px solid var(--theme-focus-ring-color, var(--theme-primary-color));
       outline-offset: 2px;
     }
   }
 
   // ─── Header: sticky, blur only ──────────────────────────────────────────────────────────
-  // No tint, no glow band. This sticky wrapper owns the single blur (a nested backdrop-filter
-  // would only blur the wrapper, not the page). A tint returns where blur alone can't carry
-  // text contrast.
+  // No tint, no glow band. Blur lives on `::before` (pointer-events: none), not on the sticky
+  // element itself: Safari/iOS drops hit-testing for descendants when sticky + backdrop-filter
+  // share one box (Menu, Personalize, brand go dead on touch). Theme `.site-chrome` still
+  // applies `backdrop-blur(md)` — clear it here so the sticky box stays filter-free.
+  // `isolation: isolate` keeps the pseudo behind chrome children while the stacking context
+  // still samples the page underneath. A tint returns where blur alone can't carry text contrast.
   > header.site-chrome {
     position: sticky;
     top: 0;
@@ -91,18 +94,40 @@
     padding-inline: 0;
     background: transparent;
     box-shadow: none;
-    -webkit-backdrop-filter: blur(14px);
-    backdrop-filter: blur(14px);
+    isolation: isolate;
+    // Defeat theme `.site-chrome { @include backdrop-blur(md) }` on this sticky box.
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      -webkit-backdrop-filter: blur(14px);
+      backdrop-filter: blur(14px);
+    }
 
     @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-      background: color-mix(in srgb, var(--surface-color) 92%, transparent);
+      background: color-mix(in srgb, var(--theme-surface-color) 92%, transparent);
+
+      &::before {
+        content: none;
+      }
     }
 
     @media (prefers-reduced-transparency: reduce) {
-      background: color-mix(in srgb, var(--surface-color) 92%, transparent);
+      background: color-mix(in srgb, var(--theme-surface-color) 92%, transparent);
+
+      &::before {
+        content: none;
+      }
     }
 
     > div {
+      position: relative;
+      z-index: 1;
       width: 100%;
       max-width: none;
       margin: 0;
@@ -117,7 +142,7 @@
   > footer.site-chrome {
     container: site-footer / inline-size;
     padding: 0;
-    border-top: 1px solid var(--portfolio-rule);
+    border-top: 1px solid var(--portfolio-rule-color);
     box-shadow: none;
     text-align: center;
   }

@@ -15,10 +15,10 @@
 
     textarea {
       width: 100%;
-      border: 1px solid var(--portfolio-rule);
+      border: 1px solid var(--portfolio-rule-color);
       border-radius: 0.75rem;
-      background: var(--surface-color);
-      color: var(--text-color);
+      background: var(--theme-surface-color);
+      color: var(--theme-text-color);
       padding: 1rem;
       font: inherit;
       font-size: 1.1rem;
@@ -36,9 +36,9 @@
   &__result,
   &__rejected {
     @include portfolio-stack;
-    border: 1px solid var(--portfolio-rule);
-    border-top: 0.65rem solid var(--primary-color);
-    background: var(--surface-color);
+    border: 1px solid var(--portfolio-rule-color);
+    border-top: 0.65rem solid var(--theme-primary-color);
+    background: var(--theme-surface-color);
     padding: clamp(1.25rem, 4vw, 3rem);
 
     h2 {
@@ -59,7 +59,7 @@
   }
 
   &__pending {
-    border-left: 0.35rem solid var(--primary-color);
+    border-left: 0.35rem solid var(--theme-primary-color);
     padding-left: 1rem;
   }
 
@@ -71,7 +71,7 @@
 
   &__fallback,
   &__mode {
-    color: var(--text-secondary-color);
+    color: var(--theme-text-secondary-color);
   }
 }
 

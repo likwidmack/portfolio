@@ -34,6 +34,7 @@ vi.mock('@aws-sdk/lib-dynamodb', async (importOriginal) => {
 
 const dynamoEnvKeys = [
   'DYNAMODB_ENDPOINT',
+  'AWS_ENDPOINT_URL_DYNAMODB',
   'AWS_ENDPOINT_URL',
   'AWS_ACCESS_KEY_ID',
   'AWS_SECRET_ACCESS_KEY',
@@ -62,6 +63,24 @@ describe('createDynamoBlogPostStore', () => {
     Reflect.deleteProperty(process.env, 'DYNAMO_POSTS_TABLE');
     Reflect.deleteProperty(process.env, 'NUXT_DYNAMO_POSTS_TABLE');
     expect(() => createDynamoBlogPostStore({ tableName: '' })).toThrow(/DYNAMO_POSTS_TABLE/);
+  });
+
+  it('constructs its DynamoDB client with AWS_ENDPOINT_URL_DYNAMODB', () => {
+    process.env.AWS_ENDPOINT_URL_DYNAMODB = 'http://dynamodb:8000';
+    process.env.AWS_REGION = 'us-west-2';
+
+    createDynamoBlogPostStore({ tableName: 'Posts' });
+
+    expect(DynamoDBClient).toHaveBeenCalledWith(expect.objectContaining({ endpoint: 'http://dynamodb:8000' }));
+  });
+
+  it('prefers an explicit endpoint option over the environment', () => {
+    process.env.DYNAMODB_ENDPOINT = 'http://env:8000';
+    process.env.AWS_REGION = 'us-west-2';
+
+    createDynamoBlogPostStore({ tableName: 'Posts', endpoint: 'http://localhost:8000' });
+
+    expect(DynamoDBClient).toHaveBeenCalledWith(expect.objectContaining({ endpoint: 'http://localhost:8000' }));
   });
 
   it('constructs its DynamoDB client with the configured local endpoint', () => {

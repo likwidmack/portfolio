@@ -286,7 +286,7 @@
         "dark": "#a3e635"
       },
       "secondary": {
-        "light": "#65a30d",
+        "light": "#fcf5d9",
         "dark": "#0d6d32"
       },
       "accent": {
@@ -299,7 +299,7 @@
           "dark": "#a3e635"
         },
         "secondary": {
-          "light": "#65a30d",
+          "light": "#fcf5d9",
           "dark": "#0d6d32"
         },
         "accent": {
@@ -617,7 +617,7 @@
       },
       "secondary": {
         "light": "#4d9e54",
-        "dark": "#5a9690"
+        "dark": "#e6f0e9"
       },
       "accent": {
         "light": "#2b1715",
@@ -630,7 +630,7 @@
         },
         "secondary": {
           "light": "#4d9e54",
-          "dark": "#5a9690"
+          "dark": "#e6f0e9"
         },
         "accent": {
           "light": "#2b1715",

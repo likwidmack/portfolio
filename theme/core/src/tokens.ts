@@ -3,6 +3,7 @@
  * Inventoried color hex/rgb literals must not appear in this module.
  */
 
+import { COLOR_RENAME_MAP } from './color-rename.js';
 import colorsJson from './colors.json' with { type: 'json' };
 import { resolveButtonForeground } from './contrast.js';
 
@@ -47,48 +48,58 @@ export const themeColors = colorsJson.theme as Record<'light' | 'dark', ThemeCol
 
 type ThemeKey = keyof ThemeColorSet;
 
-/** Shared CSS custom-property keys for both color modes (aligned with `scss/globals/_root.scss`). */
+/**
+ * Shared CSS custom-property keys for both colour modes (aligned with `scss/globals/_root.scss`),
+ * under the colour system's `--theme-…-color` names only (Task 8, R-T8c — the old keys are gone;
+ * an old key passed to the theme API is normalised with `normalizeColorNames`). The brand, status,
+ * focus and button-text entries hold the Sass *source* values; the stylesheet paints their
+ * lightness-adjusted variations (`buildColorVariations` / `buildButtonInkTokens` with
+ * `DEFAULT_COLOR_SOURCES`), and nothing writes these maps' colours inline
+ * (`getInlineTokensForMode`).
+ */
 export type ThemeCssVariableMap = {
-  '--primary-color': string;
-  '--primary-default': string;
-  '--primary-hover': string;
-  '--secondary-color': string;
-  '--tertiary-color': string;
-  '--text-color': string;
-  '--text-secondary-color': string;
-  '--main-background': string;
-  '--main-background-secondary': string;
-  '--surface-color': string;
-  '--surface-variant': string;
-  '--border-color': string;
-  '--focus-ring': string;
-  '--accent-color': string;
-  '--success': string;
-  '--warning': string;
-  '--error': string;
-  '--info': string;
-  '--border-radius-md': string;
-  '--form-background': string;
-  '--form-background-disabled': string;
-  '--form-border-color': string;
-  '--form-placeholder': string;
-  '--form-focus-ring': string;
-  '--form-invalid-color': string;
-  '--button-fg': string;
+  '--theme-primary-color': string;
+  '--theme-secondary-color': string;
+  '--theme-accent-color': string;
+  '--theme-primary-hover-color': string;
+  '--theme-button-fg-color': string;
+  /** The active pen & paper pair (the neutral scale runs paper → ink). */
+  '--theme-paper-color': string;
+  '--theme-ink-color': string;
+  '--theme-text-color': string;
+  '--theme-text-secondary-color': string;
+  '--theme-main-background-color': string;
+  '--theme-main-background-secondary-color': string;
+  '--theme-surface-color': string;
+  '--theme-surface-variant-color': string;
+  '--theme-border-color': string;
   /** Accessible interaction roles (AA in both modes; see docs/packages/theme.md → Contrast roles). */
-  '--link-color': string;
-  '--border-strong': string;
-  '--primary-fill': string;
-  '--on-primary': string;
-  '--success-ink': string;
-  '--danger-ink': string;
-  /** Status inks (≥ 4.5:1 text) — five-input model. */
-  '--warning-ink': string;
-  '--error-ink': string;
-  '--info-ink': string;
-  /** The neutral inputs: lightest ("white") and darkest ("black"). */
-  '--paper': string;
-  '--ink': string;
+  '--theme-border-strong-color': string;
+  '--theme-focus-ring-color': string;
+  '--theme-link-color': string;
+  '--theme-primary-fill-color': string;
+  '--theme-on-primary-color': string;
+  /** Status hues and their text inks (≥ 4.5:1). */
+  '--theme-success-hue-color': string;
+  '--theme-warning-hue-color': string;
+  '--theme-error-hue-color': string;
+  '--theme-info-hue-color': string;
+  '--theme-success-ink-color': string;
+  '--theme-warning-ink-color': string;
+  '--theme-error-ink-color': string;
+  '--theme-info-ink-color': string;
+  '--theme-form-background-color': string;
+  '--theme-form-background-disabled-color': string;
+  '--theme-form-placeholder-color': string;
+  '--theme-form-invalid-color': string;
+  /**
+   * Palette name the owner kept (data, not renamed). The stylesheet declares it on `:root` only
+   * (dark value), so the colour-mode writer pins it per mode — see {@link getInlineTokensForMode}.
+   * It no longer feeds `--text-shadow-root`; the pin only serves the Theme API (see the TODO).
+   */
+  '--primary-default': string;
+  /** Non-colour layout token — not part of the colour inventory. */
+  '--border-radius-md': string;
 };
 
 const darkCss = colorsJson.cssVariables.dark;
@@ -99,84 +110,76 @@ const BORDER_RADIUS_MD = '0.5rem';
 
 /** Dark mode CSS custom properties (document default / `:root`). */
 export const darkCssVariables = {
-  '--primary-color': themeColors.dark.primary,
+  '--theme-primary-color': themeColors.dark.primary,
+  '--theme-secondary-color': themeColors.dark.secondary,
+  '--theme-accent-color': darkCss['--theme-accent-color'],
+  '--theme-primary-hover-color': darkCss['--theme-primary-hover-color'],
+  '--theme-button-fg-color': resolveButtonForeground('dark', themeColors.dark.primary, themeColors.dark.secondary),
+  '--theme-paper-color': darkCss['--theme-paper-color'],
+  '--theme-ink-color': darkCss['--theme-ink-color'],
+  '--theme-text-color': themeColors.dark.text,
+  '--theme-text-secondary-color': darkCss['--theme-text-secondary-color'],
+  '--theme-main-background-color': themeColors.dark.background,
+  '--theme-main-background-secondary-color': themeColors.dark.backgroundSecondary,
+  '--theme-surface-color': darkCss['--theme-surface-color'],
+  '--theme-surface-variant-color': darkCss['--theme-surface-variant-color'],
+  '--theme-border-color': darkCss['--theme-border-color'],
+  '--theme-border-strong-color': darkCss['--theme-border-strong-color'],
+  '--theme-focus-ring-color': darkCss['--theme-focus-ring-color'],
+  '--theme-link-color': darkCss['--theme-link-color'],
+  '--theme-primary-fill-color': darkCss['--theme-primary-fill-color'],
+  '--theme-on-primary-color': darkCss['--theme-on-primary-color'],
+  '--theme-success-hue-color': semanticColors.success,
+  '--theme-warning-hue-color': semanticColors.warning,
+  '--theme-error-hue-color': semanticColors.error,
+  '--theme-info-hue-color': darkCss['--theme-info-hue-color'],
+  '--theme-success-ink-color': darkCss['--theme-success-ink-color'],
+  '--theme-warning-ink-color': darkCss['--theme-warning-ink-color'],
+  '--theme-error-ink-color': darkCss['--theme-error-ink-color'],
+  '--theme-info-ink-color': darkCss['--theme-info-ink-color'],
+  '--theme-form-background-color': darkCss['--theme-form-background-color'],
+  '--theme-form-background-disabled-color': darkCss['--theme-form-background-disabled-color'],
+  '--theme-form-placeholder-color': darkCss['--theme-form-placeholder-color'],
+  '--theme-form-invalid-color': darkCss['--theme-form-invalid-color'],
   '--primary-default': themeColors.dark.primary,
-  '--primary-hover': darkCss['--primary-hover'],
-  '--secondary-color': themeColors.dark.secondary,
-  '--tertiary-color': darkCss['--tertiary-color'],
-  '--text-color': themeColors.dark.text,
-  '--text-secondary-color': darkCss['--text-secondary-color'],
-  '--main-background': themeColors.dark.background,
-  '--main-background-secondary': themeColors.dark.backgroundSecondary,
-  '--surface-color': darkCss['--surface-color'],
-  '--surface-variant': darkCss['--surface-variant'],
-  '--border-color': darkCss['--border-color'],
-  '--focus-ring': darkCss['--focus-ring'],
-  '--accent-color': darkCss['--accent-color'],
-  '--success': semanticColors.success,
-  '--warning': semanticColors.warning,
-  '--error': semanticColors.error,
-  '--info': darkCss['--info'],
   '--border-radius-md': BORDER_RADIUS_MD,
-  '--form-background': darkCss['--form-background'],
-  '--form-background-disabled': darkCss['--form-background-disabled'],
-  '--form-border-color': darkCss['--border-strong'],
-  '--form-placeholder': darkCss['--form-placeholder'],
-  '--form-focus-ring': darkCss['--focus-ring'],
-  '--form-invalid-color': darkCss['--form-invalid-color'],
-  '--button-fg': resolveButtonForeground('dark', themeColors.dark.primary, themeColors.dark.secondary),
-  '--link-color': darkCss['--link-color'],
-  '--border-strong': darkCss['--border-strong'],
-  '--primary-fill': darkCss['--primary-fill'],
-  '--on-primary': darkCss['--on-primary'],
-  '--success-ink': darkCss['--success-ink'],
-  '--danger-ink': darkCss['--danger-ink'],
-  '--warning-ink': darkCss['--warning-ink'],
-  '--error-ink': darkCss['--error-ink'],
-  '--info-ink': darkCss['--info-ink'],
-  '--paper': darkCss['--paper'],
-  '--ink': darkCss['--ink'],
 } as const satisfies ThemeCssVariableMap;
 
 /** Light mode CSS custom properties (`:root[data-theme='light']`). */
 export const lightCssVariables = {
-  '--primary-color': themeColors.light.primary,
+  '--theme-primary-color': themeColors.light.primary,
+  '--theme-secondary-color': themeColors.light.secondary,
+  '--theme-accent-color': lightCss['--theme-accent-color'],
+  '--theme-primary-hover-color': lightCss['--theme-primary-hover-color'],
+  '--theme-button-fg-color': resolveButtonForeground('light', themeColors.light.primary, themeColors.light.secondary),
+  '--theme-paper-color': lightCss['--theme-paper-color'],
+  '--theme-ink-color': lightCss['--theme-ink-color'],
+  '--theme-text-color': themeColors.light.text,
+  '--theme-text-secondary-color': lightCss['--theme-text-secondary-color'],
+  '--theme-main-background-color': themeColors.light.background,
+  '--theme-main-background-secondary-color': themeColors.light.backgroundSecondary,
+  '--theme-surface-color': lightCss['--theme-surface-color'],
+  '--theme-surface-variant-color': lightCss['--theme-surface-variant-color'],
+  '--theme-border-color': lightCss['--theme-border-color'],
+  '--theme-border-strong-color': lightCss['--theme-border-strong-color'],
+  '--theme-focus-ring-color': lightCss['--theme-focus-ring-color'],
+  '--theme-link-color': lightCss['--theme-link-color'],
+  '--theme-primary-fill-color': lightCss['--theme-primary-fill-color'],
+  '--theme-on-primary-color': lightCss['--theme-on-primary-color'],
+  '--theme-success-hue-color': lightCss['--theme-success-hue-color'],
+  '--theme-warning-hue-color': lightCss['--theme-warning-hue-color'],
+  '--theme-error-hue-color': lightCss['--theme-error-hue-color'],
+  '--theme-info-hue-color': semanticColors.info,
+  '--theme-success-ink-color': lightCss['--theme-success-ink-color'],
+  '--theme-warning-ink-color': lightCss['--theme-warning-ink-color'],
+  '--theme-error-ink-color': lightCss['--theme-error-ink-color'],
+  '--theme-info-ink-color': lightCss['--theme-info-ink-color'],
+  '--theme-form-background-color': lightCss['--theme-form-background-color'],
+  '--theme-form-background-disabled-color': lightCss['--theme-form-background-disabled-color'],
+  '--theme-form-placeholder-color': lightCss['--theme-form-placeholder-color'],
+  '--theme-form-invalid-color': lightCss['--theme-form-invalid-color'],
   '--primary-default': themeColors.light.primary,
-  '--primary-hover': lightCss['--primary-hover'],
-  '--secondary-color': themeColors.light.secondary,
-  '--tertiary-color': lightCss['--tertiary-color'],
-  '--text-color': themeColors.light.text,
-  '--text-secondary-color': lightCss['--text-secondary-color'],
-  '--main-background': themeColors.light.background,
-  '--main-background-secondary': themeColors.light.backgroundSecondary,
-  '--surface-color': lightCss['--surface-color'],
-  '--surface-variant': lightCss['--surface-variant'],
-  '--border-color': lightCss['--border-color'],
-  '--focus-ring': lightCss['--focus-ring'],
-  '--accent-color': lightCss['--accent-color'],
-  '--success': lightCss['--success'],
-  '--warning': lightCss['--warning'],
-  '--error': lightCss['--error'],
-  '--info': semanticColors.info,
   '--border-radius-md': BORDER_RADIUS_MD,
-  '--form-background': lightCss['--form-background'],
-  '--form-background-disabled': lightCss['--form-background-disabled'],
-  '--form-border-color': lightCss['--border-strong'],
-  '--form-placeholder': lightCss['--form-placeholder'],
-  '--form-focus-ring': lightCss['--focus-ring'],
-  '--form-invalid-color': lightCss['--form-invalid-color'],
-  '--button-fg': resolveButtonForeground('light', themeColors.light.primary, themeColors.light.secondary),
-  '--link-color': lightCss['--link-color'],
-  '--border-strong': lightCss['--border-strong'],
-  '--primary-fill': lightCss['--primary-fill'],
-  '--on-primary': lightCss['--on-primary'],
-  '--success-ink': lightCss['--success-ink'],
-  '--danger-ink': lightCss['--danger-ink'],
-  '--warning-ink': lightCss['--warning-ink'],
-  '--error-ink': lightCss['--error-ink'],
-  '--info-ink': lightCss['--info-ink'],
-  '--paper': lightCss['--paper'],
-  '--ink': lightCss['--ink'],
 } as const satisfies ThemeCssVariableMap;
 
 /** @deprecated Prefer `darkCssVariables` — alias kept for existing call sites. */
@@ -189,37 +192,70 @@ export function getCssVariablesForMode(mode: 'light' | 'dark'): ThemeCssVariable
 
 /**
  * Roles the stylesheet derives at runtime from the five inputs (paper / ink → neutral scale,
- * status hue → status inks). They must never be written inline on `:root`: an inline hex would
- * pin the build-time default and a live `--paper` / `--ink` change would stop reaching them.
- * The stylesheet already switches them per mode (`:root` / `[data-theme='light']`).
+ * status hue → status inks), plus the active paper / ink and button-text pointers. They must never
+ * be written inline on `:root`: an inline hex would pin the build-time default and a live paper /
+ * ink change would stop reaching them. The stylesheet already switches them per mode
+ * (`:root` / `[data-theme='light']`). {@link withoutModeColors} drops them (with every mode colour,
+ * {@link MODE_COLOR_TOKENS}) from what the colour-mode writer and the built-in light / dark packs
+ * pin. The palette packs and `Theme.create` / `Theme.apply({ colors })` still write some of them
+ * inline — see the TODO (`docs/web/features/interaction-redesign.md#todo`).
  */
 export const DERIVED_ROLE_TOKENS: ReadonlySet<string> = new Set([
-  '--paper',
-  '--ink',
-  '--main-background',
-  '--main-background-secondary',
-  '--surface-color',
-  '--surface-variant',
-  '--text-color',
-  '--text-secondary-color',
-  '--border-color',
-  '--border-strong',
-  '--form-border-color',
-  '--success-ink',
-  '--warning-ink',
-  '--error-ink',
-  '--info-ink',
-  '--danger-ink',
+  '--theme-paper-color',
+  '--theme-ink-color',
+  '--theme-main-background-color',
+  '--theme-main-background-secondary-color',
+  '--theme-surface-color',
+  '--theme-surface-variant-color',
+  '--theme-text-color',
+  '--theme-text-secondary-color',
+  '--theme-border-color',
+  '--theme-border-strong-color',
+  '--theme-success-ink-color',
+  '--theme-warning-ink-color',
+  '--theme-error-ink-color',
+  '--theme-info-ink-color',
+  '--theme-button-fg-color',
 ]);
 
-/** A token map without the runtime-derived roles (safe to write inline). */
-export function withoutDerivedRoles<T extends Record<string, string>>(tokens: T): Partial<T> {
-  return Object.fromEntries(Object.entries(tokens).filter(([key]) => !DERIVED_ROLE_TOKENS.has(key))) as Partial<T>;
+/**
+ * Every colour the stylesheet switches per mode: each `--theme-…-color` name in the rename map
+ * (R-T3d). The stylesheet already declares both modes' values (and the runtime writes the per-mode
+ * variations), so an inline write of one of these would pin a single mode's value over the other.
+ */
+export const MODE_COLOR_TOKENS: ReadonlySet<string> = new Set(Object.values(COLOR_RENAME_MAP.renames));
+
+/**
+ * A per-mode variation name: `--theme-<what>-{light,dark}{,-background}-color` (the paper / ink
+ * pairs, the solid-colour variations, `--theme-button-fg-dark-color`, `--theme-primary-fill-*`).
+ * core/web writes these inline once for both modes; the stylesheet switches the active names, so
+ * the full-replace writers (`setTokens`: colour mode, `Theme.set` / `select` / `applyModeVariables`,
+ * `resetTokens`) keep them. Remove them with `removeTokens`.
+ */
+const MODE_VARIATION_NAME = /^--theme-[a-z0-9-]+-(?:light|dark)(?:-background)?-color$/;
+
+export function isModeVariationName(name: string): boolean {
+  return MODE_VARIATION_NAME.test(name);
 }
 
-/** Tokens a colour-mode switch writes inline: the mode map minus the runtime-derived roles. */
+/** A token map without mode colours or runtime-derived roles (what the mode writers may pin). */
+export function withoutModeColors<T extends Record<string, string>>(tokens: T): Partial<T> {
+  return Object.fromEntries(
+    Object.entries(tokens).filter(([key]) => !DERIVED_ROLE_TOKENS.has(key) && !MODE_COLOR_TOKENS.has(key))
+  ) as Partial<T>;
+}
+
+/**
+ * Tokens a colour-mode switch writes inline: the mode map minus every mode colour and derived
+ * role — `--border-radius-md` and the palette name `--primary-default`. The stylesheet declares
+ * `--primary-default` on `:root` only (the dark value), so this pin is what switches it per mode.
+ * It no longer feeds `--text-shadow-root` (that mixes `--theme-primary-color`); the pin only serves
+ * the Theme API and the PrimeVue hover fallback (`primevue.ts`) — see the TODO. The
+ * `--tertiary-color` pin was dropped in Task 8 (R-T8h): the stylesheet already switches it per
+ * mode (`var(--oxblood-color)`) to the same values.
+ */
 export function getInlineTokensForMode(mode: 'light' | 'dark'): Record<string, string> {
-  return withoutDerivedRoles(getCssVariablesForMode(mode) as Record<string, string>) as Record<string, string>;
+  return withoutModeColors(getCssVariablesForMode(mode) as Record<string, string>) as Record<string, string>;
 }
 
 export function getThemeColor(key: ThemeKey, isDark = false): string | null {

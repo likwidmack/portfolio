@@ -8,9 +8,9 @@
   @include portfolio-box-contain;
   min-height: 0;
   padding: 0;
-  border-right: 1px solid var(--portfolio-rule);
-  border-bottom: 1px solid var(--portfolio-rule);
-  background: color-mix(in srgb, var(--surface-color) 88%, transparent);
+  border-right: 1px solid var(--portfolio-rule-color);
+  border-bottom: 1px solid var(--portfolio-rule-color);
+  background: color-mix(in srgb, var(--theme-surface-color) 88%, transparent);
   overflow: hidden;
   position: relative;
 
@@ -21,7 +21,7 @@
     line-height: 0.95;
 
     a {
-      color: var(--text-color);
+      color: var(--theme-text-color);
       text-decoration: none;
     }
   }
@@ -39,7 +39,7 @@
   }
 
   &:focus-within {
-    outline: 2px solid var(--focus-ring);
+    outline: 2px solid var(--theme-focus-ring-color);
     outline-offset: 2px;
   }
 
@@ -53,7 +53,7 @@
   &__index {
     @include portfolio-type-eyebrow;
     font-size: max(var(--type-min, 12px), 0.625rem);
-    color: var(--text-secondary-color, var(--text-color));
+    color: var(--theme-text-secondary-color, var(--theme-text-color));
     white-space: nowrap;
   }
 
@@ -64,7 +64,7 @@
 
   dt {
     @include portfolio-type-eyebrow;
-    color: var(--primary-color);
+    color: var(--theme-primary-ink-color);
     font-size: 0.75rem;
     font-weight: 800;
     letter-spacing: 0.08em;
@@ -84,8 +84,8 @@
     max-width: 100%;
     aspect-ratio: var(--work-card-media-ratio);
     overflow: hidden;
-    border-bottom: 1px solid var(--portfolio-rule);
-    background: color-mix(in srgb, var(--surface-color) 70%, var(--main-background) 30%);
+    border-bottom: 1px solid var(--portfolio-rule-color);
+    background: color-mix(in srgb, var(--theme-surface-color) 70%, var(--theme-main-background-color) 30%);
 
     // UiImage (its root carries this scope) fills the media cell; the photo inside already covers
     // its frame. The aspect is owned by this box.
@@ -117,7 +117,7 @@
         object-fit: contain;
         object-position: center;
         padding: 0.85rem;
-        background: color-mix(in srgb, var(--surface-color) 82%, #000 18%);
+        background: color-mix(in srgb, var(--theme-surface-color) 82%, var(--theme-paper-dark-color) 18%);
       }
     }
   }
@@ -139,8 +139,8 @@
     li {
       // Meta chrome (moved from app-global `_globals.scss`), then the pill overrides.
       @include portfolio-type-meta;
-      color: var(--text-secondary-color, var(--text-color));
-      border: 1px solid var(--portfolio-rule);
+      color: var(--theme-text-secondary-color, var(--theme-text-color));
+      border: 1px solid var(--portfolio-rule-color);
       border-radius: 999px;
       padding: 0.25rem 0.55rem;
       font-size: 0.78rem;
@@ -149,7 +149,7 @@
 
   &__link {
     margin-top: auto;
-    color: var(--link-color, var(--primary-color));
+    color: var(--theme-link-color, var(--theme-primary-ink-color));
     font-weight: 800;
   }
 }
@@ -222,7 +222,7 @@
       min-height: 100%;
       align-self: stretch;
       border-bottom: 0;
-      border-right: 1px solid var(--portfolio-rule);
+      border-right: 1px solid var(--portfolio-rule-color);
     }
 
     .work-card__body {

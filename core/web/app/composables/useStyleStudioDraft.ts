@@ -1,21 +1,23 @@
 import {
   brandRolesFromPack,
-  snapshotFromLive,
+  createStyleSetup,
   withAccent,
   withPrimary,
   withSecondary,
   type BackgroundMode,
+  type BackgroundOptionVariable,
   type BrandPackId,
   type BrandRolesState,
   type MotionPreference,
   type PaperInkState,
   type StyleSetup,
   type StyleSetupMode,
-} from '#shared/personalization';
+} from '#shared/preferences';
 
 /**
  * Style Studio session draft helpers — edits preview via personalization with
- * `{ persist: false }`; Apply / Save commit through `usePersonalization`.
+ * `{ persist: false }` → Preferences.preview; Apply → Preferences.commit;
+ * Discard → Preferences.discard; Save → Preferences.setups.save (via adapter).
  */
 export function useStyleStudioDraft() {
   const personalization = usePersonalization();
@@ -29,6 +31,15 @@ export function useStyleStudioDraft() {
 
   const clearDirty = () => {
     dirty.value = false;
+  };
+
+  const pulseApplied = () => {
+    appliedPulse.value = true;
+    if (import.meta.client) {
+      window.setTimeout(() => {
+        appliedPulse.value = false;
+      }, 600);
+    }
   };
 
   const setDraftPrimary = (hex: string) => {
@@ -82,6 +93,12 @@ export function useStyleStudioDraft() {
     markDirty();
   };
 
+  /** One Background → Custom option (empty clears it back to the preset / theme default). */
+  const setDraftBackgroundOption = (variable: BackgroundOptionVariable, value: string | null) => {
+    personalization.setBackgroundOption(variable, value, { persist: false });
+    markDirty();
+  };
+
   const setDraftMode = (next: StyleSetupMode) => {
     personalization.setMode(next, { persist: false });
     markDirty();
@@ -97,49 +114,34 @@ export function useStyleStudioDraft() {
     markDirty();
   };
 
+  /** Apply → Preferences.commit (via personalization.commitLive). */
   const applyDraft = () => {
     personalization.commitLive({
       activeSetupId: personalization.activeSetupId.value,
     });
     clearDirty();
-    appliedPulse.value = true;
-    if (import.meta.client) {
-      window.setTimeout(() => {
-        appliedPulse.value = false;
-      }, 600);
-    }
+    pulseApplied();
   };
 
+  /** Discard → Preferences.discard (via personalization.revertToCommitted). */
   const revertDraft = () => {
     personalization.revertToCommitted();
     clearDirty();
     saveName.value = '';
   };
 
-  const saveDraftAs = (name: string, id?: string): StyleSetup => {
+  /** Save → Preferences.setups.save + commit. `null` when the setup limit is reached (draft stays dirty). */
+  const saveDraftAs = (name: string, id?: string): StyleSetup | null => {
     const setup = personalization.saveSetup(name, id);
+    if (!setup) return null;
     clearDirty();
     saveName.value = '';
-    appliedPulse.value = true;
-    if (import.meta.client) {
-      window.setTimeout(() => {
-        appliedPulse.value = false;
-      }, 600);
-    }
+    pulseApplied();
     return setup;
   };
 
   const snapshotDraft = (name: string, id?: string): StyleSetup =>
-    snapshotFromLive({
-      name,
-      id,
-      brandRoles: personalization.brandRoles.value,
-      motion: personalization.motion.value,
-      background: personalization.background.value,
-      backgroundCustom: personalization.backgroundCustom.value,
-      mode: personalization.mode.value,
-      paperInk: personalization.paperInk.value,
-    });
+    createStyleSetup(name, personalization.currentDocument(), id);
 
   const previewRoles = (
     roles: BrandRolesState,
@@ -166,6 +168,7 @@ export function useStyleStudioDraft() {
     setDraftBackground,
     setDraftBackgroundCustom,
     setDraftMode,
+    setDraftBackgroundOption,
     setDraftPaperInk,
     setDraftPaperInkLinked,
     resetDraftPaperInk,

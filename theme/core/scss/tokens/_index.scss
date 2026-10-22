@@ -9,10 +9,12 @@
 @forward 'contrast';
 @forward 'color-fns';
 @forward 'variables';
+@forward 'variations.generated';
 @forward 'custom';
 // Empty by default — third parties alias `@tgmc/theme/scss/tokens/overrides`.
 @forward 'overrides';
 @forward 'button-mixins';
+@forward 'focus';
 
 // Placeholder aliases kept for in-module `@extend` / media-query overrides.
 %button-base {

@@ -26,7 +26,8 @@ export interface CaseStudy {
 }
 
 export interface DecisionCard {
-  id: string;
+  /** Stable public fragment id (`/process#…`). Not Nuxt Content's document `id`. */
+  slug: string;
   date: string;
   source: 'codex' | 'chatgpt' | 'github' | 'adobe';
   title: string;

@@ -1,7 +1,7 @@
 // @vitest-environment node
 
 import type { AdminBlogApi } from '@tgmc/web-layer-admin/server/utils/admin-blog-api';
-import { requireAdminBlog, requirePostId } from '@tgmc/web-layer-admin/server/utils/admin-handler';
+import { checkAdminSession, requireAdminBlog, requirePostId } from '@tgmc/web-layer-admin/server/utils/admin-handler';
 import type { H3Event } from 'h3';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -20,6 +20,9 @@ function makeEvent(partial: { authorization?: string; id?: string; adminBlog?: A
         headers: {
           authorization: partial.authorization,
         },
+      },
+      res: {
+        setHeader: vi.fn(),
       },
     },
   } as unknown as H3Event;
@@ -52,6 +55,30 @@ describe('requireAdminBlog', () => {
     } as unknown as AdminBlogApi;
     const event = makeEvent({ authorization: 'Bearer secret', adminBlog: api });
     expect(requireAdminBlog(event)).toBe(api);
+  });
+});
+
+describe('checkAdminSession (GET /api/admin/session)', () => {
+  beforeEach(() => {
+    useRuntimeConfig.mockReturnValue({ adminToken: 'secret' });
+  });
+
+  it('accepts the admin token', () => {
+    expect(checkAdminSession(makeEvent({ authorization: 'Bearer secret' }))).toEqual({ ok: true });
+  });
+
+  it.each([undefined, 'Bearer nope'])('rejects %s with 401', (authorization) => {
+    expect(() => checkAdminSession(makeEvent({ authorization }))).toThrow(expect.objectContaining({ statusCode: 401 }));
+  });
+
+  it.each(['Bearer secret', undefined])('sends Cache-Control: no-store (Authorization: %s)', (authorization) => {
+    const event = makeEvent({ authorization });
+    try {
+      checkAdminSession(event);
+    } catch {
+      // A missing token throws 401; the header must already be set.
+    }
+    expect(event.node.res.setHeader).toHaveBeenCalledWith('Cache-Control', 'no-store');
   });
 });
 

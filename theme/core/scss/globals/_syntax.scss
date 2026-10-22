@@ -34,12 +34,6 @@
   font-size: var(--font-size-sm);
   line-height: 1.7;
   tab-size: 2;
-
-  &:focus,
-  &:focus-visible,
-  &:hover {
-    opacity: 1;
-  }
 }
 
 /// Language pill on blocks and frames (`data-language` / Prism class).
@@ -52,9 +46,11 @@
   z-index: 1;
   padding: 0.1rem 0.45rem;
   border-radius: var(--border-radius-pill);
-  border: 1px solid color-mix(in srgb, var(--secondary-color) 24%, rgba($default-white, 0.5));
-  background-color: color-mix(in srgb, var(--secondary-color) 68%, rgba($default-white, 0.25));
-  color: color-mix(in srgb, rgba($default-white, 0.85) 62%, var(--secondary-color));
+  border: 1px solid color-mix(in srgb, var(--theme-secondary-color) 24%, rgba($default-white, 0.5));
+  // Text on a secondary fill: the `-background` variation is built so the ink reads ≥ 4.5:1 on it
+  // (the old white-on-68%-secondary mix read 1.8–2.8:1).
+  background-color: var(--theme-secondary-background-color);
+  color: var(--theme-ink-color);
   font-size: max(var(--type-min, 12px), 0.54rem);
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -90,7 +86,7 @@ pre {
   .shiki {
     &::selection,
     *::selection {
-      background-color: color-mix(in srgb, var(--secondary-color) 33%, transparent);
+      background-color: color-mix(in srgb, var(--theme-secondary-color) 33%, transparent);
     }
   }
 }
@@ -102,16 +98,22 @@ pre {
   align-items: stretch;
   gap: 0;
   padding: 0;
-  border: 1px solid color-mix(in srgb, var(--secondary-color) 32%, var(--text-secondary-color));
+  border: 1px solid color-mix(in srgb, var(--theme-secondary-color) 32%, var(--theme-text-secondary-color));
   border-radius: var(--border-radius-md);
-  background-color: color-mix(in srgb, var(--secondary-color) 20%, rgba(0, 0, 0, 0.75));
-  color: color-mix(in srgb, var(--secondary-color) 8%, var(--gray-100));
+  background-color: color-mix(in srgb, var(--theme-secondary-color) 20%, rgba(0, 0, 0, 0.75));
+  color: color-mix(in srgb, var(--theme-secondary-ink-color) 8%, var(--theme-gray-100-color));
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.18),
     var(--shadow-md);
   -webkit-backdrop-filter: blur(var(--blur-md));
   backdrop-filter: blur(var(--blur-md));
-  opacity: 0.65;
+
+  // The frame is the scroll container and a focusable region (UiCodeBlock: tabindex="0"), so keyboard users
+  // can scroll it; the site focus ring is the only focus cue (the resting fade is gone).
+  &:focus-visible {
+    outline: 2px solid var(--theme-focus-ring-color);
+    outline-offset: 2px;
+  }
 
   .syntax-line-numbers {
     position: sticky;
@@ -121,15 +123,18 @@ pre {
     margin: 0;
     padding: 2.2rem 0.65rem 1rem 0.85rem;
     list-style: none;
-    border-right: 1px solid color-mix(in srgb, var(--secondary-color) 28%, transparent);
-    background: color-mix(in srgb, var(--secondary-color) 18%, rgba(0, 0, 0, 0.72));
-    color: color-mix(in srgb, var(--secondary-color) 30%, rgba($default-white, 0.85));
+    border-right: 1px solid color-mix(in srgb, var(--theme-secondary-color) 28%, transparent);
+    background: color-mix(in srgb, var(--theme-secondary-color) 18%, rgba(0, 0, 0, 0.72));
+    // The code pane is dark in both modes, so a neutral that stays light in both: `--theme-gray-200-color`
+    // (neutral 600 dark / 100 light). Set on the `li` too — the prose `ol li` text colour would win otherwise.
+    color: var(--theme-gray-200-color);
     text-align: right;
     user-select: none;
 
     li {
       margin: 0;
       padding: 0;
+      color: inherit;
       min-height: 2.2em;
       font-size: 0.8em;
       font-variant-numeric: tabular-nums;
@@ -180,10 +185,10 @@ pre[data-language]::before,
 // Inline code (non-highlighted)
 :not(pre) > code {
   border-radius: var(--border-radius-sm);
-  background-color: color-mix(in srgb, var(--secondary-color) 24%, transparent);
-  border: 1px solid color-mix(in srgb, var(--secondary-color) 45%, var(--text-secondary-color));
-  color: color-mix(in srgb, var(--secondary-color) 47%, var(--text-color));
-  text-shadow: 0 -1px 1px var(--text-secondary-color);
+  background-color: color-mix(in srgb, var(--theme-secondary-color) 24%, transparent);
+  border: 1px solid color-mix(in srgb, var(--theme-secondary-color) 45%, var(--theme-text-secondary-color));
+  color: color-mix(in srgb, var(--theme-secondary-ink-color) 47%, var(--theme-text-color));
+  text-shadow: 0 -1px 1px var(--theme-text-secondary-color);
   padding: 0.14em 0.44em;
 }
 

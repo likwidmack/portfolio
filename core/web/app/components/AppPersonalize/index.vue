@@ -16,7 +16,12 @@ UiDialog(v-model:visible="open", header="Personalize", aria-label="Personalize t
           span {{ option.label }}
 
     .personalize__section
-      AppBackgroundPicker(v-model="backgroundModel", v-model:custom="backgroundCustomModel", name="theme-background")
+      AppBackgroundPicker(
+        v-model="backgroundModel",
+        v-model:custom="backgroundCustomModel",
+        v-model:options="backgroundOptionsModel",
+        name="theme-background"
+      )
 
     .grid-x.grid-margin-x.personalize__section
       .cell.small-12
@@ -61,7 +66,12 @@ UiDialog(v-model:visible="open", header="Personalize", aria-label="Personalize t
  * setup/pack quick-apply, link to Style Studio.
  * Brand role editors and motion live on `/styles` (Style Studio).
  */
-import type { BackgroundMode, BrandPackId } from '#shared/personalization';
+import {
+  applyBackgroundOptionChanges,
+  type BackgroundMode,
+  type BackgroundOptions,
+  type BrandPackId,
+} from '#shared/preferences';
 import { Color } from '@tgmc/theme';
 import type { ThemeModePreference } from '@tgmc/theme/tokens';
 
@@ -69,13 +79,15 @@ const open = defineModel<boolean>('open', { default: false });
 const {
   mode,
   background,
-  backgroundCustom,
+  backgroundCustomShown,
+  backgroundOptions: personalizationBackgroundOptions,
   brandPacks,
   styleSetups,
   activeSetupId,
   setMode,
   setBackground,
   setBackgroundCustom,
+  setBackgroundOption,
   applyBrandPack,
   applySetup,
   reset,
@@ -97,8 +109,15 @@ const backgroundModel = computed({
   set: (value: BackgroundMode) => setBackground(value),
 });
 
+// Quick apply commits each option (Personalize has no draft).
+const backgroundOptionsModel = computed({
+  get: () => personalizationBackgroundOptions.value,
+  set: (next: BackgroundOptions) =>
+    applyBackgroundOptionChanges(personalizationBackgroundOptions.value, next, setBackgroundOption),
+});
+
 const backgroundCustomModel = computed({
-  get: () => backgroundCustom.value,
+  get: () => backgroundCustomShown.value,
   set: (value: string) => onCustomBackground(value),
 });
 
@@ -128,11 +147,11 @@ function onCustomBackground(value: string | number | null | undefined): void {
   setBackgroundCustom(hex);
 }
 
-/** Defer unmount so the closing click cannot fall through onto phone chrome (Menu). */
+/** Close after this click finishes so it cannot fall through onto phone chrome (Menu). */
 function closeDialog(): void {
-  void nextTick(() => {
+  window.setTimeout(() => {
     open.value = false;
-  });
+  }, 0);
 }
 
 function openStudio(): void {

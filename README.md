@@ -35,7 +35,7 @@ This repository is the source hub for the [Nuxt 4](docs/web/README.md) SSR site 
 | ------------ | --------------------------------------------------------- |
 | `core/web`   | Nuxt 4 app (`@tgmc/web`), Nitro SSR                       |
 | `theme/core` | `@tgmc/theme` design tokens                               |
-| `packages/*` | `utilities`, `media-player`, `likwidlibs`, `web-layer-admin` |
+| `packages/*` | `utilities`, `image`, `media`, `media-aws`, `media-client`, `media-nuxt`, `media-player`, `likwidlibs`, `nuxt-layer-base`, `web-layer-admin` |
 
 ## Requirements
 

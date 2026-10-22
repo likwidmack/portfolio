@@ -1,0 +1,91 @@
+# CD — AWS SAM production deploy for @tgmc/<%= name %>. Mirrors .github/workflows/cd-aws-prod.yml:
+#   - GitHub Release published (non-prerelease) → deploy the tagged commit after production Environment approval
+#   - workflow_dispatch → requires input confirm=deploy + production Environment approval
+name: CD Deploy (<%= name %> - AWS SAM production)
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type deploy to confirm production release'
+        required: true
+        default: ''
+
+permissions:
+  contents: read
+  id-token: write # AWS OIDC
+
+concurrency:
+  group: cd-deploy-<%= name %>-prod
+  cancel-in-progress: false
+
+jobs:
+  deploy-production:
+    name: SAM deploy (production)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || !github.event.release.prerelease
+    environment: production
+    env:
+      HUSKY: '0'
+      AWS_REGION: ${{ vars.AWS_REGION || secrets.AWS_REGION || 'us-west-2' }}
+    steps:
+      - name: Confirm production intent (manual dispatch only)
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          if [ "${{ github.event.inputs.confirm }}" != "deploy" ]; then
+            echo "Refusing production deploy: set input confirm=deploy"
+            exit 1
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'release' && github.event.release.tag_name || github.ref }}
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Setup SAM CLI
+        uses: aws-actions/setup-sam@v2
+        with:
+          use-installer: true
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build workspace libraries
+        run: npm run build:libs
+
+      - name: Build SSR app for Lambda
+        run: npx nx run @tgmc/<%= name %>:build
+        env:
+          SYS_ENV: production
+          NITRO_PRESET: aws_lambda
+
+      - name: SAM deploy
+        run: |
+          sam deploy \
+            --template-file <%= projectRoot %>/infra/template.yaml \
+            --stack-name tgmc-<%= name %>-prod \
+            --parameter-overrides Stage=production \
+            --capabilities CAPABILITY_IAM \
+            --resolve-s3 \
+            --no-confirm-changeset \
+            --no-fail-on-empty-changeset
+
+      - name: Smoke test
+        run: |
+          url=$(aws cloudformation describe-stacks --stack-name tgmc-<%= name %>-prod \
+            --query "Stacks[0].Outputs[?OutputKey=='HttpApiUrl'].OutputValue" --output text)
+          curl --fail --silent --show-error --retry 5 --retry-delay 5 --output /dev/null "$url"

@@ -13,6 +13,8 @@ export * from './lib/index.js';
 export { buildCdnUrl, createCdnHelper, isCdnUrl, resolveCdnPath, resolveCdnPaths, stripCdnPrefix } from './lib/cdn.js';
 export type { CdnConfig } from './lib/cdn.js';
 export { default as Logging } from './lib/class-models/logging.js';
+export { DATA_BACKENDS, resolveDataBackend } from './lib/data-backend.js';
+export type { DataBackend } from './lib/data-backend.js';
 export { default as deepAssign } from './lib/deepAssign.js';
 export { default as deepSet } from './lib/deepSet.js';
 export { EventHandler, EventsHandler, default as NodeEventsHandler } from './lib/node/events-handler.js';

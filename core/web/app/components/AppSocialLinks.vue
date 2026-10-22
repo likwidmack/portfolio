@@ -64,16 +64,16 @@ const links = computed(() => socialLinks(profile.value, { includeEmail: props.in
   min-width: var(--touch-target, 44px);
   padding-inline: 0.5rem;
   border-radius: var(--border-radius-sm, 0.25rem);
-  color: var(--text-secondary-color, var(--text-color));
+  color: var(--theme-text-secondary-color, var(--theme-text-color));
   text-decoration: none;
 
   &:hover {
-    color: var(--text-color);
-    background: color-mix(in srgb, var(--text-color) 6%, transparent);
+    color: var(--theme-text-color);
+    background: color-mix(in srgb, var(--theme-text-color) 6%, transparent);
   }
 
   &:focus-visible {
-    outline: 2px solid var(--focus-ring, var(--primary-color));
+    outline: 2px solid var(--theme-focus-ring-color, var(--theme-primary-color));
     outline-offset: 2px;
   }
 }

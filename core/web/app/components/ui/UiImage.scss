@@ -6,8 +6,9 @@
   width: 100%;
   max-width: 100%;
   overflow: hidden;
-  background: var(--ui-image-bg, var(--surface-color));
-  color: var(--ui-image-ink, var(--text-color));
+  // A dominant colour (image data) and its ink are set inline by the component.
+  background: var(--theme-surface-color);
+  color: var(--theme-text-color);
 
   &__lqip,
   &__img {

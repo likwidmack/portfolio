@@ -1,0 +1,33 @@
+/// Brand / palette tokens for mytheme — prioritize global CSS vars for unionizing.
+/// Keep a concrete solid primary for Sass tint/shade scales in theme-base `_colors.scss`.
+
+/// Hex used only for generated `--primary-*` shade scales (tint/shade need concrete colors).
+/// Matches theme `$primary-color-dark` (ember / deep red brand).
+$primaryColorSolid: #ac1922 !default;
+
+/// Runtime brand color — follows `@layer theme` `:root` tokens.
+$primaryColor: var(--theme-primary-color) !default;
+$primaryDarkColor: var(--theme-primary-hover-color) !default;
+$primaryDarkerColor: color-mix(in srgb, var(--theme-primary-color) 72%, black) !default;
+$primaryTextColor: var(--theme-button-fg-color) !default;
+
+/// Brand accent (complementary of primary) — Nora styled preset also maps active → `--theme-accent-color`.
+$accentColor: var(--theme-accent-color) !default;
+
+$textColor: var(--theme-text-color) !default;
+$textSecondaryColor: var(--theme-text-secondary-color) !default;
+
+$colors: (
+  'blue': #2196f3,
+  'green': #4caf50,
+  'yellow': #fbc02d,
+  'cyan': #00bcd4,
+  'pink': #e91e63,
+  'indigo': #3f51b5,
+  'teal': #009688,
+  'orange': #f57c00,
+  'bluegray': #607d8b,
+  'purple': #9c27b0,
+  'red': #ff4032,
+  'primary': $primaryColorSolid,
+) !default;

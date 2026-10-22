@@ -157,7 +157,7 @@ usePortfolioSeo({
     font-size: 0.75rem;
     letter-spacing: 0.04em;
     word-break: break-all;
-    color: var(--text-secondary-color, inherit); // was a mistyped token → inherit
+    color: var(--theme-text-secondary-color, inherit); // was a mistyped token → inherit
   }
 }
 </style>

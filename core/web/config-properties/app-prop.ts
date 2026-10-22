@@ -5,7 +5,7 @@
  * @param siteTitle - Document title and Open Graph title
  * @param cdnUrl - Optional `NUXT_APP_CDN_URL` origin so `/favicon.ico` is not requested from Lambda
  */
-import { buildPersonalizationFoucScript } from '../shared/personalization';
+import { Preferences } from '../shared/preferences';
 import { resolvePublicAssetUrl } from './cdn-url';
 
 export const app = (siteDescription: string, siteTitle: string, cdnUrl = '') => ({
@@ -37,7 +37,7 @@ export const app = (siteDescription: string, siteTitle: string, cdnUrl = '') => 
     script: [
       {
         key: 'tgmc-theme-mode-fouc',
-        innerHTML: buildPersonalizationFoucScript(),
+        innerHTML: Preferences.foucScript(),
         tagPosition: 'head',
       },
     ],

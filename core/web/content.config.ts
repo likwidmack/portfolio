@@ -373,7 +373,9 @@ const caseStudySchema = z.object({
 });
 
 const decisionCardSchema = z.object({
-  id: z.string().min(1),
+  // Stable public fragment id (`/process#…`). Must not be named `id` — Nuxt Content
+  // reserves that for the document path and would clobber the JSON value.
+  slug: z.string().min(1),
   date: z.string(),
   source: z.enum(['codex', 'chatgpt', 'github', 'adobe']),
   title: z.string(),

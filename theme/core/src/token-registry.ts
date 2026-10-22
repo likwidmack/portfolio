@@ -1,3 +1,4 @@
+import { normalizeColorName, normalizeColorNames } from './color-rename.js';
 import {
   applyFoundationBridge,
   applyPrimeVueBridge,
@@ -5,7 +6,7 @@ import {
   clearPrimeVueBridge,
   removeThemeVariables,
 } from './set-theme-variable.js';
-import { defaultCssVariables, withoutDerivedRoles } from './tokens.js';
+import { getInlineTokensForMode, isModeVariationName } from './tokens.js';
 
 /** CSS custom-property map (keys with or without `--` prefix). */
 export type ThemeTokenMap = Record<string, string>;
@@ -40,16 +41,28 @@ function normalizeTokenName(property: string): string {
   return property.startsWith('--') ? property : `--${property}`;
 }
 
+/**
+ * Normalize keys to `--name` and move each old colour name to its `--theme-…-color` name
+ * (backward-compatible input, R-T8c): a raw `updateTokens({ '--primary-color': … })` writes
+ * `--theme-primary-color` with the same value and never the old name, which the stylesheet no
+ * longer declares. A new name the patch sets explicitly wins; retired names are dropped.
+ */
 function normalizeTokenMap(variables: ThemeTokenMap): ThemeTokenMap {
   const normalized: ThemeTokenMap = {};
   for (const [key, value] of Object.entries(variables)) {
     if (value == null) continue;
     normalized[normalizeTokenName(key)] = String(value);
   }
-  return normalized;
+  return normalizeColorNames(normalized);
 }
 
-const state: ThemeTokenMap = { ...defaultCssVariables };
+/** One key, `--`-prefixed and moved to its new colour name (`null` for a retired name). */
+function normalizeKey(name: string): string | null {
+  return normalizeColorName(normalizeTokenName(name));
+}
+
+// Mirrors what is inline on `:root`: nothing colour-related until a writer runs (R-T3d).
+const state: ThemeTokenMap = { ...getInlineTokensForMode('dark') };
 const listeners = new Set<ThemeTokenListener>();
 const sources = new Map<string, ThemeTokenSource>();
 
@@ -81,9 +94,10 @@ export function getTokens(): Readonly<ThemeTokenMap> {
   return { ...state };
 }
 
-/** Read one token (accepts name with or without `--`). */
+/** Read one token (accepts name with or without `--`; an old colour name reads its new name). */
 export function getToken(name: string): string | undefined {
-  return state[normalizeTokenName(name)];
+  const key = normalizeKey(name);
+  return key === null ? undefined : state[key];
 }
 
 /**
@@ -101,17 +115,25 @@ export function updateTokens(
   return getTokens();
 }
 
-/** Replace the entire token map (still merges onto a fresh object). */
+/**
+ * Replace the entire token map (still merges onto a fresh object). The per-mode colour map
+ * (`isModeVariationName`: `--theme-…-{light,dark}{,-background}-color`) is kept unless the new map
+ * sets it: the runtime writes it once for both modes and a mode switch must not wipe it (Task 3
+ * fix round 1). Use {@link removeTokens} to drop those names.
+ */
 export function setTokens(
   tokens: ThemeTokenMap,
   options: ThemeBridgeOptions & { source?: string } = {}
 ): Readonly<ThemeTokenMap> {
   const normalized = normalizeTokenMap(tokens);
-  const removed = Object.keys(state).filter((key) => !(key in normalized));
+  const kept = Object.fromEntries(
+    Object.entries(state).filter(([key]) => isModeVariationName(key) && !(key in normalized))
+  );
+  const removed = Object.keys(state).filter((key) => !(key in normalized) && !(key in kept));
   for (const key of Object.keys(state)) {
     delete state[key];
   }
-  Object.assign(state, normalized);
+  Object.assign(state, kept, normalized);
   if (!options.dryRun) {
     if (removed.length > 0) {
       removeThemeVariables(removed);
@@ -127,9 +149,27 @@ export function setTokens(
   return getTokens();
 }
 
-/** Reset registry to package defaults and re-apply to the DOM. */
+/**
+ * Remove tokens from the registry and from `:root` inline styles (keeps the registry and the DOM in
+ * sync — e.g. core/web clearing its colour map when the visitor returns to the defaults).
+ */
+export function removeTokens(
+  names: readonly string[],
+  options: ThemeBridgeOptions & { source?: string } = {}
+): Readonly<ThemeTokenMap> {
+  const normalized = names.map(normalizeKey).filter((key): key is string => key !== null);
+  for (const key of normalized) delete state[key];
+  if (!options.dryRun) removeThemeVariables(normalized);
+  notify({}, options.source ?? 'api:remove');
+  return getTokens();
+}
+
+/**
+ * Reset registry to package defaults and re-apply to the DOM (no mode colour is pinned — R-T3d).
+ * The runtime per-mode colour map is kept (see {@link setTokens}).
+ */
 export function resetTokens(options: ThemeBridgeOptions = {}): Readonly<ThemeTokenMap> {
-  return setTokens({ ...withoutDerivedRoles(defaultCssVariables) } as ThemeTokenMap, { ...options, source: 'reset' });
+  return setTokens({ ...getInlineTokensForMode('dark') } as ThemeTokenMap, { ...options, source: 'reset' });
 }
 
 /**
@@ -181,8 +221,8 @@ export async function applyAllTokenSources(options: ThemeBridgeOptions = {}): Pr
  * import { defineTokenPack, registerTokenSource, applyTokenSource } from '@tgmc/theme/tokens';
  *
  * const brand = defineTokenPack('acme-brand', () => ({
- *   '--primary-color': '#0a7',
- *   '--accent-color': '#f90',
+ *   '--theme-primary-color': '#0a7',
+ *   '--theme-accent-color': '#f90',
  * }));
  * registerTokenSource(brand);
  * await applyTokenSource('acme-brand', { primevue: true });

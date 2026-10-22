@@ -1,48 +1,96 @@
-// Layer 2 — app global tokens. Only `--portfolio-*` atmosphere tokens plus the app's brand overrides of
+// Layer 2 — app global tokens. Only `--portfolio-*` app tokens plus the app's brand overrides of
 // theme tokens (IBM Plex type stacks, type-recipe metrics). Emitted once via portfolio-launch.scss.
 // Layout, space, radius, shadow, ratio and colour-role tokens come from the theme — never redeclare
 // them here (`--page-*`, `--space-*`, `--border-radius-*`, `--shadow-*`, `--*-ratio`, roles, …).
 // Unused `--portfolio-*` aliases were archived: theme/core/scss/_archive/2026-09-24-app-global/.
-// Proven color twins (teal / ivory / ink): bridge to theme CSS vars or Sass tokens — no web hex SoT.
-// `--portfolio-teal` aliases the theme's `--teal-signal` (success hue); the theme itself stays app-agnostic.
-
-@use 'sass:color';
-@use 'theme/scss/tokens' as *;
+//
+// Colour system (docs/superpowers/specs/2026-09-24-color-system-design.md): every colour variable
+// here is `--portfolio-<stem>-color` and holds no colour of its own — only the theme's active
+// colours (`--theme-{paper,ink,primary,accent,success}-color`, which switch per mode) and
+// `color-mix()` blends of them, so Style Studio edits reach the atmosphere live. The blend recipes
+// are mirrored in `shared/portfolio-chrome.ts` (PORTFOLIO_CHROME_BLENDS; tests keep them equal).
+// The old names (`--portfolio-rose`, `--portfolio-primary` …) are gone (colour system Task 8;
+// archived in theme/core/scss/_archive/2026-09-29-color-aliases/; map: `shared/portfolio-color-names.ts`).
+// Guard: tests/colors-scss.spec.ts.
+//
+// Mode order: the web `:root` recipes below are light-first (dark overrides in
+// `html[data-theme='dark']`), while the theme's `:root` default is dark (light in
+// `:root[data-theme='light']`). They only disagree before `data-theme` is set — i.e. without JS,
+// since the FOUC script sets it before first paint — when light recipes blend dark theme colours.
 
 :root {
-  // Accent / paper / ink SoT: theme + shared/personalization.ts (FOUC sets --accent-color).
-  // Width tokens (--page-screen-max / --page-shell-max / --prose-max / --page-pad) live in theme `_root.scss`.
-  // Coral stays an accent bridge (KTD2); Sass fallback is theme `$accent-color-dark`, not a web hex SoT.
-  --portfolio-primary: var(--portfolio-primary-dark, var(--theme-color));
-  --portfolio-secondary: var(--portfolio-secondary-dark, var(--theme-color-secondary));
-  --portfolio-accent: var(--portfolio-accent-dark, var(--theme-color-accent));
-  --portfolio-background-primary: var(--portfolio-background-primary-dark, var(--theme-background-color));
-  --portfolio-background-secondary: var(--portfolio-background-secondary-dark, var(--theme-background-color-secondary));
-  --portfolio-background-accent: var(--portfolio-background-accent-dark, var(--theme-background-color-accent));
+  // ── Preset / custom background roles (rename only) ─────────────────────────────────────────
+  // Style Studio presets write the per-mode `--portfolio-*-{light,dark}-color` names inline and
+  // Background → Custom writes `--portfolio-background-{primary,secondary,accent}-color`
+  // (shared/preferences/); untouched, they fall back to the theme colours.
+  --portfolio-primary-color: var(--portfolio-primary-dark-color, var(--theme-primary-color));
+  --portfolio-secondary-color: var(--portfolio-secondary-dark-color, var(--theme-secondary-color));
+  --portfolio-accent-color: var(--portfolio-accent-dark-color, var(--theme-accent-color));
+  --portfolio-background-primary-color: var(--portfolio-background-primary-dark-color, var(--theme-background-color));
+  --portfolio-background-secondary-color: var(
+    --portfolio-background-secondary-dark-color,
+    var(--theme-background-secondary-color)
+  );
+  --portfolio-background-accent-color: var(
+    --portfolio-background-accent-dark-color,
+    var(--theme-background-accent-color)
+  );
   --portfolio-background-image: var(--portfolio-background-image-dark, var(--theme-background-image));
   --portfolio-background-repeat: var(--theme-background-repeat);
   --portfolio-background-size: var(--theme-background-size);
   --portfolio-background-position: var(--theme-background-position);
   --portfolio-background-attachment: var(--theme-background-attachment);
   --portfolio-background-blend-mode: var(--theme-background-blend-mode);
-  --portfolio-coral: var(--accent-color, #{$accent-color-dark});
-  --portfolio-teal: var(--teal-signal);
-  // Default (pre–data-theme / light paper roles): ivory = light paper, ink = dark paper.
-  --portfolio-ivory: #{$main-background-light};
-  --portfolio-ink: #{$main-background-dark};
-  // Atmosphere chrome: keep --portfolio-* names; values from theme brand/oxblood/surface mixes (KD3).
-  --portfolio-rose: #{theme-lighten($oxblood-dark, 10%)};
-  --portfolio-rose-strong: #{$primary-color-dark};
-  --portfolio-rule: color-mix(in srgb, var(--text-color) 22%, transparent);
-  --portfolio-haze-1: #{color.mix($main-background-light, $oxblood-dark, 72%)};
-  --portfolio-haze-2: #{color.mix($main-background-light, $oxblood-dark, 78%)};
-  --portfolio-haze-3: #{color.mix($main-background-light, $oxblood-dark, 84%)};
-  --portfolio-haze-4: #{color.mix($main-background-light, $oxblood-dark, 90%)};
-  --portfolio-particle-strong: #{$primary-color-dark};
-  --portfolio-particle-mid: #{color.mix($oxblood-dark, $text-color-secondary-dark, 55%)};
-  --portfolio-particle-soft: #{color.mix($main-background-light, $oxblood-dark, 82%)};
-  --portfolio-grid-glow: #{color.mix($main-background-light, $oxblood-dark, 88%)};
-  --portfolio-grid-line: color-mix(in srgb, var(--portfolio-rose-strong) 26%, transparent);
+
+  // ── Atmosphere (light defaults; dark overrides below) ──────────────────────────────────────
+  // Blends of the active theme colours, tuned to stay close to the pre-blend look
+  // (before / after table: docs/web/features/app-scss.md).
+  --portfolio-coral-color: var(--theme-accent-color);
+  --portfolio-teal-color: var(--theme-success-color);
+  --portfolio-ivory-color: var(--theme-paper-color);
+  --portfolio-ink-color: var(--theme-ink-color);
+  // Links: the theme link ink (≥ 4.5:1 on page, surfaces and its own 12 % / 16 % washes); hover
+  // mixes it toward the text colour in OKLab, which keeps it ≥ 4.5:1.
+  --portfolio-rose-color: var(--theme-link-color);
+  --portfolio-rose-strong-color: color-mix(in oklab, var(--theme-link-color) 85%, var(--theme-text-color));
+  // Teal button (/about): the success fill with its paired text (≥ 4.5:1 by construction).
+  --portfolio-teal-fill-color: var(--theme-success-color);
+  --portfolio-on-teal-color: var(--theme-paper-color);
+  --portfolio-rule-color: color-mix(in srgb, var(--theme-ink-color) 21%, transparent);
+  --portfolio-haze-1-color: color-mix(
+    in srgb,
+    var(--theme-accent-color) 10%,
+    color-mix(in srgb, var(--theme-primary-color) 30%, var(--theme-paper-color))
+  );
+  --portfolio-haze-2-color: color-mix(
+    in srgb,
+    var(--theme-accent-color) 8%,
+    color-mix(in srgb, var(--theme-primary-color) 23%, var(--theme-paper-color))
+  );
+  --portfolio-haze-3-color: color-mix(
+    in srgb,
+    var(--theme-accent-color) 6%,
+    color-mix(in srgb, var(--theme-primary-color) 16%, var(--theme-paper-color))
+  );
+  --portfolio-haze-4-color: color-mix(
+    in srgb,
+    var(--theme-accent-color) 4%,
+    color-mix(in srgb, var(--theme-primary-color) 10%, var(--theme-paper-color))
+  );
+  --portfolio-particle-strong-color: color-mix(in srgb, var(--theme-primary-color) 71%, var(--theme-ink-color));
+  --portfolio-particle-mid-color: color-mix(in srgb, var(--theme-accent-color) 31%, var(--theme-primary-color));
+  --portfolio-particle-soft-color: color-mix(
+    in srgb,
+    var(--theme-accent-color) 6%,
+    color-mix(in srgb, var(--theme-primary-color) 19%, var(--theme-paper-color))
+  );
+  --portfolio-grid-glow-color: color-mix(
+    in srgb,
+    var(--theme-accent-color) 4%,
+    color-mix(in srgb, var(--theme-primary-color) 12%, var(--theme-paper-color))
+  );
+  --portfolio-grid-line-color: color-mix(in srgb, var(--portfolio-rose-strong-color) 26%, transparent);
+
   --portfolio-space: clamp(3rem, 7vw, 7rem);
   --portfolio-stack-gap: 1rem;
   --portfolio-stack-gap-lg: clamp(1.5rem, 4vw, 2.5rem);
@@ -68,35 +116,36 @@
 }
 
 html[data-theme='dark'] {
-  // Ivory → dark paper; ink → theme text ink (not $ink-* greys / not main-background alone).
-  --portfolio-ivory: var(--main-background);
-  --portfolio-ink: var(--text-color);
-  --portfolio-rose: #{theme-lighten($oxblood-dark, 28%)};
-  --portfolio-rose-strong: #{theme-lighten($oxblood-dark, 42%)};
-  --portfolio-haze-1: #{color.mix($main-background-dark, $oxblood-dark, 42%)};
-  --portfolio-haze-2: #{color.mix($main-background-dark, $oxblood-light, 55%)};
-  --portfolio-haze-3: #{theme-darken($oxblood-light, 4%)};
-  --portfolio-haze-4: #{theme-darken($oxblood-light, 10%)};
-  --portfolio-particle-strong: #{theme-lighten($primary-color-dark, 32%)};
-  --portfolio-particle-mid: #{theme-lighten($oxblood-dark, 28%)};
-  --portfolio-particle-soft: #{$text-color-dark};
-  --portfolio-particle-shadow-strong: 0 0 10px #{theme-add-alpha(theme-lighten($oxblood-dark, 28%), 0.7)};
-  --portfolio-grid-glow: #{theme-darken($oxblood-dark, 8%)};
-  --portfolio-grid-line: color-mix(in srgb, var(--portfolio-rose) 50%, transparent);
+  --portfolio-teal-color: color-mix(in srgb, var(--theme-success-color) 87%, var(--theme-paper-color));
+  --portfolio-ink-color: color-mix(in srgb, var(--theme-ink-color) 97%, var(--theme-paper-color));
+  --portfolio-rose-color: var(--theme-link-color);
+  --portfolio-rose-strong-color: color-mix(in oklab, var(--theme-link-color) 50%, var(--theme-text-color));
+  --portfolio-teal-fill-color: var(--theme-success-background-color);
+  --portfolio-on-teal-color: var(--theme-ink-color);
+  --portfolio-haze-1-color: color-mix(in srgb, var(--theme-primary-color) 49%, var(--theme-paper-color));
+  --portfolio-haze-2-color: color-mix(in srgb, var(--theme-primary-color) 10%, var(--theme-paper-color));
+  --portfolio-haze-3-color: color-mix(in srgb, var(--theme-primary-color) 12%, var(--theme-paper-color));
+  --portfolio-haze-4-color: var(--theme-paper-color);
+  --portfolio-particle-strong-color: color-mix(in srgb, var(--theme-primary-color) 53%, var(--theme-ink-color));
+  --portfolio-particle-mid-color: color-mix(in srgb, var(--theme-primary-color) 56%, var(--theme-ink-color));
+  --portfolio-particle-soft-color: color-mix(in srgb, var(--theme-ink-color) 97%, var(--theme-paper-color));
+  --portfolio-particle-shadow-strong: 0 0 10px color-mix(in srgb, var(--portfolio-rose-color) 70%, transparent);
+  --portfolio-grid-glow-color: color-mix(in srgb, var(--theme-primary-color) 65%, var(--theme-paper-color));
+  --portfolio-grid-line-color: color-mix(in srgb, var(--portfolio-rose-color) 50%, transparent);
 }
 
 html[data-theme='light'] {
-  --portfolio-ivory: var(--main-background);
-  // Light mode's ink (the text "pen") — follows a live `--ink` change instead of a build-time hex.
-  --portfolio-ink: var(--ink);
-  --portfolio-primary: var(--portfolio-primary-light, var(--theme-color));
-  --portfolio-secondary: var(--portfolio-secondary-light, var(--theme-color-secondary));
-  --portfolio-accent: var(--portfolio-accent-light, var(--theme-color-accent));
-  --portfolio-background-primary: var(--portfolio-background-primary-light, var(--theme-background-color));
-  --portfolio-background-secondary: var(
-    --portfolio-background-secondary-light,
-    var(--theme-background-color-secondary)
+  --portfolio-primary-color: var(--portfolio-primary-light-color, var(--theme-primary-color));
+  --portfolio-secondary-color: var(--portfolio-secondary-light-color, var(--theme-secondary-color));
+  --portfolio-accent-color: var(--portfolio-accent-light-color, var(--theme-accent-color));
+  --portfolio-background-primary-color: var(--portfolio-background-primary-light-color, var(--theme-background-color));
+  --portfolio-background-secondary-color: var(
+    --portfolio-background-secondary-light-color,
+    var(--theme-background-secondary-color)
   );
-  --portfolio-background-accent: var(--portfolio-background-accent-light, var(--theme-background-color-accent));
+  --portfolio-background-accent-color: var(
+    --portfolio-background-accent-light-color,
+    var(--theme-background-accent-color)
+  );
   --portfolio-background-image: var(--portfolio-background-image-light, var(--theme-background-image));
 }

@@ -10,9 +10,15 @@
     "./server/utils/admin-auth": "./server/utils/admin-auth.ts",
     "./server/utils/admin-handler": "./server/utils/admin-handler.ts",
     "./server/utils/admin-blog-api": "./server/utils/admin-blog-api.ts",
-    "./app/utils/admin-token": "./app/utils/admin-token.ts",
     "./app/utils/admin-database": "./app/utils/admin-database.ts",
-    "./app/composables/useAdminDatabase": "./app/composables/useAdminDatabase.ts",
+    "./app/utils/admin-session": "./app/utils/admin-session.ts",
+    "./app/utils/admin-fetch": "./app/utils/admin-fetch.ts",
+    "./app/utils/admin-auth-redirect": "./app/utils/admin-auth-redirect.ts",
+    "./app/utils/fetch-error": "./app/utils/fetch-error.ts",
+    "./app/utils/admin-sign-in-messages": "./app/utils/admin-sign-in-messages.ts",
+    "./app/composables/useAdminSession": "./app/composables/useAdminSession.ts",
+    "./app/plugins/admin-session.client": "./app/plugins/admin-session.client.ts",
+    "./app/middleware/admin-auth": "./app/middleware/admin-auth.ts",
     "./shared/blog-types": "./shared/blog-types.ts"
   },
   "files": [
@@ -32,7 +38,8 @@
     "nuxt": "^4.0.0"
   },
   "dependencies": {
-    "h3": "^1.15.11"
+    "h3": "^1.15.11",
+    "ufo": "^1.6.4"
   },
   "devDependencies": {
     "nuxt": "^4.3.1"

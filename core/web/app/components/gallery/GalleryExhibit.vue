@@ -5,7 +5,8 @@
       :code="exhibit.source",
       :language="exhibit.language",
       :line-numbers="exhibit.lineNumbers !== false",
-      :aria-label="exhibit.filename || title"
+      :aria-label="exhibit.filename || title",
+      :focusable="codeFocusable"
     )
   template(v-else-if="exhibit?.kind === 'media' && exhibit.mediaType === 'video'")
     video.gallery-exhibit__video(
@@ -33,7 +34,7 @@
     )
   template(v-else-if="exhibit?.kind === 'viz' && exhibit.diagram")
     AppArchitectureDiagram(
-      :caption="exhibit.caption",
+      :caption="captionPlacement === 'inside' ? exhibit.caption : undefined",
       :aria-label="exhibit.diagram.ariaLabel || title",
       :groups="exhibit.diagram.groups",
       :nodes="exhibit.diagram.nodes",
@@ -52,7 +53,8 @@
     loading="lazy"
   )
   p.gallery-exhibit__fallback(v-else) {{ title }}
-  p.gallery-exhibit__caption(v-if="caption") {{ caption }}
+  //- The diagram renders its own figcaption: no second (overlapping) caption on top of it.
+  p.gallery-exhibit__caption(v-if="caption && !hasDiagram && captionPlacement === 'inside'") {{ caption }}
 </template>
 
 <script setup lang="ts">
@@ -61,6 +63,13 @@ import type { GalleryExhibit } from '#shared/gallery-types';
 const props = withDefaults(
   defineProps<{
     autoplay?: boolean;
+    /** `none`: the host shows the caption itself (the gallery grid puts it in the tile meta). */
+    captionPlacement?: 'inside' | 'none';
+    /**
+     * `false` in the gallery grid: the code is a cropped preview and the tile's "Open in feed"
+     * button is the keyboard target, so the frame is not a tab stop (its ring would be clipped).
+     */
+    codeFocusable?: boolean;
     eager?: boolean;
     exhibit?: GalleryExhibit;
     image?: string;
@@ -69,6 +78,8 @@ const props = withDefaults(
   }>(),
   {
     autoplay: false,
+    captionPlacement: 'inside',
+    codeFocusable: true,
     eager: false,
     exhibit: undefined,
     image: undefined,
@@ -78,6 +89,7 @@ const props = withDefaults(
 
 const videoEl = ref<HTMLVideoElement | null>(null);
 const kind = computed(() => props.exhibit?.kind ?? 'shell');
+const hasDiagram = computed(() => props.exhibit?.kind === 'viz' && Boolean(props.exhibit.diagram));
 const caption = computed(() => (props.exhibit && 'caption' in props.exhibit ? props.exhibit.caption : undefined));
 
 watch(
@@ -104,8 +116,13 @@ watch(
   position: relative;
   display: grid;
   min-height: 16rem;
-  overflow: hidden;
-  background: color-mix(in srgb, var(--surface-color) 70%, transparent);
+  // Clip media/shell only — code frames need a visible outward focus ring (2px offset).
+  overflow: visible;
+  background: color-mix(in srgb, var(--theme-surface-color) 70%, transparent);
+
+  &:not([data-kind='code']) {
+    overflow: hidden;
+  }
 
   &__image,
   &__video {
@@ -141,7 +158,7 @@ watch(
       justify-content: space-between;
       gap: 1rem;
       padding-block: 0.35rem;
-      border-bottom: 1px solid var(--portfolio-rule, currentColor);
+      border-bottom: 1px solid var(--portfolio-rule-color, currentColor);
     }
   }
 
@@ -154,11 +171,21 @@ watch(
     letter-spacing: 0.02em;
   }
 
+  // Over a photo / video the caption floats on a frosted chip at the bottom. Over text (series,
+  // code, the fallback title) it would cover words, so there it takes its own row under the
+  // content: when the exhibit's height is fixed, the content crops / scrolls above it, never it.
   &__caption {
+    border-radius: 0.55rem;
+    background: color-mix(in srgb, var(--theme-surface-color) 78%, transparent);
+  }
+
+  &:is([data-kind='code'], [data-kind='viz']) {
+    grid-template-rows: minmax(0, 1fr) auto;
+  }
+
+  &:is([data-kind='media'], [data-kind='shell']) &__caption {
     position: absolute;
     inset: auto 0.65rem 0.65rem;
-    border-radius: 0.55rem;
-    background: color-mix(in srgb, var(--surface-color) 78%, transparent);
     backdrop-filter: blur(4px);
   }
 }

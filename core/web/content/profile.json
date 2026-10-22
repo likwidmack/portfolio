@@ -8,7 +8,7 @@
   "contact": {
     "email": "likwidmack@gmail.com",
     "phone": null,
-    "website": null,
+    "website": "https://likwidmack.com",
     "location": null,
     "booking": null,
     "github": {
@@ -26,7 +26,7 @@
       {
         "id": "linkedin",
         "label": "LinkedIn",
-        "href": null,
+        "href": "https://www.linkedin.com/in/likwidmack",
         "icon": "linkedin",
         "kind": "profile"
       },
@@ -196,12 +196,12 @@
   "role": {
     "title": "Creative Technologist",
     "organization": "Founder of HyperActivity",
-    "footerCredential": "Software Engineer & Technologist",
+    "footerCredential": "Software Management",
     "creativeTechnologist": "Creative Technologist",
     "jsonLdDescription": "Creative Technologist & Founder of HyperActivity — designing human-centered interfaces for systems that think, act, and create."
   },
   "portrait": {
-    "src": "/i/profile_pic_1.jpg",
+    "src": "/i/profile_pic_2.jpg",
     "width": 480,
     "height": 480
   },

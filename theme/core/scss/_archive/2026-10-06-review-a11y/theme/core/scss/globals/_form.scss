@@ -1,0 +1,285 @@
+@use '../tokens/variables' as *;
+@use '../tokens/colors' as *;
+@use 'mixins' as m;
+
+// elements related to html form
+
+form {
+  display: grid;
+  gap: var(--form-gap);
+}
+
+fieldset {
+  margin: 0;
+  padding: 1rem;
+  border: 1px solid color-mix(in srgb, var(--theme-text-color) 36%, transparent);
+  border-radius: var(--form-radius);
+}
+
+legend {
+  padding: 0 0.5rem;
+  color: var(--theme-text-color);
+  text-transform: uppercase;
+  text-shadow: var(--text-shadow-md);
+  font-weight: 600;
+}
+
+label {
+  display: inline-block;
+  margin-bottom: 0.4rem;
+  color: var(--theme-text-color);
+  text-shadow: var(--text-shadow-sm);
+  font-size: var(--font-size-base);
+  font-weight: 500;
+}
+
+input,
+textarea,
+select,
+button {
+  font: inherit;
+}
+
+input,
+textarea,
+select {
+  width: 100%;
+  min-height: var(--form-control-height);
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--theme-border-strong-color);
+  border-radius: var(--form-radius);
+  background-color: var(--theme-form-background-color);
+  color: var(--theme-text-color);
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    background-color 150ms ease;
+  box-shadow: 0 0 0 0 transparent;
+
+  &:hover {
+    border-color: color-mix(in srgb, var(--theme-primary-color) 75%, transparent);
+    background-color: color-mix(in srgb, var(--theme-primary-color) 4%, var(--theme-form-background-color));
+  }
+
+  &:focus-visible {
+    outline: none;
+    border-color: color-mix(in srgb, var(--theme-primary-color) 45%, transparent);
+    background-color: color-mix(in srgb, var(--theme-main-background-color) 26%, var(--theme-form-background-color));
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--theme-focus-ring-color) 33%, transparent);
+  }
+
+  &:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    background-color: var(--theme-form-background-disabled-color);
+  }
+
+  &::placeholder {
+    color: var(--theme-form-placeholder-color);
+  }
+
+  &[aria-invalid='true'] {
+    border-color: var(--theme-form-invalid-color);
+  }
+}
+
+textarea {
+  min-height: calc(var(--form-control-height) * 2);
+  resize: vertical;
+}
+
+select {
+  appearance: none;
+  color: var(--theme-text-color);
+  background: {
+    color: var(--theme-form-background-color);
+    image:
+      linear-gradient(45deg, transparent 50%, var(--theme-main-background-secondary-color) 50%),
+      linear-gradient(135deg, var(--theme-main-background-secondary-color) 50%, transparent 50%);
+    position:
+      calc(100% - 1rem) calc(50% - 2px),
+      calc(100% - 0.65rem) calc(50% - 2px);
+    size:
+      0.35rem 0.35rem,
+      0.35rem 0.35rem;
+    repeat: no-repeat;
+  }
+  padding-right: 2rem;
+
+  option {
+    color: var(--theme-text-color);
+    background: var(--theme-form-background-color);
+  }
+}
+
+input {
+  &[type='checkbox'],
+  &[type='radio'] {
+    width: 1rem;
+    min-height: 1rem;
+    margin: 0 0.5rem 0 0;
+    padding: 0;
+    vertical-align: middle;
+    accent-color: var(--theme-primary-color);
+  }
+
+  &[type='checkbox'] + label,
+  &[type='radio'] + label {
+    margin-bottom: 0;
+  }
+
+  &[type='tel'],
+  &[type='date'],
+  &[type='time'],
+  &[type='datetime-local'],
+  &[type='number'] {
+    min-width: 12.5rem;
+  }
+
+  &[type='color' i] {
+    appearance: none;
+    min-width: 2rem;
+    width: 100%;
+    inline-size: 6rem;
+    block-size: 2.5rem;
+
+    &,
+    &::-webkit-color-swatch,
+    &::-moz-color-swatch {
+      padding: 0.1875rem;
+      border: 3px solid var(--theme-border-strong-color);
+      border-radius: var(--form-radius);
+    }
+
+    &::-webkit-color-swatch-wrapper {
+      padding: 1px;
+      border: none;
+    }
+
+    label + & {
+      margin: {
+        left: 0.5rem;
+        top: 0.75rem;
+        bottom: 1rem;
+      }
+    }
+  }
+
+  &[type='file'] {
+    display: flex;
+    align-items: center;
+    padding: 0;
+    cursor: pointer;
+    overflow: hidden;
+
+    &::file-selector-button {
+      height: 100%;
+      margin-right: 0.75rem;
+      text-transform: uppercase;
+      border: none !important;
+      border-radius: 0 !important;
+      font-size: var(--font-size-sm) !important;
+      letter-spacing: 0.03em !important;
+      transform: none !important;
+
+      &:hover {
+        background-color: color-mix(in srgb, var(--theme-primary-color) 10%, transparent);
+      }
+    }
+
+    &:focus-visible {
+      outline: none;
+      border-color: color-mix(in srgb, var(--theme-primary-color) 75%, transparent);
+      box-shadow: 0 0 0 3px var(--theme-focus-ring-color);
+    }
+
+    &:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+
+      &::file-selector-button {
+        cursor: not-allowed;
+        pointer-events: none;
+      }
+    }
+  }
+
+  &[type='range'] {
+    width: 100%;
+    min-height: var(--form-control-height);
+  }
+}
+
+.help-text,
+.form-hint {
+  margin-top: -0.4rem;
+  color: var(--theme-form-help-color);
+  font-size: var(--font-size-sm);
+}
+
+.error-text,
+.form-error {
+  margin-top: -0.3rem;
+  color: var(--theme-form-invalid-color);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+@include m.bp-down(standard) {
+  form {
+    gap: 0.85rem;
+  }
+
+  fieldset {
+    padding: 0.85rem;
+  }
+}
+
+@include m.bp-down(tablet) {
+  form {
+    gap: 0.75rem;
+  }
+
+  fieldset {
+    padding: 0.75rem;
+  }
+
+  input,
+  textarea,
+  select {
+    padding: 0.5rem 0.65rem;
+  }
+
+  label {
+    margin-bottom: 0.3rem;
+  }
+}
+
+@include m.bp-down(mobile) {
+  fieldset {
+    padding: 0.6rem;
+  }
+
+  legend {
+    padding: 0 0.35rem;
+  }
+
+  .help-text,
+  .form-hint,
+  .error-text,
+  .form-error {
+    margin-top: 0;
+  }
+}
+
+// Touch (repo UI rule): a checkbox / radio / switch and its label form one ≥44px target.
+label:has(input[type='checkbox'], input[type='radio']),
+input[type='checkbox'] + label,
+input[type='radio'] + label,
+.p-checkbox + label,
+.p-radiobutton + label,
+.p-toggleswitch + label {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch-target, 44px);
+}

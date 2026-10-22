@@ -1,0 +1,121 @@
+# CD — AWS SAM test deploy for @tgmc/<%= name %>. Mirrors .github/workflows/cd-aws.yml:
+# a gate job decides whether the app is affected, then deploy-test runs in the `test` Environment
+# (its AWS_ROLE_ARN secret is trusted by repo:OWNER/REPO:environment:test — docs/cicd.md).
+name: CD Deploy (<%= name %> - AWS SAM test)
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '<%= projectRoot %>/**'
+      - 'packages/**'
+      - 'theme/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write # AWS OIDC
+
+concurrency:
+  group: cd-deploy-<%= name %>-test
+  cancel-in-progress: false
+
+jobs:
+  deployable-gate:
+    name: Deployable gate
+    runs-on: ubuntu-latest
+    env:
+      HUSKY: '0'
+    outputs:
+      deployable: ${{ steps.gate.outputs.deployable }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Use Node.js 24
+        if: github.event_name == 'push'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        if: github.event_name == 'push'
+        run: npm ci
+
+      - name: Derive Nx base/head
+        if: github.event_name == 'push'
+        uses: nrwl/nx-set-shas@v4
+
+      - name: Is @tgmc/<%= name %> affected?
+        id: gate
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "deployable=true" >> "$GITHUB_OUTPUT"
+          elif npx nx show projects --affected --base="$NX_BASE" --head="$NX_HEAD" | grep -qx '@tgmc/<%= name %>'; then
+            echo "deployable=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "deployable=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  deploy-test:
+    name: SAM deploy (test)
+    needs: deployable-gate
+    if: needs.deployable-gate.outputs.deployable == 'true'
+    runs-on: ubuntu-latest
+    environment: test
+    env:
+      HUSKY: '0'
+      AWS_REGION: ${{ vars.AWS_REGION || secrets.AWS_REGION || 'us-west-2' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Setup SAM CLI
+        uses: aws-actions/setup-sam@v2
+        with:
+          use-installer: true
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build workspace libraries
+        run: npm run build:libs
+
+      - name: Build SSR app for Lambda
+        run: npx nx run @tgmc/<%= name %>:build
+        env:
+          SYS_ENV: test
+          NITRO_PRESET: aws_lambda
+
+      - name: SAM deploy
+        run: |
+          sam deploy \
+            --template-file <%= projectRoot %>/infra/template.yaml \
+            --stack-name tgmc-<%= name %>-test \
+            --parameter-overrides Stage=test \
+            --capabilities CAPABILITY_IAM \
+            --resolve-s3 \
+            --no-confirm-changeset \
+            --no-fail-on-empty-changeset
+
+      - name: Smoke test
+        run: |
+          url=$(aws cloudformation describe-stacks --stack-name tgmc-<%= name %>-test \
+            --query "Stacks[0].Outputs[?OutputKey=='HttpApiUrl'].OutputValue" --output text)
+          curl --fail --silent --show-error --retry 5 --retry-delay 5 --output /dev/null "$url"

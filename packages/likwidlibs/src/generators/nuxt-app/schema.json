@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "$id": "NuxtAppGenerator",
+  "title": "Nuxt App Generator",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name of the new Nuxt application (e.g. portal, docs, store)",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      },
+      "x-prompt": "What is the application name?"
+    },
+    "directory": {
+      "type": "string",
+      "description": "Destination directory relative to workspace root (defaults to 'core')",
+      "default": "core"
+    },
+    "deploymentTarget": {
+      "type": "string",
+      "description": "Target deployment environment and CD workflow style",
+      "enum": ["aws-sam", "docker-node", "static-cloudflare"],
+      "default": "aws-sam",
+      "x-prompt": {
+        "message": "Which CI/CD deployment target do you want to configure?",
+        "type": "list",
+        "items": [
+          { "value": "aws-sam", "label": "AWS SAM (Lambda + DynamoDB + S3/CloudFront with 4-env topology)" },
+          { "value": "docker-node", "label": "Docker Node-Server (Containerized Nitro server + Compose)" },
+          { "value": "static-cloudflare", "label": "Static / Cloudflare Pages (Pre-rendered Jamstack)" }
+        ]
+      }
+    },
+    "includeE2e": {
+      "type": "boolean",
+      "description": "Scaffold a companion Cypress E2E accessibility audit project (core/<app>-e2e)",
+      "default": true,
+      "x-prompt": "Include a companion Cypress E2E a11y test project?"
+    }
+  },
+  "required": ["name"]
+}

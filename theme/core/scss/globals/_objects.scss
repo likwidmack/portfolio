@@ -7,14 +7,14 @@ progress {
   margin: 0 0.5rem;
   height: 1rem;
   background: {
-    color: var(--main-background-secondary);
+    color: var(--theme-main-background-secondary-color);
   }
 }
 
 ::-moz-progress-bar,
 ::-webkit-progress-bar {
   background: {
-    color: var(--primary-color);
+    color: var(--theme-primary-color);
   }
 }
 
@@ -29,7 +29,7 @@ progress {
 ::-webkit-progress-inner-element,
 ::-moz-range-track {
   background: {
-    color: var(--primary-color);
+    color: var(--theme-primary-color);
   }
 }
 
@@ -40,7 +40,7 @@ meter {
   height: 1rem;
   background: none;
   background: {
-    color: var(--main-background-secondary);
+    color: var(--theme-main-background-secondary-color);
   }
 }
 
@@ -49,7 +49,7 @@ meter {
   -moz-appearance: meterchunk;
   background: none;
   background: {
-    color: var(--secondary-color);
+    color: var(--theme-secondary-color);
     size: 100% 100%;
   }
 }
@@ -97,7 +97,7 @@ figure {
 }
 
 figcaption {
-  color: color-mix(in srgb, var(--text-color) 82%, transparent);
+  color: color-mix(in srgb, var(--theme-text-color) 82%, transparent);
   font-size: var(--font-size-sm);
   line-height: 1.5;
 }

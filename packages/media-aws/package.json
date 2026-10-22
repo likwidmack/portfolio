@@ -1,0 +1,61 @@
+{
+  "name": "@tgmc/media-aws",
+  "version": "0.0.1",
+  "type": "module",
+  "description": "Public stand-in: the real package is not published in this mirror.",
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "tgmc-portfolio": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.lib.json"
+  },
+  "files": [
+    "dist",
+    "!**/*.tsbuildinfo"
+  ],
+  "nx": {
+    "tags": [
+      "type:lib",
+      "scope:shared"
+    ],
+    "targets": {
+      "build": {
+        "executor": "@nx/js:tsc",
+        "outputs": [
+          "{options.outputPath}"
+        ],
+        "dependsOn": [
+          "^build"
+        ],
+        "options": {
+          "outputPath": "packages/media-aws/dist",
+          "main": "packages/media-aws/src/index.ts",
+          "tsConfig": "packages/media-aws/tsconfig.lib.json",
+          "rootDir": "packages/media-aws/src",
+          "generatePackageJson": false
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "@aws-sdk/client-cloudfront": "^3.1095.0",
+    "@aws-sdk/client-dynamodb": "^3.1095.0",
+    "@aws-sdk/client-s3": "^3.1095.0",
+    "@aws-sdk/client-sqs": "^3.1095.0",
+    "@aws-sdk/lib-dynamodb": "^3.1095.0",
+    "@aws-sdk/s3-request-presigner": "^3.1095.0",
+    "@tgmc/media": "*",
+    "tslib": "^2.3.0"
+  },
+  "tgmcStandIn": true
+}

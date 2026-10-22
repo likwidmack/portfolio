@@ -1,30 +1,50 @@
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 
-import { resolveBrandRolesState, restoreStyleSetup, withDerivedRole, type StyleSetup } from '../shared/personalization';
+import { createStyleSetup, withDerivedRole, type StyleSetup } from '../shared/preferences';
+import { resolveBrandRolesState } from '../shared/preferences/document';
+import { setupsApi } from '../shared/preferences/setups';
+import { defaultPreferenceDocument } from '../shared/preferences/storage';
 
 const setup = (id: string): StyleSetup =>
-  ({
-    id,
-    name: id.toUpperCase(),
-    brandRoles: resolveBrandRolesState('#ac1922'),
-    motion: 'system',
-    background: 'particles',
-  }) as StyleSetup;
+  createStyleSetup(
+    id.toUpperCase(),
+    { ...defaultPreferenceDocument(), brandRoles: resolveBrandRolesState('#ac1922') },
+    id
+  );
 
-describe('restoreStyleSetup (Undo delete)', () => {
+function storageWith(...setups: StyleSetup[]) {
+  const map = new Map<string, string>();
+  const storage = {
+    getItem: (k: string) => map.get(k) ?? null,
+    setItem: (k: string, v: string) => void map.set(k, v),
+    removeItem: (k: string) => void map.delete(k),
+  };
+  setupsApi.invalidate();
+  for (const item of setups) setupsApi.save(storage, item);
+  return storage;
+}
+
+const restoredIds = (storage: ReturnType<typeof storageWith>, item: StyleSetup, index: number) =>
+  setupsApi.restore(storage, item, index).setups.map((s) => s.id);
+
+describe('setupsApi.restore (Undo delete)', () => {
   const [a, b, c] = [setup('a'), setup('b'), setup('c')];
 
+  beforeEach(() => {
+    setupsApi.invalidate();
+  });
+
   it('puts the setup back at its original index', () => {
-    expect(restoreStyleSetup([a, c], b, 1).map((s) => s.id)).toEqual(['a', 'b', 'c']);
+    expect(restoredIds(storageWith(a, c), b, 1)).toEqual(['a', 'b', 'c']);
   });
 
   it('clamps an out-of-range index', () => {
-    expect(restoreStyleSetup([a], c, 9).map((s) => s.id)).toEqual(['a', 'c']);
-    expect(restoreStyleSetup([b], a, -3).map((s) => s.id)).toEqual(['a', 'b']);
+    expect(restoredIds(storageWith(a), c, 9)).toEqual(['a', 'c']);
+    expect(restoredIds(storageWith(b), a, -3)).toEqual(['a', 'b']);
   });
 
   it('never duplicates a setup that is already present', () => {
-    expect(restoreStyleSetup([a, b], b, 0).map((s) => s.id)).toEqual(['a', 'b']);
+    expect(restoredIds(storageWith(a, b), b, 0)).toEqual(['a', 'b']);
   });
 });
 

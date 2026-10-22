@@ -1,0 +1,76 @@
+{
+  "name": "@tgmc/media-client",
+  "version": "0.0.1",
+  "type": "module",
+  "description": "Portable media HTTP client for TGMC apps (browser + Node).",
+  "author": "Tamara Gisele Mack",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:likwidmack/portfolio.git",
+    "directory": "packages/media-client"
+  },
+  "homepage": "https://github.com/likwidmack/portfolio/tree/main/packages/media-client",
+  "bugs": {
+    "url": "https://github.com/likwidmack/portfolio/issues"
+  },
+  "keywords": [
+    "media",
+    "client",
+    "fetch",
+    "tgmc"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "tgmc-portfolio": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.lib.json",
+    "test": "vitest run --config vitest.config.mts",
+    "prepublishOnly": "npm run build"
+  },
+  "files": [
+    "dist",
+    "!**/*.tsbuildinfo"
+  ],
+  "nx": {
+    "tags": [
+      "type:lib",
+      "scope:shared"
+    ],
+    "targets": {
+      "build": {
+        "executor": "@nx/js:tsc",
+        "outputs": [
+          "{options.outputPath}"
+        ],
+        "options": {
+          "outputPath": "packages/media-client/dist",
+          "main": "packages/media-client/src/index.ts",
+          "tsConfig": "packages/media-client/tsconfig.lib.json",
+          "rootDir": "packages/media-client/src",
+          "generatePackageJson": false
+        }
+      },
+      "test": {
+        "dependsOn": [
+          "build"
+        ]
+      }
+    }
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  }
+}

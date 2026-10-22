@@ -1,7 +1,7 @@
 /**
  * Shared setup for admin post API handlers (auth gate + host-injected blog API).
  */
-import { createError, getRouterParam, type H3Event } from 'h3';
+import { createError, getRouterParam, setResponseHeader, type H3Event } from 'h3';
 import { requireAdminToken } from './admin-auth';
 import type { AdminBlogApi } from './admin-blog-api';
 
@@ -19,6 +19,16 @@ export function requireAdminBlog(event: H3Event): AdminBlogApi {
     });
   }
   return api;
+}
+
+/**
+ * `GET /api/admin/session`: `{ ok: true }` for the admin token, else 401 (the sign-in form's token check).
+ * Never cached: the answer depends on the Authorization header.
+ */
+export function checkAdminSession(event: H3Event): { ok: true } {
+  setResponseHeader(event, 'Cache-Control', 'no-store');
+  requireAdminToken(event, useRuntimeConfig(event).adminToken);
+  return { ok: true };
 }
 
 /**

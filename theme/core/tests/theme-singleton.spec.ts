@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { buildStudioPresets } from '../src/studio-presets.js';
 import { Theme } from '../src/theme.js';
 import { getToken, getTokens, resetTokens } from '../src/token-registry.js';
-import { colorsLibrary, themeColors } from '../src/tokens.js';
+import { colorsLibrary } from '../src/tokens.js';
 
 describe('Theme singleton', () => {
   afterEach(() => {
@@ -12,6 +12,7 @@ describe('Theme singleton', () => {
 
   it('serves studio presets from theme-presets.json, including extra-swatch fields', () => {
     const built = buildStudioPresets();
+    // Drift → regenerate: `npm run build:presets --workspace=@tgmc/theme` (bin/build-theme-presets.mjs).
     expect(Theme.presets()).toEqual(built);
     expect(built.length).toBeGreaterThan(0);
     const night = built.find((preset) => preset.id === 'darkNightGoldenDay') ?? built[0]!;
@@ -43,7 +44,9 @@ describe('Theme singleton', () => {
 
   it('selects a built-in theme into the registry (dryRun)', () => {
     Theme.select('dark', { dryRun: true });
-    expect(getToken('primary-color')).toBe(themeColors.dark.primary);
+    // R-T3d: a built-in mode pack pins no colour — the stylesheet switches every colour per mode.
+    expect(getToken('theme-primary-color')).toBeUndefined();
+    expect(getToken('--border-radius-md')).toBeTruthy();
     expect(Theme.selected()).toBe('dark');
   });
 
@@ -51,15 +54,16 @@ describe('Theme singleton', () => {
     Theme.select('dark', { dryRun: true });
     // Five-input model: surfaces / text / borders are derived by the stylesheet from paper / ink,
     // never pinned inline by a built-in mode pack.
-    expect(getToken('--main-background')).toBeUndefined();
-    expect(getToken('--surface-color')).toBeUndefined();
-    expect(getToken('--link-color')).toBe(colorsLibrary.cssVariables.dark['--link-color']);
+    expect(getToken('--theme-main-background-color')).toBeUndefined();
+    expect(getToken('--theme-surface-color')).toBeUndefined();
+    // R-T3d: no mode colour either (the stylesheet owns --theme-link-color per mode).
+    expect(getToken('--theme-link-color')).toBeUndefined();
     const paletteName = Object.keys(colorsLibrary.palettes)[0]!;
     Theme.select(paletteName, { dryRun: true });
-    expect(getToken('--primary-color')).toBeTruthy();
-    expect(getToken('--button-fg')).toBeTruthy();
-    // Non-derived dark tokens remain after the accent-pack merge.
-    expect(getToken('--link-color')).toBe(colorsLibrary.cssVariables.dark['--link-color']);
+    expect(getToken('--theme-primary-color')).toBeTruthy();
+    expect(getToken('--theme-button-fg-color')).toBeTruthy();
+    // Non-colour dark tokens remain after the accent-pack merge.
+    expect(getToken('--border-radius-md')).toBeTruthy();
   });
 
   it('creates and selects a custom theme', () => {
@@ -69,26 +73,59 @@ describe('Theme singleton', () => {
       ratios: { media: '16 / 9' },
     });
     Theme.select('custom-ember', { dryRun: true });
-    expect(getToken('--primary-color')).toBe('#ff6600');
-    expect(getToken('--button-fg')).toBeTruthy();
-    expect(getToken('--text-color')).toBe('#111111');
+    expect(getToken('--theme-primary-color')).toBe('#ff6600');
+    expect(getToken('--theme-button-fg-color')).toBeTruthy();
+    expect(getToken('--theme-text-color')).toBe('#111111');
     expect(getToken('--media-ratio')).toBe('16 / 9');
   });
 
-  it('derives button-fg from registry secondary when custom pack omits secondary', () => {
+  it('writes a pack surface / background / text colours under their --theme-…-color names only', () => {
+    // The status inks / surfaces derive from --theme-surface-color / --theme-text-color, so a pack
+    // sets the new names for its surface and text to tint them; the old names are gone (Task 8).
+    const tokens = Theme.create('surface-text-pack', {
+      colors: { surface: '#202020', surfaceVariant: '#303030', background: '#101010' },
+      text: { color: '#eeeeee', secondary: '#bbbbbb' },
+    });
+    const expected = {
+      '--theme-surface-color': '#202020',
+      '--theme-surface-variant-color': '#303030',
+      '--theme-main-background-color': '#101010',
+      '--theme-text-color': '#eeeeee',
+      '--theme-text-secondary-color': '#bbbbbb',
+    };
+    expect(tokens).toEqual(expected);
+    Theme.select('surface-text-pack', { dryRun: true });
+    for (const [key, value] of Object.entries(expected)) expect(getToken(key), key).toBe(value);
+    // A pack is the raw path: its brand / paper picks go out under the active new names (R-T3d).
+    const brand = Theme.create('brand-pack', { colors: { primary: '#ff6600', paper: '#fffdf8' } });
+    expect(brand['--theme-primary-color']).toBe('#ff6600');
+    expect(brand['--theme-paper-color']).toBe('#fffdf8');
+    expect(brand['--primary-color']).toBeUndefined();
+    expect(brand['--paper']).toBeUndefined();
+  });
+
+  it('setText writes the text colours under their new names', () => {
+    Theme.setText({ color: '#121212', secondary: '#5a5a5a' }, { dryRun: true });
+    expect(getTokens()['--text-color']).toBeUndefined();
+    expect(getToken('--theme-text-color')).toBe('#121212');
+    expect(getToken('--theme-text-secondary-color')).toBe('#5a5a5a');
+  });
+
+  it('derives button-fg when a custom pack omits secondary, without pinning a secondary', () => {
     Theme.select('dark', { dryRun: true });
-    expect(getToken('--secondary-color')).toBe(themeColors.dark.secondary);
+    // R-T3d: the built-in pack pins no secondary, so the pack falls back to primary.
+    expect(getToken('--theme-secondary-color')).toBeUndefined();
     Theme.create('primary-only', {
       colors: { primary: '#ff6600' },
     });
     Theme.select('primary-only', { dryRun: true });
-    expect(getToken('--primary-color')).toBe('#ff6600');
-    expect(getToken('--secondary-color')).toBe(themeColors.dark.secondary);
-    expect(getToken('--button-fg')).toBeTruthy();
+    expect(getToken('--theme-primary-color')).toBe('#ff6600');
+    expect(getToken('--theme-secondary-color')).toBeUndefined();
+    expect(getToken('--theme-button-fg-color')).toBeTruthy();
   });
 
   it('full replace drops prior registry keys (dryRun keeps DOM untouched)', () => {
-    Theme.update({ '--breakpoint-mobile': '480px' }, { dryRun: true });
+    Theme.apply({ '--breakpoint-mobile': '480px' }, { dryRun: true });
     expect(getToken('--breakpoint-mobile')).toBe('480px');
     Theme.select('dark', { dryRun: true });
     expect(getToken('--breakpoint-mobile')).toBeUndefined();
@@ -112,6 +149,9 @@ describe('Theme singleton', () => {
   it('snapshots a built-in theme via Theme.get', () => {
     const light = Theme.get('light');
     expect(light).toBeTruthy();
-    expect(light?.['--primary-color']).toBeTruthy();
+    expect(light?.['--border-radius-md']).toBeTruthy();
+    expect(light?.['--theme-primary-color']).toBeUndefined();
+    // The only colour a mode pack pins is the palette name the stylesheet does not switch.
+    expect(Object.keys(light ?? {}).sort()).toEqual(['--border-radius-md', '--primary-default']);
   });
 });

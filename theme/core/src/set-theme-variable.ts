@@ -2,18 +2,24 @@
  * Runtime CSS custom-property helpers for `@tgmc/theme`.
  * Browser-only — callers must ensure `document` exists.
  */
+import { normalizeColorName, normalizeColorNames } from './color-rename.js';
 
-/** Writes a single custom property on `:root`. */
-export function setThemeVariable(property: string, value: string): void {
-  const name = property.startsWith('--') ? property : `--${property}`;
-  document.documentElement.style.setProperty(name, value);
+/** `--`-prefixed, and an old colour name moved to its new name (`null`: retired, never written — R-T8c). */
+function propertyName(property: string): string | null {
+  return normalizeColorName(property.startsWith('--') ? property : `--${property}`);
 }
 
-/** Removes custom properties from `:root` (inline styles only). */
+/** Writes a single custom property on `:root` (an old colour name is written under its new name). */
+export function setThemeVariable(property: string, value: string): void {
+  const name = propertyName(property);
+  if (name !== null) document.documentElement.style.setProperty(name, value);
+}
+
+/** Removes custom properties from `:root` (inline styles only; old colour names → new names). */
 export function removeThemeVariables(properties: readonly string[]): void {
   for (const property of properties) {
-    const name = property.startsWith('--') ? property : `--${property}`;
-    document.documentElement.style.removeProperty(name);
+    const name = propertyName(property);
+    if (name !== null) document.documentElement.style.removeProperty(name);
   }
 }
 
@@ -27,9 +33,10 @@ export function applyThemeVariables(variables: Record<string, string>): void {
 /**
  * Maps theme token keys to Foundation-facing CSS variables when that layer is active.
  *
- * `--foundation-*` defaults are CSS aliases of theme tokens in `_root.scss` (including
- * `--foundation-accent` → `--accent-color`), so they already follow light/dark. This clears
- * any prior inline overrides on those keys so the stylesheet aliases remain parallel after
+ * `--foundation-*` is Foundation's (third-party) interface: the names are kept, and their defaults
+ * in `_root.scss` read the `--theme-*-color` names (e.g. `--foundation-accent` →
+ * `--theme-accent-color`), so they already follow light/dark. This clears
+ * any prior inline overrides on those keys so the stylesheet values win again after
  * an `applyTheme` / registry patch.
  */
 const FOUNDATION_ALIAS_KEYS = [
@@ -47,8 +54,6 @@ const FOUNDATION_ALIAS_KEYS = [
   '--foundation-light-gray',
   '--foundation-medium-gray',
   '--foundation-dark-gray',
-  '--foundation-black',
-  '--foundation-white',
   '--foundation-border',
   '--foundation-surface',
   '--foundation-surface-variant',
@@ -85,21 +90,24 @@ function assignIfPresent(
  * Covers surfaces, typography, overlays, forms, lists, navigation, and severity scales
  * so light/dark font composition stays parallel to `@tgmc/theme`.
  */
-export function applyPrimeVueBridge(variables: Record<string, string>): void {
+export function applyPrimeVueBridge(input: Record<string, string>): void {
+  // Read the `--theme-…-color` names; a patch that still uses old keys is normalised first. When
+  // two old keys share one new name (`--border-strong` / `--form-border-color`), one value wins.
+  const variables = normalizeColorNames(input);
   const bridge: Record<string, string> = {};
 
-  assignIfPresent(bridge, variables, '--primary-color', [
+  assignIfPresent(bridge, variables, '--theme-primary-color', [
     '--p-primary-color',
     '--p-primary-500',
     '--p-primary-600',
     '--p-highlight-color',
     '--p-highlight-focus-color',
   ]);
-  assignIfPresent(bridge, variables, '--primary-hover', ['--p-primary-hover-color', '--p-primary-700']);
-  assignIfPresent(bridge, variables, '--accent-color', ['--p-primary-active-color']);
-  assignIfPresent(bridge, variables, '--button-fg', ['--p-primary-contrast-color']);
+  assignIfPresent(bridge, variables, '--theme-primary-hover-color', ['--p-primary-hover-color', '--p-primary-700']);
+  assignIfPresent(bridge, variables, '--theme-accent-color', ['--p-primary-active-color']);
+  assignIfPresent(bridge, variables, '--theme-button-fg-color', ['--p-primary-contrast-color']);
 
-  assignIfPresent(bridge, variables, '--text-color', [
+  assignIfPresent(bridge, variables, '--theme-text-color', [
     '--p-text-color',
     '--p-text-hover-color',
     '--p-content-color',
@@ -118,7 +126,7 @@ export function applyPrimeVueBridge(variables: Record<string, string>): void {
     '--p-surface-900',
     '--p-surface-950',
   ]);
-  assignIfPresent(bridge, variables, '--text-secondary-color', [
+  assignIfPresent(bridge, variables, '--theme-text-secondary-color', [
     '--p-text-muted-color',
     '--p-text-hover-muted-color',
     '--p-form-field-disabled-color',
@@ -132,8 +140,8 @@ export function applyPrimeVueBridge(variables: Record<string, string>): void {
     '--p-mask-color',
   ]);
 
-  assignIfPresent(bridge, variables, '--main-background', ['--p-surface-ground', '--p-mask-background']);
-  assignIfPresent(bridge, variables, '--surface-color', [
+  assignIfPresent(bridge, variables, '--theme-main-background-color', ['--p-surface-ground', '--p-mask-background']);
+  assignIfPresent(bridge, variables, '--theme-surface-color', [
     '--p-content-background',
     '--p-surface-card',
     '--p-surface-0',
@@ -142,14 +150,14 @@ export function applyPrimeVueBridge(variables: Record<string, string>): void {
     '--p-overlay-popover-background',
     '--p-overlay-modal-background',
   ]);
-  assignIfPresent(bridge, variables, '--surface-variant', [
+  assignIfPresent(bridge, variables, '--theme-surface-variant-color', [
     '--p-content-hover-background',
     '--p-surface-overlay',
     '--p-surface-100',
     '--p-surface-200',
     '--p-navigation-item-active-background',
   ]);
-  assignIfPresent(bridge, variables, '--border-color', [
+  assignIfPresent(bridge, variables, '--theme-border-color', [
     '--p-content-border-color',
     '--p-surface-300',
     '--p-surface-400',
@@ -157,40 +165,47 @@ export function applyPrimeVueBridge(variables: Record<string, string>): void {
     '--p-overlay-popover-border-color',
     '--p-overlay-modal-border-color',
   ]);
-  assignIfPresent(bridge, variables, '--focus-ring', ['--p-focus-ring-color']);
+  assignIfPresent(bridge, variables, '--theme-focus-ring-color', ['--p-focus-ring-color']);
 
-  if (variables['--primary-color']) {
-    bridge['--p-highlight-background'] = `color-mix(in srgb, ${variables['--primary-color']} 18%, transparent)`;
-    bridge['--p-highlight-focus-background'] = `color-mix(in srgb, ${variables['--primary-color']} 28%, transparent)`;
-    bridge['--p-list-option-focus-background'] = `color-mix(in srgb, ${variables['--primary-color']} 14%, transparent)`;
+  if (variables['--theme-primary-color']) {
+    bridge['--p-highlight-background'] = `color-mix(in srgb, ${variables['--theme-primary-color']} 18%, transparent)`;
+    bridge['--p-highlight-focus-background'] =
+      `color-mix(in srgb, ${variables['--theme-primary-color']} 28%, transparent)`;
+    bridge['--p-list-option-focus-background'] =
+      `color-mix(in srgb, ${variables['--theme-primary-color']} 14%, transparent)`;
     bridge['--p-list-option-selected-background'] =
-      `color-mix(in srgb, ${variables['--primary-color']} 22%, transparent)`;
+      `color-mix(in srgb, ${variables['--theme-primary-color']} 22%, transparent)`;
     bridge['--p-navigation-item-focus-background'] =
-      `color-mix(in srgb, ${variables['--primary-color']} 16%, transparent)`;
+      `color-mix(in srgb, ${variables['--theme-primary-color']} 16%, transparent)`;
   }
 
-  assignIfPresent(bridge, variables, '--form-background', [
+  assignIfPresent(bridge, variables, '--theme-form-background-color', [
     '--p-form-field-background',
     '--p-form-field-filled-background',
   ]);
-  assignIfPresent(bridge, variables, '--form-background-disabled', ['--p-form-field-disabled-background']);
-  assignIfPresent(bridge, variables, '--form-border-color', ['--p-form-field-border-color']);
-  assignIfPresent(bridge, variables, '--form-placeholder', ['--p-form-field-placeholder-color']);
-  assignIfPresent(bridge, variables, '--form-focus-ring', ['--p-form-field-focus-border-color']);
-  assignIfPresent(bridge, variables, '--form-invalid-color', [
+  assignIfPresent(bridge, variables, '--theme-form-background-disabled-color', ['--p-form-field-disabled-background']);
+  assignIfPresent(bridge, variables, '--theme-border-strong-color', ['--p-form-field-border-color']);
+  assignIfPresent(bridge, variables, '--theme-form-placeholder-color', ['--p-form-field-placeholder-color']);
+  assignIfPresent(bridge, variables, '--theme-focus-ring-color', ['--p-form-field-focus-border-color']);
+  assignIfPresent(bridge, variables, '--theme-form-invalid-color', [
     '--p-form-field-invalid-border-color',
     '--p-form-field-invalid-placeholder-color',
   ]);
 
-  assignIfPresent(bridge, variables, '--success', ['--p-green-500', '--p-green-600']);
-  assignIfPresent(bridge, variables, '--warning', [
+  assignIfPresent(bridge, variables, '--theme-success-hue-color', ['--p-green-500', '--p-green-600']);
+  assignIfPresent(bridge, variables, '--theme-warning-hue-color', [
     '--p-orange-500',
     '--p-orange-600',
     '--p-yellow-500',
     '--p-yellow-600',
   ]);
-  assignIfPresent(bridge, variables, '--error', ['--p-red-500', '--p-red-600']);
-  assignIfPresent(bridge, variables, '--info', ['--p-sky-500', '--p-sky-600', '--p-blue-500', '--p-blue-600']);
+  assignIfPresent(bridge, variables, '--theme-error-hue-color', ['--p-red-500', '--p-red-600']);
+  assignIfPresent(bridge, variables, '--theme-info-hue-color', [
+    '--p-sky-500',
+    '--p-sky-600',
+    '--p-blue-500',
+    '--p-blue-600',
+  ]);
 
   applyThemeVariables(bridge);
 }
@@ -288,13 +303,14 @@ export function clearPrimeVueBridge(): void {
 
 /**
  * Applies theme variables and optional library bridges in one pass.
- * Prefer `updateTokens` from `@tgmc/theme/tokens` when third parties need
- * registry + subscription behavior.
+ * Prefer `Theme.apply` from `@tgmc/theme` / `@tgmc/theme/tokens` when third
+ * parties need registry + subscription behavior.
  */
 export function applyTheme(
   variables: Record<string, string>,
   options: { foundation?: boolean; primevue?: boolean } = {}
 ): void {
+  variables = normalizeColorNames(variables);
   applyThemeVariables(variables);
   if (options.foundation) {
     applyFoundationBridge(variables);

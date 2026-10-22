@@ -31,7 +31,7 @@
     min-height: var(--touch-target, 44px);
     padding: 0.35rem 0.5rem;
     border-radius: var(--border-radius-sm, 0.35rem);
-    color: var(--text-color);
+    color: var(--theme-text-color);
     text-decoration: none;
     font-variant: small-caps;
     letter-spacing: 0.02em;
@@ -39,14 +39,14 @@
 
     // Keyboard focus stays visible (was `outline: none` — focus ring hidden).
     &:focus-visible {
-      outline: 2px solid var(--focus-ring, var(--primary-color));
+      outline: 2px solid var(--theme-focus-ring-color, var(--theme-primary-color));
       outline-offset: 2px;
     }
 
     &[data-state='active'],
     &.is-active {
-      // background: color-mix(in srgb, var(--primary-color) 18%, transparent);
-      color: var(--primary-color);
+      // background: color-mix(in srgb, var(--theme-primary-color) 18%, transparent);
+      color: var(--theme-primary-ink-color);
       font-weight: 700;
     }
   }
@@ -87,16 +87,21 @@
     width: 100%;
     min-height: var(--touch-target, 44px);
     padding: 0.5rem 0.85rem;
-    border: 1px solid var(--border-strong);
+    border: 1px solid var(--theme-border-strong-color);
     border-radius: var(--border-radius-sm, 0.35rem);
-    background: color-mix(in srgb, var(--surface-color) 88%, transparent);
-    color: var(--text-color);
+    background: color-mix(in srgb, var(--theme-surface-color) 88%, transparent);
+    color: var(--theme-text-color);
     font: inherit;
+    // The global `button` base is `white-space: nowrap; line-height: 1` (one-line labels): the
+    // current-section label is free text, so it wraps inside the toggle instead of running under
+    // the chevron and being clipped mid-word on phones.
+    white-space: normal;
+    line-height: 1.25;
     text-align: start;
     cursor: pointer;
 
     &:focus-visible {
-      outline: 2px solid var(--focus-ring, var(--primary-color));
+      outline: 2px solid var(--theme-focus-ring-color, var(--theme-primary-color));
       outline-offset: 2px;
     }
 
@@ -109,6 +114,7 @@
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
+    flex: 1 1 auto;
     gap: 0.25rem 0.5rem;
     min-width: 0;
   }
@@ -118,7 +124,7 @@
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--text-secondary-color, inherit);
+    color: var(--theme-text-secondary-color, inherit);
   }
 
   .page-nav__toggle-current {
@@ -141,6 +147,6 @@
   background: transparent;
 
   [data-label] {
-    color: var(--text-secondary-color, inherit);
+    color: var(--theme-text-secondary-color, inherit);
   }
 }

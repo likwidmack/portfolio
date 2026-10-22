@@ -134,6 +134,8 @@ function broadAnalogousSecondary(primaryHex: string): string {
   }
   let best = primaryHex;
   let bestScore = 0;
+  let widest = primaryHex;
+  let widestRatio = 1;
   for (const degrees of BROAD_ANALOGOUS_DEGREES) {
     for (const sign of signs) {
       for (const lightness of lightnesses) {
@@ -145,11 +147,13 @@ function broadAnalogousSecondary(primaryHex: string): string {
           best = candidate;
           bestScore = score;
         }
+        if (againstPrimary > widestRatio) [widest, widestRatio] = [candidate, againstPrimary];
         if (passesBrandCompliance(primaryHex, candidate)) return candidate;
       }
     }
   }
-  return best;
+  // A pack is always three colours: with no compliant partner, take the most separated one.
+  return best === primaryHex ? widest : best;
 }
 
 /**

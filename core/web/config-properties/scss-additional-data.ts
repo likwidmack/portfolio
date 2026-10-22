@@ -1,12 +1,13 @@
 /**
- * Sass load paths + Vue-only `additionalData` prepend for theme `nuxt-auto` and app mixins.
+ * Sass load paths, `pkg:` importers + Vue-only `additionalData` prepend for theme `nuxt-auto` and app mixins.
  * Kept separate from `vite-prop.ts` so unit tests do not load Vite/esbuild plugins.
  *
- * Load paths include `@tgmc/theme` SCSS, PrimeVue theme Sass (`theme/primevue`), Foundation
- * vendor Sass (`theme/foundation`), and app `assets/css`. Vue SFCs get `theme-*` color helpers
+ * Load paths include `@tgmc/theme` SCSS and app `assets/css`. Foundation resolves from npm
+ * `foundation-sites` through `pkg:` URLs (`scssImporters`). Vue SFCs get `theme-*` color helpers
  * via `_nuxt-auto` (`@forward 'tokens/color-fns'`). Standalone sheets `@use` explicitly.
  */
 import { fileURLToPath, URL } from 'node:url';
+import { NodePackageImporter } from 'sass-embedded';
 
 import { shouldInjectAppMixins, shouldInjectScssAutoUse } from './scss-auto-use';
 
@@ -14,8 +15,6 @@ const resolvePath = (strUrl: string | URL) => fileURLToPath(new URL(strUrl, impo
 
 export const themeRoot = resolvePath('../../../theme/core');
 export const themeScssRoot = `${themeRoot}/scss`;
-export const themePrimeVueRoot = resolvePath('../../../theme/primevue');
-export const themeFoundationRoot = resolvePath('../../../theme/foundation');
 export const appCssRoot = resolvePath('../assets/css');
 
 /**
@@ -30,10 +29,16 @@ export const appCssRoot = resolvePath('../assets/css');
 export const scssAutoUseEntry = 'nuxt-auto';
 
 /**
- * Sass load paths for `@tgmc/theme` SCSS, PrimeVue/Foundation theme packages, and app `assets/css`.
+ * Sass load paths for `@tgmc/theme` SCSS and app `assets/css`.
  * Standalone sheets resolve `@use 'mixins'` (and must not `@use 'globals'` — see app-scss SoT).
  */
-export const scssLoadPaths = [themeRoot, themeScssRoot, themePrimeVueRoot, themeFoundationRoot, appCssRoot];
+export const scssLoadPaths = [themeRoot, themeScssRoot, appCssRoot];
+
+/**
+ * Resolves the theme's `pkg:foundation-sites/...` imports. Vite compiles with `sass-embedded`
+ * when it is installed and only accepts that package's `NodePackageImporter` class.
+ */
+export const scssImporters = [new NodePackageImporter(themeRoot)];
 
 /**
  * Vite SCSS `additionalData` body: prepend absolute `@use` for theme tokens and/or app mixins.

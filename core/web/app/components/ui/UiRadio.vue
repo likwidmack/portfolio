@@ -1,15 +1,8 @@
 <template lang="pug">
-PrimeRadioButton(
-  v-if="isPrimeVue",
-  v-bind="$attrs",
-  v-model="_model",
-  :input-id="inputId",
-  :aria-label="ariaLabel",
-  :name="name",
-  :value="value",
-  :disabled="disabled"
-)/
-span.p-radiobutton.p-component(v-else, :class="{ 'p-radiobutton-checked': _model === value, 'p-disabled': disabled }")
+span.p-radiobutton.p-component(
+  :class="{ 'p-radiobutton-checked': selected, 'p-disabled': disabled }",
+  @click="select"
+)
   input.p-radiobutton-input(
     v-bind="$attrs",
     :id="inputId",
@@ -17,20 +10,26 @@ span.p-radiobutton.p-component(v-else, :class="{ 'p-radiobutton-checked': _model
     :name="name",
     :aria-label="ariaLabel",
     :disabled="disabled",
-    :value="_nativeValue",
-    :checked="_model === value",
-    @change="_onNativeChange"
+    :value="nativeValue",
+    :checked="selected",
+    @change="select",
+    @click.stop="select"
   )
   span.p-radiobutton-box(aria-hidden="true")
-    span.p-radiobutton-icon(v-if="_model === value")
+    span.p-radiobutton-icon(v-if="selected")
 </template>
 
 <script setup lang="ts">
-/** Radio — PrimeVue `RadioButton`, else native control with classic `p-radiobutton` classes. */
+/**
+ * Radio — native control with classic `p-radiobutton` classes.
+ *
+ * Model updates are explicit (`select`) from the box, input click, and change.
+ * Avoid Vue's built-in radio `v-model` across separate component instances — it
+ * fought Cypress / parent `:model-value` and left Personalize Grid unchecked.
+ */
 defineOptions({ inheritAttrs: false });
 
-const { isPrimeVue } = useUiStack();
-const _model = defineModel<string | number | boolean | null>({ default: null });
+const model = defineModel<string | number | boolean | null>({ default: null });
 
 const props = withDefaults(
   defineProps<{
@@ -46,13 +45,11 @@ const props = withDefaults(
   }
 );
 
-const _nativeValue = computed(() => String(props.value));
+const nativeValue = computed(() => String(props.value));
+const selected = computed(() => model.value === props.value);
 
-function _onNativeChange(event: Event): void {
-  const target = event.target;
-  if (!(target instanceof HTMLInputElement) || !target.checked) {
-    return;
-  }
-  _model.value = props.value;
+function select(): void {
+  if (props.disabled) return;
+  model.value = props.value;
 }
 </script>

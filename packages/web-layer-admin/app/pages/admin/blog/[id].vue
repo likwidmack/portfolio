@@ -53,17 +53,19 @@
 
 <script setup lang="ts">
 import { normalizeSlug, type BlogPost, type BlogPostStatus } from '@tgmc/web-layer-admin/shared/blog-types';
-import { useAdminDatabase } from '../../../composables/useAdminDatabase';
-import type { AdminDatabase } from '../../../utils/admin-database';
-import { adminRequestHeaders, fetchErrorMessage, fetchErrorStatus, readAdminToken } from '../../../utils/admin-token';
+import { useAdminSession } from '../../../composables/useAdminSession';
+import { useAdminFetch } from '../../../utils/admin-fetch';
+import { fetchErrorMessage, fetchErrorStatus } from '../../../utils/fetch-error';
 
 definePageMeta({
   breadcrumb: 'Admin Blog',
+  middleware: 'admin-auth',
 });
 
 const route = useRoute();
 const config = useRuntimeConfig();
-const { selected: adminDatabase } = useAdminDatabase();
+const { database: adminDatabase } = useAdminSession();
+const adminFetch = useAdminFetch();
 const writesEnabled = computed(() => Boolean(config.public.adminWritesEnabled));
 
 const idParam = computed(() => String(route.params.id || ''));
@@ -89,24 +91,16 @@ const formSeverity = ref<'success' | 'error' | 'info'>('info');
 
 watch(
   () => form.title,
-  (title) => {
-    if (isNew.value && !form.slug) {
+  (title, previousTitle) => {
+    // Follow the title until the slug is edited by hand.
+    if (isNew.value && form.slug === normalizeSlug(previousTitle ?? '')) {
       form.slug = normalizeSlug(title);
     }
   }
 );
 
-// Tracks which backend the post was last fetched for, so the composable's post-mount
-// sessionStorage hydration (which mutates `adminDatabase` once, separately from the initial
-// onMounted load) doesn't trigger a second, redundant fetch for the same database.
-let loadedDatabase: AdminDatabase | null = null;
-
 const loadPost = async () => {
   if (!writesEnabled.value) {
-    return;
-  }
-  if (!readAdminToken()) {
-    await navigateTo('/admin');
     return;
   }
 
@@ -115,27 +109,17 @@ const loadPost = async () => {
     return;
   }
 
-  if (loadedDatabase === adminDatabase.value) {
-    return;
-  }
-
   loadError.value = '';
   try {
-    const post = await $fetch<BlogPost>(`/api/admin/posts/${idParam.value}`, {
-      headers: adminRequestHeaders(),
-    });
+    const post = await adminFetch<BlogPost>(`/api/admin/posts/${idParam.value}`);
     form.title = post.title;
     form.slug = post.slug;
     form.excerpt = post.excerpt;
     form.body = post.body;
     form.status = post.status;
-    // Only mark this backend "loaded" once the fetch actually succeeds, so a failed
-    // request (network error, 404, etc.) doesn't block a later retry for the same database.
-    loadedDatabase = adminDatabase.value;
   } catch (error: unknown) {
     const status = fetchErrorStatus(error);
     if (status === 401) {
-      await navigateTo('/admin');
       return;
     }
     loadError.value = status === 404 ? 'Post not found.' : 'Unable to load post.';
@@ -163,9 +147,8 @@ const onSave = async () => {
     };
 
     if (isNew.value) {
-      const created = await $fetch<BlogPost>('/api/admin/posts', {
+      const created = await adminFetch<BlogPost>('/api/admin/posts', {
         method: 'POST',
-        headers: adminRequestHeaders(),
         body: payload,
       });
       formSeverity.value = 'success';
@@ -174,16 +157,14 @@ const onSave = async () => {
       return;
     }
 
-    await $fetch(`/api/admin/posts/${idParam.value}`, {
+    await adminFetch(`/api/admin/posts/${idParam.value}`, {
       method: 'PUT',
-      headers: adminRequestHeaders(),
       body: payload,
     });
     formSeverity.value = 'success';
     formMessage.value = 'Post saved.';
   } catch (error: unknown) {
     if (fetchErrorStatus(error) === 401) {
-      await navigateTo('/admin');
       return;
     }
     formSeverity.value = 'error';
@@ -202,12 +183,14 @@ const onDelete = async () => {
   }
   saving.value = true;
   try {
-    await $fetch(`/api/admin/posts/${idParam.value}`, {
+    await adminFetch(`/api/admin/posts/${idParam.value}`, {
       method: 'DELETE',
-      headers: adminRequestHeaders(),
     });
     await navigateTo('/admin/blog');
   } catch (error: unknown) {
+    if (fetchErrorStatus(error) === 401) {
+      return;
+    }
     formSeverity.value = 'error';
     formMessage.value = fetchErrorMessage(error) || 'Delete failed.';
   } finally {

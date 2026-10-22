@@ -3,7 +3,7 @@
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createBlogPostStore, getBlogPostStore, resetBlogPostStore } from '../../../server/db/blog-store';
 
 describe('createBlogPostStore factory', () => {
@@ -38,14 +38,19 @@ describe('createBlogPostStore factory', () => {
     await store.close?.();
   });
 
-  it('selects postgres for development (requires DATABASE_URL)', () => {
+  it('selects postgres only when DATA_BACKEND=postgres is requested (requires DATABASE_URL)', () => {
     const previous = process.env.DATABASE_URL;
     const previousNuxt = process.env.NUXT_DATABASE_URL;
     Reflect.deleteProperty(process.env, 'DATABASE_URL');
     Reflect.deleteProperty(process.env, 'NUXT_DATABASE_URL');
 
     try {
-      expect(() => createBlogPostStore({ sysEnv: 'development', databaseUrl: '' })).toThrow(/DATABASE_URL/);
+      expect(() => createBlogPostStore({ sysEnv: 'development', dataBackend: 'postgres', databaseUrl: '' })).toThrow(
+        /DATABASE_URL/
+      );
+      expect(() => createBlogPostStore({ sysEnv: 'local', dataBackend: 'postgres', databaseUrl: '' })).toThrow(
+        /DATABASE_URL/
+      );
     } finally {
       if (previous === undefined) {
         Reflect.deleteProperty(process.env, 'DATABASE_URL');
@@ -60,15 +65,20 @@ describe('createBlogPostStore factory', () => {
     }
   });
 
-  it('selects dynamodb for test and production (requires DYNAMO_POSTS_TABLE)', () => {
+  it('selects dynamodb by default for development, remote, test and production (requires DYNAMO_POSTS_TABLE)', () => {
     const previous = process.env.DYNAMO_POSTS_TABLE;
     const previousNuxt = process.env.NUXT_DYNAMO_POSTS_TABLE;
     Reflect.deleteProperty(process.env, 'DYNAMO_POSTS_TABLE');
     Reflect.deleteProperty(process.env, 'NUXT_DYNAMO_POSTS_TABLE');
 
     try {
-      expect(() => createBlogPostStore({ sysEnv: 'test', dynamoPostsTable: '' })).toThrow(/DYNAMO_POSTS_TABLE/);
-      expect(() => createBlogPostStore({ sysEnv: 'production', dynamoPostsTable: '' })).toThrow(/DYNAMO_POSTS_TABLE/);
+      for (const sysEnv of ['development', 'remote', 'test', 'production']) {
+        expect(() => createBlogPostStore({ sysEnv, dynamoPostsTable: '' })).toThrow(/DYNAMO_POSTS_TABLE/);
+      }
+      // docker:local: SYS_ENV=local plus DATA_BACKEND=dynamodb → DynamoDB.
+      expect(() => createBlogPostStore({ sysEnv: 'local', dataBackend: 'dynamodb', dynamoPostsTable: '' })).toThrow(
+        /DYNAMO_POSTS_TABLE/
+      );
     } finally {
       if (previous === undefined) {
         Reflect.deleteProperty(process.env, 'DYNAMO_POSTS_TABLE');
@@ -80,6 +90,24 @@ describe('createBlogPostStore factory', () => {
       } else {
         process.env.NUXT_DYNAMO_POSTS_TABLE = previousNuxt;
       }
+    }
+  });
+
+  it('lets DATA_BACKEND from the environment override the SYS_ENV default and rejects invalid values', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'blog-store-'));
+    tempDirs.push(dir);
+    vi.stubEnv('DATA_BACKEND', 'sqlite');
+    vi.stubEnv('E2E_STORE_SYS_ENV', '');
+    vi.stubEnv('SYS_ENV', 'production');
+    try {
+      const store = createBlogPostStore({ databaseUrl: `file:${join(dir, 'env.sqlite')}` });
+      await expect(store.listPublished()).resolves.toEqual([]);
+      await store.close?.();
+
+      vi.stubEnv('DATA_BACKEND', 'mysql');
+      expect(() => createBlogPostStore()).toThrow(/Invalid DATA_BACKEND "mysql"/);
+    } finally {
+      vi.unstubAllEnvs();
     }
   });
 

@@ -139,6 +139,26 @@ export function exhibitKind(item: GalleryItem): GalleryPost['kind'] {
   return item.exhibit?.kind ?? 'shell';
 }
 
+/** The exhibit's caption (media / viz exhibits carry one), if any. */
+export function galleryExhibitCaption(item: GalleryItem): string | undefined {
+  const exhibit = item.exhibit;
+  return exhibit && 'caption' in exhibit ? exhibit.caption || undefined : undefined;
+}
+
+/**
+ * What a grid tile's media box holds: `media` (photo / video, or the shell image) loads late and
+ * keeps a strict reserved aspect ratio; `code` is a cropped preview window; `viz` (series /
+ * diagram) and `text` (the fallback title) are text with nothing to load, so they may grow.
+ */
+export type GalleryTileSurface = 'media' | 'code' | 'viz' | 'text';
+
+export function galleryTileSurface(item: GalleryItem): GalleryTileSurface {
+  const kind = item.exhibit?.kind;
+  if (kind === 'media') return 'media';
+  if (kind === 'code' || kind === 'viz') return kind;
+  return item.image ? 'media' : 'text';
+}
+
 export function flattenGalleryPosts(content: GalleryContent): GalleryPost[] {
   return content.categories.flatMap((category) =>
     category.items.map((item) => ({

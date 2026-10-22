@@ -1,12 +1,12 @@
 /**
- * Copy `src/colors.json` into `dist/` after `tsc` (tsc does not emit JSON assets).
+ * Copy `src/colors.json` (and the other runtime JSON) into `dist/` after `tsc` (tsc does not emit JSON assets).
  */
 import { copyFileSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const files = ['colors.json', 'theme-presets.json'];
+const files = ['colors.json', 'theme-presets.json', 'color-rename-map.json'];
 for (const name of files) {
   const src = join(root, 'src', name);
   const dest = join(root, 'dist', name);

@@ -44,7 +44,7 @@ A later ce-optimize run minimized `scss_lines` (baseline about 3880 → 3847) by
 3. **Mixin vs selector** — mixin when ≥2 sheets need the same recipe or scoped Vue needs `@include`; selector in `_globals.scss` when the rule should load once on every page.
 4. **Measure before keeping optimize diffs** — `node scripts/measure-app-scss.mjs` / `node scripts/measure-scss-imports.mjs` report line/import metrics and `contract_tests_passed`. Stack migrations usually win; new mixin churn can raise `scss_lines` even when it looks cleaner.
 5. **Keep agent design/plan docs aligned** when the mixins/globals split or Nuxt inject path changes, so agents do not reintroduce fragile `../assets/css/mixins` `@use` patterns.
-6. **Theme boundary** — do not shadow theme token names from app variables (except documented bridges like `--portfolio-coral` → `--accent-color`).
+6. **Theme boundary** — do not shadow theme token names from app variables (except documented bridges like `--portfolio-coral-color` → `--theme-accent-color`).
 
 ## Why This Matters
 

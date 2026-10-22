@@ -6,10 +6,16 @@
  * - colors_2.json / extended-colors.json — named catalogs (fill; Sass wins on conflict)
  *
  * Conflict rule: Sass-resolved values win over catalog values.
+ *
+ * `cssVariables` is keyed by the colour system's `--theme-…-color` names only (colour system
+ * Task 8, R-T8c); `src/tokens.ts` mirrors it. `tests/colors-json-drift.spec.ts` rebuilds the
+ * inventory in memory ({@link buildColorsInventory}) and fails when the committed file drifts.
+ *
+ *   npm run build:colors --workspace=@tgmc/theme
  */
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import * as sass from 'sass';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -164,62 +170,57 @@ function buildStructuredFromDump(dump) {
     },
   };
 
+  // The routed `--theme-…-color` roles the JS mirrors read (`src/tokens.ts`).
   const cssVariables = {
     dark: {
-      '--primary-hover': g('route-css-dark-primary-hover'),
-      '--tertiary-color': g('route-css-dark-tertiary-color'),
-      '--text-secondary-color': g('route-css-dark-text-secondary-color'),
-      '--surface-color': g('route-css-dark-surface-color'),
-      '--surface-variant': g('route-css-dark-surface-variant'),
-      '--border-color': g('route-css-dark-border-color'),
-      '--accent-color': g('route-css-dark-accent-color'),
-      '--info': g('route-css-dark-info'),
-      '--form-background': g('route-css-dark-form-background'),
-      '--form-background-disabled': g('route-css-dark-form-background-disabled'),
-      '--form-border-color': g('route-css-dark-form-border-color'),
-      '--form-placeholder': g('route-css-dark-form-placeholder'),
-      '--form-invalid-color': g('route-css-dark-form-invalid-color'),
-      '--focus-ring': g('route-css-dark-focus-ring'),
-      '--link-color': g('route-css-dark-link-color'),
-      '--border-strong': g('route-css-dark-border-strong'),
-      '--primary-fill': g('route-css-dark-primary-fill'),
-      '--on-primary': g('route-css-dark-on-primary'),
-      '--success-ink': g('route-css-dark-success-ink'),
-      '--danger-ink': g('route-css-dark-danger-ink'),
-      '--warning-ink': g('route-css-dark-warning-ink'),
-      '--error-ink': g('route-css-dark-error-ink'),
-      '--info-ink': g('route-css-dark-info-ink'),
-      '--paper': g('route-css-dark-paper'),
-      '--ink': g('route-css-dark-ink'),
+      '--theme-primary-hover-color': g('route-css-dark-primary-hover'),
+      '--theme-text-secondary-color': g('route-css-dark-text-secondary-color'),
+      '--theme-surface-color': g('route-css-dark-surface-color'),
+      '--theme-surface-variant-color': g('route-css-dark-surface-variant'),
+      '--theme-border-color': g('route-css-dark-border-color'),
+      '--theme-accent-color': g('route-css-dark-accent-color'),
+      '--theme-info-hue-color': g('route-css-dark-info'),
+      '--theme-form-background-color': g('route-css-dark-form-background'),
+      '--theme-form-background-disabled-color': g('route-css-dark-form-background-disabled'),
+      '--theme-form-placeholder-color': g('route-css-dark-form-placeholder'),
+      '--theme-form-invalid-color': g('route-css-dark-form-invalid-color'),
+      '--theme-focus-ring-color': g('route-css-dark-focus-ring'),
+      '--theme-link-color': g('route-css-dark-link-color'),
+      '--theme-border-strong-color': g('route-css-dark-border-strong'),
+      '--theme-primary-fill-color': g('route-css-dark-primary-fill'),
+      '--theme-on-primary-color': g('route-css-dark-on-primary'),
+      '--theme-success-ink-color': g('route-css-dark-success-ink'),
+      '--theme-warning-ink-color': g('route-css-dark-warning-ink'),
+      '--theme-error-ink-color': g('route-css-dark-error-ink'),
+      '--theme-info-ink-color': g('route-css-dark-info-ink'),
+      '--theme-paper-color': g('route-css-dark-paper'),
+      '--theme-ink-color': g('route-css-dark-ink'),
     },
     light: {
-      '--primary-hover': g('route-css-light-primary-hover'),
-      '--tertiary-color': g('route-css-light-tertiary-color'),
-      '--text-secondary-color': g('route-css-light-text-secondary-color'),
-      '--surface-color': g('route-css-light-surface-color'),
-      '--surface-variant': g('route-css-light-surface-variant'),
-      '--border-color': g('route-css-light-border-color'),
-      '--accent-color': g('route-css-light-accent-color'),
-      '--success': g('route-css-light-success'),
-      '--warning': g('route-css-light-warning'),
-      '--error': g('route-css-light-error'),
-      '--form-background': g('route-css-light-form-background'),
-      '--form-background-disabled': g('route-css-light-form-background-disabled'),
-      '--form-border-color': g('route-css-light-form-border-color'),
-      '--form-placeholder': g('route-css-light-form-placeholder'),
-      '--form-invalid-color': g('route-css-light-form-invalid-color'),
-      '--focus-ring': g('route-css-light-focus-ring'),
-      '--link-color': g('route-css-light-link-color'),
-      '--border-strong': g('route-css-light-border-strong'),
-      '--primary-fill': g('route-css-light-primary-fill'),
-      '--on-primary': g('route-css-light-on-primary'),
-      '--success-ink': g('route-css-light-success-ink'),
-      '--danger-ink': g('route-css-light-danger-ink'),
-      '--warning-ink': g('route-css-light-warning-ink'),
-      '--error-ink': g('route-css-light-error-ink'),
-      '--info-ink': g('route-css-light-info-ink'),
-      '--paper': g('route-css-light-paper'),
-      '--ink': g('route-css-light-ink'),
+      '--theme-primary-hover-color': g('route-css-light-primary-hover'),
+      '--theme-text-secondary-color': g('route-css-light-text-secondary-color'),
+      '--theme-surface-color': g('route-css-light-surface-color'),
+      '--theme-surface-variant-color': g('route-css-light-surface-variant'),
+      '--theme-border-color': g('route-css-light-border-color'),
+      '--theme-accent-color': g('route-css-light-accent-color'),
+      '--theme-success-hue-color': g('route-css-light-success'),
+      '--theme-warning-hue-color': g('route-css-light-warning'),
+      '--theme-error-hue-color': g('route-css-light-error'),
+      '--theme-form-background-color': g('route-css-light-form-background'),
+      '--theme-form-background-disabled-color': g('route-css-light-form-background-disabled'),
+      '--theme-form-placeholder-color': g('route-css-light-form-placeholder'),
+      '--theme-form-invalid-color': g('route-css-light-form-invalid-color'),
+      '--theme-focus-ring-color': g('route-css-light-focus-ring'),
+      '--theme-link-color': g('route-css-light-link-color'),
+      '--theme-border-strong-color': g('route-css-light-border-strong'),
+      '--theme-primary-fill-color': g('route-css-light-primary-fill'),
+      '--theme-on-primary-color': g('route-css-light-on-primary'),
+      '--theme-success-ink-color': g('route-css-light-success-ink'),
+      '--theme-warning-ink-color': g('route-css-light-warning-ink'),
+      '--theme-error-ink-color': g('route-css-light-error-ink'),
+      '--theme-info-ink-color': g('route-css-light-info-ink'),
+      '--theme-paper-color': g('route-css-light-paper'),
+      '--theme-ink-color': g('route-css-light-ink'),
     },
   };
 
@@ -337,26 +338,31 @@ function buildPlugin(structured) {
   return plugin;
 }
 
-const dump = compileSassDump();
-const structured = buildStructuredFromDump(dump);
-const sassFlat = buildSassFlat(dump);
+/** The whole `colors.json` inventory (compiles the Sass dump; writes nothing). */
+export function buildColorsInventory() {
+  const dump = compileSassDump();
+  const structured = buildStructuredFromDump(dump);
+  const sassFlat = buildSassFlat(dump);
+  return {
+    $schemaComment:
+      'Generated by bin/build-colors-json.mjs from Sass colors-dump + colors_2/extended-colors; Sass wins on conflict.',
+    base: buildBase(structured),
+    palettes: buildPalettes(structured),
+    semantic: structured.semantic,
+    theme: structured.theme,
+    cssVariables: structured.cssVariables,
+    primary: buildPrimary(structured),
+    plugin: buildPlugin(structured),
+    sass: sassFlat,
+    named: buildNamedMap(sassFlat, structured),
+  };
+}
 
-const inventory = {
-  $schemaComment:
-    'Generated by bin/build-colors-json.mjs from Sass colors-dump + colors_2/extended-colors; Sass wins on conflict.',
-  base: buildBase(structured),
-  palettes: buildPalettes(structured),
-  semantic: structured.semantic,
-  theme: structured.theme,
-  cssVariables: structured.cssVariables,
-  primary: buildPrimary(structured),
-  plugin: buildPlugin(structured),
-  sass: sassFlat,
-  named: buildNamedMap(sassFlat, structured),
-};
-
-const outPath = join(src, 'colors.json');
-writeFileSync(outPath, `${JSON.stringify(inventory, null, 2)}\n`, 'utf8');
-console.log(
-  `Wrote ${outPath} (${Object.keys(inventory.named).length} named, ${Object.keys(inventory.sass).length} sass, ${Object.keys(inventory.palettes).length} palettes)`
-);
+if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) {
+  const inventory = buildColorsInventory();
+  const outPath = join(src, 'colors.json');
+  writeFileSync(outPath, `${JSON.stringify(inventory, null, 2)}\n`, 'utf8');
+  console.log(
+    `Wrote ${outPath} (${Object.keys(inventory.named).length} named, ${Object.keys(inventory.sass).length} sass, ${Object.keys(inventory.palettes).length} palettes)`
+  );
+}

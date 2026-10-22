@@ -35,6 +35,7 @@ export default defineConfig(() => ({
     pool: 'forks',
     fileParallelism: false,
     maxWorkers: 1,
+    setupFiles: ['./tests/setup/clear-store-env.ts'],
     include: ['tests/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     reporters: ['default'],
     coverage: {
@@ -44,14 +45,14 @@ export default defineConfig(() => ({
         'server/db/**/*.ts',
         'server/api/messages/**/*.ts',
         'server/api/posts/**/*.ts',
-        'shared/personalization.ts',
+        'shared/preferences/**/*.ts',
         'shared/site-person.ts',
         'shared/site-profile.ts',
         'shared/blog-types.ts',
       ],
-      exclude: ['**/*.{spec,test}.ts', '**/routes.spec.ts'],
+      exclude: ['**/*.{spec,test}.ts', '**/routes.spec.ts', 'shared/preferences/testing.ts'],
       thresholds: {
-        // Focused gate for data stores + public post/message APIs + personalization SoT.
+        // Focused gate for data stores + public post/message APIs + personalization SoT (shared/preferences).
         lines: 70,
         functions: 65,
         branches: 55,

@@ -4,24 +4,50 @@
 /// Nested surfaces always pair `color` with `background` so inherited ink contrasts.
 @use '../tokens/colors' as *;
 @use '../tokens/button-mixins' as *;
+@use 'mixins' as m;
+@use '../tokens/focus' as *;
+@use '../tokens/variations.generated' as *;
 
 @mixin pv-message-tone($token) {
-  background: color-mix(in srgb, #{$token} 16%, var(--surface-color));
+  background: color-mix(in srgb, #{$token} 16%, var(--theme-surface-color));
   border-color: color-mix(in srgb, #{$token} 45%, transparent);
-  color: var(--text-color);
+  color: var(--theme-text-color);
 }
 
+/// Filled status control (button / tag / badge). The status variation is ≥ 4.5:1 against the
+/// mode's paper by construction, so the paper is the text colour that always reads on it.
 @mixin pv-solid-tone($token) {
   background: #{$token};
   border-color: #{$token};
-  color: var(--button-fg, #{$color-white});
+  color: var(--theme-paper-color);
 }
 
-@mixin pv-outline-tone($token) {
-  color: #{$token};
-  border-color: #{$token};
+/// Outlined status control: the label is text, so it paints the status ink (`$ink`, ≥ 4.5:1 on
+/// page, surfaces and variant — `buildStatusInkTokens`); the border is a graphic and keeps the hue
+/// (`$hue`, ≥ 4.5:1 on paper). Hover / active keep that ground (no wash under the ink) and signal
+/// with an inset ring in the hue plus the lift / press shadow — never colour alone.
+@mixin pv-outline-tone($hue, $ink) {
+  color: #{$ink};
+  border-color: #{$hue};
   background: transparent;
-  text-shadow: 1px -1px 1px color-mix(in srgb, var(--primary-inverted) 76%, transparent);
+  text-shadow: 1px -1px 1px color-mix(in srgb, var(--theme-primary-inverted-color) 76%, transparent);
+
+  // `:not(:disabled)` matches PrimeVue's own state selectors' weight, so these win.
+  &:not(:disabled):hover {
+    color: #{$ink};
+    background-color: transparent;
+    box-shadow:
+      inset 0 0 0 1px #{$hue},
+      var(--button-shadow-hover);
+  }
+
+  &:not(:disabled):active {
+    color: #{$ink};
+    background-color: transparent;
+    box-shadow:
+      inset 0 0 0 1px #{$hue},
+      var(--button-shadow-active);
+  }
 }
 
 // ─── Surfaces / overlays ─────────────────────────────────────────────────────
@@ -40,15 +66,21 @@
 .p-megamenu,
 .p-menubar,
 .p-panelmenu,
+.p-datepicker {
+  color: var(--theme-text-color);
+  background: color-mix(in srgb, var(--theme-surface-color) 16%, transparent 100%);
+  border-color: var(--theme-border-color);
+}
+
+// Option lists float over other controls: an opaque surface keeps the options readable.
 .p-select-overlay,
-.p-datepicker,
 .p-autocomplete-overlay,
 .p-cascadeselect-overlay,
 .p-treeselect-overlay,
 .p-multiselect-overlay {
-  color: var(--text-color);
-  background: color-mix(in srgb, var(--surface-color) 16%, transparent 100%);
-  border-color: var(--border-color);
+  color: var(--theme-text-color);
+  background: var(--theme-surface-color);
+  border-color: var(--theme-border-strong-color);
 }
 
 .p-card .p-card-header,
@@ -57,9 +89,9 @@
 .p-drawer .p-drawer-header,
 .p-accordionpanel > .p-accordionheader,
 .p-tablist {
-  color: var(--text-color);
-  background: color-mix(in srgb, var(--surface-variant) 22%, transparent 100%);
-  border-color: var(--border-color);
+  color: var(--theme-text-color);
+  background: color-mix(in srgb, var(--theme-surface-variant-color) 22%, transparent 100%);
+  border-color: var(--theme-border-color);
 }
 
 .p-card .p-card-title,
@@ -77,9 +109,22 @@
   font-size: max(var(--type-min, 12px), 0.75rem);
 }
 
+// Dialog / drawer close (×): Nora's icon-only button is 2.5rem wide and tall — under the 44px
+// touch floor at the default type size. `min-*` lifts it without touching Nora's width / height.
+.p-dialog .p-dialog-close-button,
+.p-drawer .p-drawer-close-button {
+  @include m.touch-target($square: true);
+}
+
 .p-tabs .p-tab {
   min-height: var(--touch-target, 44px);
-  color: var(--text-color);
+  color: var(--theme-text-color);
+}
+
+// PrimeVue's Select is a <div>, so the native `select` floor in `_form.scss` misses it.
+.p-select {
+  align-items: center;
+  min-height: var(--form-control-height);
 }
 
 .p-card .p-card-body,
@@ -90,31 +135,31 @@
 .p-accordioncontent-content,
 .p-tabpanels,
 .p-tabpanel {
-  color: var(--text-color);
-  background: color-mix(in srgb, var(--surface-color) 50%, transparent 100%);
+  color: var(--theme-text-color);
+  background: color-mix(in srgb, var(--theme-surface-color) 50%, transparent 100%);
 }
 
 .p-card .p-card-subtitle,
 .p-tabs .p-tab:not(.p-tab-active),
 .p-accordionheader-toggle-icon {
-  color: var(--text-secondary-color);
+  color: var(--theme-text-secondary-color);
 }
 
 .p-tabs .p-tab-active,
 .p-tabs .p-tab:not(.p-disabled):focus-visible {
-  color: var(--primary-color);
+  color: var(--theme-primary-ink-color);
 }
 
 .p-tablist-active-bar {
-  background: var(--primary-color);
+  background: var(--theme-primary-color);
 }
 
 .p-accordionpanel.p-accordionpanel-active > .p-accordionheader {
-  color: var(--primary-color);
+  color: var(--theme-primary-ink-color);
 }
 
 .p-select-list-container {
-  background-color: var(--form-background);
+  background-color: var(--theme-surface-color);
 }
 
 // ─── Form controls ───────────────────────────────────────────────────────────
@@ -129,7 +174,7 @@
 .p-radiobutton,
 .p-toggleswitch,
 .p-floatlabel label {
-  color: var(--text-color);
+  color: var(--theme-text-color);
 }
 
 .p-inputtext,
@@ -138,20 +183,21 @@
 .p-password-input,
 .p-inputnumber-input,
 .p-datepicker-input {
-  background: color-mix(in srgb, var(--form-background) 50%, transparent 100%);
-  border-color: var(--form-border-color);
+  background: color-mix(in srgb, var(--theme-form-background-color) 50%, transparent 100%);
+  border-color: var(--theme-border-strong-color);
 
   &:hover {
-    border-color: color-mix(in srgb, var(--primary-color) 75%, transparent);
-    background-color: color-mix(in srgb, var(--primary-color) 4%, var(--form-background));
+    border-color: color-mix(in srgb, var(--theme-primary-color) 75%, transparent);
+    background-color: color-mix(in srgb, var(--theme-primary-color) 4%, var(--theme-form-background-color));
   }
 
+  // The standard ring; the border keeps its rest contrast (≥ 3:1) — focus never lowers it.
   &:focus,
   &:focus-visible {
-    outline: none;
-    border-color: color-mix(in srgb, var(--primary-color) 45%, transparent);
-    background-color: color-mix(in srgb, var(--main-background) 26%, var(--form-background));
-    box-shadow: 0 0 0 1px color-mix(in srgb, var(--form-focus-ring) 33%, transparent);
+    @include focus-ring;
+    border-color: var(--theme-border-strong-color);
+    background-color: color-mix(in srgb, var(--theme-main-background-color) 26%, var(--theme-form-background-color));
+    box-shadow: none;
   }
 }
 
@@ -159,230 +205,243 @@
 .p-textarea::placeholder,
 .p-select .p-select-label.p-placeholder,
 .p-floatlabel label {
-  color: var(--form-placeholder, var(--text-secondary-color));
+  color: var(--theme-form-placeholder-color, var(--theme-text-secondary-color));
 }
 
+// One ring per control: `.p-password` / `.p-inputnumber` wrap a `.p-inputtext` that draws it.
 .p-inputtext:enabled:focus,
 .p-textarea:enabled:focus,
-.p-select:not(.p-disabled).p-focus,
-.p-password:not(.p-disabled).p-focus,
-.p-inputnumber:not(.p-disabled).p-focus {
-  border-color: var(--form-focus-ring, var(--focus-ring));
-  box-shadow: 0 0 0 1px var(--form-focus-ring, var(--focus-ring));
+.p-select:not(.p-disabled).p-focus {
+  @include focus-ring;
+  border-color: var(--theme-border-strong-color);
+  box-shadow: none;
 }
 
 .p-select-option,
 .p-datepicker-calendar td > span,
 .p-listbox-option,
 .p-tree-node-content {
-  color: var(--text-color);
+  color: var(--theme-text-color);
 }
 
 .p-select-option-group,
 .p-datepicker-title,
 .p-datepicker-decade {
-  color: var(--text-secondary-color);
+  color: var(--theme-text-secondary-color);
 }
 
 .p-select-option.p-select-option-selected,
 .p-listbox-option.p-listbox-option-selected {
-  color: var(--primary-color);
-  background-color: var(--form-background);
+  color: var(--theme-primary-ink-color);
+  background-color: var(--theme-form-background-color);
 }
 
 // ─── Feedback ────────────────────────────────────────────────────────────────
 
 .p-message {
-  color: var(--text-color);
+  color: var(--theme-text-color);
 
   &.p-message-success {
-    @include pv-message-tone(var(--success));
+    @include pv-message-tone(var(--theme-success-hue-color));
   }
 
   &.p-message-warn,
   &.p-message-warning {
-    @include pv-message-tone(var(--warning));
+    @include pv-message-tone(var(--theme-warning-hue-color));
   }
 
   &.p-message-error,
   &.p-message-danger {
-    @include pv-message-tone(var(--error));
+    @include pv-message-tone(var(--theme-error-hue-color));
   }
 
   &.p-message-info {
-    @include pv-message-tone(var(--info));
+    @include pv-message-tone(var(--theme-info-hue-color));
   }
 
   &.p-message-secondary {
-    background: var(--surface-variant);
-    border-color: var(--border-color);
-    color: var(--text-color);
+    background: var(--theme-surface-variant-color);
+    border-color: var(--theme-border-color);
+    color: var(--theme-text-color);
   }
 }
 
 .p-tag,
 .p-badge,
 .p-chip {
-  color: var(--text-color);
-  background: var(--surface-variant);
-  border-color: var(--border-color);
+  color: var(--theme-text-color);
+  background: var(--theme-surface-variant-color);
+  border-color: var(--theme-border-color);
 }
 
 .p-tag,
 .p-badge {
   &.p-tag-success,
   &.p-badge-success {
-    @include pv-solid-tone(var(--success));
+    @include pv-solid-tone(var(--theme-success-hue-color));
   }
 
   &.p-tag-warn,
   &.p-tag-warning,
   &.p-badge-warn,
   &.p-badge-warning {
-    @include pv-solid-tone(var(--warning));
+    @include pv-solid-tone(var(--theme-warning-hue-color));
   }
 
   &.p-tag-danger,
   &.p-badge-danger {
-    @include pv-solid-tone(var(--error));
+    @include pv-solid-tone(var(--theme-error-hue-color));
   }
 
   &.p-tag-info,
   &.p-badge-info {
-    @include pv-solid-tone(var(--info));
+    @include pv-solid-tone(var(--theme-info-hue-color));
   }
 
   &.p-tag-secondary,
   &.p-badge-secondary {
-    background: var(--surface-variant);
-    color: var(--text-color);
-    border-color: var(--border-color);
+    background: var(--theme-surface-variant-color);
+    color: var(--theme-text-color);
+    border-color: var(--theme-border-color);
   }
 }
 
 // ─── Buttons ─────────────────────────────────────────────────────────────────
 
 .p-button {
-  color: var(--primary-color);
-  text-shadow: -1px -1px 1px color-mix(in srgb, var(--primary-inverted) 76%, transparent);
+  color: var(--theme-primary-ink-color);
+  text-shadow: -1px -1px 1px color-mix(in srgb, var(--theme-primary-inverted-color) 76%, transparent);
   border: {
     width: 1px;
     style: solid;
-    color: color-mix(in srgb, var(--text-secondary-color) 25%, transparent);
+    color: color-mix(in srgb, var(--theme-text-secondary-color) 25%, transparent);
   }
 
-  &:hover {
+  &:not(:disabled):hover {
     text-decoration: none;
-    filter: saturate(1.05) brightness(1.04);
+    // No lightening filter: filled buttons keep their ≥ 4.5:1 text on hover; the lift is the cue.
     transform: translateY(-1px);
-    background-color: color-mix(in srgb, var(--primary-color) 18%, transparent);
+    // A computed wash: primary-ink text stays ≥ 4.5:1 on it (`buildWashTokens`).
+    background-color: color-mix(in srgb, var(--theme-primary-wash-color) $theme-wash-alpha, transparent);
   }
 
-  &:active {
-    background-color: color-mix(in srgb, var(--secondary-color) 20%, transparent);
+  &:not(:disabled):active {
+    background-color: color-mix(in srgb, var(--theme-secondary-wash-color) $theme-wash-alpha, transparent);
     transform: translateY(0);
   }
 
   &:not(.p-button-outlined):not(.p-button-text):not(.p-button-link):not(.p-button-secondary):not(.p-button-success):not(
       .p-button-warn
     ):not(.p-button-warning):not(.p-button-danger):not(.p-button-info):not(.p-button-help) {
-    text-shadow: 1px -1px 1px color-mix(in srgb, var(--primary-inverted) 52%, transparent);
-    background-color: var(--primary-color);
-    background-image: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
-    color: var(--button-secondary-fg, var(--button-fg));
+    text-shadow: 1px -1px 1px color-mix(in srgb, var(--theme-primary-inverted-color) 52%, transparent);
+    // Dark: primary + gradient; light: the white-text primary fill, no gradient (option C).
+    background-color: var(--theme-button-fill-color);
+    background-image: var(
+      --button-solid-bg,
+      linear-gradient(135deg, var(--theme-secondary-fill-color) 0%, var(--theme-primary-color) 100%)
+    );
+    color: var(--theme-button-secondary-fg-color, var(--theme-button-fg-color));
 
     &:hover {
-      background-color: var(--primary-color-hover);
-      background-image: linear-gradient(125deg, var(--secondary-inverted) 0%, var(--primary-color) 100%);
+      background-color: var(--theme-button-hover-fill-color);
+      background-image: var(
+        --button-solid-bg-hover,
+        linear-gradient(125deg, var(--theme-secondary-inverted-color) 0%, var(--theme-primary-color) 100%)
+      );
     }
   }
 
   &.p-button-outlined {
-    color: var(--primary-color);
-    border-color: color-mix(in srgb, var(--primary-color) 45%, transparent);
-    box-shadow: inset 0 0 0 0 color-mix(in srgb, var(--primary-color) 0%, transparent);
+    color: var(--theme-primary-ink-color);
+    border-color: color-mix(in srgb, var(--theme-primary-color) 45%, transparent);
+    box-shadow: inset 0 0 0 0 color-mix(in srgb, var(--theme-primary-color) 0%, transparent);
 
-    &:hover {
-      background-color: color-mix(in srgb, var(--primary-color) 12%, transparent);
+    // Wash + inset ring + lift shadow (not colour alone).
+    &:not(:disabled):hover {
+      background-color: color-mix(in srgb, var(--theme-primary-wash-color) $theme-wash-alpha, transparent);
       box-shadow:
-        inset 0 -3rem 0 0 color-mix(in srgb, var(--primary-color) 15%, transparent),
+        inset 0 0 0 1px var(--theme-primary-color),
         var(--button-shadow-hover);
     }
 
-    &:active {
-      background-color: color-mix(in srgb, var(--secondary-color) 16%, transparent);
+    &:not(:disabled):active {
+      background-color: color-mix(in srgb, var(--theme-secondary-wash-color) $theme-wash-alpha, transparent);
       box-shadow:
-        inset 0 -3rem 0 0 color-mix(in srgb, var(--secondary-color) 20%, transparent),
+        inset 0 0 0 1px var(--theme-secondary-color),
         var(--button-shadow-active);
     }
   }
 
   &.p-button-text {
-    color: var(--primary-color);
-    text-shadow: 1px -1px 1px color-mix(in srgb, var(--primary-inverted) 52%, transparent);
+    color: var(--theme-primary-ink-color);
+    text-shadow: 1px -1px 1px color-mix(in srgb, var(--theme-primary-inverted-color) 52%, transparent);
     box-shadow: none;
     background: transparent none;
     border-color: transparent;
 
-    &:hover {
+    // No lift on text buttons: hover underlines the label (not colour alone).
+    &:not(:disabled):hover {
       text-shadow:
-        1px -1px 1px color-mix(in srgb, var(--primary-inverted) 52%, transparent),
-        3px 3px 2px color-mix(in srgb, var(--primary-color) 36%, transparent);
+        1px -1px 1px color-mix(in srgb, var(--theme-primary-inverted-color) 52%, transparent),
+        3px 3px 2px color-mix(in srgb, var(--theme-primary-color) 36%, transparent);
+      background-color: transparent;
       box-shadow: none;
       transform: translateY(0);
+      text-decoration-line: underline;
+      text-underline-offset: 0.2em;
     }
 
-    &:active {
-      background-color: color-mix(in srgb, var(--secondary-color) 20%, transparent);
+    &:not(:disabled):active {
+      background-color: color-mix(in srgb, var(--theme-secondary-wash-color) $theme-wash-alpha, transparent);
       box-shadow: none;
       transform: translateY(0);
     }
   }
 
   &.p-button-success:not(:disabled) {
-    @include pv-solid-tone(var(--success));
+    @include pv-solid-tone(var(--theme-success-hue-color));
   }
 
   &.p-button-warn:not(:disabled),
   &.p-button-warning:not(:disabled) {
-    @include pv-solid-tone(var(--warning));
+    @include pv-solid-tone(var(--theme-warning-hue-color));
   }
 
   &.p-button-danger:not(:disabled) {
-    @include pv-solid-tone(var(--error));
+    @include pv-solid-tone(var(--theme-error-hue-color));
   }
 
   &.p-button-info:not(:disabled) {
-    @include pv-solid-tone(var(--info));
+    @include pv-solid-tone(var(--theme-info-hue-color));
   }
 
   &.p-button-secondary:not(:disabled):not(.p-button-outlined):not(.p-button-text) {
-    background: var(--surface-variant);
-    border-color: var(--border-color);
-    color: var(--text-color);
+    background: var(--theme-surface-variant-color);
+    border-color: var(--theme-border-color);
+    color: var(--theme-text-color);
   }
 
   &.p-button-outlined.p-button-success {
-    @include pv-outline-tone(var(--success));
+    @include pv-outline-tone(var(--theme-success-hue-color), var(--theme-success-ink-color));
   }
 
   &.p-button-outlined.p-button-warn,
   &.p-button-outlined.p-button-warning {
-    @include pv-outline-tone(var(--warning));
+    @include pv-outline-tone(var(--theme-warning-hue-color), var(--theme-warning-ink-color));
   }
 
   &.p-button-outlined.p-button-danger {
-    @include pv-outline-tone(var(--error));
+    @include pv-outline-tone(var(--theme-error-hue-color), var(--theme-error-ink-color));
   }
 
   &.p-button-outlined.p-button-info {
-    @include pv-outline-tone(var(--info));
+    @include pv-outline-tone(var(--theme-info-hue-color), var(--theme-info-ink-color));
   }
 
   &.p-button-outlined.p-button-secondary,
   &.p-button-text.p-button-secondary {
-    color: var(--text-color);
-    border-color: var(--border-color);
+    color: var(--theme-text-color);
+    border-color: var(--theme-border-color);
     background: transparent;
   }
 }
@@ -390,48 +449,48 @@
 // ─── Progress / chrome ───────────────────────────────────────────────────────
 
 .p-progressbar .p-progressbar-value {
-  background: var(--primary-color);
+  background: var(--theme-primary-color);
 }
 
 .p-progressbar {
-  background: var(--surface-variant);
+  background: var(--theme-surface-variant-color);
 }
 
 .p-progressspinner-circle {
-  stroke: var(--primary-color);
+  stroke: var(--theme-primary-color);
 }
 
 .p-divider {
-  border-color: var(--border-color);
+  border-color: var(--theme-border-color);
 }
 
 .p-skeleton {
-  background: var(--surface-variant);
+  background: var(--theme-surface-variant-color);
 }
 
 .p-timeline .p-timeline-event-marker {
-  border-color: var(--primary-color);
-  background: var(--surface-color);
+  border-color: var(--theme-primary-color);
+  background: var(--theme-surface-color);
 }
 
 .p-timeline .p-timeline-event-connector {
-  background: var(--border-color);
+  background: var(--theme-border-color);
 }
 
 .p-checkbox .p-checkbox-box.p-highlight,
 .p-radiobutton .p-radiobutton-box.p-highlight,
 .p-toggleswitch.p-toggleswitch-checked .p-toggleswitch-slider {
-  background: var(--primary-color);
-  border-color: var(--primary-color);
+  background: var(--theme-primary-color);
+  border-color: var(--theme-primary-color);
 }
 
 .p-checkbox .p-checkbox-box.p-highlight .p-checkbox-icon,
 .p-radiobutton .p-radiobutton-box.p-highlight .p-radiobutton-icon {
-  color: var(--button-fg);
+  color: var(--theme-button-fg-color);
 }
 
 .p-avatar {
-  background: var(--surface-variant);
-  color: var(--text-color);
-  border-color: var(--border-color);
+  background: var(--theme-surface-variant-color);
+  color: var(--theme-text-color);
+  border-color: var(--theme-border-color);
 }

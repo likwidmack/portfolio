@@ -50,7 +50,7 @@
     width: 100%;
     height: 15rem;
     object-fit: cover;
-    border: 1px solid var(--portfolio-rule);
+    border: 1px solid var(--portfolio-rule-color);
     border-bottom: none;
   }
 
@@ -58,14 +58,14 @@
     display: flex;
     align-items: flex-end;
     padding: 0.85rem;
-    background: color-mix(in srgb, var(--surface-color) 80%, transparent);
+    background: color-mix(in srgb, var(--theme-surface-color) 80%, transparent);
 
     span {
       @include portfolio-type-meta;
       font-size: max(var(--type-min, 12px), 0.6rem);
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: var(--text-secondary-color);
+      color: var(--theme-text-secondary-color);
     }
   }
 
@@ -86,7 +86,7 @@
       margin: 0;
       font-size: 1.05rem;
       letter-spacing: -0.02em;
-      color: var(--text-color);
+      color: var(--theme-text-color);
     }
   }
 
@@ -96,10 +96,10 @@
 
     button {
       padding: 0.35rem 0.75rem;
-      border: 1px solid var(--portfolio-rule);
+      border: 1px solid var(--portfolio-rule-color);
       border-radius: var(--button-radius, var(--border-radius-sm));
       background: transparent;
-      color: var(--text-secondary-color);
+      color: var(--theme-text-secondary-color);
       @include portfolio-type-meta;
       font-size: max(var(--type-min, 12px), 0.65rem);
       letter-spacing: 0.08em;
@@ -107,9 +107,9 @@
       cursor: pointer;
 
       &[aria-pressed='true'] {
-        background: color-mix(in srgb, var(--primary-color) 18%, transparent);
-        border-color: var(--primary-color);
-        color: var(--text-color);
+        background: color-mix(in srgb, var(--theme-primary-color) 18%, transparent);
+        border-color: var(--theme-primary-color);
+        color: var(--theme-text-color);
       }
     }
   }
@@ -120,7 +120,7 @@
     font-size: max(var(--type-min, 12px), 0.65rem);
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: var(--text-secondary-color);
+    color: var(--theme-text-secondary-color);
   }
 }
 

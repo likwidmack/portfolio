@@ -97,15 +97,7 @@ export function createColorPalette(color: ColorInput, options: AnalogousOptions 
 
   return {
     original,
-    analogous: generateAnalogousColors(
-      h,
-      s,
-      l,
-      a,
-      format,
-      requireAnalogousAngle(angle),
-      requireAnalogousCount(count)
-    ),
+    analogous: generateAnalogousColors(h, s, l, a, format, requireAnalogousAngle(angle), requireAnalogousCount(count)),
     complementary: generateComplementaryColor(h, s, l, a, format),
     splitComplementary: generateSplitComplementaryColors(h, s, l, a, format),
     triadic: generateTriadicColors(h, s, l, a, format),
@@ -115,15 +107,7 @@ export function createColorPalette(color: ColorInput, options: AnalogousOptions 
 
 export function createAnalogousColors(color: ColorInput, angle = 30, count = 2): string[] {
   const { format, h, s, l, a } = requireParsed(color);
-  return generateAnalogousColors(
-    h,
-    s,
-    l,
-    a,
-    format,
-    requireAnalogousAngle(angle),
-    requireAnalogousCount(count)
-  );
+  return generateAnalogousColors(h, s, l, a, format, requireAnalogousAngle(angle), requireAnalogousCount(count));
 }
 
 export function getComplementaryColor(color: ColorInput): string {

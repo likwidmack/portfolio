@@ -11,7 +11,7 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1px;
-  background: var(--portfolio-rule);
+  background: var(--portfolio-rule-color);
 }
 
 @media (orientation: landscape) {
@@ -31,11 +31,11 @@
 .evidence-grid {
   > div {
     padding: 2rem;
-    background: var(--main-background);
+    background: var(--theme-main-background-color);
   }
 
   dt {
-    color: var(--primary-color);
+    color: var(--theme-primary-ink-color);
     font-size: 0.75rem;
     font-weight: 800;
     letter-spacing: 0.08em;
@@ -55,7 +55,7 @@
     display: grid;
     grid-template-rows: auto 1fr;
     margin: 0;
-    background: var(--surface-color);
+    background: var(--theme-surface-color);
   }
 
   :is(img, video, .ui-image) {
@@ -63,7 +63,7 @@
     width: 100%;
     height: auto;
     aspect-ratio: var(--media-ratio, 16 / 9);
-    background: var(--portfolio-ink);
+    background: var(--portfolio-ink-color);
     object-fit: cover;
   }
 
@@ -81,7 +81,7 @@
   figcaption {
     margin: 0;
     padding: 0.85rem 1rem 1rem;
-    color: var(--text-secondary-color);
+    color: var(--theme-text-secondary-color);
     font-size: 0.85rem;
     line-height: 1.45;
   }
@@ -94,16 +94,16 @@
 
   &__privacy {
     width: fit-content;
-    border: 1px solid var(--portfolio-rule);
+    border: 1px solid var(--portfolio-rule-color);
     border-radius: 999px;
     padding: 0.35rem 0.7rem;
   }
 
   &__media {
     margin: 0;
-    border-bottom: 1px solid var(--portfolio-rule);
+    border-bottom: 1px solid var(--portfolio-rule-color);
     overflow: hidden;
-    background: color-mix(in srgb, var(--surface-color) 70%, var(--main-background) 30%);
+    background: color-mix(in srgb, var(--theme-surface-color) 70%, var(--theme-main-background-color) 30%);
 
     > :is(img, video, .ui-image) {
       display: block;
@@ -124,7 +124,7 @@
     figcaption {
       margin: 0;
       padding: 0.85rem 1rem 1rem;
-      color: var(--text-secondary-color);
+      color: var(--theme-text-secondary-color);
       font-size: 0.85rem;
       line-height: 1.45;
     }
@@ -172,7 +172,7 @@
   list-style: none;
 
   li {
-    border: 1px solid var(--portfolio-rule);
+    border: 1px solid var(--portfolio-rule-color);
     border-radius: 999px;
     padding: 0.25rem 0.55rem;
     font-size: 0.78rem;

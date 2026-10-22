@@ -1,0 +1,99 @@
+{
+  "name": "@tgmc/media",
+  "version": "0.0.1",
+  "type": "module",
+  "description": "Server-side media catalog, child materialization, audit, and local SQLite/filesystem adapters for TGMC apps.",
+  "author": "Tamara Gisele Mack",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:likwidmack/portfolio.git",
+    "directory": "packages/media"
+  },
+  "homepage": "https://github.com/likwidmack/portfolio/tree/main/packages/media",
+  "bugs": {
+    "url": "https://github.com/likwidmack/portfolio/issues"
+  },
+  "keywords": [
+    "media",
+    "dam",
+    "sqlite",
+    "image",
+    "typescript",
+    "tgmc"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "tgmc-media": "./bin/media.mjs"
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "tgmc-portfolio": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./kinds": {
+      "tgmc-portfolio": "./src/kinds.ts",
+      "types": "./dist/kinds.d.ts",
+      "import": "./dist/kinds.js",
+      "default": "./dist/kinds.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.lib.json",
+    "test": "npm run build --workspace=@tgmc/image --workspace=@tgmc/utilities && npm run build && vitest run",
+    "prepublishOnly": "npm run build"
+  },
+  "files": [
+    "dist",
+    "bin",
+    "!**/*.tsbuildinfo"
+  ],
+  "nx": {
+    "tags": [
+      "type:lib",
+      "scope:shared"
+    ],
+    "targets": {
+      "build": {
+        "executor": "@nx/js:tsc",
+        "outputs": [
+          "{options.outputPath}"
+        ],
+        "dependsOn": [
+          "^build"
+        ],
+        "options": {
+          "outputPath": "packages/media/dist",
+          "main": "packages/media/src/index.ts",
+          "tsConfig": "packages/media/tsconfig.lib.json",
+          "rootDir": "packages/media/src",
+          "generatePackageJson": false
+        }
+      },
+      "test": {
+        "dependsOn": [
+          "build",
+          "^build"
+        ]
+      }
+    }
+  },
+  "dependencies": {
+    "@tgmc/image": "*",
+    "@tgmc/utilities": "*",
+    "better-sqlite3": "^12.6.2",
+    "sharp": "^0.35.5",
+    "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13"
+  }
+}

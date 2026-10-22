@@ -45,7 +45,16 @@ describe('about page content', () => {
     expect(aboutPage).not.toContain('queryCollection(');
     expect(aboutPage).toContain('about-cv__sidebar');
     expect(aboutPage).toContain('about-cv__resume');
-    expect(aboutPage).toContain('--portfolio-teal');
+    expect(aboutPage).toContain('--portfolio-teal-fill-color');
+    // Focus uses the theme ring (focus role, 2px outline), not a teal glow or a removed outline.
+    expect(aboutPage).not.toContain('outline: none');
+    expect(aboutPage.match(/&:focus-visible \{\s*@include focus-ring;\s*\}/g) ?? []).toHaveLength(2);
+    // The résumé chip's text is the teal fill's paired text (rule 3: paper on the success variation
+    // in light, ink on the success `-background` variation in dark), independent of the brand primary.
+    expect(aboutPage).toMatch(
+      /background: var\(--portfolio-teal-fill-color\);[^}]*?color: var\(--portfolio-on-teal-color\);/
+    );
+    expect(aboutPage).not.toMatch(/color: var\(--(?:theme-)?button-fg/);
     expect(aboutPage).toContain('data-fit="prose"');
     expect(aboutPage).toContain('margin-inline: auto');
     expect(aboutPage).toContain('max-width: none');

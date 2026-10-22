@@ -2,19 +2,15 @@
  * Admin Bearer-token gate for write APIs (env-gated shared secret).
  */
 import { createError, getHeader, type H3Event } from 'h3';
-import { timingSafeEqual } from 'node:crypto';
+import { createHash, timingSafeEqual } from 'node:crypto';
+
+const digest = (value: string): Buffer => createHash('sha256').update(value, 'utf8').digest();
 
 /**
- * Constant-time string compare (pads to equal length buffers).
+ * Constant-time string compare on 32-byte SHA-256 digests, so neither the result nor the
+ * timing reveals the expected token's length.
  */
-export const secureCompare = (a: string, b: string): boolean => {
-  const left = Buffer.from(a);
-  const right = Buffer.from(b);
-  if (left.length !== right.length) {
-    return false;
-  }
-  return timingSafeEqual(left, right);
-};
+export const secureCompare = (a: string, b: string): boolean => timingSafeEqual(digest(a), digest(b));
 
 /**
  * Extract Bearer token from an Authorization header value.

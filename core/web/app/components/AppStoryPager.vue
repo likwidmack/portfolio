@@ -39,23 +39,23 @@ function onContactClick(): void {
   gap: var(--space-4, 1rem);
   margin-top: var(--space-8, 2rem);
   padding-top: var(--space-6, 1.5rem);
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid var(--theme-border-color);
 
   &__link {
     display: grid;
     gap: var(--space-1, 0.25rem);
     padding: var(--space-5, 1.25rem);
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--theme-border-color);
     border-radius: var(--border-radius-md, 0.5rem);
-    color: var(--text-color);
+    color: var(--theme-text-color);
     text-decoration: none;
 
     &:hover {
-      border-color: var(--link-color, var(--primary-color));
+      border-color: var(--theme-link-color, var(--theme-primary-color));
     }
 
     &:focus-visible {
-      outline: 2px solid var(--focus-ring);
+      outline: 2px solid var(--theme-focus-ring-color);
       outline-offset: 2px;
     }
   }
@@ -65,7 +65,7 @@ function onContactClick(): void {
   }
 
   &__dir {
-    color: var(--text-secondary-color);
+    color: var(--theme-text-secondary-color);
     font-size: var(--font-size-xs, 0.75rem);
     letter-spacing: 0.14em;
     text-transform: uppercase;
@@ -89,20 +89,20 @@ function onContactClick(): void {
     min-height: var(--touch-target, 44px);
     padding: 0 1.25rem;
     border-radius: var(--button-radius, var(--border-radius-sm));
-    background: var(--primary-fill, var(--primary-color));
-    color: var(--on-primary, #fff);
+    background: var(--theme-primary-fill-color, var(--theme-primary-color));
+    color: var(--theme-on-primary-color);
     font-weight: 700;
     text-decoration: none;
 
     &:focus-visible {
-      outline: 2px solid var(--focus-ring);
+      outline: 2px solid var(--theme-focus-ring-color);
       outline-offset: 2px;
     }
   }
 
   &__all {
     @include touch-target;
-    color: var(--link-color, var(--primary-color));
+    color: var(--theme-link-color, var(--theme-primary-ink-color));
   }
 }
 

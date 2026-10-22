@@ -1,30 +1,40 @@
 /**
- * Public token surface for third-party packs and host apps.
+ * Public Theme surface for third-party packs and host apps.
+ *
+ * Paint via `Theme.apply`. Read/subscribe and pack helpers stay on this entry;
+ * registry writers (`updateTokens`, …) are not exported — use `Theme.apply` / `Theme.set` / `Theme.reset`.
+ *
+ * Colour keys are the `--theme-…-color` names. An old key (`--primary-color`, `--paper` …) is
+ * still accepted on input and written under its new name with the same value (colour system
+ * Task 8, R-T8c); `getToken('--primary-color')` reads `--theme-primary-color`.
  *
  * @example
  * ```ts
  * import {
+ *   Theme,
  *   defineTokenPack,
  *   registerTokenSource,
  *   applyTokenSource,
  *   subscribeTokens,
- *   updateTokens,
  *   getTokens,
  * } from '@tgmc/theme/tokens';
  *
  * registerTokenSource(
  *   defineTokenPack('partner', () => ({
- *     '--primary-color': '#1264a3',
- *     '--secondary-color': '#de4e2b',
+ *     '--theme-primary-color': '#1264a3',
+ *     '--theme-secondary-color': '#de4e2b',
  *   }))
  * );
  * await applyTokenSource('partner', { primevue: true, foundation: true });
+ *
+ * Theme.apply({ '--theme-accent-color': '#de4e2b' });
  *
  * const stop = subscribeTokens(({ patch }) => {
  *   console.log('tokens changed', patch);
  * });
  * ```
  */
+
 export {
   applyAllTokenSources,
   applyTokenSource,
@@ -32,11 +42,7 @@ export {
   getToken,
   getTokens,
   registerTokenSource,
-  resetTokens,
-  setTokens,
   subscribeTokens,
-  updateToken,
-  updateTokens,
 } from './token-registry.js';
 export type {
   ThemeBridgeOptions,
@@ -68,7 +74,15 @@ export { darkCssVariables, defaultCssVariables, getCssVariablesForMode, lightCss
 export type { ThemeCssVariableMap } from './tokens.js';
 
 export { Theme } from './theme.js';
-export type { ThemeBreakpoints, ThemeDefinition, ThemeRatios, ThemeTextSettings, ThemeWriteOptions } from './theme.js';
+export type {
+  ThemeApplyInput,
+  ThemeApplyOptions,
+  ThemeBreakpoints,
+  ThemeDefinition,
+  ThemeRatios,
+  ThemeTextSettings,
+  ThemeWriteOptions,
+} from './theme.js';
 
 export { Color } from './color.js';
 export type { BaseColorKey, ColorLookup, PaletteName, SemanticColorKey, ThemeModeName, ThemeRoleKey } from './color.js';

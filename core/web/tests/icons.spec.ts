@@ -55,4 +55,13 @@ describe('icons (Lucide via @nuxt/icon)', () => {
     expect(names.size).toBeGreaterThan(5);
     for (const name of names) expect(config).toContain(`'lucide:${name}'`);
   });
+
+  it('pre-bundles the admin media kind icons (bound dynamically) in web and admin', () => {
+    const map = /MEDIA_KIND_ICONS[^{]*\{([^}]*)\}/.exec(read('../admin/app/utils/media-kind.ts'))?.[1] ?? '';
+    const names = [...map.matchAll(/:\s*'([a-z0-9-]+)'/g)].map((match) => match[1]!);
+    expect(names).toHaveLength(6);
+    for (const config of ['nuxt.config.ts', '../admin/nuxt.config.ts']) {
+      for (const name of names) expect(read(config)).toContain(`'lucide:${name}'`);
+    }
+  });
 });
