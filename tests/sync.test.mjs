@@ -396,3 +396,22 @@ test("sync redacts private AWS identifiers and keeps public hosts", () => {
   assert.match(text, /11111111-aaaa-bbbb-cccc-000000000001/);
   assert.match(text, /docs example 123456789012/);
 });
+
+test("scan fails on secret-shaped strings, including Google API keys", () => {
+  const scan = path.join(root, "sync/scan.mjs");
+  // Built at runtime so no secret-shaped literal is committed.
+  const samples = {
+    google: "AIza" + "x".repeat(35),
+    stripe: "sk_" + "live_" + "0".repeat(24),
+    slack: "xox" + "b-" + "1".repeat(12),
+    privateKey: "-----BEGIN " + "RSA PRIVATE KEY-----",
+  };
+  for (const [name, value] of Object.entries(samples)) {
+    const staging = fs.mkdtempSync(path.join(os.tmpdir(), "portfolio-stage-"));
+    fs.mkdirSync(path.join(staging, "theme"), { recursive: true });
+    fs.writeFileSync(path.join(staging, "theme/maps.js"), `const key = "${value}";\n`);
+    const result = spawnSync("node", [scan, "--staging", staging], { encoding: "utf8" });
+    assert.equal(result.status, 3, `${name} was not caught`);
+    assert.match(result.stderr, /secret-shaped string/);
+  }
+});

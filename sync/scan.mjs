@@ -40,7 +40,9 @@ const NESTED_DOT_DIRS = new Set([
   ".opencode",
 ]);
 
-const SECRET_RE = /(github_pat_[A-Za-z0-9_]+|ghp_[A-Za-z0-9]{36,}|AKIA[0-9A-Z]{16})/;
+// GitHub tokens, AWS access keys, Google API keys, Stripe live keys, Slack tokens, private keys.
+const SECRET_RE =
+  /(github_pat_[A-Za-z0-9_]+|ghp_[A-Za-z0-9]{36,}|AKIA[0-9A-Z]{16}|AIza[0-9A-Za-z_-]{35}|sk_live_[0-9A-Za-z]{24,}|xox[abprs]-[0-9A-Za-z-]{10,}|-----BEGIN [A-Z ]*PRIVATE KEY-----)/;
 
 function parseArgs(argv) {
   const out = {};
