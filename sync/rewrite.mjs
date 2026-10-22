@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { applyCdnPlaceholders } from "./cdn-placeholders.mjs";
 import { applyPublicDocs } from "./public-docs.mjs";
+import { redactStaging } from "./private-ids.mjs";
 
 const PRIVATE_REL_PATHS = [
   "docs/infra.md",
@@ -513,6 +514,7 @@ function main() {
   writeSyncMeta(staging, tag, sha);
   writeDbMigrateLocal(staging);
   applyPublicDocs(staging);
+  for (const rel of redactStaging(staging)) console.log(`redacted private IDs: ${rel}`);
 }
 
 main();

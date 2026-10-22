@@ -2,6 +2,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { cdnOriginalScanHits } from "./cdn-placeholders.mjs";
+import { findPrivateIds } from "./private-ids.mjs";
 
 const DENY_BASENAMES = new Set([
   ".env",
@@ -40,8 +41,6 @@ const NESTED_DOT_DIRS = new Set([
 ]);
 
 const SECRET_RE = /(github_pat_[A-Za-z0-9_]+|ghp_[A-Za-z0-9]{36,}|AKIA[0-9A-Z]{16})/;
-const PRIVATE_INFRA_RE =
-  /(987654321098|d0example00000|shared-cdn-test-assets-)/;
 
 function parseArgs(argv) {
   const out = {};
@@ -71,15 +70,15 @@ function walk(dir, hits, depth, stagingRoot) {
       hits.push(`denied file present: ${full}`);
     }
     if (
-      entry.size < 1_000_000 &&
-      /\.(js|mjs|ts|json|vue|md|env|yml|yaml|sh|txt)$/.test(entry.name)
+      fs.statSync(full).size < 2_000_000 &&
+      /\.(js|mjs|cjs|ts|json|vue|md|env|yml|yaml|sh|txt|html|css|scss|pug|svg|toml)$/.test(entry.name)
     ) {
       const text = fs.readFileSync(full, "utf8");
       if (SECRET_RE.test(text) && !full.includes(`${path.sep}sync${path.sep}`)) {
         hits.push(`secret-shaped string in ${full}`);
       }
-      if (PRIVATE_INFRA_RE.test(text)) {
-        hits.push(`private infra identifier in ${full}`);
+      for (const rule of findPrivateIds(text)) {
+        hits.push(`private infra identifier (${rule}) in ${full}`);
       }
     }
   }

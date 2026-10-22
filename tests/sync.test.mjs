@@ -351,3 +351,48 @@ test("the mirror runs read-only CI only (no CD workflows)", () => {
     assert.doesNotMatch(text, /contents:\s*write|pull-requests:\s*write|git push|gh pr create/, file);
   }
 });
+
+test("scan reads file contents and fails on a private AWS identifier", () => {
+  const staging = fs.mkdtempSync(path.join(os.tmpdir(), "portfolio-stage-"));
+  fs.mkdirSync(path.join(staging, "docs"), { recursive: true });
+  fs.writeFileSync(path.join(staging, "docs/notes.md"), "Test API: https://q1w2e3r4t5.execute-api.us-west-2.amazonaws.com\n");
+  const scan = path.join(root, "sync/scan.mjs");
+  const dirty = spawnSync("node", [scan, "--staging", staging], { encoding: "utf8" });
+  assert.equal(dirty.status, 3);
+  assert.match(dirty.stderr, /private infra identifier \(API Gateway host\)/);
+
+  fs.writeFileSync(path.join(staging, "docs/notes.md"), "Test API: https://<api-id>.execute-api.us-west-2.amazonaws.com\n");
+  const clean = spawnSync("node", [scan, "--staging", staging], { encoding: "utf8" });
+  assert.equal(clean.status, 0, clean.stderr);
+});
+
+test("sync redacts private AWS identifiers and keeps public hosts", () => {
+  const source = fs.mkdtempSync(path.join(os.tmpdir(), "portfolio-src-"));
+  fs.cpSync(fixture, source, { recursive: true });
+  const readme = path.join(source, "docs/web/reference/architecture.md");
+  fs.appendFileSync(
+    readme,
+    [
+      "",
+      "Deployed on https://q1w2e3r4t5.execute-api.us-west-2.amazonaws.com behind https://d0example00000.cloudfront.net.",
+      "Role arn:aws:iam::987654321098:role/deploy in account 987654321098.",
+      "Live on https://likwidmack.com, https://tamaramack.github.io and https://hyperactivity.studio.",
+      "Asset 11111111-aaaa-bbbb-cccc-000000000001 and docs example 123456789012.",
+      "",
+    ].join("\n"),
+  );
+  const dest = fs.mkdtempSync(path.join(os.tmpdir(), "portfolio-dest-"));
+  const result = spawnSync("bash", [syncSh, "--source", source, "--dest", dest, "--tag", "main"], {
+    encoding: "utf8",
+  });
+  assert.equal(result.status, 0, result.stderr);
+
+  const text = fs.readFileSync(path.join(dest, "docs/web/reference/architecture.md"), "utf8");
+  for (const real of ["q1w2e3r4t5", "d0example00000", "987654321098"]) assert.doesNotMatch(text, new RegExp(real));
+  assert.match(text, /https:\/\/<api-id>\.execute-api\.us-west-2\.amazonaws\.com/);
+  assert.match(text, /https:\/\/<distribution-id>\.cloudfront\.net/);
+  assert.match(text, /arn:aws:iam::<account-id>:role\/deploy in account <account-id>/);
+  assert.match(text, /https:\/\/likwidmack\.com, https:\/\/tamaramack\.github\.io and https:\/\/hyperactivity\.studio/);
+  assert.match(text, /11111111-aaaa-bbbb-cccc-000000000001/);
+  assert.match(text, /docs example 123456789012/);
+});

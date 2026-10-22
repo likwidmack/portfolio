@@ -92,3 +92,31 @@ fails if one is staged): `asset-urls-routes`, `ingest-routes-backend`, `media-li
 **Docs kept (owner decision):** `docs/packages/media-aws.md` and the
 `docs/plans/2026-09-22-*-media-*` plans stay public. They describe the package but hold no
 secrets, account IDs or real hostnames.
+
+## 2026-10-21: content scan never ran; private IDs in the mirror (`fix/scan-content`)
+
+**Found:** `scan.mjs` filtered on `entry.size`, which a `Dirent` does not have, so no file
+content was ever scanned: secrets and private infra IDs went unchecked on every sync since
+2026-08-28. Only file names and denied folders were checked.
+
+**Already public (since 2026-08-28):** the AWS account ID, the test CloudFront distribution ID and
+the shared test bucket prefix, all written into this repository's own `scan.mjs` denylist,
+`tests/fixtures/source-mini/docs/infra.md`, `tests/sync.test.mjs` and the former
+`.github/scripts/review.mjs`. No tokens or keys were found in any commit.
+
+**Would have been published:** the test API Gateway ID and the test CloudFront ID in
+`docs/web/features/interaction-redesign.md` (blocked before commit).
+
+**Fix:**
+
+- `sync/private-ids.mjs` matches AWS identifiers by shape (account IDs in ARNs, account
+  contexts, resource names and ECR hosts; `*.execute-api.*` IDs; `d…cloudfront.net` IDs). No real
+  value lives in the repository; extra exact values can be passed in `SYNC_PRIVATE_IDS` at sync
+  time.
+- `rewrite.mjs` redacts them to `<account-id>`, `<api-id>` and `<distribution-id>`; `scan.mjs` reads
+  every text file and fails if any survive.
+- Never touched: AWS documentation fakes, UUIDs and the public hosts `likwidmack.com`,
+  `tamaramack.github.io` and `hyperactivity.studio`.
+- Test fixtures use fake values.
+
+**Still to do:** purge the IDs from the git history (owner chose a history rewrite).
