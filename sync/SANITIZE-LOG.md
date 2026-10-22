@@ -120,3 +120,13 @@ the shared test bucket prefix, all written into this repository's own `scan.mjs`
 - Test fixtures use fake values.
 
 **Still to do:** purge the IDs from the git history (owner chose a history rewrite).
+
+## 2026-10-22: Google API key in the first snapshot (`fix/scan-google-api-keys`)
+
+GitHub secret scanning flagged a Google API key in
+`theme/foundation/docs/assets/js/docs.interchangeMap.js`, from the 2026-08-28 snapshot. It is
+ZURB Foundation's docs key, public in `foundation/foundation-sites` since v6.0.0 (2015) and since
+rotated upstream, not an owner credential. The file left the tree when `theme/foundation` was
+removed upstream (sync of `f9d37ba`). Alert resolved as "won't fix".
+
+`scan.mjs` now also fails on Google API keys, Stripe live keys, Slack tokens and private-key blocks.
